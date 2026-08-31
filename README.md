@@ -138,7 +138,38 @@ npm run dev
 
 ---
 
-## Deploying, and the scheduled jobs
+## Deploying
+
+### Vercel project settings
+
+`vercel.json` pins `"framework": "nextjs"`, which overrides whatever the
+dashboard's **Application Preset** says. That is deliberate: with the preset on
+**Other**, Vercel runs no Next build, finds no static `index.html`, and every
+path — including `/` — returns `404: NOT_FOUND` on the `.vercel.app` domain. A
+404 on a freshly deployed root path almost always means the framework preset,
+not the application.
+
+Set these environment variables on the project (Settings → Environment
+Variables). The app validates them at boot and fails with a readable list, so a
+missing one is loud rather than mysterious:
+
+| Variable | Required | Notes |
+| --- | --- | --- |
+| `NEXT_PUBLIC_SUPABASE_URL` | yes | Supabase project URL |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | yes | Anon / publishable key |
+| `SUPABASE_SERVICE_ROLE_KEY` | yes | Server-only. Bypasses RLS |
+| `CRON_SECRET` | for the jobs | 16+ chars; also signs sandbox payment callbacks |
+| `NEXT_PUBLIC_SITE_URL` | no | Declared but currently unreferenced |
+
+**Payments in production.** `ENABLE_SANDBOX_PAYMENTS` has no effect on Vercel:
+the sandbox adapter refuses to construct when `NODE_ENV=production`, which it
+always is there. With no Razorpay or Cashfree credentials,
+`configuredPaymentProviders()` returns an empty list and checkout has no method
+to offer. That is the safety property working, not a bug — a fake gateway must
+never be reachable in production. Add Razorpay **test-mode** keys
+(`rzp_test_…`) to exercise the real verification path without moving money.
+
+### The scheduled jobs
 
 Three endpoints have to be called on a timer. They are guarded by a shared
 secret rather than a session, compared in constant time, and each answers both
