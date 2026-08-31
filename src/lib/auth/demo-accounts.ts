@@ -60,8 +60,32 @@ export function demoAccountsEnabled(): boolean {
   return serverEnv().SHOW_DEMO_ACCOUNTS === 'true';
 }
 
+/**
+ * Says once, in the server log, why the panel is not on the page.
+ *
+ * Without this the panel's absence is indistinguishable from a broken build,
+ * which is a genuinely expensive thing to debug on a deployment: the variables
+ * live in `.env.local`, which is gitignored and therefore never travels with a
+ * push. Once per process, so it explains itself on a cold start without
+ * narrating every request.
+ */
+let explained = false;
+
+function explainAbsence(reason: string): null {
+  if (!explained) {
+    explained = true;
+    console.info(`[demo-accounts] panel not rendered: ${reason}`);
+  }
+  return null;
+}
+
 export async function listDemoAccounts(): Promise<DemoAccountList | null> {
-  if (!demoAccountsEnabled()) return null;
+  if (!demoAccountsEnabled()) {
+    return explainAbsence(
+      "SHOW_DEMO_ACCOUNTS is not 'true'. Set it in the hosting environment, " +
+        'not just .env.local, and redeploy — env vars are bound at build time.',
+    );
+  }
 
   const { data, error } = await adminClient()
     .from('auth_profiles')
@@ -70,7 +94,9 @@ export async function listDemoAccounts(): Promise<DemoAccountList | null> {
 
   // A panel that cannot load is simply absent. It is a convenience, and it
   // must never be the reason nobody can reach the sign-in form.
-  if (error || !data) return null;
+  if (error || !data) {
+    return explainAbsence(`could not read auth_profiles — ${error?.message ?? 'no rows returned'}`);
+  }
 
   const all = (data as Array<{ email: string | null; full_name: string; role: string }>)
     .filter((row): row is { email: string; full_name: string; role: string } => Boolean(row.email))
