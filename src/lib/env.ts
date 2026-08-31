@@ -68,6 +68,14 @@ const serverSchema = z.object({
   // the adapter refuses to construct when NODE_ENV is production.
   ENABLE_SANDBOX_PAYMENTS: z.enum(['true', 'false']).default('false'),
 
+  // Development aid: lists the seeded accounts on the sign-in page so each
+  // role can be checked quickly. It is a single explicit switch rather than a
+  // NODE_ENV check because the thing being reviewed is usually a deployed
+  // preview, where NODE_ENV is always 'production'. Unset it and the panel
+  // stops existing -- the page never even queries for it.
+  SHOW_DEMO_ACCOUNTS: z.enum(['true', 'false']).default('false'),
+  DEMO_ACCOUNT_PASSWORD: blankAsUndefined(z.string()),
+
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
   NEXT_PUBLIC_SITE_URL: z.string().url().default('http://localhost:3000'),
 });

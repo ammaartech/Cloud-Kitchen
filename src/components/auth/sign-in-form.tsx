@@ -14,10 +14,26 @@ import { Alert, Button, Field, Input, Spinner } from '@/components/ui/primitives
  * work, and offering a button for a provider that is not enabled would just
  * produce a confusing error. So this renders what is actually wired up.
  */
-export function SignInForm({ next }: { next: string | null }) {
+/**
+ * The credential fields are controlled from outside so the development account
+ * panel can fill them by simply setting state, rather than this component
+ * syncing to a prop in an effect. Same reason any shared value gets lifted:
+ * one owner, no copy to keep in step.
+ */
+export function SignInForm({
+  next,
+  email,
+  password,
+  onEmailChange,
+  onPasswordChange,
+}: {
+  next: string | null;
+  email: string;
+  password: string;
+  onEmailChange: (value: string) => void;
+  onPasswordChange: (value: string) => void;
+}) {
   const router = useRouter();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
 
@@ -54,7 +70,7 @@ export function SignInForm({ next }: { next: string | null }) {
           value={email}
           autoComplete="email"
           required
-          onChange={(event) => setEmail(event.target.value)}
+          onChange={(event) => onEmailChange(event.target.value)}
           placeholder="you@example.com"
         />
       </Field>
@@ -65,7 +81,7 @@ export function SignInForm({ next }: { next: string | null }) {
           value={password}
           autoComplete="current-password"
           required
-          onChange={(event) => setPassword(event.target.value)}
+          onChange={(event) => onPasswordChange(event.target.value)}
         />
       </Field>
 
