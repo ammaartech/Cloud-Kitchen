@@ -138,6 +138,57 @@ npm run dev
 
 ---
 
+## Deploying, and the scheduled jobs
+
+Three endpoints have to be called on a timer. They are guarded by a shared
+secret rather than a session, compared in constant time, and each answers both
+`POST` and `GET` because most hosted schedulers only issue `GET`.
+
+| Endpoint | Wants to run | Why |
+| --- | --- | --- |
+| `/api/jobs/release-deliveries` | every few minutes | Releases due deliveries into the live KOT inside the configurable lead time |
+| `/api/jobs/notifications` | every few minutes | Drains the notification outbox |
+| `/api/jobs/reconcile` | hourly | Two-way marketplace reconciliation |
+
+**Vercel's Hobby plan allows two cron jobs per project, each firing at most
+once per day.** That is enough for reconciliation and useless for delivery
+release — a job whose purpose is to reach the kitchen inside a lead time cannot
+run once at 1am and be said to work.
+
+So the cadence is split:
+
+- `vercel.json` keeps two **daily** crons as a floor, within Hobby limits.
+- `.github/workflows/scheduled-jobs.yml` does the real work — every 5 minutes
+  for release and notifications, hourly for reconciliation. GitHub Actions is
+  free for public repositories, and its 5-minute minimum matches what these
+  jobs need.
+
+Set two repository secrets under **Settings → Secrets and variables → Actions**:
+
+| Secret | Value |
+| --- | --- |
+| `SITE_URL` | your deployment origin, no trailing slash |
+| `CRON_SECRET` | the same value as the `CRON_SECRET` env var on Vercel |
+
+Two caveats worth knowing rather than discovering:
+
+- GitHub disables scheduled workflows on repositories with **no activity for 60
+  days**. The daily Vercel crons are the reason that degrades into "late"
+  rather than "stopped".
+- GitHub's scheduler is best-effort and can run late under load. The release
+  job releases whatever is due when it next runs rather than assuming it was
+  punctual, so a delayed run catches up.
+
+Running both schedulers is safe: `release_due_deliveries` locks rows with
+`SKIP LOCKED` and is idempotent, the dispatcher drains a queue, and
+reconciliation only records findings. A duplicated run is a no-op, never a
+double delivery.
+
+On the Pro plan, delete the workflow and set `vercel.json` back to
+`*/5 * * * *`, `2-59/5 * * * *` and `17 * * * *`.
+
+---
+
 ## Demonstrating the end-to-end flow
 
 With no Razorpay or Cashfree merchant account, set `ENABLE_SANDBOX_PAYMENTS=true`

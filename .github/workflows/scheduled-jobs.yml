@@ -1,0 +1,75 @@
+name: Scheduled jobs
+
+# The operational cadence for the deployed app.
+#
+# Vercel's Hobby plan allows two cron jobs per project, each firing at most
+# once a day. That is fine for reconciliation but useless for releasing
+# deliveries: a job whose whole purpose is to put food in front of the kitchen
+# inside a configurable lead time cannot run at 1am and be said to work. So the
+# real cadence lives here, and the daily Vercel crons in vercel.json stay on as
+# a floor in case this workflow is ever disabled.
+#
+# Running both is safe. `release_due_deliveries` locks rows with SKIP LOCKED
+# and is idempotent, the notification dispatcher drains a queue, and
+# reconciliation only records findings -- so an overlapping or duplicated run
+# is a no-op rather than a double delivery.
+#
+# Required repository secrets (Settings -> Secrets and variables -> Actions):
+#   SITE_URL     e.g. https://cloud-kitchen-02.vercel.app  (no trailing slash)
+#   CRON_SECRET  the same value as the CRON_SECRET env var on Vercel
+
+on:
+  schedule:
+    # GitHub's minimum interval is 5 minutes, and it is best-effort: runs can
+    # be delayed under load. The release job tolerates that -- it releases
+    # whatever is due whenever it next runs, rather than assuming it was
+    # punctual.
+    - cron: '*/5 * * * *'
+    - cron: '17 * * * *'
+  workflow_dispatch:
+
+concurrency:
+  # Never let a delayed run pile up on top of the next one.
+  group: scheduled-jobs
+  cancel-in-progress: false
+
+jobs:
+  frequent:
+    name: Release deliveries and drain notifications
+    if: github.event.schedule == '*/5 * * * *' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Release due deliveries into the KOT
+        env:
+          SITE_URL: ${{ secrets.SITE_URL }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          curl --fail-with-body --silent --show-error --max-time 60 \
+            -X POST "$SITE_URL/api/jobs/release-deliveries" \
+            -H "Authorization: Bearer $CRON_SECRET"
+
+      - name: Dispatch queued notifications
+        # A notification provider being down must never hide a release failure,
+        # so this reports separately rather than short-circuiting the job.
+        if: always()
+        env:
+          SITE_URL: ${{ secrets.SITE_URL }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          curl --fail-with-body --silent --show-error --max-time 60 \
+            -X POST "$SITE_URL/api/jobs/notifications" \
+            -H "Authorization: Bearer $CRON_SECRET"
+
+  hourly:
+    name: Reconcile marketplaces
+    if: github.event.schedule == '17 * * * *'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Two-way marketplace reconciliation
+        env:
+          SITE_URL: ${{ secrets.SITE_URL }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          curl --fail-with-body --silent --show-error --max-time 120 \
+            -X POST "$SITE_URL/api/jobs/reconcile" \
+            -H "Authorization: Bearer $CRON_SECRET"
