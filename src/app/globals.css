@@ -1,0 +1,200 @@
+@import "tailwindcss";
+
+/* ==========================================================================
+   Design tokens
+   ==========================================================================
+   Two registers share one system:
+
+   Storefront  - warm, editorial, appetising. Generous space, real photography.
+   Operations  - the KOT screens. Dense, high contrast, glanceable across a
+                 kitchen at arm's length under bad lighting (PRD 19).
+
+   Source colours are fixed by the PRD: SW orange, ZM red, SX navy. Colour is
+   never the only signal -- every ticket also carries its literal prefix.
+   ========================================================================== */
+
+:root {
+  /* Neutrals: warm-tinted, so the storefront reads as food rather than SaaS. */
+  --ck-bg: #fbf9f6;
+  --ck-surface: #ffffff;
+  --ck-surface-sunken: #f4f1ec;
+  --ck-border: #e5e0d8;
+  --ck-border-strong: #d2cabd;
+
+  --ck-text: #1c1917;
+  --ck-text-muted: #6b6259;
+  --ck-text-subtle: #938a80;
+
+  /* Brand: a deep spice red-brown, with turmeric as the accent. */
+  --ck-brand: #9c3919;
+  --ck-brand-hover: #822f14;
+  --ck-brand-soft: #fdefe8;
+  --ck-accent: #c98a13;
+  --ck-accent-soft: #fdf4e0;
+
+  /* Status */
+  --ck-success: #1f7a4d;
+  --ck-success-soft: #e6f4ec;
+  --ck-warning: #a86800;
+  --ck-warning-soft: #fdf2dc;
+  --ck-danger: #b3261e;
+  --ck-danger-soft: #fdecea;
+  --ck-info: #1f5fa8;
+  --ck-info-soft: #e8f1fb;
+
+  /* Order sources (PRD 4) */
+  --ck-source-sw: #e2680f; /* Swiggy  - orange */
+  --ck-source-zm: #d81f26; /* Zomato  - red    */
+  --ck-source-sx: #1c3f7c; /* Website - navy   */
+  --ck-source-sw-soft: #fdf0e5;
+  --ck-source-zm-soft: #fdeaeb;
+  --ck-source-sx-soft: #e9eef7;
+
+  --ck-radius: 0.625rem;
+  --ck-radius-lg: 1rem;
+
+  --ck-shadow-sm: 0 1px 2px rgb(28 25 23 / 0.06);
+  --ck-shadow: 0 2px 8px -2px rgb(28 25 23 / 0.1), 0 1px 3px rgb(28 25 23 / 0.06);
+  --ck-shadow-lg: 0 12px 32px -12px rgb(28 25 23 / 0.22);
+}
+
+/* --------------------------------------------------------------------------
+   Operations surface. The KOT screens opt into this by setting data-surface,
+   which flips the neutrals to a dark, high-contrast ramp without any component
+   needing to know which screen it is on.
+   -------------------------------------------------------------------------- */
+[data-surface="ops"] {
+  --ck-bg: #14120f;
+  --ck-surface: #1f1c18;
+  --ck-surface-sunken: #100e0c;
+  --ck-border: #322d27;
+  --ck-border-strong: #4a423a;
+
+  --ck-text: #f7f4f0;
+  --ck-text-muted: #b3a99e;
+  --ck-text-subtle: #857c72;
+
+  --ck-brand: #e8763f;
+  --ck-brand-hover: #f08a58;
+  --ck-brand-soft: #2c1a12;
+  --ck-accent: #e8b23f;
+  --ck-accent-soft: #2b2311;
+
+  --ck-success: #45c07f;
+  --ck-success-soft: #12291d;
+  --ck-warning: #e0a52c;
+  --ck-warning-soft: #2b2211;
+  --ck-danger: #ff6b60;
+  --ck-danger-soft: #331714;
+  --ck-info: #6ba6ec;
+  --ck-info-soft: #14202f;
+
+  --ck-source-sw: #ff8534;
+  --ck-source-zm: #ff5a5f;
+  --ck-source-sx: #7ba7ee;
+  --ck-source-sw-soft: #2e1a0d;
+  --ck-source-zm-soft: #33161a;
+  --ck-source-sx-soft: #16203a;
+
+  --ck-shadow-sm: 0 1px 2px rgb(0 0 0 / 0.4);
+  --ck-shadow: 0 2px 8px -2px rgb(0 0 0 / 0.5);
+  --ck-shadow-lg: 0 12px 32px -12px rgb(0 0 0 / 0.6);
+}
+
+@theme inline {
+  --color-bg: var(--ck-bg);
+  --color-surface: var(--ck-surface);
+  --color-sunken: var(--ck-surface-sunken);
+  --color-line: var(--ck-border);
+  --color-line-strong: var(--ck-border-strong);
+
+  --color-ink: var(--ck-text);
+  --color-muted: var(--ck-text-muted);
+  --color-subtle: var(--ck-text-subtle);
+
+  --color-brand: var(--ck-brand);
+  --color-brand-hover: var(--ck-brand-hover);
+  --color-brand-soft: var(--ck-brand-soft);
+  --color-accent: var(--ck-accent);
+  --color-accent-soft: var(--ck-accent-soft);
+
+  --color-success: var(--ck-success);
+  --color-success-soft: var(--ck-success-soft);
+  --color-warning: var(--ck-warning);
+  --color-warning-soft: var(--ck-warning-soft);
+  --color-danger: var(--ck-danger);
+  --color-danger-soft: var(--ck-danger-soft);
+  --color-info: var(--ck-info);
+  --color-info-soft: var(--ck-info-soft);
+
+  --color-sw: var(--ck-source-sw);
+  --color-zm: var(--ck-source-zm);
+  --color-sx: var(--ck-source-sx);
+  --color-sw-soft: var(--ck-source-sw-soft);
+  --color-zm-soft: var(--ck-source-zm-soft);
+  --color-sx-soft: var(--ck-source-sx-soft);
+
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+
+  --radius-ck: var(--ck-radius);
+  --radius-ck-lg: var(--ck-radius-lg);
+
+  --shadow-ck-sm: var(--ck-shadow-sm);
+  --shadow-ck: var(--ck-shadow);
+  --shadow-ck-lg: var(--ck-shadow-lg);
+}
+
+html {
+  color-scheme: light;
+}
+
+body {
+  background: var(--ck-bg);
+  color: var(--ck-text);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Numbers that must line up in a column: totals, credits, ticket counts. */
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* An unavailable product is shown, not hidden -- grayscale plus a badge, and
+   not selectable (PRD 6, PRD 19). */
+.is-unavailable img {
+  filter: grayscale(1);
+  opacity: 0.55;
+}
+
+/* Focus ring that survives both surfaces. */
+:where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: 2px solid var(--ck-brand);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* A ticket that has just changed pulses once, so a change is obvious on a
+   screen nobody is staring at (PRD 11, PRD 19). */
+@keyframes ck-flash {
+  0% {
+    box-shadow: 0 0 0 0 var(--ck-accent);
+  }
+  100% {
+    box-shadow: 0 0 0 6px transparent;
+  }
+}
+
+.ck-flash {
+  animation: ck-flash 1.2s ease-out 1;
+}
