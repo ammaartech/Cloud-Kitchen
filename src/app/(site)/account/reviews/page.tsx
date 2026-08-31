@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import { revalidatePath } from 'next/cache';
 import { requireSession } from '@/lib/auth/session';
 import { serverClient } from '@/lib/supabase/server';
@@ -9,7 +8,9 @@ import {
   Alert,
   Badge,
   Button,
+  ButtonLink,
   Card,
+  ConfirmButton,
   EmptyState,
   Field,
   Input,
@@ -62,9 +63,7 @@ export default async function AccountReviewsPage({ searchParams }: PageProps<'/a
           title="Nothing to review yet"
           description="Once meals have been delivered to you, you can say what you thought."
           action={
-            <Link href="/subscriptions">
-              <Button>Browse plans</Button>
-            </Link>
+            <ButtonLink href="/subscriptions">Browse plans</ButtonLink>
           }
         />
       </div>
@@ -315,9 +314,9 @@ export default async function AccountReviewsPage({ searchParams }: PageProps<'/a
 
                   <form action={withdrawReview} className="mt-2">
                     <input type="hidden" name="reviewId" value={review.id} />
-                    <Button type="submit" size="sm" variant="ghost">
+                    <ConfirmButton confirmLabel="Really withdraw?">
                       Withdraw this review
-                    </Button>
+                    </ConfirmButton>
                   </form>
                 </details>
               </Card>

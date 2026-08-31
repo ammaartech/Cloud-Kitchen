@@ -17,6 +17,7 @@ import {
   Badge,
   Button,
   Card,
+  ConfirmButton,
   Field,
   Input,
   SectionHeading,
@@ -572,9 +573,7 @@ export default async function CustomerDetailPage({
 
                       <form action={removeAddress} className="mt-2">
                         <input type="hidden" name="addressId" value={address.id} />
-                        <Button type="submit" size="sm" variant="ghost">
-                          Retire this address
-                        </Button>
+                        <ConfirmButton confirmLabel="Really retire?">Retire this address</ConfirmButton>
                       </form>
                     </details>
                   ) : null}

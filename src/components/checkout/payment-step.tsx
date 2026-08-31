@@ -68,38 +68,49 @@ export function PaymentStep({
   const [paymentId, setPaymentId] = useState<string | null>(null);
 
   async function startPayment() {
+    // Refused up front rather than left to time out: an offline browser must
+    // never look like it is mid-payment (PRD 11).
+    if (typeof navigator !== 'undefined' && !navigator.onLine) {
+      setError('You are offline. Nothing was started — reconnect and try again.');
+      return;
+    }
+
     setPending(true);
     setError(null);
 
-    const beginResponse = await fetch('/api/checkout/begin', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ addressId, provider, fullName, phone }),
-    });
+    try {
+      const beginResponse = await fetch('/api/checkout/begin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ addressId, provider, fullName, phone }),
+      });
 
-    const begun = await beginResponse.json();
+      const begun = await beginResponse.json();
 
-    if (!beginResponse.ok) {
-      setError(begun.error ?? 'Checkout could not be started.');
+      if (!beginResponse.ok) {
+        setError(begun.error ?? 'Checkout could not be started.');
+        return;
+      }
+
+      setPaymentId(begun.paymentId);
+
+      // The sandbox gateway asks for an outcome instead of opening a hosted
+      // page. A real provider would hand control to its SDK here and return
+      // via /api/checkout/confirm.
+      if (provider === 'sandbox') {
+        return;
+      }
+
+      setError(
+        'This provider needs its browser SDK to complete the payment. ' +
+          'Enable the test gateway to walk the flow end to end.',
+      );
+    } catch {
+      // Before any money moves, a dropped connection is safely retryable.
+      setError('We could not reach the server. Nothing was charged — try again.');
+    } finally {
       setPending(false);
-      return;
     }
-
-    setPaymentId(begun.paymentId);
-
-    // The sandbox gateway asks for an outcome instead of opening a hosted
-    // page. A real provider would hand control to its SDK here and return via
-    // /api/checkout/confirm.
-    if (provider === 'sandbox') {
-      setPending(false);
-      return;
-    }
-
-    setError(
-      'This provider needs its browser SDK to complete the payment. ' +
-        'Enable the test gateway to walk the flow end to end.',
-    );
-    setPending(false);
   }
 
   async function completeSandbox(result: 'success' | 'failed' | 'uncertain') {
@@ -107,25 +118,36 @@ export function PaymentStep({
     setPending(true);
     setError(null);
 
-    const response = await fetch('/api/checkout/sandbox', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ paymentId, outcome: result }),
-    });
+    try {
+      const response = await fetch('/api/checkout/sandbox', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ paymentId, outcome: result }),
+      });
 
-    const data = await response.json();
+      const data = await response.json();
 
-    if (!response.ok) {
-      setError(data.error ?? 'Could not complete the payment.');
+      if (!response.ok) {
+        setError(data.error ?? 'Could not complete the payment.');
+        return;
+      }
+
+      setOutcome(data as Outcome);
+
+      if (data.status === 'active') {
+        router.refresh();
+      }
+    } catch {
+      // Mid-confirmation the outcome is genuinely unknown -- say that rather
+      // than guessing either way (PRD 8): the payment may or may not have
+      // registered, and reconciliation will settle it.
+      setError(
+        'The connection dropped before we could confirm the outcome. Do not pay again — ' +
+          'check your account in a minute; if the plan is not active, reconciliation will ' +
+          'either activate it or ensure nothing was charged.',
+      );
+    } finally {
       setPending(false);
-      return;
-    }
-
-    setOutcome(data as Outcome);
-    setPending(false);
-
-    if (data.status === 'active') {
-      router.refresh();
     }
   }
 

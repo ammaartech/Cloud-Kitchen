@@ -5,7 +5,7 @@ import { saveDraft, draftSchema } from '@/lib/checkout/draft';
 import { PlanConfigurator } from '@/components/checkout/plan-configurator';
 import { ProductTile } from '@/components/product-card';
 import { money, PLAN_TYPE_LABELS } from '@/lib/format';
-import { Badge, Card } from '@/components/ui/primitives';
+import { Alert, Badge, Card } from '@/components/ui/primitives';
 
 export async function generateMetadata({ params }: PageProps<'/subscriptions/[slug]'>) {
   const { slug } = await params;
@@ -13,11 +13,17 @@ export async function generateMetadata({ params }: PageProps<'/subscriptions/[sl
   return { title: plan?.name ?? 'Plan' };
 }
 
-export default async function PlanPage({ params }: PageProps<'/subscriptions/[slug]'>) {
+export default async function PlanPage({
+  params,
+  searchParams,
+}: PageProps<'/subscriptions/[slug]'>) {
   const { slug } = await params;
   const plan = await getPlan(slug);
 
   if (!plan) notFound();
+
+  const query = await searchParams;
+  const configurationRejected = query.error === 'invalid';
 
   const [meals, offers] = await Promise.all([getPlanMeals(plan.id), listPublicOffers()]);
   const autoOffer = offers[0] ?? null;
@@ -60,6 +66,15 @@ export default async function PlanPage({ params }: PageProps<'/subscriptions/[sl
       <Link href="/subscriptions" className="text-sm text-muted hover:text-ink">
         ← All plans
       </Link>
+
+      {configurationRejected ? (
+        <div className="mt-4">
+          <Alert tone="danger" title="That configuration could not be saved">
+            Something about the selection did not check out on our side. Nothing was charged
+            — re-check your choices below and continue again.
+          </Alert>
+        </div>
+      ) : null}
 
       <div className="mt-4 grid gap-10 lg:grid-cols-[1fr_22rem] lg:items-start">
         <div>

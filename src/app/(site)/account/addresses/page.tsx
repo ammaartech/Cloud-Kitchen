@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import { revalidatePath } from 'next/cache';
 import { requireSession } from '@/lib/auth/session';
 import { serverClient } from '@/lib/supabase/server';
@@ -7,7 +6,9 @@ import { ActionFeedback, done, fail, readable } from '@/lib/admin/feedback';
 import {
   Badge,
   Button,
+  ButtonLink,
   Card,
+  ConfirmButton,
   EmptyState,
   Field,
   Input,
@@ -58,9 +59,7 @@ export default async function AddressesPage({ searchParams }: PageProps<'/accoun
           title="No customer record yet"
           description="Addresses appear here once you have placed your first order."
           action={
-            <Link href="/subscriptions">
-              <Button>Browse plans</Button>
-            </Link>
+            <ButtonLink href="/subscriptions">Browse plans</ButtonLink>
           }
         />
       </div>
@@ -224,9 +223,7 @@ export default async function AddressesPage({ searchParams }: PageProps<'/accoun
                 {!inUse.has(address.id) ? (
                   <form action={retireAddress} className="ml-auto">
                     <input type="hidden" name="addressId" value={address.id} />
-                    <Button type="submit" size="sm" variant="ghost">
-                      Remove
-                    </Button>
+                    <ConfirmButton confirmLabel="Really remove?">Remove</ConfirmButton>
                   </form>
                 ) : (
                   <span className="ml-auto text-xs text-subtle">

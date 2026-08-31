@@ -8,6 +8,7 @@ import { serverClient } from '@/lib/supabase/server';
 import { availablePaymentProviders } from '@/lib/payments';
 import { money, weekdayList, clockTime, PLAN_TYPE_LABELS } from '@/lib/format';
 import { Alert, Badge, Card } from '@/components/ui/primitives';
+import { ActionFeedback, fail, readable } from '@/lib/admin/feedback';
 import { CheckoutAuthStep } from '@/components/checkout/auth-step';
 import { ProfileStep } from '@/components/checkout/profile-step';
 import { AddressStep } from '@/components/checkout/address-step';
@@ -27,9 +28,11 @@ interface Quote {
   tax_breakdown: Array<{ code: string; label: string; rate: number; amount: number }>;
 }
 
-export default async function CheckoutPage() {
+export default async function CheckoutPage({ searchParams }: PageProps<'/checkout'>) {
   const draft = await readDraft();
   if (!draft) redirect('/subscriptions');
+
+  const params = await searchParams;
 
   const [session, plan] = await Promise.all([getSession(), getPlan(draft.planSlug)]);
   if (!plan) redirect('/subscriptions');
@@ -83,7 +86,7 @@ export default async function CheckoutPage() {
     if (!current) redirect('/checkout');
 
     const db = await serverClient();
-    await db.from('customers').insert({
+    const { error } = await db.from('customers').insert({
       profile_id: current.id,
       full_name: String(formData.get('fullName') ?? ''),
       email: current.email,
@@ -93,6 +96,10 @@ export default async function CheckoutPage() {
       marketing_consent_source: 'checkout',
       created_source: 'website',
     });
+
+    // A silent refusal here would strand the customer on a step that never
+    // advances -- the failure has to be said out loud.
+    if (error) fail('/checkout', readable(error));
 
     revalidatePath('/checkout');
   }
@@ -104,7 +111,13 @@ export default async function CheckoutPage() {
     if (!current?.customerId) redirect('/checkout');
 
     const db = await serverClient();
-    await db.from('customer_addresses').insert({
+    // Only one address may be the default; the incumbent stands down first.
+    await db
+      .from('customer_addresses')
+      .update({ is_default: false })
+      .eq('customer_id', current.customerId);
+
+    const { error } = await db.from('customer_addresses').insert({
       customer_id: current.customerId,
       label: String(formData.get('label') ?? 'Home'),
       recipient_name: String(formData.get('recipientName') ?? ''),
@@ -118,6 +131,8 @@ export default async function CheckoutPage() {
       delivery_instructions: String(formData.get('instructions') ?? '') || null,
       is_default: true,
     });
+
+    if (error) fail('/checkout', readable(error));
 
     revalidatePath('/checkout');
   }
@@ -137,6 +152,12 @@ export default async function CheckoutPage() {
       </Link>
 
       <h1 className="mt-4 text-3xl font-semibold tracking-tight">Checkout</h1>
+
+      {typeof params.error === 'string' ? (
+        <div className="mt-6">
+          <ActionFeedback error={params.error} />
+        </div>
+      ) : null}
 
       <ol className="mt-6 flex flex-wrap gap-2 text-sm" aria-label="Checkout progress">
         {(

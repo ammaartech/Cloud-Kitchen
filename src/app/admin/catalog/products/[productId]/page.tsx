@@ -14,6 +14,7 @@ import {
   Badge,
   Button,
   Card,
+  ConfirmButton,
   Field,
   Input,
   SectionHeading,
@@ -675,9 +676,7 @@ export default async function ProductEditorPage({
 
                       <form action={removeImage} className="ml-auto">
                         <input type="hidden" name="imageId" value={image.id} />
-                        <Button type="submit" size="sm" variant="ghost">
-                          Remove
-                        </Button>
+                        <ConfirmButton confirmLabel="Really remove?">Remove</ConfirmButton>
                       </form>
                     </div>
                   </div>

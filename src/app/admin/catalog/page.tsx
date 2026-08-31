@@ -10,6 +10,7 @@ import { CatalogNav } from '@/components/admin/catalog-nav';
 import {
   Badge,
   Button,
+  ButtonLink,
   Card,
   EmptyState,
   Field,
@@ -154,11 +155,7 @@ export default async function CatalogPage({ searchParams }: PageProps<'/admin/ca
         description={`${products.length} dishes · ${unavailableCount} currently unavailable. Every change is audited.`}
         action={
           archivedCount > 0 ? (
-            <Link href={showArchived ? PATH : `${PATH}?archived=true`}>
-              <Button variant="ghost" size="sm">
-                {showArchived ? 'Back to live dishes' : `Archived (${archivedCount})`}
-              </Button>
-            </Link>
+            <ButtonLink href={showArchived ? PATH : `${PATH}?archived=true`} variant="ghost" size="sm">{showArchived ? 'Back to live dishes' : `Archived (${archivedCount})`}</ButtonLink>
           ) : null
         }
       />
@@ -251,11 +248,7 @@ export default async function CatalogPage({ searchParams }: PageProps<'/admin/ca
                 </div>
 
                 <div className="flex items-end gap-2">
-                  <Link href={`/admin/catalog/products/${product.id}`}>
-                    <Button variant="secondary" size="sm">
-                      Edit
-                    </Button>
-                  </Link>
+                  <ButtonLink href={`/admin/catalog/products/${product.id}`} variant="secondary" size="sm">Edit</ButtonLink>
 
                   {!product.archived_at ? (
                     <form action={toggleAvailability} className="flex items-end gap-2">

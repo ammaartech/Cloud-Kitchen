@@ -1,8 +1,7 @@
-import Link from 'next/link';
 import { listPublicOffers } from '@/lib/data/catalog';
 import { getSession } from '@/lib/auth/session';
 import { money, dateOnly } from '@/lib/format';
-import { Alert, Badge, Button, Card, EmptyState } from '@/components/ui/primitives';
+import { Alert, Badge, ButtonLink, Card, EmptyState } from '@/components/ui/primitives';
 
 export const metadata = {
   title: 'Offers',
@@ -92,9 +91,7 @@ export default async function OffersPage() {
       ) : null}
 
       <div className="mt-10 text-center">
-        <Link href="/subscriptions">
-          <Button size="lg">Choose a plan</Button>
-        </Link>
+        <ButtonLink href="/subscriptions" size="lg">Choose a plan</ButtonLink>
       </div>
     </div>
   );

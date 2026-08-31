@@ -11,6 +11,7 @@ import {
   Badge,
   Button,
   Card,
+  ConfirmButton,
   EmptyState,
   Field,
   Input,
@@ -465,13 +466,19 @@ export default async function EmployeesPage({ searchParams }: PageProps<'/admin/
                                 <Input name="reason" className="w-48" placeholder="Left the team" />
                               </Field>
                             ) : null}
-                            <Button
-                              type="submit"
-                              size="md"
-                              variant={signedOut ? 'success' : 'danger'}
-                            >
-                              {signedOut ? 'Re-enable' : 'Disable login'}
-                            </Button>
+                            {signedOut ? (
+                              <Button type="submit" size="md" variant="success">
+                                Re-enable
+                              </Button>
+                            ) : (
+                              <ConfirmButton
+                                size="md"
+                                variant="danger"
+                                confirmLabel="Really disable?"
+                              >
+                                Disable login
+                              </ConfirmButton>
+                            )}
                           </form>
                         </div>
                       ) : null}

@@ -1,8 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import Link from 'next/link';
-import { Alert, Button, Card } from '@/components/ui/primitives';
+import { Alert, Button, ButtonLink, Card } from '@/components/ui/primitives';
 
 /**
  * Route-level error boundary (PRD 19).
@@ -37,9 +36,7 @@ export default function RouteError({
 
         <div className="mt-6 flex flex-wrap gap-2">
           <Button onClick={reset}>Try again</Button>
-          <Link href="/">
-            <Button variant="secondary">Go to the home page</Button>
-          </Link>
+          <ButtonLink href="/" variant="secondary">Go to the home page</ButtonLink>
         </div>
 
         {error.digest ? (

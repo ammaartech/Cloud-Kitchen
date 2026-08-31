@@ -4,9 +4,12 @@ import { PERMISSIONS } from '@/lib/auth/permissions';
 import { serverClient } from '@/lib/supabase/server';
 import { money, clockTime } from '@/lib/format';
 import { Alert, Badge, Button, Card, Input, SectionHeading } from '@/components/ui/primitives';
+import { ActionFeedback, done, fail, readable } from '@/lib/admin/feedback';
 
 export const metadata = { title: 'Settings' };
 export const dynamic = 'force-dynamic';
+
+const PATH = '/admin/settings';
 
 interface SettingRow {
   key: string;
@@ -39,9 +42,10 @@ const GROUP_TITLES: Record<string, string> = {
  * Values the Owner has not yet confirmed are marked provisional rather than
  * being presented as settled policy (PRD 22).
  */
-export default async function SettingsPage() {
+export default async function SettingsPage({ searchParams }: PageProps<'/admin/settings'>) {
   await requirePermission(PERMISSIONS.settingsManage);
   const supabase = await serverClient();
+  const params = await searchParams;
 
   const [settingsResult, taxResult, deliveryResult, costResult, windowResult] =
     await Promise.all([
@@ -82,31 +86,39 @@ export default async function SettingsPage() {
     'use server';
 
     const key = String(formData.get('key'));
+    const label = String(formData.get('label') ?? '') || key;
     const raw = String(formData.get('value') ?? '');
     const valueType = String(formData.get('valueType'));
 
     // Stored as jsonb, so the type has to survive the round trip: a number
-    // written as a string would break `setting_int` at read time.
+    // written as a string would break `setting_int` at read time. An input
+    // that cannot round-trip is refused with a reason, never swallowed --
+    // an Owner who clicks Save and sees nothing believes the value changed.
     let value: unknown;
     if (valueType === 'integer' || valueType === 'number') {
       value = Number(raw);
-      if (Number.isNaN(value)) return;
+      if (Number.isNaN(value)) {
+        fail(PATH, `"${label}" needs a number — "${raw}" is not one. Nothing was changed.`);
+      }
     } else if (valueType === 'boolean') {
       value = raw === 'true';
     } else if (valueType === 'json') {
       try {
         value = JSON.parse(raw);
       } catch {
-        return;
+        fail(PATH, `"${label}" needs valid JSON. Nothing was changed.`);
       }
     } else {
       value = raw;
     }
 
     const db = await serverClient();
-    await db.from('business_settings').update({ value }).eq('key', key);
+    const { error } = await db.from('business_settings').update({ value }).eq('key', key);
 
-    revalidatePath('/admin/settings');
+    if (error) fail(PATH, readable(error));
+
+    revalidatePath(PATH);
+    done(PATH, `"${label}" saved. It takes effect on the next request.`);
   }
 
   const groups = [...new Set(settings.map((setting) => setting.group_name))];
@@ -117,6 +129,11 @@ export default async function SettingsPage() {
       <SectionHeading
         title="Business settings"
         description="Everything here is data. Changing a value takes effect immediately — no deployment involved."
+      />
+
+      <ActionFeedback
+        error={typeof params.error === 'string' ? params.error : undefined}
+        ok={typeof params.ok === 'string' ? params.ok : undefined}
       />
 
       {provisionalCount > 0 ? (
@@ -151,6 +168,7 @@ export default async function SettingsPage() {
                       className="flex flex-wrap items-end gap-4 p-4"
                     >
                       <input type="hidden" name="key" value={setting.key} />
+                      <input type="hidden" name="label" value={setting.label} />
                       <input type="hidden" name="valueType" value={setting.value_type} />
 
                       <div className="min-w-0 flex-1">

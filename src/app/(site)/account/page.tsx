@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import { revalidatePath } from 'next/cache';
 import { requireSession } from '@/lib/auth/session';
 import { serverClient } from '@/lib/supabase/server';
@@ -11,15 +10,25 @@ import {
   PLAN_TYPE_LABELS,
   KOT_STATUS_LABELS,
 } from '@/lib/format';
-import { Alert, Badge, Button, Card, EmptyState, Stat } from '@/components/ui/primitives';
+import {
+  Alert,
+  Badge,
+  Button,
+  ButtonLink,
+  Card,
+  EmptyState,
+  Stat,
+} from '@/components/ui/primitives';
 import { SubscriptionControls } from '@/components/account/subscription-controls';
+import { ActionFeedback, done, fail, readable } from '@/lib/admin/feedback';
 
 export const metadata = { title: 'My account' };
 export const dynamic = 'force-dynamic';
 
-export default async function AccountPage() {
+export default async function AccountPage({ searchParams }: PageProps<'/account'>) {
   const session = await requireSession();
   const supabase = await serverClient();
+  const params = await searchParams;
 
   if (!session.customerId) {
     return (
@@ -28,9 +37,7 @@ export default async function AccountPage() {
           title="No subscription yet"
           description="Once you buy a plan, this is where you will manage it."
           action={
-            <Link href="/subscriptions">
-              <Button>Browse plans</Button>
-            </Link>
+            <ButtonLink href="/subscriptions">Browse plans</ButtonLink>
           }
         />
       </div>
@@ -129,38 +136,47 @@ export default async function AccountPage() {
   }
 
   /* ------------------------------------------------------------------ */
-  /* Actions. Each calls an RPC that re-checks ownership server-side.    */
+  /* Actions. Each calls an RPC that re-checks ownership server-side and */
+  /* enforces the configured rules -- so a refusal (pause limit reached, */
+  /* delivery already in the kitchen) must reach the customer's eyes,    */
+  /* not vanish into a page that quietly re-renders unchanged.           */
   /* ------------------------------------------------------------------ */
   async function skipDelivery(formData: FormData) {
     'use server';
     const db = await serverClient();
-    await db.rpc('skip_subscription_delivery', {
+    const { error } = await db.rpc('skip_subscription_delivery', {
       p_delivery_id: String(formData.get('deliveryId')),
       p_reason: String(formData.get('reason') ?? '') || null,
     });
+    if (error) fail('/account', readable(error));
     revalidatePath('/account');
+    done('/account', 'Delivery skipped — the entitlement is back in your balance.');
   }
 
   async function pauseSubscription(formData: FormData) {
     'use server';
     const db = await serverClient();
-    await db.rpc('pause_subscription', {
+    const { error } = await db.rpc('pause_subscription', {
       p_subscription_id: String(formData.get('subscriptionId')),
       p_starts_on: String(formData.get('startsOn')),
       p_ends_on: String(formData.get('endsOn')),
       p_reason: String(formData.get('reason') ?? '') || null,
     });
+    if (error) fail('/account', readable(error));
     revalidatePath('/account');
+    done('/account', 'Subscription paused. Deliveries in that window are skipped.');
   }
 
   async function cancelSubscription(formData: FormData) {
     'use server';
     const db = await serverClient();
-    await db.rpc('cancel_subscription', {
+    const { error } = await db.rpc('cancel_subscription', {
       p_subscription_id: String(formData.get('subscriptionId')),
       p_reason: String(formData.get('reason') ?? '') || null,
     });
+    if (error) fail('/account', readable(error));
     revalidatePath('/account');
+    done('/account', 'Subscription cancelled. Future deliveries are stopped; your records are kept.');
   }
 
   return (
@@ -172,10 +188,17 @@ export default async function AccountPage() {
           </h1>
           <p className="mt-1 text-muted">Your plan, your deliveries, your history.</p>
         </div>
-        <Link href="/subscriptions">
-          <Button variant="secondary">Browse plans</Button>
-        </Link>
+        <ButtonLink href="/subscriptions" variant="secondary">Browse plans</ButtonLink>
       </header>
+
+      {typeof params.error === 'string' || typeof params.ok === 'string' ? (
+        <div className="mt-6">
+          <ActionFeedback
+            error={typeof params.error === 'string' ? params.error : undefined}
+            ok={typeof params.ok === 'string' ? params.ok : undefined}
+          />
+        </div>
+      ) : null}
 
       {/* ---------------------------------------------------------------- */}
       {/* Active subscription                                               */}
@@ -265,9 +288,7 @@ export default async function AccountPage() {
             title="No active subscription"
             description="Pick a plan and your deliveries will show up here."
             action={
-              <Link href="/subscriptions">
-                <Button>Browse plans</Button>
-              </Link>
+              <ButtonLink href="/subscriptions">Browse plans</ButtonLink>
             }
           />
         </div>
@@ -379,11 +400,7 @@ export default async function AccountPage() {
       <section className="mt-10">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <h2 className="text-xl font-semibold tracking-tight">Saved addresses</h2>
-          <Link href="/account/addresses">
-            <Button variant="secondary" size="sm">
-              Manage addresses
-            </Button>
-          </Link>
+          <ButtonLink href="/account/addresses" variant="secondary" size="sm">Manage addresses</ButtonLink>
         </div>
 
         {addresses.length === 0 ? (

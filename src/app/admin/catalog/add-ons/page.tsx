@@ -10,6 +10,7 @@ import {
   Badge,
   Button,
   Card,
+  ConfirmButton,
   EmptyState,
   Field,
   Input,
@@ -289,9 +290,7 @@ export default async function AddOnsPage({ searchParams }: PageProps<'/admin/cat
 
               <form action={deleteAddOn} className="mt-2">
                 <input type="hidden" name="addOnId" value={addOn.id} />
-                <Button type="submit" size="sm" variant="ghost">
-                  Delete add-on
-                </Button>
+                <ConfirmButton confirmLabel="Really delete?">Delete add-on</ConfirmButton>
               </form>
             </Card>
           ))}

@@ -1,7 +1,6 @@
-import Link from 'next/link';
 import { getSession } from '@/lib/auth/session';
 import { landingPathForRole } from '@/lib/auth/permissions';
-import { Button, Card } from '@/components/ui/primitives';
+import { ButtonLink, Card } from '@/components/ui/primitives';
 import { SignOutButton } from '@/components/auth/sign-out-button';
 
 export const metadata = { title: 'Not permitted' };
@@ -27,17 +26,11 @@ export default async function ForbiddenPage() {
 
         <div className="mt-6 flex flex-wrap justify-center gap-3">
           {session ? (
-            <Link href={landingPathForRole(session.role)}>
-              <Button>Back to your dashboard</Button>
-            </Link>
+            <ButtonLink href={landingPathForRole(session.role)}>Back to your dashboard</ButtonLink>
           ) : (
-            <Link href="/sign-in">
-              <Button>Sign in</Button>
-            </Link>
+            <ButtonLink href="/sign-in">Sign in</ButtonLink>
           )}
-          <Link href="/">
-            <Button variant="secondary">Home</Button>
-          </Link>
+          <ButtonLink href="/" variant="secondary">Home</ButtonLink>
           {/* Without this, someone signed in as the wrong role has no way out
               of this page except clearing cookies by hand. */}
           {session ? <SignOutButton label="Sign in as someone else" variant="secondary" size="md" /> : null}

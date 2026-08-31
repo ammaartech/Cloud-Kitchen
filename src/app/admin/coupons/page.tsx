@@ -9,6 +9,7 @@ import {
   Badge,
   Button,
   Card,
+  ConfirmButton,
   EmptyState,
   Field,
   Input,
@@ -432,9 +433,7 @@ export default async function CouponsPage({ searchParams }: PageProps<'/admin/co
 
                     <form action={deleteCoupon}>
                       <input type="hidden" name="couponId" value={coupon.id} />
-                      <Button type="submit" size="sm" variant="danger">
-                        Delete
-                      </Button>
+                      <ConfirmButton confirmLabel="Really delete?">Delete</ConfirmButton>
                     </form>
                   </div>
                 </div>
@@ -550,9 +549,7 @@ export default async function CouponsPage({ searchParams }: PageProps<'/admin/co
                           <span>{describeRule(rule, planNames)}</span>
                           <form action={removeRule} className="ml-auto">
                             <input type="hidden" name="ruleId" value={rule.id} />
-                            <Button type="submit" size="sm" variant="ghost">
-                              Remove
-                            </Button>
+                            <ConfirmButton confirmLabel="Really remove?">Remove</ConfirmButton>
                           </form>
                         </li>
                       ))}

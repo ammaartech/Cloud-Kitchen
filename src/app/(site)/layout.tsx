@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { getSession } from '@/lib/auth/session';
 import { landingPathForRole } from '@/lib/auth/permissions';
-import { Button } from '@/components/ui/primitives';
+import { ButtonLink } from '@/components/ui/primitives';
 import { SignOutButton } from '@/components/auth/sign-out-button';
 
 /**
@@ -55,23 +55,13 @@ export default async function SiteLayout({ children }: LayoutProps<'/'>) {
                 <span className="hidden text-sm text-subtle sm:inline">
                   {session.fullName || session.email}
                 </span>
-                <Link href={landingPathForRole(session.role)}>
-                  <Button variant="secondary" size="sm">
-                    {session.role === 'customer' ? 'My account' : 'Dashboard'}
-                  </Button>
-                </Link>
+                <ButtonLink href={landingPathForRole(session.role)} variant="secondary" size="sm">{session.role === 'customer' ? 'My account' : 'Dashboard'}</ButtonLink>
                 <SignOutButton />
               </>
             ) : (
               <>
-                <Link href="/sign-in" className="hidden sm:block">
-                  <Button variant="ghost" size="sm">
-                    Sign in
-                  </Button>
-                </Link>
-                <Link href="/subscriptions">
-                  <Button size="sm">Start a plan</Button>
-                </Link>
+                <ButtonLink href="/sign-in" variant="ghost" size="sm" className="hidden sm:inline-flex">Sign in</ButtonLink>
+                <ButtonLink href="/subscriptions" size="sm">Start a plan</ButtonLink>
               </>
             )}
           </div>

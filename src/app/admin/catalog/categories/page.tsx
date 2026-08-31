@@ -9,6 +9,7 @@ import {
   Badge,
   Button,
   Card,
+  ConfirmButton,
   EmptyState,
   Field,
   Input,
@@ -222,9 +223,7 @@ export default async function CategoriesPage({
 
               <form action={deleteCategory} className="mt-2">
                 <input type="hidden" name="categoryId" value={category.id} />
-                <Button type="submit" size="sm" variant="ghost">
-                  Delete category
-                </Button>
+                <ConfirmButton confirmLabel="Really delete?">Delete category</ConfirmButton>
               </form>
             </Card>
           ))}

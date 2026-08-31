@@ -1,7 +1,6 @@
-import Link from 'next/link';
 import { listMenuByCategory } from '@/lib/data/catalog';
 import { ProductTile } from '@/components/product-card';
-import { Alert, Button, EmptyState } from '@/components/ui/primitives';
+import { Alert, ButtonLink, EmptyState } from '@/components/ui/primitives';
 
 export const metadata = {
   title: 'Menu',
@@ -62,9 +61,7 @@ export default async function MenuPage() {
           Subscriptions are how meals are ordered. Pick a plan, set your window, and the
           kitchen cooks to it.
         </p>
-        <Link href="/subscriptions" className="mt-5 inline-block">
-          <Button size="lg">See subscription plans</Button>
-        </Link>
+        <ButtonLink href="/subscriptions" size="lg" className="mt-5">See subscription plans</ButtonLink>
       </div>
     </div>
   );

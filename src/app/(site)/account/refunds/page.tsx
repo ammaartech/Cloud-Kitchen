@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import { revalidatePath } from 'next/cache';
 import { requireSession } from '@/lib/auth/session';
 import { serverClient } from '@/lib/supabase/server';
@@ -9,6 +8,7 @@ import {
   Alert,
   Badge,
   Button,
+  ButtonLink,
   Card,
   EmptyState,
   Field,
@@ -74,9 +74,7 @@ export default async function AccountRefundsPage({ searchParams }: PageProps<'/a
           title="Nothing to refund yet"
           description="Refund requests relate to a subscription you have paid for."
           action={
-            <Link href="/subscriptions">
-              <Button>Browse plans</Button>
-            </Link>
+            <ButtonLink href="/subscriptions">Browse plans</ButtonLink>
           }
         />
       </div>

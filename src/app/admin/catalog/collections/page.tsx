@@ -9,6 +9,7 @@ import {
   Badge,
   Button,
   Card,
+  ConfirmButton,
   EmptyState,
   Field,
   Input,
@@ -239,9 +240,7 @@ export default async function CollectionsPage({
 
               <form action={deleteCollection} className="mt-2">
                 <input type="hidden" name="collectionId" value={collection.id} />
-                <Button type="submit" size="sm" variant="ghost">
-                  Delete collection
-                </Button>
+                <ConfirmButton confirmLabel="Really delete?">Delete collection</ConfirmButton>
               </form>
             </Card>
           ))}

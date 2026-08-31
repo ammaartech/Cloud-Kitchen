@@ -1,7 +1,6 @@
-import Link from 'next/link';
 import { listPlans, listPublicOffers } from '@/lib/data/catalog';
 import { money, clockTime, PLAN_TYPE_LABELS } from '@/lib/format';
-import { Badge, Button, Card, EmptyState } from '@/components/ui/primitives';
+import { Badge, ButtonLink, Card, EmptyState } from '@/components/ui/primitives';
 
 export const metadata = {
   title: 'Subscriptions',
@@ -113,11 +112,7 @@ export default async function SubscriptionsPage() {
 
                 <div className="mt-6 flex-1" />
 
-                <Link href={`/subscriptions/${plan.slug}`}>
-                  <Button className="w-full" size="lg">
-                    Choose this plan
-                  </Button>
-                </Link>
+                <ButtonLink href={`/subscriptions/${plan.slug}`} size="lg" className="w-full">Choose this plan</ButtonLink>
               </Card>
             );
           })}

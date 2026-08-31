@@ -9,6 +9,7 @@ import { ActionFeedback, done, fail, readable } from '@/lib/admin/feedback';
 import {
   Badge,
   Button,
+  ButtonLink,
   Card,
   EmptyState,
   Field,
@@ -150,11 +151,7 @@ export default async function CustomersPage({ searchParams }: PageProps<'/admin/
           Search
         </Button>
         {query ? (
-          <Link href={PATH}>
-            <Button type="button" variant="ghost">
-              Clear
-            </Button>
-          </Link>
+          <ButtonLink href={PATH} type="button" variant="ghost">Clear</ButtonLink>
         ) : null}
       </form>
 
@@ -242,11 +239,7 @@ export default async function CustomersPage({ searchParams }: PageProps<'/admin/
                 <Badge tone="success">{liveSubs.get(customer.id)} live plan(s)</Badge>
               ) : null}
 
-              <Link href={`/admin/customers/${customer.id}`}>
-                <Button variant="secondary" size="sm">
-                  Open
-                </Button>
-              </Link>
+              <ButtonLink href={`/admin/customers/${customer.id}`} variant="secondary" size="sm">Open</ButtonLink>
             </div>
           ))}
         </Card>

@@ -1,5 +1,4 @@
-import Link from 'next/link';
-import { Button, Card } from '@/components/ui/primitives';
+import { ButtonLink, Card } from '@/components/ui/primitives';
 
 export const metadata = { title: 'Not found' };
 
@@ -18,15 +17,9 @@ export default function NotFound() {
         </p>
 
         <div className="mt-6 flex flex-wrap gap-2">
-          <Link href="/">
-            <Button>Home</Button>
-          </Link>
-          <Link href="/menu">
-            <Button variant="secondary">See the menu</Button>
-          </Link>
-          <Link href="/subscriptions">
-            <Button variant="secondary">Subscription plans</Button>
-          </Link>
+          <ButtonLink href="/">Home</ButtonLink>
+          <ButtonLink href="/menu" variant="secondary">See the menu</ButtonLink>
+          <ButtonLink href="/subscriptions" variant="secondary">Subscription plans</ButtonLink>
         </div>
       </Card>
     </div>

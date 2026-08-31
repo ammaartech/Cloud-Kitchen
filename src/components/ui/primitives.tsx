@@ -1,9 +1,11 @@
 import type { ComponentPropsWithoutRef, ReactNode } from 'react';
+import Link from 'next/link';
+import { buttonClasses, cx, type ButtonSize, type ButtonVariant } from './button-styles';
 
-/** Minimal class joiner. Falsy entries drop out. */
-export function cx(...parts: Array<string | false | null | undefined>): string {
-  return parts.filter(Boolean).join(' ');
-}
+export { cx };
+export { Button } from './button';
+export { ConfirmButton } from './confirm-button';
+export { Spinner } from './spinner';
 
 /* ========================================================================== */
 /* Surfaces                                                                   */
@@ -48,47 +50,31 @@ export function SectionHeading({
 }
 
 /* ========================================================================== */
-/* Button                                                                     */
+/* Button-shaped link                                                         */
 /* ========================================================================== */
 
-type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'success';
-type ButtonSize = 'sm' | 'md' | 'lg';
-
-const BUTTON_VARIANTS: Record<ButtonVariant, string> = {
-  primary: 'bg-brand text-white hover:bg-brand-hover border-transparent',
-  secondary: 'bg-surface text-ink border-line-strong hover:bg-sunken',
-  ghost: 'bg-transparent text-muted border-transparent hover:bg-sunken hover:text-ink',
-  danger: 'bg-danger text-white hover:opacity-90 border-transparent',
-  success: 'bg-success text-white hover:opacity-90 border-transparent',
-};
-
-const BUTTON_SIZES: Record<ButtonSize, string> = {
-  sm: 'h-8 px-3 text-sm',
-  md: 'h-10 px-4 text-sm',
-  // Operational screens are used at arm's length on a tablet or kiosk.
-  lg: 'h-12 px-6 text-base',
-};
-
-export function Button({
+/**
+ * A navigation styled as a button.
+ *
+ * A real `<a>`, not a `<button>` wrapped in a `<Link>` -- nesting one
+ * interactive element inside another is invalid HTML, confuses screen readers
+ * about what a single tab stop does, and breaks open-in-new-tab. Anything that
+ * *goes somewhere* uses this; anything that *does something* uses `Button`.
+ */
+export function ButtonLink<RouteType>({
   variant = 'primary',
   size = 'md',
   className,
   children,
   ...rest
-}: ComponentPropsWithoutRef<'button'> & { variant?: ButtonVariant; size?: ButtonSize }) {
+}: ComponentPropsWithoutRef<typeof Link<RouteType>> & {
+  variant?: ButtonVariant;
+  size?: ButtonSize;
+}) {
   return (
-    <button
-      className={cx(
-        'inline-flex items-center justify-center gap-2 rounded-ck border font-medium',
-        'transition-colors disabled:cursor-not-allowed disabled:opacity-50',
-        BUTTON_VARIANTS[variant],
-        BUTTON_SIZES[size],
-        className,
-      )}
-      {...rest}
-    >
+    <Link className={buttonClasses(variant, size, className)} {...rest}>
       {children}
-    </button>
+    </Link>
   );
 }
 
@@ -312,25 +298,4 @@ export function Textarea({ className, ...rest }: ComponentPropsWithoutRef<'texta
 
 export function Skeleton({ className }: { className?: string }) {
   return <div className={cx('animate-pulse rounded-ck bg-sunken', className)} aria-hidden />;
-}
-
-export function Spinner({ className }: { className?: string }) {
-  return (
-    <svg
-      className={cx('animate-spin', className)}
-      viewBox="0 0 24 24"
-      fill="none"
-      aria-hidden
-      width="16"
-      height="16"
-    >
-      <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" opacity="0.25" />
-      <path
-        d="M12 2a10 10 0 0 1 10 10"
-        stroke="currentColor"
-        strokeWidth="3"
-        strokeLinecap="round"
-      />
-    </svg>
-  );
 }

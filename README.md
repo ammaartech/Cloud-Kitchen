@@ -13,10 +13,10 @@ Built against `c.k.p.prd.pdf` (Working PRD v1.0).
 | Stage | Status |
 | --- | --- |
 | 1. Foundation & config | Done |
-| 2. Database, schema, RLS | Done — 15 migrations, 56 tables, 90 policies |
+| 2. Database, schema, RLS | Done — 22 migrations, 56 tables, 90 policies |
 | 3. Domain engine (checkout, payments, subscriptions, KOT, marketplace) | Done — 30 SQL routines |
 | 4. Seed data through real workflows | Done |
-| 5. Automated tests | Done — 95 tests |
+| 5. Automated tests | Done — 116 tests |
 | 6. Provider abstractions (payments, marketplaces, notifications) | Done |
 | 7. Auth/RBAC application layer | Done |
 | 8. Storefront, checkout and customer account | Done |
@@ -25,13 +25,13 @@ Built against `c.k.p.prd.pdf` (Working PRD v1.0).
 | 11. Webhooks and scheduled jobs | Done |
 | 12. Live verification against a Supabase project | Done |
 
-`npm run build` compiles all 28 routes; `npm test` runs 95 tests; `tsc` and
+`npm run build` compiles all 46 routes; `npm test` runs 116 tests; `tsc` and
 `eslint` are clean. The schema, the seed and the full operational walkthrough
 have been run against a live Supabase project — see below.
 
 ### Verified live
 
-Against a real Supabase project (21 migrations, 56 tables, 90 policies applied):
+Against a real Supabase project (22 migrations, 56 tables, 90 policies applied):
 
 - All four staff/customer roles sign in
 - Kitchen board renders with **zero currency on screen**; `orders` returns
@@ -52,6 +52,23 @@ Against a real Supabase project (21 migrations, 56 tables, 90 policies applied):
   days, zero collisions)
 
 ---
+
+## Front-end conventions
+
+`PRODUCT.md` holds the strategy, `DESIGN.md` the visual system. Four rules are
+worth knowing before touching a screen, because each one is enforced by a
+shared component rather than by discipline:
+
+| Rule | How |
+| --- | --- |
+| Anything that **navigates** is an `<a>`, anything that **acts** is a `<button>` | `ButtonLink` vs `Button`. A `<button>` inside a `<Link>` is invalid HTML and breaks open-in-new-tab. |
+| A form that is saving says so | `Button` reads `useFormStatus`, so every server-action submit disables itself and shows a spinner automatically. |
+| A destructive action needs two clicks | `ConfirmButton` — arms on the first click, submits on the second, disarms after 4s (PRD 19). |
+| A refused write is reported, never swallowed | `fail()` / `done()` + `<ActionFeedback>`. A save that silently does nothing is how an Owner comes to believe a setting changed when it did not. |
+
+Design tokens live in `src/app/globals.css`. The KOT screens set
+`data-surface="ops"` to flip the whole palette to the dark, high-contrast ramp;
+no component needs to know which screen it is on. No raw hex in components.
 
 ## Architecture in one paragraph
 
@@ -249,7 +266,7 @@ The walkthrough:
 npm test
 ```
 
-95 tests run the **real migrations** against
+116 tests run the **real migrations** against
 [PGlite](https://pglite.dev) — Postgres compiled to WebAssembly — so
 constraints, triggers, RLS policies and RPCs are exercised as themselves, with
 no Docker daemon and no mocking of the database.

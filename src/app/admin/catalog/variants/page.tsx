@@ -10,6 +10,7 @@ import {
   Badge,
   Button,
   Card,
+  ConfirmButton,
   EmptyState,
   Field,
   Input,
@@ -437,9 +438,7 @@ export default async function VariantsPage({
 
                           <form action={deleteVariant} className="mt-1">
                             <input type="hidden" name="variantId" value={variant.id} />
-                            <Button type="submit" size="sm" variant="ghost">
-                              Remove option
-                            </Button>
+                            <ConfirmButton confirmLabel="Really remove?">Remove option</ConfirmButton>
                           </form>
                         </li>
                       ))}
@@ -485,9 +484,7 @@ export default async function VariantsPage({
 
               <form action={deleteGroup} className="mt-4">
                 <input type="hidden" name="groupId" value={group.id} />
-                <Button type="submit" size="sm" variant="ghost">
-                  Delete group
-                </Button>
+                <ConfirmButton confirmLabel="Really delete?">Delete group</ConfirmButton>
               </form>
             </Card>
           ))}

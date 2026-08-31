@@ -9,6 +9,7 @@ import { ActionFeedback, done, fail, readable } from '@/lib/admin/feedback';
 import {
   Badge,
   Button,
+  ButtonLink,
   Card,
   EmptyState,
   Field,
@@ -279,11 +280,7 @@ export default async function PlansPage({ searchParams }: PageProps<'/admin/plan
                   <div className="flex flex-wrap items-center gap-2">
                     <span className="mr-2 font-semibold tabular">{money(plan.price)}</span>
 
-                    <Link href={`/admin/plans/${plan.id}`}>
-                      <Button variant="secondary" size="sm">
-                        Edit
-                      </Button>
-                    </Link>
+                    <ButtonLink href={`/admin/plans/${plan.id}`} variant="secondary" size="sm">Edit</ButtonLink>
 
                     <form action={setPublished}>
                       <input type="hidden" name="planId" value={plan.id} />

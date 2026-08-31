@@ -1,8 +1,7 @@
-import Link from 'next/link';
 import { listCollections, listDeliveryWindows } from '@/lib/data/catalog';
 import { ProductTile } from '@/components/product-card';
 import { clockTime } from '@/lib/format';
-import { Button, Card, EmptyState } from '@/components/ui/primitives';
+import { ButtonLink, Card, EmptyState } from '@/components/ui/primitives';
 
 export const metadata = {
   title: 'Meal Plans',
@@ -79,9 +78,7 @@ export default async function MealPlansPage() {
 
       <div className="mt-16 rounded-ck-lg border border-line bg-surface p-8 text-center">
         <h2 className="text-xl font-semibold">Pick the plan that fits your week</h2>
-        <Link href="/subscriptions" className="mt-5 inline-block">
-          <Button size="lg">See subscription plans</Button>
-        </Link>
+        <ButtonLink href="/subscriptions" size="lg" className="mt-5">See subscription plans</ButtonLink>
       </div>
     </div>
   );

@@ -12,6 +12,7 @@ import {
   Badge,
   Button,
   Card,
+  ConfirmButton,
   Field,
   Input,
   SectionHeading,
@@ -651,9 +652,7 @@ export default async function PlanEditorPage({
 
                             <form action={removeMeal} className="ml-auto">
                               <input type="hidden" name="mealId" value={meal.id} />
-                              <Button type="submit" size="sm" variant="ghost">
-                                Remove
-                              </Button>
+                              <ConfirmButton confirmLabel="Really remove?">Remove</ConfirmButton>
                             </form>
                           </li>
                         ))}

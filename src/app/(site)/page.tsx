@@ -2,7 +2,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { listPlans, listMenu, listPublicOffers, listDeliveryWindows } from '@/lib/data/catalog';
 import { money, clockTime, PLAN_TYPE_LABELS } from '@/lib/format';
-import { Badge, Button, Card } from '@/components/ui/primitives';
+import { Badge, ButtonLink, Card } from '@/components/ui/primitives';
 
 export const metadata = {
   title: 'Home-style meals, on subscription',
@@ -45,14 +45,8 @@ export default async function HomePage() {
             </p>
 
             <div className="mt-8 flex flex-wrap gap-3">
-              <Link href="/subscriptions">
-                <Button size="lg">See subscription plans</Button>
-              </Link>
-              <Link href="/menu">
-                <Button size="lg" variant="secondary">
-                  Look at the menu
-                </Button>
-              </Link>
+              <ButtonLink href="/subscriptions" size="lg">See subscription plans</ButtonLink>
+              <ButtonLink href="/menu" size="lg" variant="secondary">Look at the menu</ButtonLink>
             </div>
 
             {windows.length ? (
@@ -169,11 +163,7 @@ export default async function HomePage() {
                     {plan.paymentFlow === 'recurring' ? ', renews automatically' : ''}
                   </p>
 
-                  <Link href={`/subscriptions/${plan.slug}`} className="mt-4">
-                    <Button className="w-full" variant="secondary" size="sm">
-                      View plan
-                    </Button>
-                  </Link>
+                  <ButtonLink href={`/subscriptions/${plan.slug}`} variant="secondary" size="sm" className="mt-4 w-full">View plan</ButtonLink>
                 </Card>
               ))}
             </div>
