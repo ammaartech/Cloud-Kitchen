@@ -36,35 +36,53 @@ export default async function AdminLayout({ children }: LayoutProps<'/admin'>) {
     ({ href, label }) => ({ href, label }),
   );
 
+  const brand = (
+    <Link href="/" className="flex items-center gap-2 font-semibold">
+      <span
+        className="grid h-7 w-7 place-items-center rounded-ck bg-brand text-xs font-bold text-white"
+        aria-hidden
+      >
+        CK
+      </span>
+      Admin
+    </Link>
+  );
+
   return (
-    <div className="min-h-dvh bg-bg">
-      <header className="border-b border-line bg-surface">
-        <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-4 px-4 py-3">
-          <Link href="/" className="flex items-center gap-2 font-semibold">
-            <span
-              className="grid h-7 w-7 place-items-center rounded-ck bg-brand text-xs font-bold text-white"
-              aria-hidden
-            >
-              CK
-            </span>
-            Admin
-          </Link>
-
+    <div className="flex min-h-dvh bg-bg">
+      <aside className="hidden w-60 shrink-0 flex-col border-r border-line bg-surface md:flex">
+        <div className="border-b border-line px-4 py-3">{brand}</div>
+        <div className="flex-1 overflow-y-auto p-3">
           <AdminNav sections={visible} />
-
-          <div className="flex items-center gap-3 text-sm">
-            <Link href="/kot/manager" className="text-muted hover:text-ink">
-              KOT board
-            </Link>
-            <span className="text-subtle">
-              {session.fullName} · {session.role.replace('_', ' ')}
-            </span>
-            <SignOutButton />
-          </div>
         </div>
-      </header>
+        <div className="border-t border-line p-3">
+          <SignOutButton />
+        </div>
+      </aside>
 
-      <main>{children}</main>
+      <div className="flex min-w-0 flex-1 flex-col">
+        <header className="border-b border-line bg-surface">
+          <div className="flex flex-wrap items-center gap-3 px-4 py-3 md:px-6">
+            <div className="md:hidden">{brand}</div>
+            <div className="ml-auto flex items-center gap-3 text-sm">
+              <Link href="/kot/manager" className="text-muted hover:text-ink">
+                KOT board
+              </Link>
+              <span className="text-subtle">
+                {session.fullName} · {session.role.replace('_', ' ')}
+              </span>
+              <span className="md:hidden">
+                <SignOutButton />
+              </span>
+            </div>
+          </div>
+          <div className="border-t border-line px-4 py-2 md:hidden">
+            <AdminNav sections={visible} orientation="horizontal" />
+          </div>
+        </header>
+
+        <main className="flex-1">{children}</main>
+      </div>
     </div>
   );
 }

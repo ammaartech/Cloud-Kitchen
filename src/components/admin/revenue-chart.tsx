@@ -90,9 +90,7 @@ export function RevenueChart({ daily }: { daily: DailyRow[] }) {
                       fill={SOURCE_FILL[source]}
                       rx={1}
                     >
-                      <title>
-                        {dateOnly(date)} · {SOURCE_LABELS[source]} · {money(value)}
-                      </title>
+                      <title>{`${dateOnly(date)} · ${SOURCE_LABELS[source]} · ${money(value)}`}</title>
                     </rect>
                   );
                 })}
