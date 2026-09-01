@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { revalidatePath } from 'next/cache';
+import { revalidateStorefront } from '@/lib/data/catalog-cache';
 import { requirePermission } from '@/lib/auth/session';
 import { PERMISSIONS } from '@/lib/auth/permissions';
 import { serverClient } from '@/lib/supabase/server';
@@ -117,7 +118,7 @@ export default async function ReviewsPage({ searchParams }: PageProps<'/admin/re
     if (error) fail(`${PATH}?status=${filter}`, readable(error));
 
     revalidatePath(PATH);
-    revalidatePath('/menu');
+    revalidateStorefront('/menu');
     done(`${PATH}?status=${filter}`, `Review ${status}.`);
   }
 

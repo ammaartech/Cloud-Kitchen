@@ -1,4 +1,6 @@
-import { serverClient } from '@/lib/supabase/server';
+import { unstable_cache } from "next/cache";
+import { publicClient } from "@/lib/supabase/public";
+import { CATALOG_TAGS, CATALOG_TTL } from "./catalog-cache";
 
 /**
  * Read models for the storefront.
@@ -58,17 +60,19 @@ export interface Rating {
  * collection tile) simply pass nothing and get a card with no rating on it.
  */
 async function loadRatings(): Promise<Map<string, Rating>> {
-  const supabase = await serverClient();
+  const supabase = publicClient();
   const { data } = await supabase
-    .from('v_product_ratings')
-    .select('product_id, review_count, average_rating');
+    .from("v_product_ratings")
+    .select("product_id, review_count, average_rating");
 
   return new Map(
-    ((data ?? []) as Array<{
-      product_id: string;
-      review_count: number;
-      average_rating: string;
-    }>).map((row) => [
+    (
+      (data ?? []) as Array<{
+        product_id: string;
+        review_count: number;
+        average_rating: string;
+      }>
+    ).map((row) => [
       row.product_id,
       { average: Number(row.average_rating), count: row.review_count },
     ]),
@@ -77,7 +81,9 @@ async function loadRatings(): Promise<Map<string, Rating>> {
 
 function toCard(row: RawProduct, ratings?: Map<string, Rating>): ProductCard {
   const primary =
-    row.product_images?.find((image) => image.is_primary) ?? row.product_images?.[0] ?? null;
+    row.product_images?.find((image) => image.is_primary) ??
+    row.product_images?.[0] ??
+    null;
   const rating = ratings?.get(row.id) ?? null;
 
   return {
@@ -109,21 +115,27 @@ const PRODUCT_SELECT = `
   product_images ( url, alt_text, is_primary )
 `;
 
-export async function listMenu(): Promise<ProductCard[]> {
-  const supabase = await serverClient();
+export const listMenu = unstable_cache(
+  async (): Promise<ProductCard[]> => {
+    const supabase = publicClient();
 
-  const [{ data }, ratings] = await Promise.all([
-    supabase
-      .from('products')
-      .select(PRODUCT_SELECT)
-      // Unavailable products are still returned: the menu shows them grayscale
-      // with a badge rather than hiding them (PRD 6, PRD 19).
-      .order('sort_order', { ascending: true }),
-    loadRatings(),
-  ]);
+    const [{ data }, ratings] = await Promise.all([
+      supabase
+        .from("products")
+        .select(PRODUCT_SELECT)
+        // Unavailable products are still returned: the menu shows them grayscale
+        // with a badge rather than hiding them (PRD 6, PRD 19).
+        .order("sort_order", { ascending: true }),
+      loadRatings(),
+    ]);
 
-  return ((data ?? []) as unknown as RawProduct[]).map((row) => toCard(row, ratings));
-}
+    return ((data ?? []) as unknown as RawProduct[]).map((row) =>
+      toCard(row, ratings),
+    );
+  },
+  ["catalog:menu"],
+  { tags: [CATALOG_TAGS.menu], revalidate: CATALOG_TTL },
+);
 
 export interface CategoryGroup {
   name: string;
@@ -132,10 +144,13 @@ export interface CategoryGroup {
 }
 
 export async function listMenuByCategory(): Promise<CategoryGroup[]> {
-  const supabase = await serverClient();
+  const supabase = publicClient();
 
   const [{ data: categories }, products] = await Promise.all([
-    supabase.from('categories').select('slug, name, sort_order').order('sort_order'),
+    supabase
+      .from("categories")
+      .select("slug, name, sort_order")
+      .order("sort_order"),
     listMenu(),
   ]);
 
@@ -143,7 +158,9 @@ export async function listMenuByCategory(): Promise<CategoryGroup[]> {
     .map((category) => ({
       name: category.name,
       slug: category.slug,
-      products: products.filter((product) => product.categoryName === category.name),
+      products: products.filter(
+        (product) => product.categoryName === category.name,
+      ),
     }))
     .filter((group) => group.products.length > 0);
 }
@@ -156,15 +173,15 @@ export interface CollectionSummary {
 }
 
 export async function listCollections(): Promise<CollectionSummary[]> {
-  const supabase = await serverClient();
+  const supabase = publicClient();
 
   const { data } = await supabase
-    .from('collections')
+    .from("collections")
     .select(
       `slug, name, description, sort_order,
        collection_products ( sort_order, products ( ${PRODUCT_SELECT} ) )`,
     )
-    .order('sort_order');
+    .order("sort_order");
 
   type Row = {
     slug: string;
@@ -203,7 +220,13 @@ export interface PlanSummary {
   selectableMealCount: number | null;
   allowsVariants: boolean;
   allowsAddOns: boolean;
-  windows: Array<{ id: string; code: string; label: string; startsAt: string; endsAt: string }>;
+  windows: Array<{
+    id: string;
+    code: string;
+    label: string;
+    startsAt: string;
+    endsAt: string;
+  }>;
 }
 
 interface RawPlan {
@@ -271,18 +294,25 @@ function toPlan(row: RawPlan): PlanSummary {
   };
 }
 
-export async function listPlans(): Promise<PlanSummary[]> {
-  const supabase = await serverClient();
-  const { data } = await supabase.from('subscription_plans').select(PLAN_SELECT).order('sort_order');
-  return ((data ?? []) as unknown as RawPlan[]).map(toPlan);
-}
+export const listPlans = unstable_cache(
+  async (): Promise<PlanSummary[]> => {
+    const supabase = publicClient();
+    const { data } = await supabase
+      .from("subscription_plans")
+      .select(PLAN_SELECT)
+      .order("sort_order");
+    return ((data ?? []) as unknown as RawPlan[]).map(toPlan);
+  },
+  ["catalog:plans"],
+  { tags: [CATALOG_TAGS.plans], revalidate: CATALOG_TTL },
+);
 
 export async function getPlan(slug: string): Promise<PlanSummary | null> {
-  const supabase = await serverClient();
+  const supabase = publicClient();
   const { data } = await supabase
-    .from('subscription_plans')
+    .from("subscription_plans")
     .select(PLAN_SELECT)
-    .eq('slug', slug)
+    .eq("slug", slug)
     .maybeSingle();
 
   return data ? toPlan(data as unknown as RawPlan) : null;
@@ -293,13 +323,15 @@ export async function getPlanMeals(planId: string): Promise<{
   fixed: ProductCard[];
   selectable: ProductCard[];
 }> {
-  const supabase = await serverClient();
+  const supabase = publicClient();
 
   const { data } = await supabase
-    .from('subscription_plan_meals')
-    .select(`is_selectable, quantity, sort_order, products ( ${PRODUCT_SELECT} )`)
-    .eq('plan_id', planId)
-    .order('sort_order');
+    .from("subscription_plan_meals")
+    .select(
+      `is_selectable, quantity, sort_order, products ( ${PRODUCT_SELECT} )`,
+    )
+    .eq("plan_id", planId)
+    .order("sort_order");
 
   type Row = { is_selectable: boolean; products: RawProduct | null };
   const rows = (data ?? []) as unknown as Row[];
@@ -330,27 +362,33 @@ export interface PublicOffer {
 }
 
 /** Only offers flagged publicly visible come back -- RLS enforces that. */
-export async function listPublicOffers(): Promise<PublicOffer[]> {
-  const supabase = await serverClient();
+export const listPublicOffers = unstable_cache(
+  async (): Promise<PublicOffer[]> => {
+    const supabase = publicClient();
 
-  const { data } = await supabase
-    .from('coupons')
-    .select(
-      'code, name, description, discount_type, discount_value, max_discount_amount, min_order_amount, valid_until',
-    )
-    .order('created_at');
+    const { data } = await supabase
+      .from("coupons")
+      .select(
+        "code, name, description, discount_type, discount_value, max_discount_amount, min_order_amount, valid_until",
+      )
+      .order("created_at");
 
-  return ((data ?? []) as Array<Record<string, string | null>>).map((row) => ({
-    code: row.code as string,
-    name: row.name as string,
-    description: row.description as string,
-    discountType: row.discount_type as string,
-    discountValue: row.discount_value as string,
-    maxDiscountAmount: row.max_discount_amount,
-    minOrderAmount: row.min_order_amount as string,
-    validUntil: row.valid_until,
-  }));
-}
+    return ((data ?? []) as Array<Record<string, string | null>>).map(
+      (row) => ({
+        code: row.code as string,
+        name: row.name as string,
+        description: row.description as string,
+        discountType: row.discount_type as string,
+        discountValue: row.discount_value as string,
+        maxDiscountAmount: row.max_discount_amount,
+        minOrderAmount: row.min_order_amount as string,
+        validUntil: row.valid_until,
+      }),
+    );
+  },
+  ["catalog:offers"],
+  { tags: [CATALOG_TAGS.offers], revalidate: CATALOG_TTL },
+);
 
 export interface DeliveryWindow {
   id: string;
@@ -361,26 +399,38 @@ export interface DeliveryWindow {
   cutoff_minutes_before: number;
 }
 
-export async function listDeliveryWindows(): Promise<DeliveryWindow[]> {
-  const supabase = await serverClient();
-  const { data } = await supabase
-    .from('delivery_windows')
-    .select('id, code, label, starts_at, ends_at, cutoff_minutes_before')
-    .eq('is_active', true)
-    .order('sort_order');
+export const listDeliveryWindows = unstable_cache(
+  async (): Promise<DeliveryWindow[]> => {
+    const supabase = publicClient();
+    const { data } = await supabase
+      .from("delivery_windows")
+      .select("id, code, label, starts_at, ends_at, cutoff_minutes_before")
+      .eq("is_active", true)
+      .order("sort_order");
 
-  return (data ?? []) as DeliveryWindow[];
-}
+    return (data ?? []) as DeliveryWindow[];
+  },
+  ["catalog:windows"],
+  { tags: [CATALOG_TAGS.windows], revalidate: CATALOG_TTL },
+);
 
 /**
  * Reads a public business setting. Sensitive keys are filtered by RLS, so a
  * storefront call cannot reach one even by asking for it.
  */
-export async function publicSettings(keys: string[]): Promise<Record<string, unknown>> {
-  const supabase = await serverClient();
-  const { data } = await supabase.from('business_settings').select('key, value').in('key', keys);
+export async function publicSettings(
+  keys: string[],
+): Promise<Record<string, unknown>> {
+  const supabase = publicClient();
+  const { data } = await supabase
+    .from("business_settings")
+    .select("key, value")
+    .in("key", keys);
 
   return Object.fromEntries(
-    ((data ?? []) as Array<{ key: string; value: unknown }>).map((row) => [row.key, row.value]),
+    ((data ?? []) as Array<{ key: string; value: unknown }>).map((row) => [
+      row.key,
+      row.value,
+    ]),
   );
 }

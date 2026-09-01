@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
+import { revalidateStorefront } from '@/lib/data/catalog-cache';
 import { requirePermission } from '@/lib/auth/session';
 import { PERMISSIONS } from '@/lib/auth/permissions';
 import { serverClient } from '@/lib/supabase/server';
@@ -187,7 +188,7 @@ export default async function PlanEditorPage({
     if (error) fail(path, readable(error));
 
     revalidatePath(path);
-    revalidatePath('/subscriptions');
+    revalidateStorefront('/subscriptions');
     done(path, 'Plan details saved.');
   }
 
@@ -241,7 +242,7 @@ export default async function PlanEditorPage({
     }
 
     revalidatePath(path);
-    revalidatePath('/subscriptions');
+    revalidateStorefront('/subscriptions');
     done(path, 'Delivery windows saved.');
   }
 
@@ -265,7 +266,7 @@ export default async function PlanEditorPage({
     if (error) fail(path, readable(error));
 
     revalidatePath(path);
-    revalidatePath('/subscriptions');
+    revalidateStorefront('/subscriptions');
     done(path, 'Dish added to the plan.');
   }
 
@@ -281,7 +282,7 @@ export default async function PlanEditorPage({
     if (error) fail(path, readable(error));
 
     revalidatePath(path);
-    revalidatePath('/subscriptions');
+    revalidateStorefront('/subscriptions');
   }
 
   async function setFlags(formData: FormData) {
@@ -300,8 +301,8 @@ export default async function PlanEditorPage({
 
     revalidatePath(path);
     revalidatePath('/admin/plans');
-    revalidatePath('/subscriptions');
-    revalidatePath('/meal-plans');
+    revalidateStorefront('/subscriptions');
+    revalidateStorefront('/meal-plans');
   }
 
   const fixedMeals = meals.filter((meal) => !meal.is_selectable);

@@ -41,17 +41,20 @@ export const getSession = cache(async (): Promise<SessionProfile | null> => {
 
   if (!profile || !profile.is_active) return null;
 
-  const { data: grants } = await supabase
-    .from('role_permissions')
-    .select('permission_code')
-    .eq('role', profile.role);
-
-  // Customers have no rows in role_permissions; their access is ownership-based.
-  const { data: customer } = await supabase
-    .from('customers')
-    .select('id')
-    .eq('profile_id', user.id)
-    .maybeSingle();
+  // The grants and the customer row are independent: one is keyed by role and
+  // the other by profile, and neither reads the other's result. Awaiting them
+  // in sequence only meant the second round-trip waited out the first for no
+  // reason -- and this runs in the site layout, so every signed-in page view
+  // paid for it before anything below the header could start rendering.
+  //
+  // The profile lookup above genuinely does have to come first: it is what
+  // supplies `profile.role` to the grants query, and what decides whether
+  // there is any point issuing either.
+  const [{ data: grants }, { data: customer }] = await Promise.all([
+    supabase.from('role_permissions').select('permission_code').eq('role', profile.role),
+    // Customers have no rows in role_permissions; their access is ownership-based.
+    supabase.from('customers').select('id').eq('profile_id', user.id).maybeSingle(),
+  ]);
 
   return {
     id: profile.id,

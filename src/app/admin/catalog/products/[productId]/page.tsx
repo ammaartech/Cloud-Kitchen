@@ -2,6 +2,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
+import { revalidateStorefront } from '@/lib/data/catalog-cache';
 import { requirePermission } from '@/lib/auth/session';
 import { PERMISSIONS } from '@/lib/auth/permissions';
 import { serverClient } from '@/lib/supabase/server';
@@ -210,7 +211,7 @@ export default async function ProductEditorPage({
 
     revalidatePath(path);
     revalidatePath('/admin/catalog');
-    revalidatePath('/menu');
+    revalidateStorefront('/menu');
     done(path, 'Dish saved.');
   }
 
@@ -232,7 +233,7 @@ export default async function ProductEditorPage({
 
     revalidatePath(path);
     revalidatePath('/admin/catalog');
-    revalidatePath('/menu');
+    revalidateStorefront('/menu');
   }
 
   async function setVisibility(formData: FormData) {
@@ -250,7 +251,7 @@ export default async function ProductEditorPage({
 
     revalidatePath(path);
     revalidatePath('/admin/catalog');
-    revalidatePath('/menu');
+    revalidateStorefront('/menu');
   }
 
   async function setArchived(formData: FormData) {
@@ -273,7 +274,7 @@ export default async function ProductEditorPage({
 
     revalidatePath(path);
     revalidatePath('/admin/catalog');
-    revalidatePath('/menu');
+    revalidateStorefront('/menu');
     done(path, archive ? 'Dish archived.' : 'Dish restored.');
   }
 
@@ -301,7 +302,7 @@ export default async function ProductEditorPage({
     if (error) fail(path, readable(error));
 
     revalidatePath(path);
-    revalidatePath('/menu');
+    revalidateStorefront('/menu');
     done(path, 'Image added.');
   }
 
@@ -321,7 +322,7 @@ export default async function ProductEditorPage({
     if (error) fail(path, readable(error));
 
     revalidatePath(path);
-    revalidatePath('/menu');
+    revalidateStorefront('/menu');
   }
 
   async function removeImage(formData: FormData) {
@@ -336,7 +337,7 @@ export default async function ProductEditorPage({
     if (error) fail(path, readable(error));
 
     revalidatePath(path);
-    revalidatePath('/menu');
+    revalidateStorefront('/menu');
   }
 
   async function saveCollections(formData: FormData) {
@@ -361,8 +362,8 @@ export default async function ProductEditorPage({
     }
 
     revalidatePath(path);
-    revalidatePath('/menu');
-    revalidatePath('/meal-plans');
+    revalidateStorefront('/menu');
+    revalidateStorefront('/meal-plans');
     done(path, 'Collections saved.');
   }
 
@@ -397,7 +398,7 @@ export default async function ProductEditorPage({
     }
 
     revalidatePath(path);
-    revalidatePath('/menu');
+    revalidateStorefront('/menu');
     done(path, 'Variant groups saved.');
   }
 
@@ -427,7 +428,7 @@ export default async function ProductEditorPage({
     }
 
     revalidatePath(path);
-    revalidatePath('/menu');
+    revalidateStorefront('/menu');
     done(path, 'Add-ons saved.');
   }
 

@@ -1,4 +1,5 @@
 import { revalidatePath } from 'next/cache';
+import { revalidateStorefront } from '@/lib/data/catalog-cache';
 import { requirePermission } from '@/lib/auth/session';
 import { PERMISSIONS } from '@/lib/auth/permissions';
 import { serverClient } from '@/lib/supabase/server';
@@ -78,7 +79,7 @@ export default async function CategoriesPage({
     if (error) fail(PATH, readable(error));
 
     revalidatePath(PATH);
-    revalidatePath('/menu');
+    revalidateStorefront('/menu');
     done(PATH, 'Category created.');
   }
 
@@ -101,7 +102,7 @@ export default async function CategoriesPage({
     if (error) fail(PATH, readable(error));
 
     revalidatePath(PATH);
-    revalidatePath('/menu');
+    revalidateStorefront('/menu');
     done(PATH, 'Category saved.');
   }
 
@@ -116,7 +117,7 @@ export default async function CategoriesPage({
     if (error) fail(PATH, readable(error));
 
     revalidatePath(PATH);
-    revalidatePath('/menu');
+    revalidateStorefront('/menu');
     done(PATH, 'Category deleted. Its dishes are now uncategorised.');
   }
 

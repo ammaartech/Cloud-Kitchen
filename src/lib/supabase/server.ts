@@ -25,8 +25,11 @@ export async function serverClient() {
             cookieStore.set(name, value, options);
           }
         } catch {
-          // Server Components cannot set cookies. The middleware refreshes the
-          // session instead, so this is safe to ignore here.
+          // Server Components cannot set cookies. `src/proxy.ts` refreshes the
+          // session before the render begins, so this is safe to ignore here.
+          // That file did not exist when this comment was first written, which
+          // meant nothing rotated an expiring token and signed-in users were
+          // dropped without explanation once theirs ran out.
         }
       },
     },

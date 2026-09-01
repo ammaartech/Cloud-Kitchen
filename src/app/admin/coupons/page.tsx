@@ -1,4 +1,5 @@
 import { revalidatePath } from 'next/cache';
+import { revalidateStorefront } from '@/lib/data/catalog-cache';
 import { requirePermission } from '@/lib/auth/session';
 import { PERMISSIONS } from '@/lib/auth/permissions';
 import { serverClient } from '@/lib/supabase/server';
@@ -170,7 +171,7 @@ export default async function CouponsPage({ searchParams }: PageProps<'/admin/co
     if (error) fail(PATH, readable(error));
 
     revalidatePath(PATH);
-    revalidatePath('/offers');
+    revalidateStorefront('/offers');
     done(PATH, `Offer ${code} created.`);
   }
 
@@ -196,7 +197,7 @@ export default async function CouponsPage({ searchParams }: PageProps<'/admin/co
     if (error) fail(PATH, readable(error));
 
     revalidatePath(PATH);
-    revalidatePath('/offers');
+    revalidateStorefront('/offers');
     done(PATH, 'Offer updated.');
   }
 
@@ -212,7 +213,7 @@ export default async function CouponsPage({ searchParams }: PageProps<'/admin/co
     if (error) fail(PATH, readable(error));
 
     revalidatePath(PATH);
-    revalidatePath('/offers');
+    revalidateStorefront('/offers');
   }
 
   async function deleteCoupon(formData: FormData) {
@@ -226,7 +227,7 @@ export default async function CouponsPage({ searchParams }: PageProps<'/admin/co
     if (error) fail(PATH, readable(error));
 
     revalidatePath(PATH);
-    revalidatePath('/offers');
+    revalidateStorefront('/offers');
     done(PATH, 'Offer deleted.');
   }
 

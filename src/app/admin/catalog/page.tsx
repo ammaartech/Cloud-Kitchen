@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { revalidatePath } from 'next/cache';
+import { revalidateStorefront } from '@/lib/data/catalog-cache';
 import { requirePermission } from '@/lib/auth/session';
 import { PERMISSIONS } from '@/lib/auth/permissions';
 import { serverClient } from '@/lib/supabase/server';
@@ -101,7 +102,7 @@ export default async function CatalogPage({ searchParams }: PageProps<'/admin/ca
     if (error) fail(PATH, readable(error));
 
     revalidatePath(PATH);
-    revalidatePath('/menu');
+    revalidateStorefront('/menu');
     done(`${PATH}/products/${data!.id}`, 'Dish created. Add a photo and a description, then publish it.');
   }
 
@@ -124,7 +125,7 @@ export default async function CatalogPage({ searchParams }: PageProps<'/admin/ca
     if (error) fail(PATH, readable(error));
 
     revalidatePath(PATH);
-    revalidatePath('/menu');
+    revalidateStorefront('/menu');
   }
 
   async function updatePricing(formData: FormData) {
@@ -143,7 +144,7 @@ export default async function CatalogPage({ searchParams }: PageProps<'/admin/ca
     if (error) fail(PATH, readable(error));
 
     revalidatePath(PATH);
-    revalidatePath('/menu');
+    revalidateStorefront('/menu');
   }
 
   const unavailableCount = products.filter((product) => !product.is_available).length;

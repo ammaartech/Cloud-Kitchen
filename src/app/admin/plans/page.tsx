@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { revalidatePath } from 'next/cache';
+import { revalidateStorefront } from '@/lib/data/catalog-cache';
 import { requirePermission } from '@/lib/auth/session';
 import { PERMISSIONS } from '@/lib/auth/permissions';
 import { serverClient } from '@/lib/supabase/server';
@@ -143,8 +144,8 @@ export default async function PlansPage({ searchParams }: PageProps<'/admin/plan
     if (error) fail(PATH, readable(error));
 
     revalidatePath(PATH);
-    revalidatePath('/subscriptions');
-    revalidatePath('/meal-plans');
+    revalidateStorefront('/subscriptions');
+    revalidateStorefront('/meal-plans');
   }
 
   async function setArchived(formData: FormData) {
@@ -166,7 +167,7 @@ export default async function PlansPage({ searchParams }: PageProps<'/admin/plan
     if (error) fail(PATH, readable(error));
 
     revalidatePath(PATH);
-    revalidatePath('/subscriptions');
+    revalidateStorefront('/subscriptions');
   }
 
   const live = plans.filter((plan) => !plan.archived_at);
