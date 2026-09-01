@@ -268,7 +268,11 @@ h3 {
    ever appears if its animation actually plays.
    -------------------------------------------------------------------------- */
 
+/* One number drives the whole introduction. Every beat below is a proportion of
+   it, so the pacing is tuned here rather than by editing eleven keyframe
+   percentages that have to stay consistent with each other. */
 .hero-headline {
+  --roll-run: 3.15s;
   position: relative;
 }
 
@@ -279,7 +283,7 @@ h3 {
   place-items: center;
   pointer-events: none;
   opacity: 0;
-  animation: hero-roll-pull 1.95s var(--ck-ease) forwards;
+  animation: hero-roll-pull var(--roll-run) var(--ck-ease) forwards;
 }
 
 /* The slot. Its line-height is its own business -- it is not in the flow, so it
@@ -305,12 +309,12 @@ h3 {
    so is blockified for free, but this span is a child of that block and would
    stay inline -- and `transform` does not apply to a non-replaced inline box, so
    the track would sit still and the slot would hold the first phrase for the
-   whole 1.95s. `filter` *does* apply to inline boxes, which makes the failure a
+   whole run. `filter` *does* apply to inline boxes, which makes the failure a
    liar: the blur pulses still land on time, so a stuck track reads as three
    beats of the same phrase rather than as nothing happening. */
 .hero-roll-track {
   display: block;
-  animation: hero-roll-track 1.95s var(--ck-ease) forwards;
+  animation: hero-roll-track var(--roll-run) var(--ck-ease) forwards;
 }
 
 .hero-roll-word {
@@ -324,31 +328,34 @@ h3 {
    exactly three words, so -33.3333% is one line at any breakpoint without the
    keyframes needing to know the font size.
 
-   The holds are deliberately unequal. "One menu a day." is half again the
-   length of its neighbours and has to be read inside the same beat, so it holds
-   for ~525ms against ~430ms for the short ones.
+   The holds are deliberately unequal, and the first one is the odd one out.
+   "One kitchen." is on screen for about a second before anything moves: a
+   headline that starts rolling the instant it appears gives a reader nowhere to
+   land, so the first phrase is a resting place and the roll is what interrupts
+   it. After that the pace is even -- ~660ms for "One menu a day.", which is half
+   again the length of its neighbours, against ~470ms for the short one.
 
    The blur frames sit at the midpoint of each roll and carry no transform of
    their own, so the slide keeps interpolating straight through them: the text
    smears only while it is moving and is sharp everywhere it rests. */
 @keyframes hero-roll-track {
   0%,
-  22% {
+  36% {
     transform: translateY(0);
     filter: blur(0px);
   }
-  26% {
+  40% {
     filter: blur(3px);
   }
-  30%,
-  57% {
+  43%,
+  64% {
     transform: translateY(-33.3333%);
     filter: blur(0px);
   }
-  61% {
+  68% {
     filter: blur(3px);
   }
-  65%,
+  71%,
   100% {
     transform: translateY(-66.6667%);
     filter: blur(0px);
@@ -364,7 +371,7 @@ h3 {
     transform: scale(1);
   }
   6%,
-  82% {
+  86% {
     opacity: 1;
     filter: blur(0px);
     transform: scale(1);
@@ -379,17 +386,20 @@ h3 {
 /* inline-block because transform and filter do not apply to inline boxes. */
 .hero-part {
   display: inline-block;
-  animation: hero-part-settle 620ms var(--ck-ease) both;
+  animation: hero-part-settle 700ms var(--ck-ease) both;
 }
 
+/* Fractions of the run, not fixed times, so retuning `--roll-run` cannot leave
+   the sentence resolving before the slot has finished lifting away. They start
+   just under the pull-back at 86%, so the two cross over. */
 .hero-sentence > .hero-part:nth-child(1) {
-  animation-delay: 1.72s;
+  animation-delay: calc(var(--roll-run) * 0.875);
 }
 .hero-sentence > .hero-part:nth-child(2) {
-  animation-delay: 1.81s;
+  animation-delay: calc(var(--roll-run) * 0.91);
 }
 .hero-sentence > .hero-part:nth-child(3) {
-  animation-delay: 1.9s;
+  animation-delay: calc(var(--roll-run) * 0.945);
 }
 
 @keyframes hero-part-settle {
