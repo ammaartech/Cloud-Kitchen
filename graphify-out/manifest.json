@@ -10,8 +10,8 @@
     "semantic_hash": ""
   },
   "C:\\Users\\Ammaar\\Desktop\\Cloud-Kitchen\\package.json": {
-    "mtime": 1788270171.938928,
-    "ast_hash": "2d93a041fb6ccd40ca42553d940fe40a",
+    "mtime": 1788284486.1742737,
+    "ast_hash": "2d5e59d81b345b3fb81fa06f3af70a03",
     "semantic_hash": ""
   },
   "C:\\Users\\Ammaar\\Desktop\\Cloud-Kitchen\\postcss.config.mjs": {
@@ -160,8 +160,8 @@
     "semantic_hash": ""
   },
   "C:\\Users\\Ammaar\\Desktop\\Cloud-Kitchen\\src\\app\\admin\\layout.tsx": {
-    "mtime": 1788190671.0508313,
-    "ast_hash": "ff5dfb05f5102af9d7fc50202fe0c419",
+    "mtime": 1788284486.1752734,
+    "ast_hash": "dba5b66f0755aad9e12736dbe7728e71",
     "semantic_hash": ""
   },
   "C:\\Users\\Ammaar\\Desktop\\Cloud-Kitchen\\src\\app\\admin\\loading.tsx": {
@@ -305,8 +305,8 @@
     "semantic_hash": ""
   },
   "C:\\Users\\Ammaar\\Desktop\\Cloud-Kitchen\\src\\components\\admin\\admin-nav.tsx": {
-    "mtime": 1788188498.824908,
-    "ast_hash": "589c4401219df13bfd2fa5ddd29eaa1d",
+    "mtime": 1788284486.1764219,
+    "ast_hash": "f86fb0fe8d3fdc082bc35dd5d1004928",
     "semantic_hash": ""
   },
   "C:\\Users\\Ammaar\\Desktop\\Cloud-Kitchen\\src\\components\\admin\\catalog-nav.tsx": {
@@ -315,8 +315,8 @@
     "semantic_hash": ""
   },
   "C:\\Users\\Ammaar\\Desktop\\Cloud-Kitchen\\src\\components\\admin\\revenue-chart.tsx": {
-    "mtime": 1788185749.5999112,
-    "ast_hash": "3f64a111d59c76c188a0a9d183b9b888",
+    "mtime": 1788284486.1764219,
+    "ast_hash": "c42994a0d8609b3152b003fe0368173c",
     "semantic_hash": ""
   },
   "C:\\Users\\Ammaar\\Desktop\\Cloud-Kitchen\\src\\components\\auth\\demo-accounts.tsx": {
@@ -415,8 +415,8 @@
     "semantic_hash": ""
   },
   "C:\\Users\\Ammaar\\Desktop\\Cloud-Kitchen\\src\\components\\site\\storefront-hero.tsx": {
-    "mtime": 1788271613.9545262,
-    "ast_hash": "d9e2f1e8febd5398c9c16c1eb69bbe7b",
+    "mtime": 1788293779.8748813,
+    "ast_hash": "b59152904fa73a9247719a33fe0714a1",
     "semantic_hash": ""
   },
   "C:\\Users\\Ammaar\\Desktop\\Cloud-Kitchen\\src\\components\\ui\\button-styles.ts": {
@@ -807,6 +807,16 @@
   "C:\\Users\\Ammaar\\Desktop\\Cloud-Kitchen\\scripts\\check-contrast.mjs": {
     "mtime": 1788270156.1438627,
     "ast_hash": "69826bbc918b4b66ca27dc861031f55d",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Ammaar\\Desktop\\Cloud-Kitchen\\public\\delivery-scooter.png": {
+    "mtime": 1788293294.097297,
+    "ast_hash": "139d2fff0e5e7462b7270047c2e7ef38",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Ammaar\\Desktop\\Cloud-Kitchen\\order-lifecycle.png": {
+    "mtime": 1788294970.0781538,
+    "ast_hash": "bd2a0b37a6461e8c5aff5fe4da01119a",
     "semantic_hash": ""
   }
 }

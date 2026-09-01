@@ -75,8 +75,8 @@ export function StorefrontHero({
   const offerPill = offer ? offerLabel(offer) : null;
 
   return (
-    <section className="border-b border-line bg-sunken">
-      <div className="mx-auto max-w-6xl px-4 pt-14 pb-16 sm:pt-20 lg:pt-24 lg:pb-20">
+    <section className="storefront-hero border-b border-line bg-sunken">
+      <div className="mx-auto max-w-6xl px-4 pt-14 pb-20 sm:pt-20 lg:pt-24 lg:pb-24">
         <HeroHeadline />
 
         <p className="mx-auto mt-5 max-w-xl text-center text-base text-pretty text-muted sm:text-lg">
@@ -127,7 +127,37 @@ export function StorefrontHero({
           </dl>
         ) : null}
       </div>
+
+      <DeliveryCourier />
     </section>
+  );
+}
+
+/**
+ * The courier who turns up once the introduction is over.
+ *
+ * Decoration, and `aria-hidden` accordingly -- the delivery windows directly
+ * above him already say in words what he says in a picture, and a screen reader
+ * announcing a scooter here would be repeating them. He is positioned out of
+ * flow against the section, so the hero measures exactly the same with him as
+ * without: nothing above him moves, at any width, whether or not he ever rides.
+ *
+ * The lane is a separate element because something has to clip the run-up, and
+ * that something must not be the section -- an `overflow` on the section would
+ * reach the search field's focus ring.
+ *
+ * He parks on the container's right edge rather than at some fraction of it, so
+ * he lines up with the gateway card standing directly above him. It is the same
+ * grid line, which is the difference between an illustration that was placed
+ * and one that was dropped.
+ */
+function DeliveryCourier() {
+  return (
+    <div className="courier-lane" aria-hidden>
+      <div className="mx-auto flex max-w-6xl justify-end px-4">
+        <div className="courier" />
+      </div>
+    </div>
   );
 }
 

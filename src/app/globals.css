@@ -268,11 +268,18 @@ h3 {
    ever appears if its animation actually plays.
    -------------------------------------------------------------------------- */
 
-/* One number drives the whole introduction. Every beat below is a proportion of
-   it, so the pacing is tuned here rather than by editing eleven keyframe
-   percentages that have to stay consistent with each other. */
-.hero-headline {
+/* One number drives the whole introduction -- the headline roll, and the courier
+   who arrives on the back of it. Every beat below is a proportion of it, so the
+   pacing is tuned here rather than by editing eleven keyframe percentages that
+   have to stay consistent with each other. It is declared on the section rather
+   than on the headline because two separate runs now read it, and they have to
+   agree about when the introduction is over. */
+.storefront-hero {
   --roll-run: 3.15s;
+  position: relative;
+}
+
+.hero-headline {
   position: relative;
 }
 
@@ -412,6 +419,137 @@ h3 {
     opacity: 1;
     transform: none;
     filter: none;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   The courier.
+
+   The hero already ends on a full-bleed horizontal rule. This makes that rule a
+   road: a courier rides in from off-canvas and parks on it once the headline
+   has finished resolving. The introduction says what the kitchen is, and then
+   the delivery turns up -- which is also, in order, what the section says in
+   words directly above him.
+
+   One-shot, like everything else in the system. An idle loop is the obvious
+   instinct here and it is the wrong one: this is the surface people choose food
+   on, and something moving forever at the edge of it competes with the
+   photography for exactly the attention the photography is there to get. He
+   arrives, he stops, the page is still again.
+
+   The beats are fractions of `--roll-run` for the same reason the sentence's
+   are: retuning the introduction has to carry the courier with it, rather than
+   leave him riding in over the top of a headline still rolling.
+
+   The artwork is a mask rather than an `<img>` because it is single-colour line
+   art. A mask lets it be painted out of the ramp -- illustration being one of
+   the two sanctioned reasons to reach for a step directly -- so it belongs to
+   the palette instead of importing a black of its own, and it follows the
+   surface if this section ever flips. It is deliberately one step lighter than
+   `brand`: colour on this page is spent on the actions, and a courier in full
+   brand green would compete with the buttons standing right above him.
+   -------------------------------------------------------------------------- */
+.courier-lane {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  /* Headroom for the brake pitch. The run-up starts a full viewport to the
+     left, so something has to clip it; scoping `overflow` to this strip keeps
+     that clip away from the search field's focus ring further up the hero. */
+  padding-top: 0.5rem;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/* Everything the courier is lives behind this guard. Where masks are not
+   supported the rule never applies and the element stays an empty box -- the
+   alternative failure is a solid coloured rectangle parked on the rule, which
+   is a great deal worse than no courier at all. */
+@supports (mask-image: url('/delivery-scooter.png')) or
+  (-webkit-mask-image: url('/delivery-scooter.png')) {
+  .courier {
+    height: 2.75rem;
+    /* The source artwork's own ratio, so `contain` never has to letterbox and
+       the wheels sit flush on the rule at every size. */
+    aspect-ratio: 2257 / 2156;
+
+    background-color: var(--color-dark-slate-grey-600);
+    mask-image: url('/delivery-scooter.png');
+    mask-repeat: no-repeat;
+    mask-position: center;
+    mask-size: contain;
+    -webkit-mask-image: url('/delivery-scooter.png');
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    -webkit-mask-size: contain;
+
+    /* The front contact patch, so the brake pitches over the front wheel
+       instead of rotating about his middle. */
+    transform-origin: 72% 100%;
+    opacity: 0;
+    animation: courier-arrive calc(var(--roll-run) * 0.56) var(--ck-ease)
+      calc(var(--roll-run) * 0.82) both;
+  }
+
+  @media (min-width: 40rem) {
+    .courier {
+      height: 3.5rem;
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .courier {
+      height: 4rem;
+    }
+  }
+}
+
+/* The run-up is `-100vw` rather than a multiple of his own width: the parked
+   spot is a fraction of the container, so only a viewport-relative distance is
+   guaranteed to start him off-screen at every width.
+
+   Blurred while moving and sharp at rest, which is the rule the headline roll
+   already follows -- the two then read as one piece of motion rather than as
+   two things that happen to run near each other.
+
+   The last three beats are the brake. He overruns the spot, pitches forward
+   over the front wheel as he stops, and rocks back level. Opacity is a
+   keyframe rather than a base rule so the failure modes stay the right way
+   round: he is decoration, so where animation never runs he never appears. */
+@keyframes courier-arrive {
+  0% {
+    opacity: 0;
+    transform: translate3d(-100vw, 0, 0) rotate(0deg);
+    filter: blur(2.5px);
+  }
+  4% {
+    opacity: 1;
+  }
+  /* The blur brackets are set off the measured curve rather than guessed at.
+     Under this easing he covers the viewport in the first third and spends the
+     rest of the run braking, so the smear has to be gone by the time he is
+     down to a crawl -- a blurred object moving 120px/s reads as out of focus,
+     not as fast. Held while he is genuinely quick, clear before he is not. */
+  30% {
+    filter: blur(2.5px);
+  }
+  55% {
+    filter: blur(0px);
+  }
+  /* Deliberately no transform here: leaving the travel to interpolate across
+     one long 0%-to-84% segment is what gives the approach its single unbroken
+     deceleration. These last beats are only the brake -- he overruns the spot,
+     pitches forward over the front wheel, and rocks back level. */
+  84% {
+    transform: translate3d(3%, 0, 0) rotate(2.4deg);
+  }
+  93% {
+    transform: translate3d(0, 0, 0) rotate(-1.1deg);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) rotate(0deg);
+    filter: blur(0px);
   }
 }
 
