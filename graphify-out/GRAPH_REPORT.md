@@ -1,134 +1,144 @@
-# Graph Report - .  (2026-08-31)
+# Graph Report - Cloud-Kitchen  (2026-09-01)
 
 ## Corpus Check
-- 156 files · ~128,021 words
+- 156 files · ~131,748 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1387 nodes · 3330 edges · 100 communities (82 shown, 18 thin omitted)
-- Extraction: 94% EXTRACTED · 6% INFERRED · 0% AMBIGUOUS · INFERRED: 186 edges (avg confidence: 0.83)
-- Token cost: 718,326 input · 126,768 output
+- 1490 nodes · 3486 edges · 106 communities (87 shown, 19 thin omitted)
+- Extraction: 94% EXTRACTED · 5% INFERRED · 0% AMBIGUOUS · INFERRED: 185 edges (avg confidence: 0.83)
+- Token cost: 0 input · 0 output
+
+## Graph Freshness
+- Built from commit: `f4c7a7f3`
+- Run `git rev-parse HEAD` and compare to check if the graph is stale.
+- Run `graphify update .` after code changes (no API cost).
 
 ## Community Hubs (Navigation)
-- [[_COMMUNITY_Admin Page Scaffolding|Admin Page Scaffolding]]
-- [[_COMMUNITY_Permissions and Page Guards|Permissions and Page Guards]]
-- [[_COMMUNITY_Marketplace Adapter and Tests|Marketplace Adapter and Tests]]
-- [[_COMMUNITY_Environment and Cashfree Adapter|Environment and Cashfree Adapter]]
-- [[_COMMUNITY_Admin Shell and Kitchen Board|Admin Shell and Kitchen Board]]
-- [[_COMMUNITY_Core Enums and Customer Tables|Core Enums and Customer Tables]]
-- [[_COMMUNITY_Catalog Read Models|Catalog Read Models]]
-- [[_COMMUNITY_Account and Checkout Components|Account and Checkout Components]]
-- [[_COMMUNITY_Package Dependencies|Package Dependencies]]
-- [[_COMMUNITY_RBAC and Settings Functions|RBAC and Settings Functions]]
-- [[_COMMUNITY_Reviews and Customer Access Guards|Reviews and Customer Access Guards]]
-- [[_COMMUNITY_Marketplace Adapter Internals|Marketplace Adapter Internals]]
-- [[_COMMUNITY_Analytics and Account Dashboards|Analytics and Account Dashboards]]
-- [[_COMMUNITY_Test Harness|Test Harness]]
-- [[_COMMUNITY_Subscription Checkout Engine|Subscription Checkout Engine]]
-- [[_COMMUNITY_Audit Log and Credit Ledger|Audit Log and Credit Ledger]]
-- [[_COMMUNITY_Checkout Draft and Service|Checkout Draft and Service]]
-- [[_COMMUNITY_Subscription Deliveries and Pricing|Subscription Deliveries and Pricing]]
-- [[_COMMUNITY_Configurable Business Policy|Configurable Business Policy]]
-- [[_COMMUNITY_Design System Principles|Design System Principles]]
-- [[_COMMUNITY_Integration Accounts and Idempotency|Integration Accounts and Idempotency]]
-- [[_COMMUNITY_KOT Creation and Marketplace Sync|KOT Creation and Marketplace Sync]]
-- [[_COMMUNITY_TypeScript Configuration|TypeScript Configuration]]
-- [[_COMMUNITY_Notification Dispatch|Notification Dispatch]]
-- [[_COMMUNITY_Scheduled Jobs and README Principles|Scheduled Jobs and README Principles]]
-- [[_COMMUNITY_Admin Permissions and Checkout Entry|Admin Permissions and Checkout Entry]]
-- [[_COMMUNITY_Button Family and Manager Board|Button Family and Manager Board]]
-- [[_COMMUNITY_Catalog Mappers and Draft Schema|Catalog Mappers and Draft Schema]]
-- [[_COMMUNITY_Business Time and Settings Accessors|Business Time and Settings Accessors]]
-- [[_COMMUNITY_Demo Accounts and Sign-In Form|Demo Accounts and Sign-In Form]]
-- [[_COMMUNITY_Session Routing and Shells|Session Routing and Shells]]
-- [[_COMMUNITY_Webhook Verification|Webhook Verification]]
-- [[_COMMUNITY_Admin Customers and Refunds|Admin Customers and Refunds]]
-- [[_COMMUNITY_Quote, Tax and Coupon Resolution|Quote, Tax and Coupon Resolution]]
-- [[_COMMUNITY_Catalog Relationship Editors|Catalog Relationship Editors]]
-- [[_COMMUNITY_Product Availability Management|Product Availability Management]]
-- [[_COMMUNITY_Payment Confirmation and Cron Jobs|Payment Confirmation and Cron Jobs]]
-- [[_COMMUNITY_Checkout and KOT API Surface|Checkout and KOT API Surface]]
-- [[_COMMUNITY_KOT Permissions and State Machine|KOT Permissions and State Machine]]
-- [[_COMMUNITY_Catalog Tables and Tax Settings|Catalog Tables and Tax Settings]]
-- [[_COMMUNITY_Account Addresses and Cancellation|Account Addresses and Cancellation]]
-- [[_COMMUNITY_Roles and RBAC Invariants|Roles and RBAC Invariants]]
-- [[_COMMUNITY_Credit Ledger and Skip Flow|Credit Ledger and Skip Flow]]
-- [[_COMMUNITY_KOT Transition Rules|KOT Transition Rules]]
-- [[_COMMUNITY_Payment Safety Invariants|Payment Safety Invariants]]
-- [[_COMMUNITY_Kitchen Money Masking|Kitchen Money Masking]]
-- [[_COMMUNITY_Variant Groups and Admin Feedback|Variant Groups and Admin Feedback]]
-- [[_COMMUNITY_KOT Pages and Formatters|KOT Pages and Formatters]]
-- [[_COMMUNITY_Integration Health Reporting|Integration Health Reporting]]
-- [[_COMMUNITY_Front-end Rules and Next Config|Front-end Rules and Next Config]]
-- [[_COMMUNITY_Build Tooling and Test Strategy|Build Tooling and Test Strategy]]
-- [[_COMMUNITY_Subscription Credit Rules|Subscription Credit Rules]]
-- [[_COMMUNITY_Refund Requests and Retirement|Refund Requests and Retirement]]
-- [[_COMMUNITY_Review Submission and Moderation|Review Submission and Moderation]]
-- [[_COMMUNITY_Migration and Seed Scripts|Migration and Seed Scripts]]
-- [[_COMMUNITY_Late Account Creation and Sign-In|Late Account Creation and Sign-In]]
-- [[_COMMUNITY_Realtime KOT Synchronisation|Realtime KOT Synchronisation]]
-- [[_COMMUNITY_Unified KOT and Marketplace Isolation|Unified KOT and Marketplace Isolation]]
-- [[_COMMUNITY_Navigation Components|Navigation Components]]
-- [[_COMMUNITY_Checkout Begin Route|Checkout Begin Route]]
-- [[_COMMUNITY_Demo Account Gating|Demo Account Gating]]
-- [[_COMMUNITY_Admin Form and Feedback Helpers|Admin Form and Feedback Helpers]]
-- [[_COMMUNITY_Refund Status Labels|Refund Status Labels]]
-- [[_COMMUNITY_Checkout Address and Quote|Checkout Address and Quote]]
-- [[_COMMUNITY_Employee Administration|Employee Administration]]
-- [[_COMMUNITY_Admin Review Moderation|Admin Review Moderation]]
-- [[_COMMUNITY_Account Navigation Shell|Account Navigation Shell]]
-- [[_COMMUNITY_Subscription Pause Rules|Subscription Pause Rules]]
-- [[_COMMUNITY_Root Layout and Fonts|Root Layout and Fonts]]
-- [[_COMMUNITY_Error Boundaries|Error Boundaries]]
-- [[_COMMUNITY_Authorization as Data|Authorization as Data]]
-- [[_COMMUNITY_Schema Bundler|Schema Bundler]]
-- [[_COMMUNITY_Shared Form Controls|Shared Form Controls]]
-- [[_COMMUNITY_Migration Runner|Migration Runner]]
-- [[_COMMUNITY_Vercel Deployment Config|Vercel Deployment Config]]
-- [[_COMMUNITY_About Page|About Page]]
-- [[_COMMUNITY_Agent Instruction Files|Agent Instruction Files]]
-- [[_COMMUNITY_KOT Transition Tables|KOT Transition Tables]]
-- [[_COMMUNITY_Next.js Config Object|Next.js Config Object]]
-- [[_COMMUNITY_Integration Failure Recording|Integration Failure Recording]]
-- [[_COMMUNITY_Integration Capability View|Integration Capability View]]
-- [[_COMMUNITY_Order Items Masking View|Order Items Masking View]]
-- [[_COMMUNITY_Release Job GET Handler|Release Job GET Handler]]
-- [[_COMMUNITY_Staff Role Set|Staff Role Set]]
-- [[_COMMUNITY_Section Heading Primitive|Section Heading Primitive]]
-- [[_COMMUNITY_Stat Primitive|Stat Primitive]]
-- [[_COMMUNITY_Reconcile Job GET Handler|Reconcile Job GET Handler]]
-- [[_COMMUNITY_Notifications Job GET Handler|Notifications Job GET Handler]]
-- [[_COMMUNITY_Cost Settings Table|Cost Settings Table]]
-- [[_COMMUNITY_Notification Events Table|Notification Events Table]]
-- [[_COMMUNITY_Notification Templates Table|Notification Templates Table]]
-- [[_COMMUNITY_Notifications Table|Notifications Table]]
-- [[_COMMUNITY_Order Status Events Table|Order Status Events Table]]
-- [[_COMMUNITY_Refunds Table|Refunds Table]]
-- [[_COMMUNITY_Variants Table|Variants Table]]
+- [[_COMMUNITY_Community 0|Community 0]]
+- [[_COMMUNITY_Community 1|Community 1]]
+- [[_COMMUNITY_Community 2|Community 2]]
+- [[_COMMUNITY_Community 3|Community 3]]
+- [[_COMMUNITY_Community 4|Community 4]]
+- [[_COMMUNITY_Community 5|Community 5]]
+- [[_COMMUNITY_Community 6|Community 6]]
+- [[_COMMUNITY_Community 7|Community 7]]
+- [[_COMMUNITY_Community 8|Community 8]]
+- [[_COMMUNITY_Community 9|Community 9]]
+- [[_COMMUNITY_Community 10|Community 10]]
+- [[_COMMUNITY_Community 11|Community 11]]
+- [[_COMMUNITY_Community 12|Community 12]]
+- [[_COMMUNITY_Community 13|Community 13]]
+- [[_COMMUNITY_Community 14|Community 14]]
+- [[_COMMUNITY_Community 15|Community 15]]
+- [[_COMMUNITY_Community 16|Community 16]]
+- [[_COMMUNITY_Community 17|Community 17]]
+- [[_COMMUNITY_Community 18|Community 18]]
+- [[_COMMUNITY_Community 19|Community 19]]
+- [[_COMMUNITY_Community 20|Community 20]]
+- [[_COMMUNITY_Community 21|Community 21]]
+- [[_COMMUNITY_Community 22|Community 22]]
+- [[_COMMUNITY_Community 23|Community 23]]
+- [[_COMMUNITY_Community 24|Community 24]]
+- [[_COMMUNITY_Community 25|Community 25]]
+- [[_COMMUNITY_Community 26|Community 26]]
+- [[_COMMUNITY_Community 27|Community 27]]
+- [[_COMMUNITY_Community 28|Community 28]]
+- [[_COMMUNITY_Community 29|Community 29]]
+- [[_COMMUNITY_Community 30|Community 30]]
+- [[_COMMUNITY_Community 31|Community 31]]
+- [[_COMMUNITY_Community 32|Community 32]]
+- [[_COMMUNITY_Community 33|Community 33]]
+- [[_COMMUNITY_Community 34|Community 34]]
+- [[_COMMUNITY_Community 35|Community 35]]
+- [[_COMMUNITY_Community 36|Community 36]]
+- [[_COMMUNITY_Community 37|Community 37]]
+- [[_COMMUNITY_Community 38|Community 38]]
+- [[_COMMUNITY_Community 39|Community 39]]
+- [[_COMMUNITY_Community 40|Community 40]]
+- [[_COMMUNITY_Community 41|Community 41]]
+- [[_COMMUNITY_Community 42|Community 42]]
+- [[_COMMUNITY_Community 43|Community 43]]
+- [[_COMMUNITY_Community 44|Community 44]]
+- [[_COMMUNITY_Community 45|Community 45]]
+- [[_COMMUNITY_Community 46|Community 46]]
+- [[_COMMUNITY_Community 47|Community 47]]
+- [[_COMMUNITY_Community 48|Community 48]]
+- [[_COMMUNITY_Community 49|Community 49]]
+- [[_COMMUNITY_Community 50|Community 50]]
+- [[_COMMUNITY_Community 51|Community 51]]
+- [[_COMMUNITY_Community 52|Community 52]]
+- [[_COMMUNITY_Community 53|Community 53]]
+- [[_COMMUNITY_Community 54|Community 54]]
+- [[_COMMUNITY_Community 55|Community 55]]
+- [[_COMMUNITY_Community 56|Community 56]]
+- [[_COMMUNITY_Community 57|Community 57]]
+- [[_COMMUNITY_Community 58|Community 58]]
+- [[_COMMUNITY_Community 59|Community 59]]
+- [[_COMMUNITY_Community 60|Community 60]]
+- [[_COMMUNITY_Community 61|Community 61]]
+- [[_COMMUNITY_Community 62|Community 62]]
+- [[_COMMUNITY_Community 63|Community 63]]
+- [[_COMMUNITY_Community 64|Community 64]]
+- [[_COMMUNITY_Community 65|Community 65]]
+- [[_COMMUNITY_Community 66|Community 66]]
+- [[_COMMUNITY_Community 67|Community 67]]
+- [[_COMMUNITY_Community 68|Community 68]]
+- [[_COMMUNITY_Community 69|Community 69]]
+- [[_COMMUNITY_Community 70|Community 70]]
+- [[_COMMUNITY_Community 71|Community 71]]
+- [[_COMMUNITY_Community 72|Community 72]]
+- [[_COMMUNITY_Community 73|Community 73]]
+- [[_COMMUNITY_Community 74|Community 74]]
+- [[_COMMUNITY_Community 75|Community 75]]
+- [[_COMMUNITY_Community 76|Community 76]]
+- [[_COMMUNITY_Community 77|Community 77]]
+- [[_COMMUNITY_Community 79|Community 79]]
+- [[_COMMUNITY_Community 80|Community 80]]
+- [[_COMMUNITY_Community 81|Community 81]]
+- [[_COMMUNITY_Community 82|Community 82]]
+- [[_COMMUNITY_Community 84|Community 84]]
+- [[_COMMUNITY_Community 85|Community 85]]
+- [[_COMMUNITY_Community 86|Community 86]]
+- [[_COMMUNITY_Community 87|Community 87]]
+- [[_COMMUNITY_Community 88|Community 88]]
+- [[_COMMUNITY_Community 89|Community 89]]
+- [[_COMMUNITY_Community 93|Community 93]]
+- [[_COMMUNITY_Community 94|Community 94]]
+- [[_COMMUNITY_Community 95|Community 95]]
+- [[_COMMUNITY_Community 96|Community 96]]
+- [[_COMMUNITY_Community 97|Community 97]]
+- [[_COMMUNITY_Community 98|Community 98]]
+- [[_COMMUNITY_Community 99|Community 99]]
+- [[_COMMUNITY_Community 100|Community 100]]
+- [[_COMMUNITY_Community 101|Community 101]]
+- [[_COMMUNITY_Community 103|Community 103]]
+- [[_COMMUNITY_Community 104|Community 104]]
+- [[_COMMUNITY_Community 105|Community 105]]
 
 ## God Nodes (most connected - your core abstractions)
 1. `serverClient()` - 73 edges
 2. `Card()` - 43 edges
-3. `app.audit_trigger()` - 42 edges
-4. `app.has_permission(text)` - 38 edges
-5. `orders (table)` - 36 edges
-6. `Button()` - 35 edges
-7. `Badge()` - 35 edges
-8. `requirePermission()` - 34 edges
-9. `money()` - 33 edges
-10. `cx()` - 32 edges
+3. `cx()` - 42 edges
+4. `app.audit_trigger()` - 42 edges
+5. `app.has_permission(text)` - 38 edges
+6. `money()` - 36 edges
+7. `orders (table)` - 36 edges
+8. `Button()` - 35 edges
+9. `Badge()` - 35 edges
+10. `requirePermission()` - 34 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `Principle: Glanceable Under Rush` --semantically_similar_to--> `Ticket Priority and SLA Urgency Escalation`  [INFERRED] [semantically similar]
-  PRODUCT.md → tests/kot.test.ts
-- `Principle: Role-Shaped Interfaces` --semantically_similar_to--> `Role Permissions Are Data, Not Code`  [INFERRED] [semantically similar]
-  PRODUCT.md → tests/rbac.test.ts
 - `Configuration as Rows (business_settings)` --semantically_similar_to--> `Role Permissions Are Data, Not Code`  [INFERRED] [semantically similar]
   README.md → tests/rbac.test.ts
 - `Principle: The Database Is the Truth` --semantically_similar_to--> `Capability Honesty: No Unverified 'integrated' State`  [INFERRED] [semantically similar]
   PRODUCT.md → tests/marketplace.test.ts
 - `Principle: Color Is Never the Only Signal` --semantically_similar_to--> `Source-Prefixed Daily KOT Numbering`  [INFERRED] [semantically similar]
   PRODUCT.md → tests/kot.test.ts
+- `Principle: Glanceable Under Rush` --semantically_similar_to--> `Ticket Priority and SLA Urgency Escalation`  [INFERRED] [semantically similar]
+  PRODUCT.md → tests/kot.test.ts
+- `Principle: Role-Shaped Interfaces` --semantically_similar_to--> `Role Permissions Are Data, Not Code`  [INFERRED] [semantically similar]
+  PRODUCT.md → tests/rbac.test.ts
 
 ## Import Cycles
 - 1-file cycle: `src/components/auth/demo-accounts.tsx -> src/components/auth/demo-accounts.tsx`
@@ -156,315 +166,331 @@
 - **The Payment Safety Guarantee** — readme_invariant_no_unverified_payment, readme_invariant_server_side_verification, readme_invariant_financial_idempotency, payments_uncertain_to_reconciliation, readme_sandbox_gateway_not_a_bypass, readme_no_payment_provider_is_safety, kot_requires_confirmed_order [EXTRACTED 1.00]
 - **The Honest-State Doctrine** — product_principle_database_is_truth, product_anti_references, readme_rule_refused_write_reported, mp_capability_honesty, readme_invariant_no_fabricated_endpoints, readme_provisional_settings, design_server_action_feedback [INFERRED 0.85]
 
-## Communities (100 total, 18 thin omitted)
+## Communities (106 total, 19 thin omitted)
 
-### Community 0 - "Admin Page Scaffolding"
+### Community 0 - "Community 0"
 Cohesion: 0.11
-Nodes (53): AddOnRow, metadata, Address, metadata, CatalogNav(), TABS, ActionFeedback(), done() (+45 more)
+Nodes (47): AddOnRow, metadata, Address, metadata, CatalogNav(), TABS, ActionFeedback(), done() (+39 more)
 
-### Community 1 - "Permissions and Page Guards"
-Cohesion: 0.07
-Nodes (50): AddOnsPage(), AddressesPage(), NotFound(), ACTION_TONE, AuditPage(), AuditRow, metadata, AppRole (+42 more)
+### Community 1 - "Community 1"
+Cohesion: 0.10
+Nodes (32): AddOnsPage(), AddressesPage(), NotFound(), ACTION_TONE, AuditPage(), AuditRow, metadata, requirePermission() (+24 more)
 
-### Community 2 - "Marketplace Adapter and Tests"
+### Community 2 - "Community 2"
 Cohesion: 0.05
 Nodes (49): PartnerMarketplaceAdapter, attempt() capability gate + circuit breaker, capabilityState() lookup, interpretPayload() best-effort mapper, PartnerMarketplaceAdapter.verifyWebhook(), Test: review moderation authority and audit, Test: staff roles, addresses, refund cases, Test: verified-purchase badge is derived, not claimed (+41 more)
 
-### Community 3 - "Environment and Cashfree Adapter"
-Cohesion: 0.10
-Nodes (19): serverEnv, serverSchema, CashfreeAdapter, signaturesMatch(), adapters, DISPLAY_NAMES, RazorpayAdapter, signaturesMatch() (+11 more)
+### Community 3 - "Community 3"
+Cohesion: 0.12
+Nodes (14): CashfreeAdapter, signaturesMatch(), RazorpayAdapter, signaturesMatch(), SandboxAdapter, CreateOrderInput, CreateOrderResult, PaymentAdapter (+6 more)
 
-### Community 4 - "Admin Shell and Kitchen Board"
-Cohesion: 0.09
-Nodes (30): AdminNav(), AdminLayout(), SECTIONS, SignOutButton(), metadata, ConnectionBadge(), COLUMNS, KitchenBoard() (+22 more)
+### Community 4 - "Community 4"
+Cohesion: 0.19
+Nodes (17): metadata, ConnectionBadge(), COLUMNS, KitchenBoard(), GROUPS, ManagerBoard(), useTicketActions(), elapsedSince() (+9 more)
 
-### Community 5 - "Core Enums and Customer Tables"
+### Community 5 - "Community 5"
 Cohesion: 0.08
 Nodes (46): coupon_discount_type (enum), notification_status (enum), order_status (enum), payment_flow (enum), payment_provider (enum), payment_status (enum), plan_type (enum), subscription_status (enum) (+38 more)
 
-### Community 6 - "Catalog Read Models"
-Cohesion: 0.09
-Nodes (35): PlanConfigurator(), ProductTile(), CategoryGroup, CollectionSummary, getPlan(), getPlanMeals(), listCollections(), listDeliveryWindows() (+27 more)
+### Community 6 - "Community 6"
+Cohesion: 0.07
+Nodes (43): AccountNav(), TABS, AccountLayout(), ProductTile(), CategoryGroup, CollectionSummary, DeliveryWindow, listCollections() (+35 more)
 
-### Community 7 - "Account and Checkout Components"
+### Community 7 - "Community 7"
 Cohesion: 0.13
-Nodes (24): metadata, SubscriptionControls(), metadata, AddressStep(), CheckoutAuthStep(), metadata, Quote, Address (+16 more)
+Nodes (20): SubscriptionControls(), metadata, AddressStep(), CheckoutAuthStep(), metadata, Quote, Address, Outcome (+12 more)
 
-### Community 8 - "Package Dependencies"
-Cohesion: 0.06
-Nodes (35): dependencies, next, react, react-dom, @supabase/ssr, @supabase/supabase-js, zod, devDependencies (+27 more)
+### Community 8 - "Community 8"
+Cohesion: 0.05
+Nodes (36): dependencies, next, react, react-dom, @supabase/ssr, @supabase/supabase-js, zod, devDependencies (+28 more)
 
-### Community 9 - "RBAC and Settings Functions"
+### Community 9 - "Community 9"
 Cohesion: 0.09
 Nodes (32): kot_status (enum), order_source (enum), app.current_role(), app.has_any_permission(text[]), app.is_staff(), permissions (table), role_permissions (table), app.resolve_delivery_fee() (+24 more)
 
-### Community 10 - "Reviews and Customer Access Guards"
+### Community 10 - "Community 10"
 Cohesion: 0.11
 Nodes (32): review_status (enum), app.has_permission(text), app.is_direct_connection(), app.is_service_role(), app.current_customer_id(), customer_addresses (table), customer_addresses_audit (trigger, redacts address PII), app.review_record_moderation() (+24 more)
 
-### Community 11 - "Marketplace Adapter Internals"
-Cohesion: 0.13
-Nodes (14): resolveSecret(), AdapterConfig, interpretPayload(), PartnerMarketplaceAdapter, adapters, marketplaceAdapter(), CapabilityState, IncomingOrder (+6 more)
+### Community 11 - "Community 11"
+Cohesion: 0.14
+Nodes (13): resolveSecret(), AdapterConfig, interpretPayload(), PartnerMarketplaceAdapter, adapters, marketplaceAdapter(), CapabilityState, IncomingOrder (+5 more)
 
-### Community 12 - "Analytics and Account Dashboards"
-Cohesion: 0.12
-Nodes (24): AccountPage(), AdminOverviewPage(), DailyRow, DashboardRow, metadata, DailyRow, RevenueChart(), SOURCE_FILL (+16 more)
+### Community 12 - "Community 12"
+Cohesion: 0.10
+Nodes (35): AccountPage(), metadata, CheckoutPage(), PlanConfigurator(), getPlan(), getPlanMeals(), listPlans(), listPublicOffers() (+27 more)
 
-### Community 13 - "Test Harness"
+### Community 13 - "Community 13"
 Cohesion: 0.17
 Nodes (11): ActAs, actingAs(), asService(), createTestDb(), Db, expectFailure(), HERE, MIGRATIONS (+3 more)
 
-### Community 14 - "Subscription Checkout Engine"
+### Community 14 - "Community 14"
 Cohesion: 0.10
 Nodes (24): continueToCheckout server action, Idempotent Money Paths, Seed Through Real Workflows, Verified-Payment Gate, app.subscription_requires_verified_payment(), begin_subscription_checkout(), confirm_subscription_payment(), fail_subscription_payment() (+16 more)
 
-### Community 15 - "Audit Log and Credit Ledger"
+### Community 15 - "Community 15"
 Cohesion: 0.11
 Nodes (26): app_role (enum), audit_action (enum), credit_entry_type (enum), app.current_actor_id(), app.forbid_mutation(), audit_logs (table), auth_profiles (table), employees (table) (+18 more)
 
-### Community 16 - "Checkout Draft and Service"
-Cohesion: 0.19
-Nodes (16): CheckoutDraft, clearDraft(), draftSchema, saveDraft(), beginCheckout(), BeginResult, confirmCheckout(), ConfirmOutcome (+8 more)
+### Community 16 - "Community 16"
+Cohesion: 0.12
+Nodes (26): bodySchema, POST(), CheckoutDraft, clearDraft(), draftSchema, readDraft(), saveDraft(), beginCheckout() (+18 more)
 
-### Community 17 - "Subscription Deliveries and Pricing"
+### Community 17 - "Community 17"
 Cohesion: 0.19
 Nodes (22): subscription_delivery_status (enum), public.record_audit_event(), delivery_windows (table), app.product_is_orderable(), products (table), subscription_deliveries (table), subscription_delivery_items (table), subscription_plan_meals (table) (+14 more)
 
-### Community 18 - "Configurable Business Policy"
-Cohesion: 0.14
-Nodes (21): Frozen plan snapshot, No hardcoded business policy, Archive, never hard delete, Admin Offers and Coupons, business_settings table, coupon_rules table, coupons table, delivery_windows table (+13 more)
+### Community 18 - "Community 18"
+Cohesion: 0.18
+Nodes (18): Frozen plan snapshot, Archive, never hard delete, Admin Offers and Coupons, business_settings table, coupon_rules table, coupons table, products table, subscription_plan_meals table (+10 more)
 
-### Community 19 - "Design System Principles"
-Cohesion: 0.14
-Nodes (21): DESIGN.md — Visual System, Global :focus-visible Ring, Never Removed, Layout: Storefront, Admin and KOT Kanban, Money Never Renders on Kitchen Surfaces, Motion Budget and prefers-reduced-motion Kill-Switch, Server-Action Feedback via the Query String, Order-Source Colors Fixed by the PRD (SourceTag), Two Registers: Storefront Light, Operations Dark (+13 more)
+### Community 19 - "Community 19"
+Cohesion: 0.13
+Nodes (23): DESIGN.md — Visual System, Global :focus-visible Ring, Never Removed, Layout: Storefront, Admin and KOT Kanban, Money Never Renders on Kitchen Surfaces, Motion Budget and prefers-reduced-motion Kill-Switch, Order-Source Colors Fixed by the PRD (SourceTag), Two Registers: Storefront Light, Operations Dark, Typography: One Family, Tabular Figures, Ops Sizes Up (+15 more)
 
-### Community 20 - "Integration Accounts and Idempotency"
+### Community 20 - "Community 20"
 Cohesion: 0.16
 Nodes (20): integration_capability_state (enum), integration_health (enum), integration_provider (enum), idempotency_keys (table), payment_events (table), Idempotency Everywhere, integration_accounts (table), integration_capabilities (table) (+12 more)
 
-### Community 21 - "KOT Creation and Marketplace Sync"
+### Community 21 - "Community 21"
 Cohesion: 0.10
 Nodes (13): app.create_kot_ticket(), app.provider_to_source(), ingest_marketplace_order(), reconcile_marketplace_orders(), integration_events table, integration_reconciliation table, kot_tickets table, orders table (+5 more)
 
-### Community 22 - "TypeScript Configuration"
+### Community 22 - "Community 22"
 Cohesion: 0.10
 Nodes (19): compilerOptions, allowJs, esModuleInterop, incremental, isolatedModules, jsx, lib, module (+11 more)
 
-### Community 23 - "Notification Dispatch"
-Cohesion: 0.18
-Nodes (12): isAuthorisedJob(), ConsoleTransport, dispatchQueuedNotifications(), NotificationChannel, notificationTransport, OutboundNotification, renderTemplate(), SendResult (+4 more)
-
-### Community 24 - "Scheduled Jobs and README Principles"
-Cohesion: 0.16
-Nodes (19): Concurrency Group Prevents Delayed Runs Piling Up, Job: Drain the Notification Outbox, Capability Honesty: No Unverified 'integrated' State, Invoices Carry a CGST/SGST Tax Split, Principle: The Database Is the Truth, Split Cron Cadence (Vercel Floor + GitHub Actions Real Cadence), Job Endpoints Guarded by a Constant-Time Shared Secret, README — Cloud Kitchen Phase 1 (+11 more)
-
-### Community 25 - "Admin Permissions and Checkout Entry"
+### Community 23 - "Community 23"
 Cohesion: 0.15
-Nodes (17): POST /api/checkout/begin, Defense-in-depth authorization, Server-side payment provider allowlist, cost_settings table, delivery_settings table, reviews table, tax_settings table, Admin Shell Layout (+9 more)
+Nodes (14): isAuthorisedJob(), serverEnv, serverSchema, ConsoleTransport, dispatchQueuedNotifications(), NotificationChannel, notificationTransport, OutboundNotification (+6 more)
 
-### Community 26 - "Button Family and Manager Board"
+### Community 24 - "Community 24"
+Cohesion: 0.11
+Nodes (26): Button Family Sharing buttonClasses, Concurrency Group Prevents Delayed Runs Piling Up, Job: Drain the Notification Outbox, KOT State Machine (NEW → COMPLETED), Capability Honesty: No Unverified 'integrated' State, Database-Driven Imagery Constrained by a Host Allowlist, typedRoutes Enabled, Invoices Carry a CGST/SGST Tax Split (+18 more)
+
+### Community 25 - "Community 25"
+Cohesion: 0.13
+Nodes (19): No hardcoded business policy, cost_settings table, delivery_settings table, delivery_windows table, product_variant_groups table, role_permissions table, tax_settings table, variant_groups table (+11 more)
+
+### Community 26 - "Community 26"
 Cohesion: 0.18
 Nodes (18): Button, buttonClasses (single button visual definition), cx (class name joiner), Colour is never the only signal, Two-click destructive confirmation, ConfirmButton (two-click destructive submit), ConnectionBadge (realtime state indicator), Manager board stage groups (+10 more)
 
-### Community 27 - "Catalog Mappers and Draft Schema"
-Cohesion: 0.16
-Nodes (17): PlanSummary read model, ProductCard read model, getPlanMeals (fixed vs selectable), listCollections, listMenu, listMenuByCategory, listPlans / getPlan, loadRatings (v_product_ratings lookup) (+9 more)
+### Community 27 - "Community 27"
+Cohesion: 0.24
+Nodes (11): ProductCard read model, getPlanMeals (fixed vs selectable), listCollections, listMenu, listMenuByCategory, loadRatings (v_product_ratings lookup), publicSettings / listPublicOffers, toCard (row to ProductCard mapper) (+3 more)
 
-### Community 28 - "Business Time and Settings Accessors"
+### Community 28 - "Community 28"
 Cohesion: 0.15
 Nodes (16): app.business_date(timestamptz), app.business_timezone(), app.setting(text), app.setting_bool(text), app.setting_int(text), app.setting_numeric(text), app.setting_text(text), business_settings (table) (+8 more)
 
-### Community 29 - "Demo Accounts and Sign-In Form"
-Cohesion: 0.19
-Nodes (11): CopyButton(), DemoAccount, DemoAccountList, DemoAccounts(), demoAccountsEnabled(), explainAbsence(), listDemoAccounts(), ROLE_LABELS (+3 more)
+### Community 29 - "Community 29"
+Cohesion: 0.15
+Nodes (22): AppRole, Permission, STAFF_ROLES, can(), requireAnyPermission(), SessionProfile, Customer, CustomerDetailPage() (+14 more)
 
-### Community 30 - "Session Routing and Shells"
-Cohesion: 0.20
-Nodes (12): landingPathForRole(), authorizeRequest(), getSession, SignInPanel(), ForbiddenPage(), metadata, metadata, SignInPage() (+4 more)
+### Community 30 - "Community 30"
+Cohesion: 0.22
+Nodes (10): landingPathForRole(), authorizeRequest(), getSession, bodySchema, POST(), ForbiddenPage(), metadata, SiteLayout() (+2 more)
 
-### Community 31 - "Webhook Verification"
+### Community 31 - "Community 31"
 Cohesion: 0.18
 Nodes (15): Colour Is Never the Only Indicator, Per-Provider Failure Isolation, Raw-Body-First Signature Verification, Webhook Idempotency on Provider Event Id, Webhook Is Authoritative, Callback Is Cosmetic, Revenue Chart, Marketplace Webhook Route (Swiggy/Zomato), Payment Provider Webhook Route (+7 more)
 
-### Community 32 - "Admin Customers and Refunds"
-Cohesion: 0.21
-Nodes (15): Admin Customer Detail, Admin Customers List, customer_addresses table, customers table, invoices table, orders table, refund_requests table, subscriptions table (+7 more)
+### Community 32 - "Community 32"
+Cohesion: 0.17
+Nodes (16): Admin Customer Detail, Admin Customers List, auth_profiles table, customer_addresses table, invoices table, orders table, refund_requests table, PERMISSIONS.customersManage (+8 more)
 
-### Community 33 - "Quote, Tax and Coupon Resolution"
+### Community 33 - "Community 33"
 Cohesion: 0.15
 Nodes (15): app.resolve_delivery_fee(), app.resolve_tax_components(), quote_subscription(), validate_coupon(), coupon_redemptions table, coupon_rules table, coupons table, delivery_settings table (+7 more)
 
-### Community 34 - "Catalog Relationship Editors"
+### Community 34 - "Community 34"
 Cohesion: 0.21
 Nodes (14): Admin Add-ons Page, Admin Collections Page, Admin Product Editor Page, saveAddOns server action, saveCollections server action, saveVariantGroups server action, Replace the Whole Relationship Set, add_ons table (+6 more)
 
-### Community 35 - "Product Availability Management"
+### Community 35 - "Community 35"
 Cohesion: 0.23
 Nodes (14): Admin Catalog Products Page, Admin Categories Page, createProduct server action, toggleAvailability server action, updatePricing server action, saveDetails server action, Availability-First Kitchen Controls, Subscription-Only Commerce (+6 more)
 
-### Community 36 - "Payment Confirmation and Cron Jobs"
-Cohesion: 0.24
-Nodes (14): adminClient() (service-role Supabase), Idempotent cron endpoints behind a bearer secret, Payment ownership check, POST /api/checkout/confirm, payments table, clearDraft(), isAuthorisedJob(request), POST|GET /api/jobs/notifications (+6 more)
+### Community 36 - "Community 36"
+Cohesion: 0.22
+Nodes (15): adminClient() (service-role Supabase), Idempotent cron endpoints behind a bearer secret, Payment ownership check, POST /api/checkout/confirm, customers table, payments table, clearDraft(), isAuthorisedJob(request) (+7 more)
 
-### Community 37 - "Checkout and KOT API Surface"
+### Community 37 - "Community 37"
 Cohesion: 0.20
 Nodes (14): /api/checkout/begin endpoint, /api/checkout/sandbox endpoint, /api/kot/eta endpoint, /api/kot/transition endpoint, Report unknown outcomes as unknown, Refuse offline mutations up front, PaymentStep (address, provider, pay), completeSandbox (test gateway outcome) (+6 more)
 
-### Community 38 - "KOT Permissions and State Machine"
-Cohesion: 0.19
-Nodes (14): Role-to-permission mapping is data, not code, KOT state machine enforced in the database, A hidden button is not a security boundary, auth_profiles table, role_permissions table, POST /api/kot/eta, PERMISSIONS constants, override_prep_eta() RPC (+6 more)
+### Community 38 - "Community 38"
+Cohesion: 0.16
+Nodes (14): CopyButton(), DemoAccount, DemoAccountList, DemoAccounts(), demoAccountsEnabled(), explainAbsence(), listDemoAccounts(), ROLE_LABELS (+6 more)
 
-### Community 39 - "Catalog Tables and Tax Settings"
+### Community 39 - "Community 39"
 Cohesion: 0.16
 Nodes (14): notification_channel (enum), app.audit_trigger(), app.resolve_tax_components(), tax_settings (table), add_ons (table), categories (table), collection_products (table), collections (table) (+6 more)
 
-### Community 40 - "Account Addresses and Cancellation"
+### Community 40 - "Community 40"
 Cohesion: 0.19
 Nodes (12): Account Addresses Page, cancelSubscription server action, Account Dashboard Page, Customer Account Layout, makeDefaultAddress server action, saveAddress server action, addImage / makePrimaryImage actions, cancel_subscription() (+4 more)
 
-### Community 41 - "Roles and RBAC Invariants"
+### Community 41 - "Community 41"
 Cohesion: 0.18
 Nodes (13): Unavailable Product Is Shown, Not Hidden, Role: Customer, Role: Kitchen Staff, Role: Owner, Anonymous Storefront Access Boundary, The Audit Log Cannot Be Rewritten, Audit Visibility Limited to Owner and Developer Admin, Customers See and Act Only on Their Own Records (+5 more)
 
-### Community 42 - "Credit Ledger and Skip Flow"
+### Community 42 - "Community 42"
 Cohesion: 0.23
 Nodes (12): skipDelivery server action, Admin Audit Log Page, Append-Only History, Derived Balance Over Stored Counter, app.assert_subscription_access(), app.audit_trigger(), app.forbid_mutation(), schedule_credit_delivery() (+4 more)
 
-### Community 43 - "KOT Transition Rules"
+### Community 43 - "Community 43"
 Cohesion: 0.21
 Nodes (12): ConfirmButton — Two-Click Destructive Submit, Manager-Only ETA Override Preserving the Original, Per-Role Transition Rights on the Board, Rejection Requires a Reason and Confirmation, A Ticket Cannot Exist Without a Confirmed Order, A Status Event for Every Move, Including Creation, A Repeated Transition Is a No-Op, Not an Error, KOT Test Suite (+4 more)
 
-### Community 44 - "Payment Safety Invariants"
-Cohesion: 0.17
-Nodes (12): Job: Hourly Marketplace Reconciliation, Two-Way Marketplace Reconciliation, Retried Checkout Replays the Original Subscription, A Duplicate Payment Webhook Is a No-Op, A Late Failure Notice Cannot Undo a Confirmed Payment, No Client Write Policy on payments, Confirmation Refused Without a Verified Signature, Uncertain Outcomes Routed to Reconciliation, Not Guessed (+4 more)
+### Community 44 - "Community 44"
+Cohesion: 0.12
+Nodes (18): Job: Hourly Marketplace Reconciliation, Marketplace Test Suite, Per-Provider Circuit Breaker, Duplicate Marketplace Delivery Is Harmless, Platform-Driven Cancellation Overrides Our Flow, Two-Way Marketplace Reconciliation, Retried Checkout Replays the Original Subscription, A Duplicate Payment Webhook Is a No-Op (+10 more)
 
-### Community 45 - "Kitchen Money Masking"
-Cohesion: 0.22
-Nodes (11): publicSettings / listPublicOffers, No money on kitchen screens, RLS decides what the read models return, v_kot_ticket_items (money-masking view), Kitchen board column definition, KitchenBoard (kitchen display), kot.mark_ready permission, kot.start_prep permission (+3 more)
+### Community 45 - "Community 45"
+Cohesion: 0.19
+Nodes (10): contrast(), css, deltaE(), light, luminance(), oklab(), ops, report() (+2 more)
 
-### Community 46 - "Variant Groups and Admin Feedback"
-Cohesion: 0.18
-Nodes (11): product_variant_groups table, variant_groups table, variants table, Admin action feedback (done/fail/readable), Admin form coercion helpers, Admin Loading Skeleton, PERMISSIONS.catalogManage, begin_subscription_checkout RPC (+3 more)
+### Community 46 - "Community 46"
+Cohesion: 0.12
+Nodes (17): POST /api/checkout/begin, Defense-in-depth authorization, Server-side payment provider allowlist, Service key only where no caller token can exist, employees table, reviews table, variants table, Admin Employees (+9 more)
 
-### Community 47 - "KOT Pages and Formatters"
+### Community 47 - "Community 47"
 Cohesion: 0.27
 Nodes (9): Permission-Not-Role Gating of Actions, BUSINESS_TIMEZONE formatters (Asia/Kolkata), BoardTicket / KOT board status sets, Forbidden Page, Kitchen Display Page, KOT Manager Page, PERMISSIONS.kotAccept, PERMISSIONS.kotView (+1 more)
 
-### Community 48 - "Integration Health Reporting"
+### Community 48 - "Community 48"
 Cohesion: 0.27
-Nodes (10): Honest integration and estimate labelling, Reconciliation reports, never repairs, integration_capabilities table, integration_reconciliation table, Admin Integration Health, marketplaceAdapter(provider), PERMISSIONS.integrationsView, POST|GET /api/jobs/reconcile (+2 more)
+Nodes (7): AdminNav(), AdminLayout(), SECTIONS, SignOutButton(), NAV, SITE_NAV, SiteHeader()
 
-### Community 49 - "Front-end Rules and Next Config"
-Cohesion: 0.20
-Nodes (9): Button Family Sharing buttonClasses, KOT State Machine (NEW → COMPLETED), Database-Driven Imagery Constrained by a Host Allowlist, typedRoutes Enabled, Role: Developer Admin, Role Permissions Are Data, Not Code, Postgres Is the Authority, Front-end Rule: Navigate Is an Anchor, Act Is a Button (+1 more)
+### Community 49 - "Community 49"
+Cohesion: 0.10
+Nodes (19): compilerOptions, allowJs, esModuleInterop, incremental, isolatedModules, jsx, lib, module (+11 more)
 
-### Community 50 - "Build Tooling and Test Strategy"
+### Community 50 - "Community 50"
 Cohesion: 0.20
 Nodes (7): Design Tokens as Single Source of Truth, eslintConfig, package.json — Scripts and Dependencies, config, Tests Run the Real Migrations on PGlite, Tests Act as Genuine Non-Superuser Roles, Test Harness — createTestDb / actingAs / asService
 
-### Community 51 - "Subscription Credit Rules"
+### Community 51 - "Community 51"
 Cohesion: 0.24
 Nodes (10): Job: Release Due Deliveries Into the KOT, Invariant: History Is Preserved, Configuration as Rows (business_settings), Booking Guards: Balance and Meal Availability, Cancellation Stops Future Deliveries but Preserves the Record, Credit Balance Derived From Ledger Entries, Premium Meals Cost More Credits, Customer-Selected Plans Are Bounded by a Selectable Pool (+2 more)
 
-### Community 52 - "Refund Requests and Retirement"
+### Community 52 - "Community 52"
 Cohesion: 0.25
 Nodes (9): Account Refund Requests Page, retireAddress server action, setArchived server action, Retire, Never Delete, raiseRequest server action, withdrawRequest server action, withdrawReview server action, withdraw_refund_request() (+1 more)
 
-### Community 53 - "Review Submission and Moderation"
+### Community 53 - "Community 53"
 Cohesion: 0.25
 Nodes (9): Account Reviews Page, RLS as the Authorization Boundary, submitReview server action, updateReview server action, Cloud Kitchen Database Schema, app.review_record_moderation(), review_moderation table, reviews table (+1 more)
 
-### Community 54 - "Migration and Seed Scripts"
+### Community 54 - "Community 54"
 Cohesion: 0.22
 Nodes (8): DATABASE_URL Read but Never Printed, One Transaction Per Migration File, schema.sql Is Generated, Never Edited, build-bundle.mjs — Schema Bundler, Credentials Stored Only by Reference, Two Schema Application Routes (db push vs schema.sql), Seed Data Built Through Real Workflows, Test Harness — Seeded Fixture IDs
 
-### Community 55 - "Late Account Creation and Sign-In"
+### Community 55 - "Community 55"
 Cohesion: 0.39
 Nodes (9): Checkout Auth Step, Demo Panel Environment Gating, Late Account Creation, Lifted Credential State, Non-Enumerating Auth Error, Demo Accounts Panel, Sign In Page, Sign In Form (+1 more)
 
-### Community 56 - "Realtime KOT Synchronisation"
+### Community 56 - "Community 56"
 Cohesion: 0.31
 Nodes (9): Test: realtime is wired for the operational tables, SOURCE_LABELS / KOT_STATUS_LABELS, ACTIVE_STATUSES / KITCHEN_STATUSES, providerForSource(source), browserClient() anon browser client, ConnectionState (connecting|live|reconnecting|offline), refetchOne() -- event as signal, not data, resync() full resynchronisation (+1 more)
 
-### Community 57 - "Unified KOT and Marketplace Isolation"
-Cohesion: 0.25
-Nodes (9): Ticket Priority and SLA Urgency Escalation, Marketplace Test Suite, Per-Provider Circuit Breaker, Duplicate Marketplace Delivery Is Harmless, Platform-Driven Cancellation Overrides Our Flow, Marketplace Orders Join the Same KOT, Unified KOT Across Three Channels, Invariant: One Marketplace Failing Cannot Stop Another (+1 more)
+### Community 57 - "Community 57"
+Cohesion: 0.22
+Nodes (8): Accessibility & Inclusion, Anti-references, Design Principles, Product, Product Purpose, Register, Users, Front-end Rule: A Refused Write Is Reported, Never Swallowed
 
-### Community 58 - "Navigation Components"
+### Community 58 - "Community 58"
 Cohesion: 0.29
 Nodes (7): Account Nav, Admin Nav, Catalog Nav, Confirm Destructive Actions, Kitchen Sees Accepted Work Only, Server-Filtered Navigation, Subscription Controls (Pause / Cancel)
 
-### Community 59 - "Checkout Begin Route"
-Cohesion: 0.43
-Nodes (6): bodySchema, POST(), readDraft(), ensureCustomer(), configuredPaymentProviders(), availablePaymentProviders()
+### Community 59 - "Community 59"
+Cohesion: 0.11
+Nodes (18): 1. Create a Supabase project, 2. Apply the schema, 3. Seed demo data (optional but recommended), 4. Run, Architecture in one paragraph, Cloud Kitchen — Phase 1, Demonstrating the end-to-end flow, Deploying (+10 more)
 
-### Community 60 - "Demo Account Gating"
-Cohesion: 0.29
-Nodes (7): auth_profiles table, ROLE_NOTES / ROLE_LABELS / ROLE_ORDER, demoAccountsEnabled (SHOW_DEMO_ACCOUNTS gate), explainAbsence (one-shot server log), listDemoAccounts, AppRole union, landingPathForRole
+### Community 60 - "Community 60"
+Cohesion: 0.25
+Nodes (11): KOT state machine enforced in the database, A hidden button is not a security boundary, role_permissions table, POST /api/kot/eta, PERMISSIONS constants, override_prep_eta() RPC, transition_kot_ticket() RPC, serverClient() (caller-token Supabase) (+3 more)
 
-### Community 61 - "Admin Form and Feedback Helpers"
-Cohesion: 0.29
-Nodes (7): ActionFeedback, fail / done (server-action redirect feedback), readable (Postgres error translator), nullableBool (tri-state), FormData readers (str/num/list), slugify / codify, Alert
+### Community 61 - "Community 61"
+Cohesion: 0.19
+Nodes (11): AdminOverviewPage(), DailyRow, DashboardRow, metadata, DailyRow, RevenueChart(), SOURCE_FILL, SOURCE_ORDER (+3 more)
 
-### Community 62 - "Refund Status Labels"
-Cohesion: 0.29
-Nodes (6): SUBSCRIPTION_STATUS_LABELS, STATUS_NOTE, WITHDRAWABLE, metadata, RequestRow, STATUS_TONES
+### Community 62 - "Community 62"
+Cohesion: 0.18
+Nodes (12): PlanSummary read model, listPlans / getPlan, Checkout idempotency by draft key, Server is the only source of price, draftSchema (checkout draft cookie), draft idempotencyKey, saveDraft / readDraft / clearDraft, PlanConfigurator (+4 more)
 
-### Community 63 - "Checkout Address and Quote"
+### Community 63 - "Community 63"
 Cohesion: 0.40
 Nodes (6): Checkout Address Step, Server-Computed Quote, Checkout Page, begin_subscription_checkout (RPC), quote_subscription (RPC), customer_addresses (table)
 
-### Community 64 - "Employee Administration"
-Cohesion: 0.33
-Nodes (6): Service key only where no caller token can exist, employees table, Admin Employees, PERMISSIONS.employeesManage, PERMISSIONS.employeesView, developer_admin role
+### Community 64 - "Community 64"
+Cohesion: 0.24
+Nodes (5): Item, TicketItems(), publicEnv, browserClient(), Skeleton()
 
-### Community 65 - "Admin Review Moderation"
+### Community 65 - "Community 65"
 Cohesion: 0.33
 Nodes (4): FILTERS, STATUS_TONES, metadata, ReviewRow
 
-### Community 66 - "Account Navigation Shell"
-Cohesion: 0.50
-Nodes (3): AccountNav(), TABS, AccountLayout()
+### Community 66 - "Community 66"
+Cohesion: 0.27
+Nodes (10): Honest integration and estimate labelling, Reconciliation reports, never repairs, integration_capabilities table, integration_reconciliation table, Admin Integration Health, marketplaceAdapter(provider), PERMISSIONS.integrationsView, POST|GET /api/jobs/reconcile (+2 more)
 
-### Community 67 - "Subscription Pause Rules"
+### Community 67 - "Community 67"
 Cohesion: 0.40
 Nodes (5): pauseSubscription server action, app.setting() accessors, pause_subscription(), business_settings table, subscription_pauses table
 
-### Community 68 - "Root Layout and Fonts"
-Cohesion: 0.40
-Nodes (3): geistMono, geistSans, metadata
+### Community 68 - "Community 68"
+Cohesion: 0.29
+Nodes (5): geistMono, geistSans, metadata, mono, sans
 
-### Community 69 - "Error Boundaries"
+### Community 69 - "Community 69"
 Cohesion: 0.40
 Nodes (5): Dependency-Free Last-Resort Boundary, Route Error Boundary, Global Error Boundary, Root Layout, Not Found Page
 
-### Community 70 - "Authorization as Data"
+### Community 70 - "Community 70"
 Cohesion: 0.50
 Nodes (4): Authorization Is Data, Not Code, app.has_permission(), permissions table, role_permissions table
 
-### Community 71 - "Schema Bundler"
+### Community 71 - "Community 71"
 Cohesion: 0.40
 Nodes (4): body, files, migrationsDir, root
 
-### Community 72 - "Shared Form Controls"
-Cohesion: 0.50
-Nodes (4): CONTROL (shared form control classes), Input, Select, Textarea
+### Community 72 - "Community 72"
+Cohesion: 0.17
+Nodes (11): Color Palette, Components, Design, Guarding the palette, Layout, Radii, Shadow, Motion, Rules, Server-action feedback (+3 more)
 
-### Community 73 - "Migration Runner"
+### Community 73 - "Community 73"
 Cohesion: 0.50
 Nodes (3): client, done, onlySeed
 
-### Community 74 - "Vercel Deployment Config"
+### Community 74 - "Community 74"
 Cohesion: 0.50
 Nodes (3): crons, framework, $schema
 
-### Community 76 - "Agent Instruction Files"
+### Community 76 - "Community 76"
 Cohesion: 0.67
 Nodes (3): AGENTS.md — Next.js Agent Rules, Rule: Read node_modules/next/dist/docs Before Writing Next.js Code, CLAUDE.md — Project Instructions
 
-### Community 77 - "KOT Transition Tables"
+### Community 77 - "Community 77"
 Cohesion: 0.67
 Nodes (3): app.kot_enforce_transition(), kot_status_events table, kot_transitions table
+
+### Community 100 - "Community 100"
+Cohesion: 0.50
+Nodes (3): crons, framework, $schema
+
+### Community 103 - "Community 103"
+Cohesion: 0.28
+Nodes (9): No money on kitchen screens, v_kot_ticket_items (money-masking view), Kitchen board column definition, KitchenBoard (kitchen display), kot.mark_ready permission, kot.start_prep permission, orders.view_financial permission, EmptyState (+1 more)
+
+### Community 104 - "Community 104"
+Cohesion: 0.25
+Nodes (8): Role-to-permission mapping is data, not code, auth_profiles table, ROLE_NOTES / ROLE_LABELS / ROLE_ORDER, demoAccountsEnabled (SHOW_DEMO_ACCOUNTS gate), explainAbsence (one-shot server log), listDemoAccounts, AppRole union, landingPathForRole
+
+### Community 105 - "Community 105"
+Cohesion: 0.29
+Nodes (7): ActionFeedback, fail / done (server-action redirect feedback), readable (Postgres error translator), nullableBool (tri-state), FormData readers (str/num/list), slugify / codify, Alert
 
 ## Ambiguous Edges - Review These
 - `payment_provider (enum)` → `business_settings (table)`  [AMBIGUOUS]
@@ -487,9 +513,9 @@ Nodes (3): app.kot_enforce_transition(), kot_status_events table, kot_transition
   README.md · relation: conceptually_related_to
 
 ## Knowledge Gaps
-- **300 isolated node(s):** `eslintConfig`, `nextConfig`, `name`, `version`, `private` (+295 more)
+- **356 isolated node(s):** `eslintConfig`, `nextConfig`, `name`, `version`, `private` (+351 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **18 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **19 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_

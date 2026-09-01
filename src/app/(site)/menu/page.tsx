@@ -1,5 +1,8 @@
-import { listMenuByCategory } from '@/lib/data/catalog';
+import Link from 'next/link';
+import { listMenuByCategory, type ProductCard } from '@/lib/data/catalog';
 import { ProductTile } from '@/components/product-card';
+import { MenuSearch } from '@/components/site/menu-search';
+import { pluralise } from '@/lib/format';
 import { Alert, ButtonLink, EmptyState } from '@/components/ui/primitives';
 
 export const metadata = {
@@ -7,11 +10,44 @@ export const metadata = {
   description: 'Everything the kitchen cooks, and what is available today.',
 };
 
-export default async function MenuPage() {
-  const groups = await listMenuByCategory();
-  const unavailableCount = groups
-    .flatMap((group) => group.products)
-    .filter((product) => !product.isAvailable).length;
+/**
+ * Every term has to appear somewhere in the dish, so "paneer curry" narrows
+ * rather than widening the way an OR would. Category and description are part
+ * of the haystack: someone searching "breakfast" or "coconut" is describing
+ * the dish, not naming it.
+ */
+function matches(product: ProductCard, terms: string[]): boolean {
+  const haystack = [
+    product.name,
+    product.shortDescription,
+    product.description,
+    product.categoryName ?? '',
+  ]
+    .join(' ')
+    .toLowerCase();
+
+  return terms.every((term) => haystack.includes(term));
+}
+
+export default async function MenuPage({ searchParams }: PageProps<'/menu'>) {
+  const params = await searchParams;
+  const raw = Array.isArray(params.q) ? params.q[0] : params.q;
+  const query = (raw ?? '').trim().slice(0, 80);
+  const terms = query.toLowerCase().split(/\s+/).filter(Boolean);
+
+  const allGroups = await listMenuByCategory();
+
+  const groups = terms.length
+    ? allGroups
+        .map((group) => ({
+          ...group,
+          products: group.products.filter((product) => matches(product, terms)),
+        }))
+        .filter((group) => group.products.length > 0)
+    : allGroups;
+
+  const shown = groups.flatMap((group) => group.products);
+  const unavailableCount = shown.filter((product) => !product.isAvailable).length;
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-12">
@@ -22,6 +58,20 @@ export default async function MenuPage() {
           for — meals are ordered through a subscription rather than one at a time.
         </p>
       </header>
+
+      <MenuSearch defaultValue={query} className="mt-6 max-w-xl" />
+
+      {query ? (
+        <p className="mt-3 text-sm text-muted">
+          {shown.length === 0
+            ? 'No dishes match'
+            : `${pluralise(shown.length, 'dish', 'dishes')} matching`}{' '}
+          <span className="font-medium text-ink">“{query}”</span>.{' '}
+          <Link href="/menu" className="font-medium text-brand hover:underline">
+            Clear search
+          </Link>
+        </p>
+      ) : null}
 
       {unavailableCount > 0 ? (
         <div className="mt-6 max-w-2xl">
@@ -35,10 +85,22 @@ export default async function MenuPage() {
 
       {groups.length === 0 ? (
         <div className="mt-10">
-          <EmptyState
-            title="The menu has not been published yet"
-            description="Once the kitchen adds dishes, they will appear here."
-          />
+          {query ? (
+            <EmptyState
+              title={`Nothing on the menu matches “${query}”`}
+              description="We cook a small menu, so it is a short list. Try a broader word — a category like breakfast, or an ingredient like paneer."
+              action={
+                <ButtonLink href="/menu" variant="secondary">
+                  Show the whole menu
+                </ButtonLink>
+              }
+            />
+          ) : (
+            <EmptyState
+              title="The menu has not been published yet"
+              description="Once the kitchen adds dishes, they will appear here."
+            />
+          )}
         </div>
       ) : (
         <div className="mt-10 space-y-14">

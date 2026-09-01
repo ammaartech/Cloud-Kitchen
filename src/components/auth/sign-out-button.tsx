@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { browserClient } from '@/lib/supabase/client';
 import { Button, Spinner } from '@/components/ui/primitives';
+import type { ButtonVariant } from '@/components/ui/button-styles';
 
 /**
  * Signs the current user out and returns them to the sign-in screen.
@@ -25,7 +26,7 @@ export function SignOutButton({
   className,
 }: {
   label?: string;
-  variant?: 'primary' | 'secondary' | 'ghost' | 'danger' | 'success';
+  variant?: ButtonVariant;
   size?: 'sm' | 'md' | 'lg';
   className?: string;
 }) {

@@ -91,7 +91,10 @@ const BADGE_TONES: Record<BadgeTone, string> = {
   warning: 'bg-warning-soft text-warning border-transparent',
   danger: 'bg-danger-soft text-danger border-transparent',
   info: 'bg-info-soft text-info border-transparent',
-  accent: 'bg-accent-soft text-accent border-transparent',
+  // The palette is monochrome, so `accent` cannot differ from `brand` by hue.
+  // It reads as the quieter of the two: paler fill, hairline edge. Its label is
+  // `brand` rather than `accent`, which would sit at 4.06:1 on this tint.
+  accent: 'bg-accent-soft text-brand border-line',
 };
 
 export function Badge({
@@ -272,8 +275,11 @@ export function Field({
 }
 
 const CONTROL =
-  'w-full rounded-ck border border-line-strong bg-surface px-3 py-2 text-sm text-ink ' +
-  'placeholder:text-subtle focus:border-brand focus:outline-none ' +
+  'w-full rounded-ck border border-line-strong bg-surface px-3.5 py-2 text-sm text-ink ' +
+  // `subtle` is the quietest colour that still clears 4.5:1; a placeholder is
+  // the only hint an empty field gives, so it does not get to be quieter.
+  'placeholder:text-subtle transition-colors duration-150 ease-ck ' +
+  'hover:border-brand/50 focus:border-brand focus:outline-none ' +
   'disabled:cursor-not-allowed disabled:bg-sunken disabled:text-subtle';
 
 export function Input({ className, ...rest }: ComponentPropsWithoutRef<'input'>) {

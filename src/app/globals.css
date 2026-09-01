@@ -5,44 +5,78 @@
    ==========================================================================
    Two registers share one system:
 
-   Storefront  - warm, editorial, appetising. Generous space, real photography.
+   Storefront  - light, calm, generous. White cards on a barely-tinted ground,
+                 colour reserved for actions and state.
    Operations  - the KOT screens. Dense, high contrast, glanceable across a
                  kitchen at arm's length under bad lighting (PRD 19).
 
-   Source colours are fixed by the PRD: SW orange, ZM red, SX navy. Colour is
-   never the only signal -- every ticket also carries its literal prefix.
+   The palette is a single-hue ramp (dark slate grey/green). Neutrals are
+   tinted toward that hue rather than toward grey, so the whole system reads as
+   one material. Everything below was checked against WCAG 2.1 AA: body pairs
+   at 4.5:1, control boundaries and focus rings at 3:1.
+
+   Source colours are fixed by the PRD and are the one exception to the palette:
+   SW orange, ZM red, SX navy. Colour is never the only signal -- every ticket
+   also carries its literal prefix.
    ========================================================================== */
 
+@theme {
+  /* The ramp, exactly as supplied. Semantic tokens below are built from it;
+     reach for a step directly only for chart series and illustration. */
+  --color-dark-slate-grey-50: #eff6f4;
+  --color-dark-slate-grey-100: #dfece8;
+  --color-dark-slate-grey-200: #bedad2;
+  --color-dark-slate-grey-300: #9ec7bb;
+  --color-dark-slate-grey-400: #7db5a4;
+  --color-dark-slate-grey-500: #5da28d;
+  --color-dark-slate-grey-600: #4a8271;
+  --color-dark-slate-grey-700: #386155;
+  --color-dark-slate-grey-800: #254139;
+  --color-dark-slate-grey-900: #13201c;
+  --color-dark-slate-grey-950: #0d1714;
+}
+
 :root {
-  /* Neutrals: warm-tinted, so the storefront reads as food rather than SaaS. */
-  --ck-bg: #fbf9f6;
+  /* Neutrals, tinted toward the ramp's hue. */
+  --ck-bg: #f6f9f8;
   --ck-surface: #ffffff;
-  --ck-surface-sunken: #f4f1ec;
-  --ck-border: #e5e0d8;
-  --ck-border-strong: #d2cabd;
+  --ck-surface-sunken: #eff6f4; /* 50  */
+  --ck-border: #dfece8;         /* 100 */
+  /* Control boundaries need 3:1, which the 100/200 steps cannot reach on
+     white. This is a desaturated sibling of the ramp that does (3.32:1). */
+  --ck-border-strong: #7f918b;
 
-  --ck-text: #1c1917;
-  --ck-text-muted: #6b6259;
-  --ck-text-subtle: #938a80;
+  --ck-text: #0d1714;        /* 950, 18.3:1 on white */
+  --ck-text-muted: #48605a;  /* 6.78:1 */
+  --ck-text-subtle: #5f7169; /* 5.18:1 -- the old subtle sat at 3.4:1 */
 
-  /* Brand: a deep spice red-brown, with turmeric as the accent. */
-  --ck-brand: #9c3919;
-  --ck-brand-hover: #822f14;
-  --ck-brand-soft: #fdefe8;
-  --ck-accent: #c98a13;
-  --ck-accent-soft: #fdf4e0;
+  /* Brand. 700 is the lightest step that carries white text at 4.5:1;
+     600 reaches only 4.45:1 and fails on a filled button. */
+  --ck-brand: #386155;       /* 700 */
+  --ck-brand-hover: #254139; /* 800 */
+  --ck-brand-soft: #dfece8;  /* 100 */
+  /* The soft button's hover and press. Tokens rather than ramp steps, because
+     on the ops surface the sequence has to run the other way. */
+  --ck-brand-soft-hover: #cfe4dd;
+  --ck-brand-soft-active: #bedad2; /* 200, still 4.70:1 with brand text */
+  /* A lighter step of the same hue for fills, chart series and large text.
+     The palette is monochrome, so accent is a step, not a second hue. */
+  --ck-accent: #4a8271;      /* 600 */
+  --ck-accent-soft: #eff6f4; /* 50  */
 
-  /* Status */
-  --ck-success: #1f7a4d;
-  --ck-success-soft: #e6f4ec;
-  --ck-warning: #a86800;
-  --ck-warning-soft: #fdf2dc;
-  --ck-danger: #b3261e;
-  --ck-danger-soft: #fdecea;
-  --ck-info: #1f5fa8;
-  --ck-info-soft: #e8f1fb;
+  /* Status. Success is deliberately a true green rather than another step of
+     the ramp: the brand is a cool grey-green, and on the KOT board a state
+     must never read as chrome. Separation is 0.114 in OKLab. */
+  --ck-success: #2e7d32;
+  --ck-success-soft: #e7f4e8;
+  --ck-warning: #8a5a00;
+  --ck-warning-soft: #f8eeda;
+  --ck-danger: #a92f24;
+  --ck-danger-soft: #fbeae8;
+  --ck-info: #1d5b9e;
+  --ck-info-soft: #e7f0f9;
 
-  /* Order sources (PRD 4) */
+  /* Order sources (PRD 4) -- fixed, outside the palette. */
   --ck-source-sw: #e2680f; /* Swiggy  - orange */
   --ck-source-zm: #d81f26; /* Zomato  - red    */
   --ck-source-sx: #1c3f7c; /* Website - navy   */
@@ -50,12 +84,22 @@
   --ck-source-zm-soft: #fdeaeb;
   --ck-source-sx-soft: #e9eef7;
 
-  --ck-radius: 0.625rem;
+  --ck-radius: 0.75rem;
   --ck-radius-lg: 1rem;
+  --ck-radius-pill: 9999px;
 
-  --ck-shadow-sm: 0 1px 2px rgb(28 25 23 / 0.06);
-  --ck-shadow: 0 2px 8px -2px rgb(28 25 23 / 0.1), 0 1px 3px rgb(28 25 23 / 0.06);
-  --ck-shadow-lg: 0 12px 32px -12px rgb(28 25 23 / 0.22);
+  /* Confident deceleration. No bounce, no elastic. */
+  --ck-ease: cubic-bezier(0.25, 1, 0.5, 1);
+
+  /* The focus ring is a token, not a literal: the ops surface flips the brand
+     colour out from under it and the ring has to follow. */
+  --ck-focus: var(--ck-brand);
+
+  /* Shadows are tinted with the ramp's darkest step, not neutral black, so
+     they sit in the same material as everything else. */
+  --ck-shadow-sm: 0 1px 2px rgb(13 23 20 / 0.05);
+  --ck-shadow: 0 2px 8px -2px rgb(13 23 20 / 0.08), 0 1px 3px rgb(13 23 20 / 0.05);
+  --ck-shadow-lg: 0 12px 32px -12px rgb(13 23 20 / 0.18);
 }
 
 /* --------------------------------------------------------------------------
@@ -64,24 +108,29 @@
    needing to know which screen it is on.
    -------------------------------------------------------------------------- */
 [data-surface="ops"] {
-  --ck-bg: #14120f;
-  --ck-surface: #1f1c18;
-  --ck-surface-sunken: #100e0c;
-  --ck-border: #322d27;
-  --ck-border-strong: #4a423a;
+  --ck-bg: #0d1714;             /* 950 */
+  --ck-surface: #13201c;        /* 900 */
+  --ck-surface-sunken: #080f0d;
+  --ck-border: #254139;         /* 800 */
+  --ck-border-strong: #4a8271;  /* 600 -- 3.77:1 on the ops surface */
 
-  --ck-text: #f7f4f0;
-  --ck-text-muted: #b3a99e;
-  --ck-text-subtle: #857c72;
+  --ck-text: #eff6f4;        /* 50,  15.3:1 */
+  --ck-text-muted: #bedad2;  /* 200, 11.3:1 */
+  --ck-text-subtle: #9ec7bb; /* 300, 9.1:1  */
 
-  --ck-brand: #e8763f;
-  --ck-brand-hover: #f08a58;
-  --ck-brand-soft: #2c1a12;
-  --ck-accent: #e8b23f;
-  --ck-accent-soft: #2b2311;
+  --ck-brand: #7db5a4;       /* 400 -- bright enough to read across a kitchen */
+  --ck-brand-hover: #9ec7bb; /* 300 */
+  --ck-brand-soft: #1b2e28;
+  /* Darker has nowhere to go here, so press shares the hover fill rather than
+     dropping the label below 4.5:1. */
+  --ck-brand-soft-hover: #254139;
+  --ck-brand-soft-active: #254139;
+  --ck-accent: #5da28d;      /* 500 */
+  --ck-accent-soft: #16241f;
+  --ck-focus: var(--ck-brand);
 
-  --ck-success: #45c07f;
-  --ck-success-soft: #12291d;
+  --ck-success: #4ade80; /* 0.144 from the ops brand in OKLab */
+  --ck-success-soft: #10291b;
   --ck-warning: #e0a52c;
   --ck-warning-soft: #2b2211;
   --ck-danger: #ff6b60;
@@ -115,6 +164,8 @@
   --color-brand: var(--ck-brand);
   --color-brand-hover: var(--ck-brand-hover);
   --color-brand-soft: var(--ck-brand-soft);
+  --color-brand-soft-hover: var(--ck-brand-soft-hover);
+  --color-brand-soft-active: var(--ck-brand-soft-active);
   --color-accent: var(--ck-accent);
   --color-accent-soft: var(--ck-accent-soft);
 
@@ -134,11 +185,13 @@
   --color-zm-soft: var(--ck-source-zm-soft);
   --color-sx-soft: var(--ck-source-sx-soft);
 
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-inter);
+  --font-mono: var(--font-jetbrains-mono);
 
   --radius-ck: var(--ck-radius);
   --radius-ck-lg: var(--ck-radius-lg);
+
+  --ease-ck: var(--ck-ease);
 
   --shadow-ck-sm: var(--ck-shadow-sm);
   --shadow-ck: var(--ck-shadow);
@@ -153,6 +206,16 @@ body {
   background: var(--ck-bg);
   color: var(--ck-text);
   -webkit-font-smoothing: antialiased;
+  /* cv05 gives the lower-case l a tail, so l / I / 1 stay apart in dish names
+     and ticket codes. Unsupported features are ignored, so this is safe. */
+  font-feature-settings: "cv05" 1;
+}
+
+/* Headings tighten as they grow; Inter is drawn loose for small sizes. */
+h1,
+h2,
+h3 {
+  letter-spacing: -0.02em;
 }
 
 /* Numbers that must line up in a column: totals, credits, ticket counts. */
@@ -167,9 +230,10 @@ body {
   opacity: 0.55;
 }
 
-/* Focus ring that survives both surfaces. */
+/* Focus ring that survives every surface. `--ck-focus` is a token rather than a
+   literal because the ops surface flips the brand colour out from under it. */
 :where(a, button, input, select, textarea, [tabindex]):focus-visible {
-  outline: 2px solid var(--ck-brand);
+  outline: 2px solid var(--ck-focus);
   outline-offset: 2px;
   border-radius: 4px;
 }
@@ -181,6 +245,163 @@ body {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+    /* Delays too. Collapsing only the duration would still leave anything on a
+       timed delay -- the hero headline included -- invisible for its full wait. */
+    animation-delay: 0s !important;
+    transition-delay: 0s !important;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Storefront hero headline.
+
+   The one piece of page-load choreography in the system, and it is deliberate:
+   the home page is the only surface where a visitor is being introduced rather
+   than working. Three phrases roll through a single slot, then the camera pulls
+   back and they settle as one sentence.
+
+   Failure modes decide the base rules. The sentence is real text in normal flow
+   and is never hidden by a base rule, only inside keyframes -- so where
+   animations never run (an old engine, a headless renderer, a screenshot
+   service) the headline is simply present. The roll is decorative and
+   `aria-hidden`, so it does the opposite: transparent by default, and it only
+   ever appears if its animation actually plays.
+   -------------------------------------------------------------------------- */
+
+.hero-headline {
+  position: relative;
+}
+
+.hero-roll {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+  opacity: 0;
+  animation: hero-roll-pull 1.95s var(--ck-ease) forwards;
+}
+
+/* The slot. Its line-height is its own business -- it is not in the flow, so it
+   can run loose enough to clear the descender on "you" without loosening the
+   headline itself.
+
+   The mask is what makes a phrase read as revealed rather than cropped: the top
+   and bottom 7% of the slot fade out instead of ending on a hard edge, so a
+   phrase surfaces out of nothing and sinks back into it. 7% of a 1.3 line box
+   lands above the ascenders and below the descenders, so the fade never eats a
+   glyph on the phrase being held. The clip still earns its keep underneath --
+   it hides the two phrases parked entirely outside the slot. */
+.hero-roll-window {
+  --roll-line: 1.3;
+  --roll-reveal: linear-gradient(to bottom, transparent, #000 7%, #000 93%, transparent);
+  height: calc(var(--roll-line) * 1em);
+  overflow: hidden;
+  mask-image: var(--roll-reveal);
+  -webkit-mask-image: var(--roll-reveal);
+}
+
+/* `display` is load-bearing, not tidiness. The window above is a grid item and
+   so is blockified for free, but this span is a child of that block and would
+   stay inline -- and `transform` does not apply to a non-replaced inline box, so
+   the track would sit still and the slot would hold the first phrase for the
+   whole 1.95s. `filter` *does* apply to inline boxes, which makes the failure a
+   liar: the blur pulses still land on time, so a stuck track reads as three
+   beats of the same phrase rather than as nothing happening. */
+.hero-roll-track {
+  display: block;
+  animation: hero-roll-track 1.95s var(--ck-ease) forwards;
+}
+
+.hero-roll-word {
+  display: block;
+  height: calc(var(--roll-line) * 1em);
+  line-height: var(--roll-line);
+  white-space: nowrap;
+}
+
+/* Land, hold, roll. The percentages are of the track's own height, which is
+   exactly three words, so -33.3333% is one line at any breakpoint without the
+   keyframes needing to know the font size.
+
+   The holds are deliberately unequal. "One menu a day." is half again the
+   length of its neighbours and has to be read inside the same beat, so it holds
+   for ~525ms against ~430ms for the short ones.
+
+   The blur frames sit at the midpoint of each roll and carry no transform of
+   their own, so the slide keeps interpolating straight through them: the text
+   smears only while it is moving and is sharp everywhere it rests. */
+@keyframes hero-roll-track {
+  0%,
+  22% {
+    transform: translateY(0);
+    filter: blur(0px);
+  }
+  26% {
+    filter: blur(3px);
+  }
+  30%,
+  57% {
+    transform: translateY(-33.3333%);
+    filter: blur(0px);
+  }
+  61% {
+    filter: blur(3px);
+  }
+  65%,
+  100% {
+    transform: translateY(-66.6667%);
+    filter: blur(0px);
+  }
+}
+
+/* The pull-back: the slot lifts away and defocuses as the sentence resolves
+   underneath it. */
+@keyframes hero-roll-pull {
+  0% {
+    opacity: 0;
+    filter: blur(0px);
+    transform: scale(1);
+  }
+  6%,
+  82% {
+    opacity: 1;
+    filter: blur(0px);
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    filter: blur(6px);
+    transform: scale(1.06);
+  }
+}
+
+/* inline-block because transform and filter do not apply to inline boxes. */
+.hero-part {
+  display: inline-block;
+  animation: hero-part-settle 620ms var(--ck-ease) both;
+}
+
+.hero-sentence > .hero-part:nth-child(1) {
+  animation-delay: 1.72s;
+}
+.hero-sentence > .hero-part:nth-child(2) {
+  animation-delay: 1.81s;
+}
+.hero-sentence > .hero-part:nth-child(3) {
+  animation-delay: 1.9s;
+}
+
+@keyframes hero-part-settle {
+  from {
+    opacity: 0;
+    transform: translateY(0.22em) scale(0.97);
+    filter: blur(5px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: none;
   }
 }
 

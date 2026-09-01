@@ -1,8 +1,9 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { listPlans, listMenu, listPublicOffers, listDeliveryWindows } from '@/lib/data/catalog';
-import { money, clockTime, PLAN_TYPE_LABELS } from '@/lib/format';
+import { money, PLAN_TYPE_LABELS } from '@/lib/format';
 import { Badge, ButtonLink, Card } from '@/components/ui/primitives';
+import { StorefrontHero } from '@/components/site/storefront-hero';
 
 export const metadata = {
   title: 'Home-style meals, on subscription',
@@ -17,82 +18,10 @@ export default async function HomePage() {
   ]);
 
   const featured = menu.filter((product) => product.isAvailable).slice(0, 3);
-  const headlineOffer = offers[0];
 
   return (
     <>
-      {/* ---------------------------------------------------------------- */}
-      {/* Hero                                                              */}
-      {/* ---------------------------------------------------------------- */}
-      <section className="border-b border-line bg-surface">
-        <div className="mx-auto grid max-w-6xl gap-10 px-4 py-16 lg:grid-cols-2 lg:items-center lg:py-24">
-          <div>
-            {headlineOffer ? (
-              <Badge tone="accent" className="mb-4">
-                {headlineOffer.discountType === 'percent'
-                  ? `${Number(headlineOffer.discountValue)}% off your first subscription`
-                  : `${money(headlineOffer.discountValue)} off your first subscription`}
-              </Badge>
-            ) : null}
-
-            <h1 className="text-4xl font-semibold tracking-tight text-balance sm:text-5xl">
-              One kitchen. One menu a day. Cooked properly.
-            </h1>
-
-            <p className="mt-4 max-w-lg text-lg text-muted text-pretty">
-              We are not a marketplace with ten thousand dishes. We cook a small menu each
-              day and deliver it on a schedule you set — breakfast, lunch or dinner.
-            </p>
-
-            <div className="mt-8 flex flex-wrap gap-3">
-              <ButtonLink href="/subscriptions" size="lg">See subscription plans</ButtonLink>
-              <ButtonLink href="/menu" size="lg" variant="secondary">Look at the menu</ButtonLink>
-            </div>
-
-            {windows.length ? (
-              <dl className="mt-10 flex flex-wrap gap-x-8 gap-y-3">
-                {windows.map((window) => (
-                  <div key={window.id}>
-                    <dt className="text-xs font-medium tracking-wide text-subtle uppercase">
-                      {window.label}
-                    </dt>
-                    <dd className="mt-0.5 text-sm font-medium tabular text-ink">
-                      {clockTime(window.starts_at)} – {clockTime(window.ends_at)}
-                    </dd>
-                  </div>
-                ))}
-              </dl>
-            ) : null}
-          </div>
-
-          <div className="grid grid-cols-2 gap-3">
-            {featured.slice(0, 3).map((product, index) => (
-              <div
-                key={product.id}
-                className={
-                  index === 0
-                    ? 'relative col-span-2 aspect-[16/10] overflow-hidden rounded-ck-lg bg-sunken'
-                    : 'relative aspect-square overflow-hidden rounded-ck-lg bg-sunken'
-                }
-              >
-                {product.imageUrl ? (
-                  <Image
-                    src={product.imageUrl}
-                    alt={product.imageAlt}
-                    fill
-                    sizes="(max-width: 1024px) 50vw, 25vw"
-                    className="object-cover"
-                    priority={index === 0}
-                  />
-                ) : null}
-                <div className="absolute inset-x-0 bottom-0 bg-linear-to-t from-black/70 to-transparent p-3">
-                  <p className="text-sm font-medium text-white">{product.name}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      <StorefrontHero plans={plans} menu={menu} offers={offers} windows={windows} />
 
       {/* ---------------------------------------------------------------- */}
       {/* How it works                                                      */}

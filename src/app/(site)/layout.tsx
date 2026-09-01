@@ -1,8 +1,8 @@
 import Link from 'next/link';
 import { getSession } from '@/lib/auth/session';
 import { landingPathForRole } from '@/lib/auth/permissions';
-import { ButtonLink } from '@/components/ui/primitives';
-import { SignOutButton } from '@/components/auth/sign-out-button';
+import { SiteHeader } from '@/components/site/site-header';
+import { SITE_NAV } from '@/components/site/nav';
 
 /**
  * Public storefront shell.
@@ -10,80 +10,26 @@ import { SignOutButton } from '@/components/auth/sign-out-button';
  * Navigation is exactly what the PRD specifies: Logo, Home, Menu, Meal Plans,
  * Subscriptions, Offers, About (PRD 6). Menu and Meal Plans are browsing and
  * acquisition surfaces -- there is deliberately no standalone meal checkout.
+ *
+ * The session is flattened here rather than handed down whole: the header has
+ * no business receiving a permission set in order to render a name and a link.
  */
-
-const NAV = [
-  { href: '/menu', label: 'Menu' },
-  { href: '/meal-plans', label: 'Meal Plans' },
-  { href: '/subscriptions', label: 'Subscriptions' },
-  { href: '/offers', label: 'Offers' },
-  { href: '/about', label: 'About' },
-] as const;
-
 export default async function SiteLayout({ children }: LayoutProps<'/'>) {
   const session = await getSession();
 
   return (
     <>
-      <header className="sticky top-0 z-40 border-b border-line bg-surface/90 backdrop-blur">
-        <div className="mx-auto flex h-16 max-w-6xl items-center gap-6 px-4">
-          <Link href="/" className="flex items-center gap-2 font-semibold tracking-tight">
-            <span
-              className="grid h-8 w-8 place-items-center rounded-ck bg-brand text-sm font-bold text-white"
-              aria-hidden
-            >
-              CK
-            </span>
-            <span className="hidden sm:inline">Cloud Kitchen</span>
-          </Link>
-
-          <nav className="hidden flex-1 items-center gap-1 md:flex" aria-label="Main">
-            {NAV.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="rounded-ck px-3 py-2 text-sm font-medium text-muted transition-colors hover:bg-sunken hover:text-ink"
-              >
-                {item.label}
-              </Link>
-            ))}
-          </nav>
-
-          <div className="ml-auto flex items-center gap-2">
-            {session ? (
-              <>
-                <span className="hidden text-sm text-subtle sm:inline">
-                  {session.fullName || session.email}
-                </span>
-                <ButtonLink href={landingPathForRole(session.role)} variant="secondary" size="sm">{session.role === 'customer' ? 'My account' : 'Dashboard'}</ButtonLink>
-                <SignOutButton />
-              </>
-            ) : (
-              <>
-                <ButtonLink href="/sign-in" variant="ghost" size="sm" className="hidden sm:inline-flex">Sign in</ButtonLink>
-                <ButtonLink href="/subscriptions" size="sm">Start a plan</ButtonLink>
-              </>
-            )}
-          </div>
-        </div>
-
-        {/* Mobile navigation: a scrollable row rather than a hidden menu, so
-            every destination stays one tap away. */}
-        <nav
-          className="flex gap-1 overflow-x-auto border-t border-line px-4 py-2 md:hidden"
-          aria-label="Main"
-        >
-          {NAV.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="shrink-0 rounded-ck px-3 py-1.5 text-sm font-medium text-muted hover:bg-sunken hover:text-ink"
-            >
-              {item.label}
-            </Link>
-          ))}
-        </nav>
-      </header>
+      <SiteHeader
+        account={
+          session
+            ? {
+                name: session.fullName || session.email || 'Account',
+                href: landingPathForRole(session.role),
+                label: session.role === 'customer' ? 'My account' : 'Dashboard',
+              }
+            : null
+        }
+      />
 
       <main className="flex-1">{children}</main>
 
@@ -99,7 +45,7 @@ export default async function SiteLayout({ children }: LayoutProps<'/'>) {
             </div>
 
             <nav aria-label="Footer" className="flex flex-col gap-2 text-sm">
-              {NAV.map((item) => (
+              {SITE_NAV.map((item) => (
                 <Link key={item.href} href={item.href} className="text-muted hover:text-ink">
                   {item.label}
                 </Link>

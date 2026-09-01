@@ -22,13 +22,13 @@ export default function GlobalError({
           minHeight: '100dvh',
           display: 'grid',
           placeItems: 'center',
-          background: '#fafaf9',
-          color: '#1c1917',
+          background: '#f6f9f8',
+          color: '#0d1714',
         }}
       >
         <main style={{ maxWidth: '32rem', padding: '2rem', textAlign: 'center' }}>
           <h1 style={{ fontSize: '1.25rem', margin: 0 }}>The site failed to load</h1>
-          <p style={{ marginTop: '0.75rem', color: '#57534e', fontSize: '0.875rem' }}>
+          <p style={{ marginTop: '0.75rem', color: '#48605a', fontSize: '0.875rem' }}>
             Something went wrong before the page could be built. Reloading usually clears it.
           </p>
 
@@ -38,8 +38,8 @@ export default function GlobalError({
               marginTop: '1.5rem',
               padding: '0.625rem 1.25rem',
               border: 0,
-              borderRadius: '0.5rem',
-              background: '#1c1917',
+              borderRadius: '9999px',
+              background: '#386155',
               color: 'white',
               fontSize: '0.875rem',
               cursor: 'pointer',
@@ -49,7 +49,7 @@ export default function GlobalError({
           </button>
 
           {error.digest ? (
-            <p style={{ marginTop: '1.5rem', color: '#78716c', fontSize: '0.75rem' }}>
+            <p style={{ marginTop: '1.5rem', color: '#5f7169', fontSize: '0.75rem' }}>
               Reference: {error.digest}
             </p>
           ) : null}

@@ -352,7 +352,16 @@ export async function listPublicOffers(): Promise<PublicOffer[]> {
   }));
 }
 
-export async function listDeliveryWindows() {
+export interface DeliveryWindow {
+  id: string;
+  code: string;
+  label: string;
+  starts_at: string;
+  ends_at: string;
+  cutoff_minutes_before: number;
+}
+
+export async function listDeliveryWindows(): Promise<DeliveryWindow[]> {
   const supabase = await serverClient();
   const { data } = await supabase
     .from('delivery_windows')
@@ -360,14 +369,7 @@ export async function listDeliveryWindows() {
     .eq('is_active', true)
     .order('sort_order');
 
-  return (data ?? []) as Array<{
-    id: string;
-    code: string;
-    label: string;
-    starts_at: string;
-    ends_at: string;
-    cutoff_minutes_before: number;
-  }>;
+  return (data ?? []) as DeliveryWindow[];
 }
 
 /**
