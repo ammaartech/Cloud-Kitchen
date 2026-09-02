@@ -276,10 +276,19 @@ export function Field({
 
 const CONTROL =
   'w-full rounded-ck border border-line-strong bg-surface px-3.5 py-2 text-sm text-ink ' +
-  // `subtle` is the quietest colour that still clears 4.5:1; a placeholder is
-  // the only hint an empty field gives, so it does not get to be quieter.
-  'placeholder:text-subtle transition-colors duration-150 ease-ck ' +
-  'hover:border-brand/50 focus:border-brand focus:outline-none ' +
+  // Quieter than any other text in the system, and the point of it: a
+  // placeholder here is an example of what to type, and it has to be obviously
+  // provisional rather than look like a value the field already holds. Every
+  // control that gets one also carries a real <label>, so nothing is said only
+  // here -- see `--ck-text-placeholder`.
+  'placeholder:text-placeholder transition-colors duration-150 ease-ck ' +
+  // No `outline-none`. It used to be here, and it never did anything: the base
+  // focus ring in `globals.css` was unlayered and outranked it. Now that the
+  // ring is in `@layer base` this opt-out would genuinely take effect, and the
+  // only focus indicator left would be a border changing from grey to green --
+  // which is a colour change alone, and not enough on its own. The ring is the
+  // indicator; the border is what confirms which control has it.
+  'hover:border-brand/50 focus:border-brand ' +
   'disabled:cursor-not-allowed disabled:bg-sunken disabled:text-subtle';
 
 export function Input({ className, ...rest }: ComponentPropsWithoutRef<'input'>) {

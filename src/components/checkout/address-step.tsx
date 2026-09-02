@@ -15,12 +15,18 @@ export function AddressStep({
           <Input name="label" defaultValue="Home" placeholder="Home, Office" />
         </Field>
         <Field label="Recipient name" required>
-          <Input name="recipientName" required autoComplete="name" />
+          <Input name="recipientName" required autoComplete="name" placeholder="Meera Iyer" />
         </Field>
       </div>
 
       <Field label="Mobile number" required>
-        <Input name="phone" type="tel" required autoComplete="tel" />
+        <Input
+          name="phone"
+          type="tel"
+          required
+          autoComplete="tel"
+          placeholder="+91 98100 00000"
+        />
       </Field>
 
       <Field label="Address line 1" required>
@@ -32,18 +38,24 @@ export function AddressStep({
       </Field>
 
       <Field label="Landmark" hint="Anything that helps the rider find you faster.">
-        <Input name="landmark" />
+        <Input name="landmark" placeholder="Opposite the Axis Bank ATM" />
       </Field>
 
       <div className="grid gap-4 sm:grid-cols-3">
         <Field label="City" required>
-          <Input name="city" required autoComplete="address-level2" />
+          <Input name="city" required autoComplete="address-level2" placeholder="Bengaluru" />
         </Field>
         <Field label="State" required>
-          <Input name="state" required autoComplete="address-level1" />
+          <Input name="state" required autoComplete="address-level1" placeholder="Karnataka" />
         </Field>
         <Field label="PIN code" required>
-          <Input name="postalCode" required inputMode="numeric" autoComplete="postal-code" />
+          <Input
+            name="postalCode"
+            required
+            inputMode="numeric"
+            autoComplete="postal-code"
+            placeholder="560001"
+          />
         </Field>
       </div>
 

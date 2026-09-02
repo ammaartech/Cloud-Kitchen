@@ -1,24 +1,30 @@
-import { Skeleton } from '@/components/ui/primitives';
+import { Hourglass } from '@/components/ui/hourglass';
 
-/** Storefront placeholder: a heading and a grid of meal cards. */
+/**
+ * Storefront placeholder.
+ *
+ * This used to be a grid of skeletons shaped like the meal cards that were
+ * coming, on the argument that a placeholder matching the content's shape stops
+ * the page jumping when it lands. That argument is still true, and it lost to a
+ * plainer one: the storefront's pages are prerendered and arrive in
+ * milliseconds, so a full page of grey blocks was a heavier thing to show than
+ * the wait it was covering. One mark in the middle of the screen says the same
+ * word and says it more quietly.
+ *
+ * `min-h` rather than `h`, and `svh` rather than `vh`: this fills the main
+ * region between the header and the footer, and on a phone `vh` is measured
+ * against the viewport with the browser's chrome retracted -- which puts the
+ * centre of a full-height box below the centre of the screen you are actually
+ * looking at.
+ */
 export default function SiteLoading() {
   return (
-    <div className="mx-auto max-w-6xl px-4 py-12" role="status" aria-label="Loading">
-      <Skeleton className="h-8 w-56" />
-      <Skeleton className="mt-3 h-4 w-full max-w-xl" />
-
-      <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-        {[0, 1, 2, 3, 4, 5].map((card) => (
-          <div key={card} className="overflow-hidden rounded-ck-lg border border-line">
-            <Skeleton className="aspect-[4/3] w-full rounded-none" />
-            <div className="p-4">
-              <Skeleton className="h-5 w-40" />
-              <Skeleton className="mt-2 h-3 w-full" />
-              <Skeleton className="mt-1 h-3 w-2/3" />
-            </div>
-          </div>
-        ))}
-      </div>
+    <div
+      role="status"
+      aria-label="Loading"
+      className="grid min-h-[70svh] place-items-center px-4"
+    >
+      <Hourglass className="h-16 text-muted" />
     </div>
   );
 }

@@ -443,10 +443,18 @@ export function PaymentStep({
         <h2 className="font-semibold">Contact for this order</h2>
         <div className="mt-4 grid gap-4 sm:grid-cols-2">
           <Field label="Name" required>
-            <Input value={fullName} onChange={(event) => setFullName(event.target.value)} />
+            <Input
+              value={fullName}
+              onChange={(event) => setFullName(event.target.value)}
+              placeholder="Meera Iyer"
+            />
           </Field>
           <Field label="Mobile" required>
-            <Input value={phone} onChange={(event) => setPhone(event.target.value)} />
+            <Input
+              value={phone}
+              onChange={(event) => setPhone(event.target.value)}
+              placeholder="+91 98100 00000"
+            />
           </Field>
         </div>
       </Card>

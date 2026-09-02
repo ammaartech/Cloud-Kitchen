@@ -1,26 +1,19 @@
-import { Card, Skeleton } from '@/components/ui/primitives';
+import { Hourglass } from '@/components/ui/hourglass';
 
 /**
  * Shown while an admin page's data resolves.
  *
- * The shape mirrors what is coming -- a heading, then a stack of rows -- so the
- * page does not jump when the real content lands.
+ * Centred on the region it is waiting for, matching the storefront's loader --
+ * see the note there for why the skeletons that used to be here went.
  */
 export default function AdminLoading() {
   return (
-    <div className="mx-auto max-w-6xl px-4 py-8" role="status" aria-label="Loading">
-      <Skeleton className="h-6 w-48" />
-      <Skeleton className="mt-2 h-4 w-96" />
-
-      <div className="mt-8 space-y-3">
-        {[0, 1, 2, 3].map((row) => (
-          <Card key={row} className="p-4">
-            <Skeleton className="h-5 w-64" />
-            <Skeleton className="mt-2 h-3 w-40" />
-            <Skeleton className="mt-4 h-9 w-full" />
-          </Card>
-        ))}
-      </div>
+    <div
+      role="status"
+      aria-label="Loading"
+      className="grid min-h-[70svh] place-items-center px-4"
+    >
+      <Hourglass className="h-16 text-muted" />
     </div>
   );
 }

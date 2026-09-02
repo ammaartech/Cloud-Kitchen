@@ -301,7 +301,7 @@ export default async function EmployeesPage({ searchParams }: PageProps<'/admin/
 
           <form action={createEmployee} className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             <Field label="Full name" required>
-              <Input name="fullName" required />
+              <Input name="fullName" required placeholder="Arjun Rao" />
             </Field>
 
             <Field label="Email" required>
@@ -337,7 +337,7 @@ export default async function EmployeesPage({ searchParams }: PageProps<'/admin/
             </Field>
 
             <Field label="Mobile">
-              <Input name="phone" inputMode="tel" />
+              <Input name="phone" inputMode="tel" placeholder="+91 98100 00000" />
             </Field>
 
             <Field label="Hired on">
@@ -345,7 +345,7 @@ export default async function EmployeesPage({ searchParams }: PageProps<'/admin/
             </Field>
 
             <Field label="Notes">
-              <Input name="notes" />
+              <Input name="notes" placeholder="Evening shift, Tuesday off" />
             </Field>
 
             <div className="flex items-end">

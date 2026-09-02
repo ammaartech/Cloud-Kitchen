@@ -706,7 +706,7 @@ export default async function ProductEditorPage({
               </div>
 
               <Field label="Alt text" hint="Describe the dish for screen readers.">
-                <Input name="altText" />
+                <Input name="altText" placeholder="A bowl of dal tadka with a roti" />
               </Field>
 
               <div className="flex flex-col justify-end gap-2">

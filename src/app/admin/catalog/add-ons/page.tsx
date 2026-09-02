@@ -174,11 +174,11 @@ export default async function AddOnsPage({ searchParams }: PageProps<'/admin/cat
           </Field>
 
           <Field label="Calories">
-            <Input name="calories" inputMode="numeric" />
+            <Input name="calories" inputMode="numeric" placeholder="120" />
           </Field>
 
           <Field label="Estimated food cost">
-            <Input name="estimatedCost" inputMode="decimal" />
+            <Input name="estimatedCost" inputMode="decimal" placeholder="8.50" />
           </Field>
 
           <Field label="Image URL">
@@ -191,7 +191,7 @@ export default async function AddOnsPage({ searchParams }: PageProps<'/admin/cat
 
           <div className="sm:col-span-2 lg:col-span-3">
             <Field label="Description">
-              <Input name="description" />
+              <Input name="description" placeholder="One extra hand-rolled roti" />
             </Field>
           </div>
 

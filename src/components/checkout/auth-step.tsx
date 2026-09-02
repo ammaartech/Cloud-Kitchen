@@ -122,6 +122,7 @@ export function CheckoutAuthStep() {
             required
             autoComplete="email"
             onChange={(event) => setEmail(event.target.value)}
+            placeholder="you@example.com"
           />
         </Field>
 

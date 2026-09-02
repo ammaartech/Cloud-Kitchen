@@ -106,6 +106,15 @@ const pairs = (t, on) => [
   ['subtle / surface', t['text-subtle'], t.surface, 4.5],
   ['subtle / bg', t['text-subtle'], t.bg, 4.5],
   ['subtle / sunken', t['text-subtle'], t['surface-sunken'], 4.5],
+
+  // Placeholders are the one text colour held to 3:1 rather than 4.5:1, and
+  // the exception is deliberate: a placeholder is an example of what to type,
+  // it is destroyed the moment the field is used, and every field carrying one
+  // also carries a real <label>. It is checked at all so the exception stays a
+  // decision -- if someone lightens it further, this fails rather than the
+  // suggestion quietly becoming unreadable.
+  ['placeholder / surface', t['text-placeholder'], t.surface, 3],
+  ['placeholder / bg', t['text-placeholder'], t.bg, 3],
   ['brand / surface', t.brand, t.surface, 4.5],
   ['brand / bg', t.brand, t.bg, 4.5],
   // The three states of the soft button, whose label is always `brand`.

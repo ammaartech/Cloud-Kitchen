@@ -151,7 +151,7 @@ export default async function CategoriesPage({
           </Field>
 
           <Field label="Slug" hint="Derived from the name if blank.">
-            <Input name="slug" />
+            <Input name="slug" placeholder="mains" />
           </Field>
 
           <Field label="Image URL">
@@ -164,7 +164,7 @@ export default async function CategoriesPage({
 
           <div className="sm:col-span-2 lg:col-span-3">
             <Field label="Description">
-              <Input name="description" />
+              <Input name="description" placeholder="Rice, breads and the day’s mains" />
             </Field>
           </div>
 

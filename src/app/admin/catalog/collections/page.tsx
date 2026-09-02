@@ -156,7 +156,7 @@ export default async function CollectionsPage({
           </Field>
 
           <Field label="Slug" hint="Derived from the name if blank.">
-            <Input name="slug" />
+            <Input name="slug" placeholder="high-protein" />
           </Field>
 
           <Field label="Image URL">
@@ -169,7 +169,7 @@ export default async function CollectionsPage({
 
           <div className="sm:col-span-2 lg:col-span-3">
             <Field label="Description">
-              <Input name="description" />
+              <Input name="description" placeholder="Dishes over 20g of protein" />
             </Field>
           </div>
 

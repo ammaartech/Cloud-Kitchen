@@ -342,7 +342,7 @@ export default async function AddressesPage({ searchParams }: PageProps<'/accoun
           </div>
 
           <Field label="Landmark">
-            <Input name="landmark" />
+            <Input name="landmark" placeholder="Opposite the Axis Bank ATM" />
           </Field>
 
           <div className="sm:col-span-3">
@@ -352,13 +352,13 @@ export default async function AddressesPage({ searchParams }: PageProps<'/accoun
           </div>
 
           <Field label="City" required>
-            <Input name="city" required />
+            <Input name="city" required placeholder="Bengaluru" />
           </Field>
           <Field label="State" required>
-            <Input name="state" required />
+            <Input name="state" required placeholder="Karnataka" />
           </Field>
           <Field label="Postcode" required>
-            <Input name="postalCode" inputMode="numeric" required />
+            <Input name="postalCode" inputMode="numeric" required placeholder="560001" />
           </Field>
 
           <div className="sm:col-span-3">
@@ -366,7 +366,11 @@ export default async function AddressesPage({ searchParams }: PageProps<'/accoun
               label="Delivery instructions"
               hint="Anything the rider needs to know. This reaches the kitchen too."
             >
-              <Textarea name="deliveryInstructions" className="min-h-16" />
+              <Textarea
+                name="deliveryInstructions"
+                className="min-h-16"
+                placeholder="Call from the gate, the lift is slow"
+              />
             </Field>
           </div>
 

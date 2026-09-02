@@ -175,20 +175,24 @@ export default async function CustomersPage({ searchParams }: PageProps<'/admin/
 
           <form action={createCustomer} className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <Field label="Full name" required>
-              <Input name="fullName" required />
+              <Input name="fullName" required placeholder="Meera Iyer" />
             </Field>
 
             <Field label="Mobile" required>
-              <Input name="phone" inputMode="tel" required />
+              <Input name="phone" inputMode="tel" required placeholder="+91 98100 00000" />
             </Field>
 
             <Field label="Email">
-              <Input name="email" type="email" />
+              <Input name="email" type="email" placeholder="meera@example.com" />
             </Field>
 
             <div className="sm:col-span-2 lg:col-span-4">
               <Field label="Notes">
-                <Textarea name="notes" className="min-h-10" />
+                <Textarea
+              name="notes"
+              className="min-h-10"
+              placeholder="Allergic to peanuts. Prefers the 7pm window."
+            />
               </Field>
             </div>
 

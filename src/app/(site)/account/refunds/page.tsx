@@ -200,7 +200,7 @@ export default async function AccountRefundsPage({ searchParams }: PageProps<'/a
           </Field>
 
           <Field label="Amount you are asking for" hint="Leave blank if you are not sure.">
-            <Input name="requestedAmount" inputMode="decimal" placeholder="—" />
+            <Input name="requestedAmount" inputMode="decimal" placeholder="450" />
           </Field>
 
           <div className="sm:col-span-2">

@@ -34,6 +34,16 @@
   --color-dark-slate-grey-800: #254139;
   --color-dark-slate-grey-900: #13201c;
   --color-dark-slate-grey-950: #0d1714;
+
+  /* Tracking for text set in capitals, which is its own problem and not a step
+     of the heading ramp below. Caps have no ascenders or descenders to separate
+     them and are drawn on a wider body than lower case, so the negative
+     tracking that flatters a heading closes capitals up until they touch. This
+     is small and *positive*: air between the letters, not enough to read as a
+     tracked-out label. Small caps want more than this and keep `tracking-wide`
+     -- the same "looser as it gets smaller" rule the headings follow, applied
+     inside the capitals. */
+  --tracking-caps: 0.01em;
 }
 
 :root {
@@ -49,6 +59,15 @@
   --ck-text: #0d1714;        /* 950, 18.3:1 on white */
   --ck-text-muted: #48605a;  /* 6.78:1 */
   --ck-text-subtle: #5f7169; /* 5.18:1 -- the old subtle sat at 3.4:1 */
+  /* Placeholders, and the one text colour in the system deliberately below
+     4.5:1 -- 3.42:1 on white, 3.23:1 on the page ground. A placeholder is a
+     suggestion of what to type, not content: it is replaced the moment the
+     field is used, every field that has one also carries a real <label>, and
+     at `subtle` (5.18:1) it read as a value already entered rather than as a
+     prompt. Quiet enough to be obviously provisional, dark enough to still be
+     read -- it clears the 3:1 asked of a non-text UI cue, and nothing is said
+     only here. `check:contrast` holds it to that floor. */
+  --ck-text-placeholder: #7d8f86;
 
   /* Brand. 700 is the lightest step that carries white text at 4.5:1;
      600 reaches only 4.45:1 and fails on a filled button. */
@@ -95,6 +114,22 @@
      colour out from under it and the ring has to follow. */
   --ck-focus: var(--ck-brand);
 
+  /* Paper for the plan notes, and the one colour on this site that is not a
+     step of the ramp and not a status. It is here rather than in a component
+     because that is where colour lives, and it is *only* here: the ops surface
+     never renders a note, so there is no dark counterpart to keep in step.
+
+     Canary, and checked rather than picked. Every ink that lands on it clears
+     AA by a margin -- `text` 15.9:1, `muted` 5.9:1, `brand` 6.1:1 -- which is
+     what decided this exact value; a more saturated yellow drops `muted` under
+     4.5 and a paler one stops reading as a note at all. */
+  --ck-note: #fdf1a0;
+  /* The glue strip along the top, and the faint edge where the paper turns. */
+  --ck-note-shade: rgb(13 23 20 / 0.04);
+  /* The ruled line across the note. Ink at low alpha rather than a deeper
+     yellow, so it reads as a line drawn on the paper rather than a seam in it. */
+  --ck-note-rule: rgb(13 23 20 / 0.14);
+
   /* Shadows are tinted with the ramp's darkest step, not neutral black, so
      they sit in the same material as everything else. */
   --ck-shadow-sm: 0 1px 2px rgb(13 23 20 / 0.05);
@@ -117,6 +152,9 @@
   --ck-text: #eff6f4;        /* 50,  15.3:1 */
   --ck-text-muted: #bedad2;  /* 200, 11.3:1 */
   --ck-text-subtle: #9ec7bb; /* 300, 9.1:1  */
+  /* Darker than the ops subtle rather than lighter: on this surface quieter
+     means closer to the ground, not further from it. */
+  --ck-text-placeholder: #6b8479;
 
   --ck-brand: #7db5a4;       /* 400 -- bright enough to read across a kitchen */
   --ck-brand-hover: #9ec7bb; /* 300 */
@@ -160,6 +198,7 @@
   --color-ink: var(--ck-text);
   --color-muted: var(--ck-text-muted);
   --color-subtle: var(--ck-text-subtle);
+  --color-placeholder: var(--ck-text-placeholder);
 
   --color-brand: var(--ck-brand);
   --color-brand-hover: var(--ck-brand-hover);
@@ -211,7 +250,16 @@ body {
   font-feature-settings: "cv05" 1;
 }
 
-/* Headings tighten as they grow; Inter is drawn loose for small sizes. */
+/* Headings tighten as they grow; Inter is drawn loose for small sizes.
+
+   -0.02em is the middle of that ramp, and it is right for the 18-30px headings
+   that make up nearly every heading in the product. The two ends have to say so
+   themselves: the hero headline runs to 60px and sets its own tighter value
+   (see `.hero-headline`), and anything set in capitals overrides it with
+   `tracking-caps`, because tracking capitals negatively is not a tighter
+   heading, it is a mistake. Nothing else needs to opt out -- and a heading that
+   reaches for `tracking-tight` on top of this is asking for -0.025em at a size
+   that wanted less than -0.02em, which is the ramp run backwards. */
 h1,
 h2,
 h3 {
@@ -231,11 +279,25 @@ h3 {
 }
 
 /* Focus ring that survives every surface. `--ck-focus` is a token rather than a
-   literal because the ops surface flips the brand colour out from under it. */
-:where(a, button, input, select, textarea, [tabindex]):focus-visible {
-  outline: 2px solid var(--ck-focus);
-  outline-offset: 2px;
-  border-radius: 4px;
+   literal because the ops surface flips the brand colour out from under it.
+
+   `@layer base` is doing real work here and the rule was broken without it.
+   Unlayered CSS outranks every layered rule no matter what the specificity
+   says, and Tailwind puts its utilities in a layer -- so while this rule sat
+   outside one, it beat `outline-none` on any control that tried to opt out,
+   however the opt-out was written. Every field that draws its own focus
+   treatment was getting this ring as well as its own: the search pill in the
+   hero was ringed once around the pill and again around the input inside it.
+
+   Declaring it in `base` puts it below `utilities` in the cascade, which is
+   where a default belongs -- it still reaches everything that says nothing,
+   and now anything that opts out actually opts out. */
+@layer base {
+  :where(a, button, input, select, textarea, [tabindex]):focus-visible {
+    outline: 2px solid var(--ck-focus);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -281,6 +343,29 @@ h3 {
 
 .hero-headline {
   position: relative;
+  /* The display end of the tracking ramp, and the only place on the site that
+     needs one. The headline triples in size between 375px and a desktop -- 36px
+     to 60px -- and a single letter-spacing value cannot be right at both ends:
+     what reads as tight at 36px reads as gappy at 60px, because the space
+     between letters grows with the type while the eye's tolerance for it does
+     not. So it tightens as it grows, and stops at -0.03em: past about -0.04em
+     Inter's round letters start to collide and it reads as cramped rather than
+     as set. Line height is already at 1.08 in the markup for the same reason --
+     long lines of large type need less leading, not the 1.5 that suits a
+     paragraph. */
+  letter-spacing: -0.022em;
+}
+
+@media (min-width: 40rem) {
+  .hero-headline {
+    letter-spacing: -0.026em;
+  }
+}
+
+@media (min-width: 64rem) {
+  .hero-headline {
+    letter-spacing: -0.03em;
+  }
 }
 
 .hero-roll {
@@ -423,6 +508,70 @@ h3 {
 }
 
 /* --------------------------------------------------------------------------
+   The hero's entrance.
+
+   The headline roll above used to be the only thing on this surface that
+   moved, and a single element animating over four that are perfectly still
+   does not read as a page arriving -- it reads as a static page with a widget
+   on it. These are the other four: the sub-heading, the search field, the two
+   gateway cards and the delivery windows, each rising into place.
+
+   They are deliberately *not* chained off `--roll-run` the way the courier is.
+   The roll takes just over three seconds to tell its story, and the cards are
+   the two actions this page exists to offer -- holding them back until the
+   headline has finished would trade a real interaction cost for a decorative
+   one. So the hero composes itself inside the first second, underneath a
+   headline that is still talking, and is completely still well before the
+   courier arrives to close the introduction.
+
+   CSS rather than the motion library on purpose. These run off the stylesheet
+   at first paint on a prerendered page, with no hydration in the path; the
+   library owns the scroll- and pointer-driven layer in `hero-motion.tsx`,
+   which by definition cannot run any earlier anyway. The comment at the top of
+   that file has the full division.
+
+   `--enter-at` is set per element at the call site, so the running order lives
+   with the markup it orders rather than in a stack of nth-child rules here.
+   -------------------------------------------------------------------------- */
+.hero-enter {
+  animation: hero-enter 800ms var(--ck-ease) var(--enter-at, 0ms) both;
+}
+
+/* The cards' variant, and the reason there are two: this one moves without
+   ever touching opacity.
+
+   The first gateway card carries the `priority` photograph and is this page's
+   LCP candidate. An element at `opacity: 0` has not been painted as far as the
+   metric is concerned, so fading the cards in would push Largest Contentful
+   Paint out by the whole length of this animation -- paying in the number the
+   page was just optimised for, to buy a fade nobody asked for. Translating a
+   fully opaque card costs nothing: it is painted on the first frame, and it
+   arrives from slightly below. */
+.hero-enter-lift {
+  animation: hero-enter-lift 900ms var(--ck-ease) var(--enter-at, 0ms) both;
+}
+
+@keyframes hero-enter {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 1.1rem, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes hero-enter-lift {
+  from {
+    transform: translate3d(0, 2rem, 0) scale(0.985);
+  }
+  to {
+    transform: none;
+  }
+}
+
+/* --------------------------------------------------------------------------
    The courier.
 
    The hero already ends on a full-bleed horizontal rule. This makes that rule a
@@ -437,9 +586,17 @@ h3 {
    photography for exactly the attention the photography is there to get. He
    arrives, he stops, the page is still again.
 
-   The beats are fractions of `--roll-run` for the same reason the sentence's
-   are: retuning the introduction has to carry the courier with it, rather than
-   leave him riding in over the top of a headline still rolling.
+   He is the one part of the entrance that does not start on the page's clock.
+   The rule he parks on is the last thing in the hero, which on a laptop puts
+   him just under the fold -- so timed off the headline roll he rode in, braked
+   and parked while the visitor was still reading the sentence at the top, and
+   anyone who scrolled down half a second later found an empty road. `.courier`
+   holds him at the kerb; `.is-riding` is added by `hero-motion.tsx` when he
+   reaches the viewport, and that is the only thing that starts him.
+
+   His run is his own duration rather than a fraction of `--roll-run`: nothing
+   about him is chained to the headline any more, and the two are now free to
+   be retuned separately.
 
    The artwork is a mask rather than an `<img>` because it is single-colour line
    art. A mask lets it be painted out of the ramp -- illustration being one of
@@ -487,8 +644,28 @@ h3 {
        instead of rotating about his middle. */
     transform-origin: 72% 100%;
     opacity: 0;
-    animation: courier-arrive calc(var(--roll-run) * 0.56) var(--ck-ease)
-      calc(var(--roll-run) * 0.82) both;
+    /* His whole ride, kerb to parked. Long, because he is a delivery and not a
+       transition: a scooter that crosses the screen in under two seconds reads
+       as a swipe effect, where one that takes the better part of four is
+       something making its way to an address. He is also the only thing moving
+       on this strip, so there is nothing for him to hold up. */
+    --ride-run: 3.4s;
+    /* His own curve, and the one place on this page that does not use
+       `--ck-ease`. That curve opens at four times its average speed -- superb
+       for a panel that should feel like it was already there, wrong for a
+       vehicle, which would enter the frame at a sprint and then crawl the last
+       third. This one leaves at roughly the speed it holds (0.28/0.25 is a
+       slope of about 1) and spends its ease on the arrival instead, so he
+       cruises in at one pace and rolls to a stop. */
+    --ride-ease: cubic-bezier(0.25, 0.28, 0.45, 1);
+  }
+
+  /* The beat between the strip appearing and him setting off. Long enough that
+     he starts *after* the visitor has arrived rather than in the same frame --
+     an arrival is only an arrival if there was a moment of road before it --
+     and short enough that nobody has scrolled past by the time he moves. */
+  .courier.is-riding {
+    animation: courier-arrive var(--ride-run) var(--ride-ease) 140ms both;
   }
 
   @media (min-width: 40rem) {
@@ -520,36 +697,864 @@ h3 {
   0% {
     opacity: 0;
     transform: translate3d(-100vw, 0, 0) rotate(0deg);
-    filter: blur(2.5px);
+    filter: blur(1.2px);
   }
   4% {
     opacity: 1;
   }
-  /* The blur brackets are set off the measured curve rather than guessed at.
-     Under this easing he covers the viewport in the first third and spends the
-     rest of the run braking, so the smear has to be gone by the time he is
-     down to a crawl -- a blurred object moving 120px/s reads as out of focus,
-     not as fast. Held while he is genuinely quick, clear before he is not. */
-  30% {
-    filter: blur(2.5px);
-  }
-  55% {
+  /* Barely any smear, and the reason is the duration above. Motion blur is a
+     speed cue, and he is no longer travelling fast enough to earn much of one
+     -- a blurred object that is visibly ambling reads as out of focus rather
+     than as quick. What is left is enough to take the hard edge off the line
+     art while he is moving; it is gone well before the brake. */
+  35% {
     filter: blur(0px);
   }
   /* Deliberately no transform here: leaving the travel to interpolate across
      one long 0%-to-84% segment is what gives the approach its single unbroken
-     deceleration. These last beats are only the brake -- he overruns the spot,
-     pitches forward over the front wheel, and rocks back level. */
+     glide. These last beats are only the brake -- he overruns the spot,
+     pitches forward over the front wheel, and rocks back level. Gentler than
+     they were, because the pitch has to match the speed he is losing: a hard
+     nose-dive out of a slow roll is a stop nobody made. */
   84% {
-    transform: translate3d(3%, 0, 0) rotate(2.4deg);
+    transform: translate3d(2.2%, 0, 0) rotate(1.5deg);
   }
   93% {
-    transform: translate3d(0, 0, 0) rotate(-1.1deg);
+    transform: translate3d(0, 0, 0) rotate(-0.6deg);
   }
   100% {
     opacity: 1;
     transform: translate3d(0, 0, 0) rotate(0deg);
     filter: blur(0px);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   A section heading that leaves the grid.
+
+   The page is a stack of `max-w-6xl` containers, which is the right skeleton
+   for content and the wrong one for a voice: everything starting on the same
+   left edge at the same size is what makes a long page read as a column of
+   boxes. This heading steps outside that edge and gets large enough to be the
+   first thing seen in its section rather than the label above it.
+
+   The break-out is done with a wider container, not a negative margin, and the
+   difference matters. A negative margin has to be computed from the viewport --
+   `calc((100vw - 72rem) / 2)` and similar -- and `100vw` includes the scrollbar
+   on Windows, so the heading overhangs the left edge by whatever the scrollbar
+   is wide and the page gains a horizontal scroll nobody asked for. Two
+   containers of different widths cannot do that: on a wide screen the heading
+   simply starts further out than the steps below it, and as the viewport
+   narrows the two converge on the same padding and the offset closes itself.
+   No breakpoints, no overflow, nothing to tune.
+
+   The ceiling is 3.5rem on purpose. The hero headline runs to 3.75rem, and it
+   is the page's loudest voice; a section heading that out-shouts it does not
+   read as drama, it reads as two things competing. Just under is the largest
+   this can be while still being second.
+   -------------------------------------------------------------------------- */
+.section-display {
+  /* 32px on a phone, 56px from about 1330px up, and continuous between them --
+     a section heading is not a hero and does not need breakpoint steps. */
+  font-size: clamp(2rem, 4.2vw, 3.5rem);
+  /* Large type needs less leading, not more: the longer the line, the less
+     space the eye needs to find the next one. Matches the hero. */
+  line-height: 1.08;
+  /* The display end of the tracking ramp, same as `.hero-headline` and for the
+     same reason -- see the note over `h1, h2, h3`. */
+  letter-spacing: -0.022em;
+}
+
+@media (min-width: 40rem) {
+  .section-display {
+    letter-spacing: -0.03em;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   "How a subscription works": the typed heading and the dealt steps.
+
+   Both are driven from a single class that `components/site/step-flow.tsx`
+   adds when the section reaches the viewport. Everything hidden lives inside a
+   keyframe and nothing is hidden by a base rule, so the resting state of this
+   whole block -- no JavaScript, no animation support, a screenshot service --
+   is a fully typed heading and four steps sitting in their columns.
+   -------------------------------------------------------------------------- */
+
+/* Break opportunities belong at the spaces. A run of separately boxed
+   characters can be broken between any two of them, so the word is what holds
+   them together and takes the line break itself. */
+.type-word {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.type-char {
+  display: inline-block;
+}
+
+/* Each character waits out its own `--char-at`, then appears. `both` is what
+   makes the wait look like anything: the backwards fill holds the character at
+   `opacity: 0` for the length of its delay, so the line arrives left to right
+   rather than all at once. The fade is deliberately shorter than the step
+   between characters -- a slower one overlaps its neighbours and the line
+   dissolves in instead of being typed. */
+.typewriter.is-typing .type-char {
+  animation: type-char 90ms linear var(--char-at) both;
+}
+
+@keyframes type-char {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* The caret.
+
+   One element at the end of the line, not one per character. The first version
+   of this gave every character its own caret and lit them in sequence, on the
+   theory that a relay of twenty-four carets would read as a single one
+   advancing. It did not: twenty-four independently delayed animations, each
+   holding its lit state through its own slot, put several carets on screen at
+   once and left bars standing in the middle of the finished word.
+
+   So the caret does not travel. It waits out the typing at the end of the
+   line, blinks to say the line is finished rather than truncated, and stops --
+   because this system does not run idle loops on a surface people are reading.
+   Its `--caret-at` is the full length of the type-out, handed down from the
+   component so the two cannot drift apart.
+
+   `opacity` rather than `display` for the resting state: the caret keeps its
+   0.07em of the line at all times, so the heading cannot reflow when it
+   arrives or leaves. And the base rule is the *hidden* one -- with no
+   animation the heading is plain finished text, with no stray mark at the end
+   of it. */
+.type-caret {
+  display: inline-block;
+  width: 0.07em;
+  height: 0.86em;
+  margin-left: 0.07em;
+  vertical-align: -0.09em;
+  border-radius: 1px;
+  background: var(--ck-brand);
+  opacity: 0;
+}
+
+.typewriter.is-typing .type-caret {
+  animation: type-caret-blink 760ms steps(1, end) var(--caret-at) 4 forwards;
+}
+
+@keyframes type-caret-blink {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   The steps: the number is handed along the row, and the copy stays still.
+
+   The relay is the same one it always was -- 2 comes out from under 1, 3 out of
+   2, 4 out of 3 -- but only the numbered badge makes the journey. The heading
+   and the body of each step never move at all; they fade up in place as their
+   number arrives.
+
+   That split is the whole design of this thing, and it is worth being explicit
+   about why. Text that slides is text you cannot read while it is sliding: the
+   eye tries to fix on a word, the word is not where it was, and the reader
+   spends the animation being unable to do the one thing the section is asking
+   of them. A heading plus three lines of body copy crossing a column is a lot
+   of that at once, four times over. A single 36px disc with a numeral in it is
+   a shape, not a sentence -- nothing about it needs to be read while it is in
+   flight, and the eye tracks it the way it tracks any small moving object,
+   which is to say easily and without effort.
+
+   And the row of badges is the right thing to be moving anyway. It is already
+   a horizontal line of markers at a single height -- the thing a reader counts
+   along to know how many steps there are. Handing a number down that line is
+   the sequence made visible. Dragging the paragraphs along with it never added
+   anything the number was not already saying.
+   -------------------------------------------------------------------------- */
+
+/* Every number travels exactly one column, so the only thing that varies
+   between the steps is *whether* it travels at all -- the first step of a row
+   has no predecessor to come out of. `--hop` is that flag, and it is a
+   different set of steps at each breakpoint because the rows are: 0,1,1,1
+   across four columns, and 0,1,0,1 across two, where the third step opens a
+   second row and so starts a relay rather than joining one.
+
+   `-100%` is what does the measuring, and it is measured on `.step-hop` rather
+   than on the badge -- which is the reason that wrapper exists at all. The
+   badge is 36px wide, so a percentage on the badge would move it 36px and land
+   it nowhere in particular. `.step-hop` is a block, so it is exactly one column
+   wide, and one column plus one gutter is precisely the distance to the badge
+   before it whatever the grid is doing. */
+.step-flow > li {
+  --deal-gap: 1.5rem;
+  --hop: 0;
+  --deal-from: calc(var(--hop) * (-100% - var(--deal-gap)));
+  /* Eased at both ends, which is what separates a glide from a slide. The
+     page's `--ck-ease` is a hard ease-out: it leaves at four times its average
+     speed and settles from there, so the number appears to be flung and then to
+     stall. One being handed along is picked up, moved and set down -- it
+     accelerates out from behind its neighbour as gently as it decelerates into
+     place, and there is no frame in the middle where it is doing either. */
+  --deal-ease: cubic-bezier(0.4, 0.05, 0.2, 1);
+}
+
+@media (min-width: 40rem) {
+  .step-flow > li {
+    --hop: var(--hop-sm);
+  }
+}
+
+@media (min-width: 64rem) {
+  .step-flow > li {
+    --hop: var(--hop-lg);
+  }
+}
+
+/* Each step sits under the one before it, so its number comes out from *behind*
+   its neighbour's. On source order alone the later step would be on top and the
+   number would appear to slide across the front of the row instead of out of
+   it. It stops mattering the moment they are apart. */
+.step-flow.is-revealed > li {
+  z-index: calc(10 - var(--step-index));
+}
+
+/* One duration for all four, which is the point of the relay: every number
+   crosses the same single column, so the same time on each is the same speed on
+   each. */
+.step-flow.is-revealed .step-hop {
+  animation: step-hop 760ms var(--deal-ease) var(--step-at) both;
+}
+
+/* Opacity only, and deliberately nothing else. This is the copy the whole
+   section exists to be read, so it arrives by becoming visible rather than by
+   travelling -- a fade is the one entrance that never moves a word out from
+   under the eye trying to read it.
+
+   It waits out most of the number's journey before it starts, so the step
+   develops under a badge that has already landed rather than assembling itself
+   in mid-flight. */
+.step-flow.is-revealed .step-copy {
+  animation: step-copy-in 520ms var(--ck-ease) calc(var(--step-at) + 480ms) both;
+}
+
+/* The hidden state is in the keyframe and nowhere else, so a visitor whose
+   JavaScript never lands -- and a screenshot service, and a headless renderer
+   -- gets the finished four columns rather than a blank block. Nothing here is
+   ever hidden by a base rule. */
+@keyframes step-hop {
+  from {
+    opacity: 0;
+    transform: translate3d(var(--deal-from), 0, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes step-copy-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Sections that arrive on scroll.
+
+   One class, driven by `components/site/reveal.tsx`, which adds `is-revealed`
+   when the element reaches the viewport and does nothing else. The travel is
+   deliberately short. A reveal has one job -- to say "this is new, look here"
+   -- and 20px of rise says it completely; anything further starts moving text
+   the reader is trying to settle on, which is the opposite of drawing them in.
+   Vertical is also the cheap direction for this: reading runs horizontally, so
+   a short lift crosses the eye's path instead of running along it.
+
+   `--reveal-at` lets one section arrive in two beats -- the heading, then what
+   it introduces -- without either needing its own class.
+
+   Nothing is hidden by a base rule. With no JavaScript the class never lands,
+   no keyframe runs, and the section is simply there.
+   -------------------------------------------------------------------------- */
+.reveal-up.is-revealed {
+  animation: reveal-up 700ms var(--ck-ease) var(--reveal-at, 0ms) both;
+}
+
+@keyframes reveal-up {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 1.25rem, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   The storefront's rectangular action.
+
+   Composes with `buttonClasses` rather than replacing it: size, spacing, the
+   transition, the disabled handling and the focus ring all still come from the
+   one shared definition, so this cannot drift away from a real button. What it
+   changes is the two things the shape says -- square corners instead of the
+   system pill, and a hover that *fills* instead of tinting.
+
+   It wins over the utilities it overrides on layer order, not on specificity
+   or `!important`. Tailwind emits its utilities inside `@layer utilities`, and
+   unlayered CSS -- everything in this file outside the one `@layer base` block
+   -- beats every layered rule regardless of which came first in the source.
+   That is why `.btn-plain` can be a single class and still defeat
+   `rounded-full`, and why `.btn-plain:hover` defeats `hover:bg-brand-soft-hover`
+   at identical specificity. The earlier version of this used `rounded-ck!`;
+   the cascade does the same job without the escape hatch.
+
+   Transparent rather than a surface fill, which is what lets the same class sit
+   on white and on a yellow note without either looking like a hole punched in
+   the paper. The hairline is full-strength brand rather than a tint of it: a
+   control boundary needs 3:1 and a 45% brand on canary does not reach it.
+   -------------------------------------------------------------------------- */
+.btn-plain {
+  border-radius: 0;
+  background-color: transparent;
+  border-color: var(--ck-brand);
+  color: var(--ck-brand);
+}
+
+.btn-plain:hover {
+  background-color: var(--ck-brand);
+  border-color: var(--ck-brand);
+  color: #fff;
+}
+
+/* Press goes past the fill to the ink, so the third state is distinguishable
+   from the second rather than being the same rectangle very slightly darker --
+   the same move `primary` makes with `active:bg-ink`. */
+.btn-plain:active {
+  background-color: var(--ck-text);
+  border-color: var(--ck-text);
+  color: #fff;
+}
+
+/* --------------------------------------------------------------------------
+   Grid paper.
+
+   A sketchbook ground for one band of the page. It is texture and nothing else
+   -- there is no information in the lines, nothing aligns to them, and the
+   moment they compete with a price they have failed at the only job they have.
+   So the cell is set once here and the lines are kept to about a fifth of the
+   contrast of the section's own border, which is already the faintest line in
+   the system.
+
+   Two gradients rather than an image, and the difference is not just weight.
+   A repeating gradient is drawn by the compositor at whatever the device pixel
+   ratio is, so the lines stay exactly one hairline on a retina screen where a
+   raster grid would go soft; it costs no request; it tiles to any section
+   height without a seam; and because the colour is a token, this follows the
+   surface if the section is ever restyled instead of having to be re-exported.
+
+   The cards keep their opaque `surface` fill, so they read as cards resting on
+   the paper rather than as boxes drawn onto it -- which is the whole reason to
+   put a texture behind a grid of cards at all.
+   -------------------------------------------------------------------------- */
+.paper-grid {
+  --paper-cell: 1.5rem;
+  /* One knob. Everything about how loud the paper is lives in this percentage
+     -- the token supplies the hue so the lines can never drift off-palette. */
+  --paper-line: color-mix(in srgb, var(--color-dark-slate-grey-200) 55%, transparent);
+
+  background-image:
+    repeating-linear-gradient(
+      to right,
+      var(--paper-line) 0 1px,
+      transparent 1px var(--paper-cell)
+    ),
+    repeating-linear-gradient(
+      to bottom,
+      var(--paper-line) 0 1px,
+      transparent 1px var(--paper-cell)
+    );
+}
+
+/* --------------------------------------------------------------------------
+   The plan notes.
+
+   The plans were cards -- hairline border, white fill, system radius, four of
+   them identical in a row, which is the arrangement the design references call
+   the lazy answer and they are right. These are notes stuck to the page
+   instead. Same information, same order of importance, but the object is one
+   you would actually write a plan on.
+
+   Four things make paper read as paper, and the colour is the least of them:
+
+   1. **It is never quite straight.** Each note carries its own `--note-tilt`,
+      set per note in the page rather than by an `nth-child` rule here, because
+      the four angles are a composition and not a repeating pattern. All under
+      two degrees: real notes are crooked by about that much, and past four or
+      five the row reads as a novelty and the text becomes work.
+
+   2. **No two are the same height.** The grid is `items-start`, so each note is
+      as tall as what is written on it. This is the one change that did the most
+      -- four rectangles of identical height in a row is a card grid wearing a
+      yellow coat, however crooked they are. A `min-height` keeps a short note
+      note-shaped; past that they are free to differ, and they do, by a line or
+      two, which is exactly the amount that reads as hand-pinned rather than as
+      broken.
+
+   3. **It is glued at the top and lifts at the bottom.** The strip across the
+      top is the adhesive, a fractionally darker band where the paper is held
+      flat, and the shadow is weighted low to match -- pinned above, standing
+      off the page below. A shadow spread evenly around all four edges is a
+      floating rectangle, which is what a card is.
+
+   4. **It sits on something.** The grid paper behind is what the note is stuck
+      to, and it is why the note is opaque: the lines stopping at its edge is
+      most of what sells it.
+
+   Straightening on hover earns its place twice -- it is the physical response
+   of picking a note up to read it, and it levels the text for the one person
+   actually reading that note. `focus-within` brings a keyboard to the same
+   state.
+
+   Square corners, `border-radius: 1px`. Paper is cut, not moulded.
+   -------------------------------------------------------------------------- */
+.sticky-note {
+  display: flex;
+  flex-direction: column;
+  min-height: 14rem;
+  /* Roomier at the top, where the glue strip is, and where a note has margin
+     before the first thing written on it. */
+  padding: 2.25rem 1.5rem 1.5rem;
+
+  /* Paper is cut, not moulded, and a cut edge is not a perfect corner either.
+     Each corner gets its own two-value radius -- a horizontal and a vertical
+     one -- which is what makes them elliptical rather than circular, and at
+     this scale reads as a slightly soft, slightly uneven edge instead of a
+     drawn rectangle. The bottom right is the exception and is doing something
+     specific: 34px across by 5px down is a long shallow sweep, the shape a
+     corner takes when it has started to lift away from what it is stuck to. */
+  border-top-left-radius: 2px 3px;
+  border-top-right-radius: 3px 2px;
+  border-bottom-left-radius: 4px 2px;
+  border-bottom-right-radius: 34px 5px;
+
+  background-color: var(--ck-note);
+  background-image:
+    /* 1. Grain. This is the layer that does the most and is the least visible:
+          a flat fill reads as a coloured box at any size, and paper does not
+          have a flat fill. `feTurbulence` generates it in the browser, so it
+          costs no request, tiles seamlessly (`stitchTiles`) and stays sharp at
+          any pixel density where a raster texture would not. `baseFrequency`
+          is the grain size and the rect's own `opacity` is the strength --
+          0.16 over noise that averages half-transparent lands near 8%, which
+          is inside the 3-6% the references call subtle once the yellow is
+          under it. */
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23p)' opacity='0.16'/%3E%3C/svg%3E"),
+    /* 2. The adhesive. A band where the paper is held flat, at the threshold of
+          visible -- it should read as the note being stuck down, never as a
+          stripe drawn across the top. */
+    linear-gradient(to bottom, var(--ck-note-shade) 0 1.5rem, transparent 1.5rem),
+    /* 3. Light. One gradient doing both ends of it: the sheet catches the light
+          at the top left and turns away from it at the bottom right, which is
+          the same corner that lifts. Paper is never one colour across its whole
+          face, and this is most of why the note stops looking printed. */
+    linear-gradient(
+      158deg,
+      rgb(255 255 255 / 0.42) 0%,
+      rgb(255 255 255 / 0) 46%,
+      rgb(13 23 20 / 0.05) 100%
+    );
+  background-size: 160px 160px, auto, auto;
+  background-repeat: repeat, no-repeat, no-repeat;
+
+  /* Four layers, because one shadow is what makes a thing look like it is
+     floating rather than resting on something.
+
+     Contact is tight and almost black: the hairline of dark right where the
+     paper still touches the page, and the only part of this that says "on"
+     rather than "above". Ambient is broad and weak, the light the note blocks.
+     The lift is offset low and spread wide -- the note is glued at the top and
+     standing off the page at the bottom, so its shadow is not symmetrical.
+
+     The inset is the curl. It shades the inside of the bottom edge, so the
+     sheet reads as bending away from the page rather than being cut off flat,
+     and it lines up with the swept bottom-right corner above. */
+  box-shadow:
+    0 1px 1px rgb(13 23 20 / 0.11),
+    0 5px 10px -6px rgb(13 23 20 / 0.24),
+    0 18px 26px -16px rgb(13 23 20 / 0.5),
+    inset 0 -16px 20px -16px rgb(13 23 20 / 0.15);
+
+  /* Lift before rotate, so the offset is vertical on the page rather than
+     along the note's own tilted axis. */
+  transform: translateY(var(--note-lift, 0)) rotate(var(--note-tilt, 0deg));
+  transition:
+    transform 220ms var(--ck-ease),
+    box-shadow 220ms var(--ck-ease);
+}
+
+.sticky-note:hover,
+.sticky-note:focus-within {
+  transform: translateY(calc(var(--note-lift, 0px) - 4px)) rotate(0deg);
+  box-shadow:
+    0 1px 1px rgb(13 23 20 / 0.11),
+    0 8px 14px -8px rgb(13 23 20 / 0.26),
+    0 26px 34px -20px rgb(13 23 20 / 0.55),
+    inset 0 -16px 20px -16px rgb(13 23 20 / 0.15);
+}
+
+/* The price sits on the bottom edge of every note rather than wherever its own
+   description happens to end. Without this the note with a two-line title
+   pushes its price a line lower than its neighbours, and four prices meant to
+   be compared do not sit on one line. */
+.note-price {
+  margin-top: auto;
+}
+
+/* --------------------------------------------------------------------------
+   What the notes are set in.
+
+   Two faces, and they are doing two different jobs rather than decorating.
+   Zodiak is a serif and carries the plan's name: it is the written voice, the
+   thing a person would have put on the paper. Cabinet Grotesk is a grotesque
+   sans and carries everything measured -- the label, the description, the
+   price, the action. Serif for what is said, sans for what is counted.
+
+   They pair on the contrast axis. Two sans faces this close in feel would read
+   as a mistake rather than a pairing; a serif next to a grotesque cannot.
+
+   Neither is used anywhere else on the site, and that is the point: the notes
+   are pretending to be a different object sitting on a page made of interface,
+   and Inter is what the interface is already set in.
+   -------------------------------------------------------------------------- */
+.note-kind {
+  font-family: var(--font-cabinet), system-ui, sans-serif;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  /* Capitals at 11px, so they get the loose end of the tracking rule rather
+     than the display end -- the smaller the caps, the more air they need. */
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ck-text-muted);
+}
+
+.note-title {
+  font-family: var(--font-zodiak), Georgia, serif;
+  font-size: 1.375rem;
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: -0.015em;
+  color: var(--ck-text);
+}
+
+.note-body {
+  font-family: var(--font-cabinet), system-ui, sans-serif;
+  font-size: 0.875rem;
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--ck-text-muted);
+  /* The floor under the price's `margin-top: auto`. Auto distributes whatever
+     space is left over, which on the tallest note in the row is none -- so
+     without this the rule would sit hard against the last line of the
+     description on exactly one note. */
+  margin-bottom: 1.5rem;
+}
+
+/* The price and its period on one line, which is most of why this stopped
+   feeling like a form. They were two stacked blocks -- a number, then a caption
+   under it -- and stacking them made the note four separate things instead of
+   three. On one line they are a single fact, the way it would be written down:
+   the amount, and what it buys.
+
+   The rule above it is the only divider on the note, and it replaces a gap. A
+   gap large enough to separate the price from the description is large enough
+   to look like a mistake on a note this small; a line does the same job in
+   1px, and note paper has lines on it anyway. */
+.note-price {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  border-top: 1px solid var(--ck-note-rule);
+
+  font-family: var(--font-cabinet), system-ui, sans-serif;
+  font-size: 1.75rem;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--ck-text);
+}
+
+.note-meta {
+  font-family: var(--font-cabinet), system-ui, sans-serif;
+  font-size: 0.75rem;
+  font-weight: 400;
+  letter-spacing: 0;
+  color: var(--ck-text-muted);
+}
+
+/* The button is Cabinet too, so the note has no Inter on it anywhere. Sized to
+   its label rather than to the note: a full-width button is a form control, and
+   the four of them lined up across the row were the last thing making these
+   read as cards. */
+.sticky-note .btn-plain {
+  font-family: var(--font-cabinet), system-ui, sans-serif;
+  font-weight: 500;
+}
+
+/* --------------------------------------------------------------------------
+   The two illustrations flanking the plans section./* --------------------------------------------------------------------------
+   The two illustrations flanking the plans section.
+
+   These break the rule the courier follows, and the break is deliberate rather
+   than an oversight. He is a mask -- single-colour line art painted out of the
+   ramp, so it belongs to the palette and follows the surface if the section
+   ever flips. These are the artwork itself, shown exactly as drawn: the
+   calendar arrives already tilted and already carrying one red day, and both
+   of those are decisions made in the file rather than by this stylesheet. A
+   mask would flatten the red into the same colour as every line around it,
+   which is precisely the detail worth keeping -- one marked day is what makes
+   it a schedule and not a grid.
+
+   So there is no `@supports` guard here and no `mask-image`. The failure mode
+   the guard existed to prevent -- a solid coloured rectangle where the artwork
+   should be -- cannot happen to an `<img>`.
+
+   What they keep from the courier is the rest of it. Both are `aria-hidden`
+   decoration: the heading between them already says these are subscription
+   plans, and a screen reader announcing a calendar and a chef here would be
+   repeating it. Both are positioned out of flow, so the section measures the
+   same with them as without and nothing moves at any width. Both start
+   invisible, so where animation never runs they simply never appear, which is
+   the correct failure for decoration and the opposite of the rule the headings
+   and prices follow.
+
+   They sit in the space the centred heading gave back. With the heading in the
+   middle of the column, both edges of that band are empty at every width where
+   there is a band at all -- so the artwork sits in real whitespace rather than
+   over the cards, and never has to be faded down to survive what is under it.
+   Below `xl` there is no such space and neither renders; a decorative chef
+   overlapping a price is worse than no chef.
+   -------------------------------------------------------------------------- */
+.calendar-mark,
+.chef-mark {
+  position: absolute;
+  top: 3rem;
+  pointer-events: none;
+  display: none;
+  opacity: 0;
+}
+
+/* Sized against each other rather than each to taste. The calendar is landscape
+   and the chef is portrait, so matching their widths would make one twice the
+   other on the page; these are the widths at which the two cover about the same
+   area, which is what actually reads as a pair. */
+.calendar-mark {
+  /* Half a step past the content edge, the same break the section heading above
+     this one takes. */
+  left: -2rem;
+  width: clamp(11rem, 14vw, 15rem);
+}
+
+.chef-mark {
+  right: -1rem;
+  width: clamp(5.5rem, 7vw, 7.5rem);
+}
+
+@media (min-width: 80rem) {
+  .calendar-mark,
+  .chef-mark {
+    display: block;
+  }
+}
+
+/* Two entrances, not one played twice. The calendar is an object and is set
+   down onto the page from above; the chef is a person and stands up into it.
+   The same movement mirrored on both sides would read as a gimmick -- what
+   makes a pair is that each does the thing its subject would do. He follows
+   her by a beat for the same reason: two illustrations arriving in the same
+   frame is one event, and this section has room for two. */
+.calendar-mark.is-revealed {
+  animation: art-set-down 900ms var(--ck-ease) 160ms both;
+}
+
+.chef-mark.is-revealed {
+  animation: art-stand-up 900ms var(--ck-ease) 320ms both;
+}
+
+@keyframes art-set-down {
+  from {
+    opacity: 0;
+    transform: translate3d(0, -1.75rem, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes art-stand-up {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 1.5rem, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   The hourglass loader./* --------------------------------------------------------------------------
+   The hourglass loader.
+
+   The one animation in this stylesheet that repeats, and it is the exception
+   that shows what the rule is for. Everything else here runs once, because
+   motion beside content competes with the content. This runs until it is taken
+   off screen because it *is* the content until the real thing arrives, and an
+   indicator that stops moving reads as one that has given up.
+
+   One duration drives the whole cycle: the turn and the three sand animations
+   are all proportions of `--hg-run`, so the loader is retuned in one place
+   rather than by keeping four sets of percentages in agreement by hand.
+
+   Every travel distance below is measured off the geometry in `hourglass.tsx`
+   and the two have to be read together -- the comment there says which numbers
+   are the set.
+
+   Under `prefers-reduced-motion` the block at the top of this file collapses
+   every duration and cuts the loop to a single pass. None of these animations
+   sets a fill, so they revert to their base state rather than freezing
+   part-way: a full upper chamber above an empty lower one, which is an
+   hourglass that has just been turned over. That is the right still frame for
+   "working" -- and the caller's `role="status"` is what actually announces it.
+   -------------------------------------------------------------------------- */
+.hourglass {
+  --hg-run: 2.8s;
+}
+
+/* The turn.
+
+   `transform-box` is declared rather than left to the initial value because
+   the two useful answers disagree: the origin below is in the drawing's own
+   coordinates, and only `view-box` reads it that way. Left to `border-box` the
+   glass would pivot around a point measured in CSS pixels of the rendered
+   element, which moves every time the icon is used at a different size.
+
+   The easing is declared *inside* the keyframes, not on the animation, and
+   that is what makes the turn smooth. A timing function set on the animation
+   is applied to every interval separately, so the project's ease -- which
+   leaves at full speed and decelerates -- was being applied to the turn as
+   well, snapping the glass into motion the instant the hold ended. Stating it
+   on the hold keyframe scopes a symmetric ease-in-out to the one interval that
+   has anything to interpolate, so the glass now leans into the turn and settles
+   out of it. */
+.hourglass-body {
+  transform-box: view-box;
+  transform-origin: 22px 26px;
+  animation: hg-turn var(--hg-run) linear infinite;
+}
+
+@keyframes hg-turn {
+  0%,
+  72% {
+    transform: rotate(0deg);
+    animation-timing-function: cubic-bezier(0.62, 0, 0.38, 1);
+  }
+  100% {
+    transform: rotate(180deg);
+  }
+}
+
+/* The sand, in the ramp's fill step rather than the frame's ink so the level
+   reads at a glance against the glass. */
+.hourglass-sand-upper,
+.hourglass-sand-lower {
+  fill: var(--ck-accent);
+}
+
+/* Draining: the block slides down out of the upper cone, so what remains
+   inside the clip is the sand still sitting above the neck.
+
+   The travel is measured from the block's top edge, not from the cone's depth,
+   and the two are not the same number. The block starts at y=0 and the cone's
+   tip is at y=24.8, so the edge has to cross the whole of that before the last
+   grain is gone -- a travel of only the cone's own depth would leave a wedge of
+   sand stranded in the neck for the rest of the cycle.
+
+   Eased at both ends rather than run linear. Linear was the literal choice --
+   sand does leave a real hourglass at a constant rate -- but it also meant the
+   level started and stopped dead, and the stop is the one that showed: the
+   surface was still falling at full speed on one frame and motionless on the
+   next. This starts and settles instead, and the middle of the run is near
+   enough linear to still read as sand. */
+.hourglass-sand-upper {
+  animation: hg-drain var(--hg-run) linear infinite;
+}
+
+@keyframes hg-drain {
+  0% {
+    transform: translateY(0);
+    animation-timing-function: cubic-bezier(0.4, 0, 0.35, 1);
+  }
+  66%,
+  100% {
+    transform: translateY(25px);
+  }
+}
+
+/* Filling, by the same trick inverted: the block's top edge starts at y=44,
+   just under the glass, and rises to the lower cone's rim at y=27.2 -- so 18
+   units fills it, with the clip discarding the overshoot. It settles
+   fractionally after the drain finishes, so the last of the falling stream
+   still has somewhere to land. */
+.hourglass-sand-lower {
+  animation: hg-fill var(--hg-run) linear infinite;
+}
+
+@keyframes hg-fill {
+  0% {
+    transform: translateY(0);
+    animation-timing-function: cubic-bezier(0.4, 0, 0.35, 1);
+  }
+  69%,
+  100% {
+    transform: translateY(-18px);
+  }
+}
+
+/* The stream, lit only while there is sand above the neck to supply it. It
+   fades at both ends rather than cutting: a stream at full strength on the
+   first frame reads as a line ruled down the middle of the glass. */
+.hourglass-stream {
+  fill: var(--ck-accent);
+  animation: hg-stream var(--hg-run) ease-in-out infinite;
+}
+
+@keyframes hg-stream {
+  0% {
+    opacity: 0;
+  }
+  9%,
+  56% {
+    opacity: 0.85;
+  }
+  66%,
+  100% {
+    opacity: 0;
   }
 }
 
