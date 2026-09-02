@@ -5,6 +5,17 @@ import { AdminNav } from '@/components/admin/admin-nav';
 import { SignOutButton } from '@/components/auth/sign-out-button';
 
 /**
+ * These screens are per-user by definition -- a session decides not just what
+ * they show but whether you may see them at all -- so there is no static shell
+ * to prerender and no point pretending otherwise. `instant = false` says that
+ * plainly: this segment is allowed to block.
+ *
+ * It is a statement about *this* route, not a global escape hatch. The public
+ * storefront next door is held to the opposite standard.
+ */
+export const instant = false;
+
+/**
  * Owner / Developer Admin shell.
  *
  * The nav is filtered by permission, so a role that cannot reach a section is

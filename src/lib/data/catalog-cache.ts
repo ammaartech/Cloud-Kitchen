@@ -6,7 +6,7 @@ import { revalidatePath, updateTag } from 'next/cache';
  * The storefront's catalog is the same rows for every visitor, changes a few
  * times a day, and costs a round-trip to a hosted database to read. That is
  * the exact shape of thing that should be read once and shared, so the public
- * reads in `catalog.ts` are wrapped in `unstable_cache` against these tags.
+ * reads in `catalog.ts` are `use cache` scopes tagged with these.
  *
  * Caching without invalidation is just a slower bug, so the two live in the
  * same file: anything that adds a tag here is looking straight at the function
@@ -26,9 +26,6 @@ export const CATALOG_TAGS = {
   windows: 'catalog:windows',
 } as const;
 
-/** Seconds. The safety net, not the mechanism -- see the note above. */
-export const CATALOG_TTL = 60;
-
 /**
  * Drops the cached public catalog.
  *
@@ -39,7 +36,7 @@ export const CATALOG_TTL = 60;
  * four small queries is far cheaper than an editor not trusting the storefront.
  *
  * Note that `revalidatePath` does *not* reach these entries. It invalidates a
- * rendered route; `unstable_cache` entries are keyed separately and only a
+ * rendered route; `use cache` entries are keyed separately and only a
  * matching tag call clears them. Admin mutations need both, which is why this
  * is called alongside the existing `revalidatePath` calls rather than instead
  * of them.

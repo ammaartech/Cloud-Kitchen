@@ -1,7 +1,5 @@
 import Link from 'next/link';
-import type { Route } from 'next';
-import { ButtonLink } from '@/components/ui/primitives';
-import { SignOutButton } from '@/components/auth/sign-out-button';
+import { AccountNav } from './account-nav';
 import { SITE_NAV } from './nav';
 
 /**
@@ -12,14 +10,12 @@ import { SITE_NAV } from './nav';
  * same light bar on every route and this can go back to being a server
  * component with no pathname to read.
  *
- * The session arrives pre-flattened -- the header needs a name and a
- * destination, not the permission set the layout loaded.
+ * The account controls are a client island. Everything else here -- the mark,
+ * both navigations -- is the same markup for every visitor and prerenders into
+ * the static shell; only the one corner that depends on *who is asking* waits
+ * for the browser. See `account.ts` for why that read moved off the server.
  */
-export function SiteHeader({
-  account,
-}: {
-  account: { name: string; href: Route; label: string } | null;
-}) {
+export function SiteHeader() {
   return (
     <header className="sticky top-0 z-40 border-b border-line bg-surface/85 backdrop-blur">
       <div className="mx-auto flex h-16 max-w-6xl items-center gap-6 px-4">
@@ -45,31 +41,7 @@ export function SiteHeader({
           ))}
         </nav>
 
-        <div className="ml-auto flex items-center gap-2">
-          {account ? (
-            <>
-              <span className="hidden text-sm text-subtle sm:inline">{account.name}</span>
-              <ButtonLink href={account.href} variant="secondary" size="sm">
-                {account.label}
-              </ButtonLink>
-              <SignOutButton />
-            </>
-          ) : (
-            <>
-              <ButtonLink
-                href="/sign-in"
-                variant="ghost"
-                size="sm"
-                className="hidden sm:inline-flex"
-              >
-                Sign in
-              </ButtonLink>
-              <ButtonLink href="/subscriptions" size="sm">
-                Start a plan
-              </ButtonLink>
-            </>
-          )}
-        </div>
+        <AccountNav />
       </div>
 
       {/* Mobile navigation: a scrollable row rather than a hidden menu, so

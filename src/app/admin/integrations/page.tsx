@@ -4,8 +4,18 @@ import { serverClient } from '@/lib/supabase/server';
 import { dateTime } from '@/lib/format';
 import { Alert, Badge, Card, EmptyState, SectionHeading } from '@/components/ui/primitives';
 
+/**
+ * These screens are per-user by definition -- a session decides not just what
+ * they show but whether you may see them at all -- so there is no static shell
+ * to prerender and no point pretending otherwise. `instant = false` says that
+ * plainly: this segment is allowed to block.
+ *
+ * It is a statement about *this* route, not a global escape hatch. The public
+ * storefront next door is held to the opposite standard.
+ */
+export const instant = false;
+
 export const metadata = { title: 'Integrations' };
-export const dynamic = 'force-dynamic';
 
 interface HealthRow {
   provider: string;

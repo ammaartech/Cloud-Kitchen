@@ -1,6 +1,4 @@
 import Link from 'next/link';
-import { getSession } from '@/lib/auth/session';
-import { landingPathForRole } from '@/lib/auth/permissions';
 import { SiteHeader } from '@/components/site/site-header';
 import { SITE_NAV } from '@/components/site/nav';
 
@@ -11,25 +9,21 @@ import { SITE_NAV } from '@/components/site/nav';
  * Subscriptions, Offers, About (PRD 6). Menu and Meal Plans are browsing and
  * acquisition surfaces -- there is deliberately no standalone meal checkout.
  *
- * The session is flattened here rather than handed down whole: the header has
- * no business receiving a permission set in order to render a name and a link.
+ * This shell awaits nothing, and that is load-bearing rather than incidental.
+ * It used to resolve the session here, and that single `cookies()` read was the
+ * only reason no storefront route could ever be prerendered -- a cookie read in
+ * a layout makes every route beneath it per-request, however static the page
+ * below happens to be. `/about` fetches nothing at all and was still rendered
+ * from scratch for every visitor because of this function.
+ *
+ * The header now asks for the identity from the browser after hydration
+ * (`components/site/account.ts`), which costs a signed-in visitor one small
+ * request and buys every visitor a shell that is already HTML.
  */
-export default async function SiteLayout({ children }: LayoutProps<'/'>) {
-  const session = await getSession();
-
+export default function SiteLayout({ children }: LayoutProps<'/'>) {
   return (
     <>
-      <SiteHeader
-        account={
-          session
-            ? {
-                name: session.fullName || session.email || 'Account',
-                href: landingPathForRole(session.role),
-                label: session.role === 'customer' ? 'My account' : 'Dashboard',
-              }
-            : null
-        }
-      />
+      <SiteHeader />
 
       <main className="flex-1">{children}</main>
 

@@ -1,11 +1,51 @@
+import { Suspense } from 'react';
 import { notFound, redirect } from 'next/navigation';
 import Link from 'next/link';
-import { getPlan, getPlanMeals, listPublicOffers } from '@/lib/data/catalog';
+import { getPlan, getPlanMeals, listPlans, listPublicOffers } from '@/lib/data/catalog';
 import { saveDraft, draftSchema } from '@/lib/checkout/draft';
 import { PlanConfigurator } from '@/components/checkout/plan-configurator';
 import { ProductTile } from '@/components/product-card';
 import { money, PLAN_TYPE_LABELS } from '@/lib/format';
 import { Alert, Badge, Card } from '@/components/ui/primitives';
+
+/**
+ * Enumerates every plan so each one is prerendered at build rather than on the
+ * first visitor's request. The list is small and already cached, so this costs
+ * one read shared with the pages themselves.
+ *
+ * A slug that is not returned here still works -- Next prerenders a shell for
+ * it and streams the rest -- so a plan added between deploys is served, just
+ * without the head start. `notFound()` below is what rejects a slug that is
+ * not a plan at all.
+ */
+export async function generateStaticParams() {
+  const plans = await listPlans();
+  return plans.map((plan) => ({ slug: plan.slug }));
+}
+
+/**
+ * The one request-dependent thing on this page: whether the last attempt to
+ * save a configuration bounced. It is isolated behind its own boundary so that
+ * reading `searchParams` costs this alert its prerender rather than the whole
+ * plan page.
+ */
+async function ConfigurationError({
+  searchParams,
+}: {
+  searchParams: PageProps<'/subscriptions/[slug]'>['searchParams'];
+}) {
+  const query = await searchParams;
+  if (query.error !== 'invalid') return null;
+
+  return (
+    <div className="mt-4">
+      <Alert tone="danger" title="That configuration could not be saved">
+        Something about the selection did not check out on our side. Nothing was charged
+        — re-check your choices below and continue again.
+      </Alert>
+    </div>
+  );
+}
 
 export async function generateMetadata({ params }: PageProps<'/subscriptions/[slug]'>) {
   const { slug } = await params;
@@ -21,9 +61,6 @@ export default async function PlanPage({
   const plan = await getPlan(slug);
 
   if (!plan) notFound();
-
-  const query = await searchParams;
-  const configurationRejected = query.error === 'invalid';
 
   const [meals, offers] = await Promise.all([getPlanMeals(plan.id), listPublicOffers()]);
   const autoOffer = offers[0] ?? null;
@@ -67,14 +104,9 @@ export default async function PlanPage({
         ← All plans
       </Link>
 
-      {configurationRejected ? (
-        <div className="mt-4">
-          <Alert tone="danger" title="That configuration could not be saved">
-            Something about the selection did not check out on our side. Nothing was charged
-            — re-check your choices below and continue again.
-          </Alert>
-        </div>
-      ) : null}
+      <Suspense fallback={null}>
+        <ConfigurationError searchParams={searchParams} />
+      </Suspense>
 
       <div className="mt-4 grid gap-10 lg:grid-cols-[1fr_22rem] lg:items-start">
         <div>

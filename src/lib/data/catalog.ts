@@ -1,6 +1,6 @@
-import { unstable_cache } from "next/cache";
+import { cacheLife, cacheTag } from "next/cache";
 import { publicClient } from "@/lib/supabase/public";
-import { CATALOG_TAGS, CATALOG_TTL } from "./catalog-cache";
+import { CATALOG_TAGS } from "./catalog-cache";
 
 /**
  * Read models for the storefront.
@@ -115,27 +115,27 @@ const PRODUCT_SELECT = `
   product_images ( url, alt_text, is_primary )
 `;
 
-export const listMenu = unstable_cache(
-  async (): Promise<ProductCard[]> => {
-    const supabase = publicClient();
+export async function listMenu(): Promise<ProductCard[]> {
+  "use cache";
+  cacheLife("catalog");
+  cacheTag(CATALOG_TAGS.menu);
 
-    const [{ data }, ratings] = await Promise.all([
-      supabase
-        .from("products")
-        .select(PRODUCT_SELECT)
-        // Unavailable products are still returned: the menu shows them grayscale
-        // with a badge rather than hiding them (PRD 6, PRD 19).
-        .order("sort_order", { ascending: true }),
-      loadRatings(),
-    ]);
+  const supabase = publicClient();
 
-    return ((data ?? []) as unknown as RawProduct[]).map((row) =>
-      toCard(row, ratings),
-    );
-  },
-  ["catalog:menu"],
-  { tags: [CATALOG_TAGS.menu], revalidate: CATALOG_TTL },
-);
+  const [{ data }, ratings] = await Promise.all([
+    supabase
+      .from("products")
+      .select(PRODUCT_SELECT)
+      // Unavailable products are still returned: the menu shows them grayscale
+      // with a badge rather than hiding them (PRD 6, PRD 19).
+      .order("sort_order", { ascending: true }),
+    loadRatings(),
+  ]);
+
+  return ((data ?? []) as unknown as RawProduct[]).map((row) =>
+    toCard(row, ratings),
+  );
+}
 
 export interface CategoryGroup {
   name: string;
@@ -144,6 +144,10 @@ export interface CategoryGroup {
 }
 
 export async function listMenuByCategory(): Promise<CategoryGroup[]> {
+  "use cache";
+  cacheLife("catalog");
+  cacheTag(CATALOG_TAGS.menu);
+
   const supabase = publicClient();
 
   const [{ data: categories }, products] = await Promise.all([
@@ -173,6 +177,13 @@ export interface CollectionSummary {
 }
 
 export async function listCollections(): Promise<CollectionSummary[]> {
+  "use cache";
+  cacheLife("catalog");
+  // Collections are a shape over products, so a product edit has to drop these
+  // too -- `revalidateCatalog()` clears every tag at once, but tagging by what
+  // the query actually reads keeps that a convenience rather than a crutch.
+  cacheTag(CATALOG_TAGS.menu);
+
   const supabase = publicClient();
 
   const { data } = await supabase
@@ -294,20 +305,24 @@ function toPlan(row: RawPlan): PlanSummary {
   };
 }
 
-export const listPlans = unstable_cache(
-  async (): Promise<PlanSummary[]> => {
-    const supabase = publicClient();
-    const { data } = await supabase
-      .from("subscription_plans")
-      .select(PLAN_SELECT)
-      .order("sort_order");
-    return ((data ?? []) as unknown as RawPlan[]).map(toPlan);
-  },
-  ["catalog:plans"],
-  { tags: [CATALOG_TAGS.plans], revalidate: CATALOG_TTL },
-);
+export async function listPlans(): Promise<PlanSummary[]> {
+  "use cache";
+  cacheLife("catalog");
+  cacheTag(CATALOG_TAGS.plans);
+
+  const supabase = publicClient();
+  const { data } = await supabase
+    .from("subscription_plans")
+    .select(PLAN_SELECT)
+    .order("sort_order");
+  return ((data ?? []) as unknown as RawPlan[]).map(toPlan);
+}
 
 export async function getPlan(slug: string): Promise<PlanSummary | null> {
+  "use cache";
+  cacheLife("catalog");
+  cacheTag(CATALOG_TAGS.plans);
+
   const supabase = publicClient();
   const { data } = await supabase
     .from("subscription_plans")
@@ -323,6 +338,12 @@ export async function getPlanMeals(planId: string): Promise<{
   fixed: ProductCard[];
   selectable: ProductCard[];
 }> {
+  "use cache";
+  cacheLife("catalog");
+  // Reads both halves: which meals a plan offers, and the meals themselves.
+  cacheTag(CATALOG_TAGS.plans);
+  cacheTag(CATALOG_TAGS.menu);
+
   const supabase = publicClient();
 
   const { data } = await supabase
@@ -362,33 +383,31 @@ export interface PublicOffer {
 }
 
 /** Only offers flagged publicly visible come back -- RLS enforces that. */
-export const listPublicOffers = unstable_cache(
-  async (): Promise<PublicOffer[]> => {
-    const supabase = publicClient();
+export async function listPublicOffers(): Promise<PublicOffer[]> {
+  "use cache";
+  cacheLife("catalog");
+  cacheTag(CATALOG_TAGS.offers);
 
-    const { data } = await supabase
-      .from("coupons")
-      .select(
-        "code, name, description, discount_type, discount_value, max_discount_amount, min_order_amount, valid_until",
-      )
-      .order("created_at");
+  const supabase = publicClient();
 
-    return ((data ?? []) as Array<Record<string, string | null>>).map(
-      (row) => ({
-        code: row.code as string,
-        name: row.name as string,
-        description: row.description as string,
-        discountType: row.discount_type as string,
-        discountValue: row.discount_value as string,
-        maxDiscountAmount: row.max_discount_amount,
-        minOrderAmount: row.min_order_amount as string,
-        validUntil: row.valid_until,
-      }),
-    );
-  },
-  ["catalog:offers"],
-  { tags: [CATALOG_TAGS.offers], revalidate: CATALOG_TTL },
-);
+  const { data } = await supabase
+    .from("coupons")
+    .select(
+      "code, name, description, discount_type, discount_value, max_discount_amount, min_order_amount, valid_until",
+    )
+    .order("created_at");
+
+  return ((data ?? []) as Array<Record<string, string | null>>).map((row) => ({
+    code: row.code as string,
+    name: row.name as string,
+    description: row.description as string,
+    discountType: row.discount_type as string,
+    discountValue: row.discount_value as string,
+    maxDiscountAmount: row.max_discount_amount,
+    minOrderAmount: row.min_order_amount as string,
+    validUntil: row.valid_until,
+  }));
+}
 
 export interface DeliveryWindow {
   id: string;
@@ -399,20 +418,20 @@ export interface DeliveryWindow {
   cutoff_minutes_before: number;
 }
 
-export const listDeliveryWindows = unstable_cache(
-  async (): Promise<DeliveryWindow[]> => {
-    const supabase = publicClient();
-    const { data } = await supabase
-      .from("delivery_windows")
-      .select("id, code, label, starts_at, ends_at, cutoff_minutes_before")
-      .eq("is_active", true)
-      .order("sort_order");
+export async function listDeliveryWindows(): Promise<DeliveryWindow[]> {
+  "use cache";
+  cacheLife("catalog");
+  cacheTag(CATALOG_TAGS.windows);
 
-    return (data ?? []) as DeliveryWindow[];
-  },
-  ["catalog:windows"],
-  { tags: [CATALOG_TAGS.windows], revalidate: CATALOG_TTL },
-);
+  const supabase = publicClient();
+  const { data } = await supabase
+    .from("delivery_windows")
+    .select("id, code, label, starts_at, ends_at, cutoff_minutes_before")
+    .eq("is_active", true)
+    .order("sort_order");
+
+  return (data ?? []) as DeliveryWindow[];
+}
 
 /**
  * Reads a public business setting. Sensitive keys are filtered by RLS, so a

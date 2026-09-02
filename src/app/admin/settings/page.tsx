@@ -6,8 +6,18 @@ import { money, clockTime } from '@/lib/format';
 import { Alert, Badge, Button, Card, Input, SectionHeading } from '@/components/ui/primitives';
 import { ActionFeedback, done, fail, readable } from '@/lib/admin/feedback';
 
+/**
+ * These screens are per-user by definition -- a session decides not just what
+ * they show but whether you may see them at all -- so there is no static shell
+ * to prerender and no point pretending otherwise. `instant = false` says that
+ * plainly: this segment is allowed to block.
+ *
+ * It is a statement about *this* route, not a global escape hatch. The public
+ * storefront next door is held to the opposite standard.
+ */
+export const instant = false;
+
 export const metadata = { title: 'Settings' };
-export const dynamic = 'force-dynamic';
 
 const PATH = '/admin/settings';
 

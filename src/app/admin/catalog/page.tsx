@@ -8,6 +8,17 @@ import { money } from '@/lib/format';
 import { num, nullableNum, slugify, str } from '@/lib/admin/form';
 import { ActionFeedback, done, fail, readable } from '@/lib/admin/feedback';
 import { CatalogNav } from '@/components/admin/catalog-nav';
+
+/**
+ * These screens are per-user by definition -- a session decides not just what
+ * they show but whether you may see them at all -- so there is no static shell
+ * to prerender and no point pretending otherwise. `instant = false` says that
+ * plainly: this segment is allowed to block.
+ *
+ * It is a statement about *this* route, not a global escape hatch. The public
+ * storefront next door is held to the opposite standard.
+ */
+export const instant = false;
 import {
   Badge,
   Button,
@@ -21,7 +32,6 @@ import {
 } from '@/components/ui/primitives';
 
 export const metadata = { title: 'Catalog' };
-export const dynamic = 'force-dynamic';
 
 const PATH = '/admin/catalog';
 

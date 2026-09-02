@@ -1,7 +1,7 @@
 import { listPublicOffers } from '@/lib/data/catalog';
-import { getSession } from '@/lib/auth/session';
 import { money, dateOnly } from '@/lib/format';
-import { Alert, Badge, ButtonLink, Card, EmptyState } from '@/components/ui/primitives';
+import { Badge, ButtonLink, Card, EmptyState } from '@/components/ui/primitives';
+import { SignedOutNotice } from '@/components/site/signed-out-notice';
 
 export const metadata = {
   title: 'Offers',
@@ -9,7 +9,11 @@ export const metadata = {
 };
 
 export default async function OffersPage() {
-  const [offers, session] = await Promise.all([listPublicOffers(), getSession()]);
+  // Offers are the same rows for everybody and already cached. Whether *you*
+  // are signed in is the only per-visitor thing on this page, and it decides
+  // one advisory notice at the bottom -- so it is resolved in the browser
+  // rather than costing the whole route its prerender. See `(site)/layout.tsx`.
+  const offers = await listPublicOffers();
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-12">
@@ -82,13 +86,9 @@ export default async function OffersPage() {
         </div>
       )}
 
-      {!session ? (
-        <div className="mt-8">
-          <Alert tone="info" title="You do not need an account to browse">
-            Create one at checkout — we only ask for details once you have chosen a plan.
-          </Alert>
-        </div>
-      ) : null}
+      <SignedOutNotice>
+        Create one at checkout — we only ask for details once you have chosen a plan.
+      </SignedOutNotice>
 
       <div className="mt-10 text-center">
         <ButtonLink href="/subscriptions" size="lg">Choose a plan</ButtonLink>

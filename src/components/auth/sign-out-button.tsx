@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { browserClient } from '@/lib/supabase/client';
+import { clearAccount } from '@/components/site/account';
 import { Button, Spinner } from '@/components/ui/primitives';
 import type { ButtonVariant } from '@/components/ui/button-styles';
 
@@ -39,6 +40,11 @@ export function SignOutButton({
     // A failure here still leaves a stale cookie, so the redirect happens
     // either way and the sign-in page re-checks the session for real.
     await browserClient().auth.signOut();
+
+    // The storefront header memoises the identity for the life of the page, and
+    // both of the navigations below are client-side -- so without this the bar
+    // would keep showing this user's name after they had signed out.
+    clearAccount();
 
     router.refresh();
     router.push('/sign-in');

@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { browserClient } from '@/lib/supabase/client';
+import { clearAccount } from '@/components/site/account';
 import { Alert, Button, Field, Input, Spinner } from '@/components/ui/primitives';
 
 /**
@@ -54,6 +55,11 @@ export function SignInForm({
       setPending(false);
       return;
     }
+
+    // The counterpart to the call in `SignOutButton`: the storefront header
+    // caches "signed out" from before this form was submitted, and the push
+    // below does not reload the page that would forget it.
+    clearAccount();
 
     // A full refresh so the server components re-read the session cookie.
     router.refresh();

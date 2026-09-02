@@ -3,6 +3,17 @@ import { landingPathForRole } from '@/lib/auth/permissions';
 import { ButtonLink, Card } from '@/components/ui/primitives';
 import { SignOutButton } from '@/components/auth/sign-out-button';
 
+/**
+ * These screens are per-user by definition -- a session decides not just what
+ * they show but whether you may see them at all -- so there is no static shell
+ * to prerender and no point pretending otherwise. `instant = false` says that
+ * plainly: this segment is allowed to block.
+ *
+ * It is a statement about *this* route, not a global escape hatch. The public
+ * storefront next door is held to the opposite standard.
+ */
+export const instant = false;
+
 export const metadata = { title: 'Not permitted' };
 
 /**
