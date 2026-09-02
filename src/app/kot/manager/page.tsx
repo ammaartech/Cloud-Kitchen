@@ -3,37 +3,36 @@ import { PERMISSIONS } from '@/lib/auth/permissions';
 import { serverClient } from '@/lib/supabase/server';
 import { ManagerBoard } from '@/components/kot/manager-board';
 import { ACTIVE_STATUSES, type BoardTicket } from '@/lib/realtime/kot-board-shared';
+import type { KotTabKey } from '@/components/kot/tabs';
+import { todayISO } from '@/lib/kot/date';
 
-/**
- * These screens are per-user by definition -- a session decides not just what
- * they show but whether you may see them at all -- so there is no static shell
- * to prerender and no point pretending otherwise. `instant = false` says that
- * plainly: this segment is allowed to block.
- *
- * It is a statement about *this* route, not a global escape hatch. The public
- * storefront next door is held to the opposite standard.
- */
 export const instant = false;
 
 export const metadata = { title: 'KOT Manager' };
 
-// The board is realtime; a cached render would be a stale board.
+const VALID_TABS: readonly KotTabKey[] = ['live', 'completed', 'all'];
 
-export default async function ManagerPage() {
+export default async function ManagerPage({
+  searchParams,
+}: {
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
+}) {
   const session = await requirePermission(PERMISSIONS.kotView);
   const supabase = await serverClient();
 
-  // Server-rendered first paint, then the client takes over on the socket. The
-  // screen is useful before JavaScript settles, which matters on a tablet in a
-  // kitchen.
+  const raw = (await searchParams) ?? {};
+  const tabParam = pickOne(raw.tab);
+  const initialTab: KotTabKey = VALID_TABS.includes(tabParam as KotTabKey)
+    ? (tabParam as KotTabKey)
+    : 'live';
+  const initialDate = normaliseDate(pickOne(raw.date)) ?? todayISO();
+
   const { data } = await supabase
     .from('v_kot_tickets')
     .select('*')
     .in('status', [...ACTIVE_STATUSES])
     .order('priority', { ascending: false });
 
-  // The Owner holds kot.view and nothing else, which is exactly what makes
-  // their board read-only (PRD 5.2, PRD 9).
   const canAct = session.permissions.has(PERMISSIONS.kotAccept);
 
   return (
@@ -41,6 +40,18 @@ export default async function ManagerPage() {
       initialTickets={(data ?? []) as BoardTicket[]}
       canAct={canAct}
       user={{ name: session.fullName || session.email || 'Signed in', role: session.role }}
+      initialTab={initialTab}
+      initialDate={initialDate}
     />
   );
+}
+
+function pickOne(value: string | string[] | undefined): string | undefined {
+  if (Array.isArray(value)) return value[0];
+  return value;
+}
+
+function normaliseDate(value: string | undefined): string | null {
+  if (!value || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return null;
+  return value;
 }
