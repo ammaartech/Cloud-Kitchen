@@ -250,8 +250,8 @@
     "semantic_hash": ""
   },
   "C:\\Users\\Ammaar\\Desktop\\Cloud-Kitchen\\src\\app\\checkout\\page.tsx": {
-    "mtime": 1788313936.0186763,
-    "ast_hash": "617517bb061d49bc83ce85ed3b1a3e29",
+    "mtime": 1788314834.6979606,
+    "ast_hash": "22c02409586fe977bd1daaad485572bf",
     "semantic_hash": ""
   },
   "C:\\Users\\Ammaar\\Desktop\\Cloud-Kitchen\\src\\app\\error.tsx": {
@@ -350,8 +350,8 @@
     "semantic_hash": ""
   },
   "C:\\Users\\Ammaar\\Desktop\\Cloud-Kitchen\\src\\components\\checkout\\payment-step.tsx": {
-    "mtime": 1788198620.8853664,
-    "ast_hash": "647705a8ee03c1bbcb5d76fe2a8c6ca6",
+    "mtime": 1788315006.5813828,
+    "ast_hash": "b01f7edc4cdeb0434b47c207bf18e068",
     "semantic_hash": ""
   },
   "C:\\Users\\Ammaar\\Desktop\\Cloud-Kitchen\\src\\components\\checkout\\plan-configurator.tsx": {
@@ -475,8 +475,8 @@
     "semantic_hash": ""
   },
   "C:\\Users\\Ammaar\\Desktop\\Cloud-Kitchen\\src\\lib\\checkout\\service.ts": {
-    "mtime": 1788185030.881781,
-    "ast_hash": "704fecf26cc3ef95f9d232b4c9e30162",
+    "mtime": 1788314580.0100338,
+    "ast_hash": "e47eb3722e1acf5296e362bd795b7d14",
     "semantic_hash": ""
   },
   "C:\\Users\\Ammaar\\Desktop\\Cloud-Kitchen\\src\\lib\\data\\catalog.ts": {
@@ -485,8 +485,8 @@
     "semantic_hash": ""
   },
   "C:\\Users\\Ammaar\\Desktop\\Cloud-Kitchen\\src\\lib\\env.ts": {
-    "mtime": 1788195319.4455936,
-    "ast_hash": "daf71ab87ebdac00872a91da5a67d7d3",
+    "mtime": 1788314580.0089548,
+    "ast_hash": "e397ace32656f5d2a95fc1882df1eccc",
     "semantic_hash": ""
   },
   "C:\\Users\\Ammaar\\Desktop\\Cloud-Kitchen\\src\\lib\\format.ts": {
@@ -520,8 +520,8 @@
     "semantic_hash": ""
   },
   "C:\\Users\\Ammaar\\Desktop\\Cloud-Kitchen\\src\\lib\\payments\\cashfree.ts": {
-    "mtime": 1788179822.891388,
-    "ast_hash": "2dc938ed03492473d426aea5630e55de",
+    "mtime": 1788314873.382213,
+    "ast_hash": "9ad4c32787caa557c79d194dbddcfce3",
     "semantic_hash": ""
   },
   "C:\\Users\\Ammaar\\Desktop\\Cloud-Kitchen\\src\\lib\\payments\\index.ts": {
@@ -530,18 +530,18 @@
     "semantic_hash": ""
   },
   "C:\\Users\\Ammaar\\Desktop\\Cloud-Kitchen\\src\\lib\\payments\\razorpay.ts": {
-    "mtime": 1788179793.711501,
-    "ast_hash": "33418e4173ae0c52c3787b81fbd3c7d6",
+    "mtime": 1788314534.0973425,
+    "ast_hash": "64df2f0ddfbfdf7d4055b29dcd80cc06",
     "semantic_hash": ""
   },
   "C:\\Users\\Ammaar\\Desktop\\Cloud-Kitchen\\src\\lib\\payments\\sandbox.ts": {
-    "mtime": 1788184949.4391181,
-    "ast_hash": "9b01b7bb4f2dee435a196e695602b968",
+    "mtime": 1788314580.0089548,
+    "ast_hash": "d7bd7d0409c0e6d94ee7c1d6a4c23668",
     "semantic_hash": ""
   },
   "C:\\Users\\Ammaar\\Desktop\\Cloud-Kitchen\\src\\lib\\payments\\types.ts": {
-    "mtime": 1788184965.739467,
-    "ast_hash": "450647855e200506a79b3f7c10ed8376",
+    "mtime": 1788314511.6411731,
+    "ast_hash": "38a0d4d66133d40e93e5eac20e33df0f",
     "semantic_hash": ""
   },
   "C:\\Users\\Ammaar\\Desktop\\Cloud-Kitchen\\src\\lib\\realtime\\kot-board-shared.ts": {
@@ -775,8 +775,8 @@
     "semantic_hash": ""
   },
   "C:\\Users\\Ammaar\\Desktop\\Cloud-Kitchen\\README.md": {
-    "mtime": 1788199780.7764382,
-    "ast_hash": "dab7629df2ca4608962318617581ec56",
+    "mtime": 1788315060.9350865,
+    "ast_hash": "8b1947b43188cce8b5d83c64790e4abd",
     "semantic_hash": ""
   },
   "C:\\Users\\Ammaar\\Desktop\\Cloud-Kitchen\\public\\file.svg": {
@@ -852,6 +852,11 @@
   "C:\\Users\\Ammaar\\Desktop\\Cloud-Kitchen\\src\\components\\site\\signed-out-notice.tsx": {
     "mtime": 1788313397.3574026,
     "ast_hash": "23bd211d5672960d9825a545686fb8d5",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Ammaar\\Desktop\\Cloud-Kitchen\\src\\lib\\payments\\browser.ts": {
+    "mtime": 1788314873.3812115,
+    "ast_hash": "03da43c41d77d4178dedfb8d8f699bf9",
     "semantic_hash": ""
   }
 }

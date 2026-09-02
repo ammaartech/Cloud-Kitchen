@@ -214,6 +214,16 @@ export default async function CheckoutPage({ searchParams }: PageProps<'/checkou
               defaultName={session.fullName}
               defaultPhone={session.phone ?? addresses[0]?.phone ?? ''}
               newAddressAction={saveAddress}
+              /**
+               * Cashfree returns the customer here after a UPI or net-banking
+               * journey. The id is only a pointer: confirmation still runs
+               * server-side against Cashfree, and /api/checkout/confirm still
+               * checks the payment belongs to the caller, so a guessed value
+               * buys nothing.
+               */
+              returningOrderId={
+                typeof params.cf_order_id === 'string' ? params.cf_order_id : undefined
+              }
             />
           ) : null}
         </div>

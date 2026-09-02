@@ -1,8 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Alert, Badge, Button, Card, Field, Input, Spinner, cx } from '@/components/ui/primitives';
+import { openCashfree, openRazorpay, type GatewayResult } from '@/lib/payments/browser';
 import { AddressStep } from './address-step';
 
 interface Address {
@@ -33,6 +34,33 @@ type Outcome = {
   deliveriesGenerated?: number;
 };
 
+/** What the pay button is currently waiting on, so it can say so. */
+type Busy = 'starting' | 'gateway' | 'confirming';
+
+const BUSY_LABEL: Record<Busy, string> = {
+  starting: 'Preparing your order…',
+  gateway: 'Waiting for the payment gateway…',
+  confirming: 'Confirming your payment…',
+};
+
+/**
+ * Routes to the provider's own browser SDK.
+ *
+ * Anything not listed here is refused rather than approximated -- an unknown
+ * provider must not fall through to something that looks like it worked.
+ */
+function openGateway(
+  provider: string,
+  checkout: Record<string, unknown>,
+): Promise<GatewayResult> {
+  if (provider === 'razorpay') return openRazorpay(checkout);
+  if (provider === 'cashfree') return openCashfree(checkout);
+  return Promise.resolve({
+    status: 'failed',
+    message: 'That payment method cannot be opened in this browser.',
+  });
+}
+
 /**
  * The final step: choose an address, choose how to pay, pay.
  *
@@ -47,12 +75,19 @@ export function PaymentStep({
   defaultName,
   defaultPhone,
   newAddressAction,
+  returningOrderId,
 }: {
   addresses: Address[];
   providers: Provider[];
   defaultName: string;
   defaultPhone: string;
   newAddressAction: (formData: FormData) => Promise<void>;
+  /**
+   * Set when Cashfree has just redirected the customer back to us after a UPI
+   * or net-banking journey. Its value is the order id, which for Cashfree is
+   * our own payment id -- so it is enough to finish the confirmation.
+   */
+  returningOrderId?: string;
 }) {
   const router = useRouter();
 
@@ -62,10 +97,75 @@ export function PaymentStep({
   const [phone, setPhone] = useState(defaultPhone);
   const [addingAddress, setAddingAddress] = useState(false);
 
-  const [pending, setPending] = useState(false);
+  const [busy, setBusy] = useState<Busy | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [outcome, setOutcome] = useState<Outcome | null>(null);
   const [paymentId, setPaymentId] = useState<string | null>(null);
+
+  const pending = busy !== null;
+
+  /**
+   * Hands the gateway's claim to the server and shows whatever verdict comes
+   * back. The claim itself is never believed here: `/api/checkout/confirm`
+   * re-derives the signature (Razorpay) or asks the provider outright
+   * (Cashfree) before a single credit is granted.
+   */
+  const confirmPayment = useCallback(
+    async (id: string, forProvider: string, payload: Record<string, unknown>) => {
+      setBusy('confirming');
+      setError(null);
+
+      try {
+        const response = await fetch('/api/checkout/confirm', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ paymentId: id, provider: forProvider, payload }),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          setError(data.error ?? 'Could not confirm the payment.');
+          return;
+        }
+
+        // Deliberately no router.refresh() here. A confirmed payment clears the
+        // draft cookie, and this page redirects to /subscriptions the moment
+        // that cookie is gone -- so refreshing would throw the customer off the
+        // receipt for the payment they just made. The account page they move on
+        // to is dynamic and reads fresh anyway.
+        setOutcome(data as Outcome);
+      } catch {
+        // The money may well have moved; what we lost is the answer. Saying
+        // "failed" here would be a guess, and an expensive one (PRD 8).
+        setError(
+          'The connection dropped before we could confirm the outcome. Do not pay again — ' +
+            'check your account in a minute; if the plan is not active, reconciliation will ' +
+            'either activate it or ensure nothing was charged.',
+        );
+      } finally {
+        setBusy(null);
+      }
+    },
+    [],
+  );
+
+  /**
+   * Cashfree's UPI and net-banking journeys leave the site entirely and come
+   * back to `/checkout?cf_order_id=…`. Picking that up on mount is what makes
+   * the redirect flow finish the same way the in-page modal does — the guard
+   * keeps a re-render from confirming twice.
+   */
+  const resumeAttempted = useRef(false);
+
+  useEffect(() => {
+    if (!returningOrderId || resumeAttempted.current) return;
+    resumeAttempted.current = true;
+
+    setProvider('cashfree');
+    setPaymentId(returningOrderId);
+    void confirmPayment(returningOrderId, 'cashfree', { order_id: returningOrderId });
+  }, [returningOrderId, confirmPayment]);
 
   async function startPayment() {
     // Refused up front rather than left to time out: an offline browser must
@@ -75,8 +175,10 @@ export function PaymentStep({
       return;
     }
 
-    setPending(true);
+    setBusy('starting');
     setError(null);
+
+    let begun: { paymentId: string; checkout: Record<string, unknown> };
 
     try {
       const beginResponse = await fetch('/api/checkout/begin', {
@@ -85,37 +187,76 @@ export function PaymentStep({
         body: JSON.stringify({ addressId, provider, fullName, phone }),
       });
 
-      const begun = await beginResponse.json();
+      const data = await beginResponse.json();
 
       if (!beginResponse.ok) {
-        setError(begun.error ?? 'Checkout could not be started.');
+        setError(data.error ?? 'Checkout could not be started.');
+        setBusy(null);
         return;
       }
 
-      setPaymentId(begun.paymentId);
-
-      // The sandbox gateway asks for an outcome instead of opening a hosted
-      // page. A real provider would hand control to its SDK here and return
-      // via /api/checkout/confirm.
-      if (provider === 'sandbox') {
-        return;
-      }
-
-      setError(
-        'This provider needs its browser SDK to complete the payment. ' +
-          'Enable the test gateway to walk the flow end to end.',
-      );
+      begun = data;
     } catch {
       // Before any money moves, a dropped connection is safely retryable.
       setError('We could not reach the server. Nothing was charged — try again.');
-    } finally {
-      setPending(false);
+      setBusy(null);
+      return;
     }
+
+    setPaymentId(begun.paymentId);
+
+    // The sandbox gateway asks for an outcome instead of opening a hosted
+    // page; its own panel takes over from here.
+    if (provider === 'sandbox') {
+      setBusy(null);
+      return;
+    }
+
+    /**
+     * Hand over to the provider. From this point the customer may be entering
+     * card details or approving a UPI mandate, so nothing below treats silence
+     * as failure -- every branch ends in either a server-checked verdict or a
+     * statement that nothing was charged.
+     */
+    let result: GatewayResult;
+
+    try {
+      setBusy('gateway');
+      result = await openGateway(provider, begun.checkout);
+    } catch (gatewayError) {
+      setError(
+        gatewayError instanceof Error
+          ? `${gatewayError.message} Nothing was charged — try again.`
+          : 'The payment gateway could not be opened. Nothing was charged.',
+      );
+      setBusy(null);
+      return;
+    }
+
+    if (result.status === 'redirecting') {
+      // The gateway is navigating this tab away. Leaving the button busy is
+      // the honest state: the page is about to stop existing.
+      return;
+    }
+
+    if (result.status === 'dismissed') {
+      setError('You closed the payment window before it finished. Nothing was charged.');
+      setBusy(null);
+      return;
+    }
+
+    if (result.status === 'failed') {
+      setError(result.message);
+      setBusy(null);
+      return;
+    }
+
+    await confirmPayment(begun.paymentId, provider, result.payload);
   }
 
   async function completeSandbox(result: 'success' | 'failed' | 'uncertain') {
     if (!paymentId) return;
-    setPending(true);
+    setBusy('confirming');
     setError(null);
 
     try {
@@ -132,11 +273,9 @@ export function PaymentStep({
         return;
       }
 
+      // Same reasoning as the live path: the draft is gone, so a refresh would
+      // redirect away from the result the tester is here to read.
       setOutcome(data as Outcome);
-
-      if (data.status === 'active') {
-        router.refresh();
-      }
     } catch {
       // Mid-confirmation the outcome is genuinely unknown -- say that rather
       // than guessing either way (PRD 8): the payment may or may not have
@@ -147,7 +286,7 @@ export function PaymentStep({
           'either activate it or ensure nothing was charged.',
       );
     } finally {
-      setPending(false);
+      setBusy(null);
     }
   }
 
@@ -205,6 +344,7 @@ export function PaymentStep({
             onClick={() => {
               setOutcome(null);
               setPaymentId(null);
+              setError(null);
             }}
           >
             Try again
@@ -355,7 +495,7 @@ export function PaymentStep({
           onClick={startPayment}
         >
           {pending ? <Spinner /> : null}
-          Pay and activate
+          {busy ? BUSY_LABEL[busy] : 'Pay and activate'}
         </Button>
 
         <p className="mt-3 text-xs text-subtle">

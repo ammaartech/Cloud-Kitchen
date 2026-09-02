@@ -81,6 +81,15 @@ export class SandboxAdapter implements PaymentAdapter {
     };
   }
 
+  /** The sandbox order is derived from the payment id, so resuming is exact. */
+  async resumeOrder(
+    providerOrderId: string,
+    input: CreateOrderInput,
+  ): Promise<CreateOrderResult> {
+    const order = await this.createOrder(input);
+    return { ...order, providerOrderId };
+  }
+
   /**
    * Issues a signed outcome. Called by the server-side sandbox endpoint when
    * the tester chooses "succeed" or "fail" -- never by the browser directly,

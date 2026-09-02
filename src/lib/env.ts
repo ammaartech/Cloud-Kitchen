@@ -40,7 +40,11 @@ const serverSchema = z.object({
   CASHFREE_APP_ID: blankAsUndefined(z.string()),
   CASHFREE_SECRET_KEY: blankAsUndefined(z.string()),
   CASHFREE_WEBHOOK_SECRET: blankAsUndefined(z.string()),
-  CASHFREE_ENVIRONMENT: z.enum(['sandbox', 'production']).default('sandbox'),
+  // Left unset on purpose: the adapter reads the environment off the secret
+  // key's own prefix, which cannot drift from the credentials in use. Set it
+  // only to assert an expectation -- a contradiction is then a loud error
+  // rather than a 401 halfway through a customer's payment.
+  CASHFREE_ENVIRONMENT: blankAsUndefined(z.enum(['sandbox', 'production'])),
 
   // Marketplaces. Swiggy and Zomato grant partner API access per merchant
   // under contract; until a base URL and key exist the adapters run against

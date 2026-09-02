@@ -69,6 +69,8 @@ export interface WebhookResult {
 
 export interface RefundInput {
   providerPaymentId: string;
+  /** Cashfree refunds are addressed by order, not by payment. */
+  providerOrderId?: string;
   amount: number;
   idempotencyKey: string;
   reason?: string;
@@ -86,6 +88,20 @@ export interface PaymentAdapter {
   readonly isConfigured: boolean;
 
   createOrder(input: CreateOrderInput): Promise<CreateOrderResult>;
+
+  /**
+   * Rebuilds the browser payload for an order that already exists.
+   *
+   * A customer who opens the gateway, dismisses it, and presses pay again must
+   * not get a second order against the same payment -- but the first order's
+   * session token is long gone from this process, and for Cashfree it is
+   * single-use anyway. So the adapter is asked to produce a fresh handle for
+   * the *same* order rather than a new order.
+   */
+  resumeOrder(
+    providerOrderId: string,
+    input: CreateOrderInput,
+  ): Promise<CreateOrderResult>;
 
   /** Verifies the signed payload the browser hands back after checkout. */
   verifyCallback(payload: Record<string, unknown>): Promise<VerificationResult>;

@@ -176,7 +176,12 @@ missing one is loud rather than mysterious:
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | yes | Anon / publishable key |
 | `SUPABASE_SERVICE_ROLE_KEY` | yes | Server-only. Bypasses RLS |
 | `CRON_SECRET` | for the jobs | 16+ chars; also signs sandbox payment callbacks |
-| `NEXT_PUBLIC_SITE_URL` | no | Declared but currently unreferenced |
+| `NEXT_PUBLIC_SITE_URL` | for Cashfree | Builds the return and notify URLs Cashfree redirects back to |
+| `RAZORPAY_KEY_ID` / `RAZORPAY_KEY_SECRET` | to offer Razorpay | Both, or Razorpay is not offered |
+| `RAZORPAY_WEBHOOK_SECRET` | for the webhook | Whatever you typed into the Razorpay dashboard |
+| `CASHFREE_APP_ID` / `CASHFREE_SECRET_KEY` | to offer Cashfree | Both, or Cashfree is not offered |
+| `CASHFREE_WEBHOOK_SECRET` | no | Defaults to the client secret, which is what Cashfree signs with |
+| `CASHFREE_ENVIRONMENT` | no | Inferred from the key prefix; set it only to assert an expectation |
 
 **Payments in production.** `ENABLE_SANDBOX_PAYMENTS` has no effect on Vercel:
 the sandbox adapter refuses to construct when `NODE_ENV=production`, which it
@@ -185,6 +190,31 @@ always is there. With no Razorpay or Cashfree credentials,
 to offer. That is the safety property working, not a bug — a fake gateway must
 never be reachable in production. Add Razorpay **test-mode** keys
 (`rzp_test_…`) to exercise the real verification path without moving money.
+
+### Wiring up a gateway
+
+Credentials alone get a provider onto the checkout screen; the webhook is what
+makes it trustworthy, because it arrives even when the customer closes the tab
+mid-payment. Register both endpoints in the provider's dashboard:
+
+| Provider | Webhook URL | Events |
+| --- | --- | --- |
+| Razorpay | `https://<your-domain>/api/payments/razorpay/webhook` | `payment.captured`, `payment.failed`, `refund.*` |
+| Cashfree | `https://<your-domain>/api/payments/cashfree/webhook` | Payment success, payment failed, refund |
+
+Cashfree is also told the notify URL per order, so the dashboard entry is a
+backstop rather than the only route. Its return URL points back at `/checkout`
+with the order id attached, which is how a UPI or net-banking journey that
+leaves the site finishes the same confirmation the in-page modal does.
+
+Which environment Cashfree talks to is read off the secret key's own prefix
+(`cfsk_ma_test_` / `cfsk_ma_prod_`) rather than a separate switch, because the
+two drifting apart shows up as an opaque 401 in the middle of someone's
+payment. Setting `CASHFREE_ENVIRONMENT` turns a mismatch into a loud startup
+error instead.
+
+Both browser SDKs are loaded on demand, when a customer presses pay — not from
+the layout — so the storefront's other routes carry no third-party script.
 
 ### The scheduled jobs
 

@@ -13,6 +13,9 @@ import {
 
 const API_BASE = 'https://api.razorpay.com/v1';
 
+/** Shown as the heading of Razorpay's own modal, so it must read as us. */
+const MERCHANT_NAME = 'Cloud Kitchen';
+
 /** Constant-time compare that tolerates differing lengths without leaking them. */
 function signaturesMatch(expected: string, received: string): boolean {
   const a = Buffer.from(expected, 'utf8');
@@ -81,19 +84,79 @@ export class RazorpayAdapter implements PaymentAdapter {
 
     return {
       providerOrderId: order.id,
-      // Publishable key only. The secret never leaves the server.
-      checkout: {
-        key: this.keyId,
-        order_id: order.id,
-        amount: order.amount,
-        currency: order.currency,
+      checkout: this.checkoutPayload(order.id, order.amount, order.currency, input),
+    };
+  }
+
+  /**
+   * Razorpay orders stay open until they are paid or expire, so resuming is
+   * just rebuilding the browser payload -- no second order, no second charge.
+   * The amount is read back from Razorpay rather than trusted from our side,
+   * so a stale draft cannot reopen an order at the wrong price.
+   */
+  async resumeOrder(
+    providerOrderId: string,
+    input: CreateOrderInput,
+  ): Promise<CreateOrderResult> {
+    if (!this.isConfigured) {
+      throw new PaymentProviderError('Razorpay is not configured', this.id);
+    }
+
+    const response = await fetch(`${API_BASE}/orders/${providerOrderId}`, {
+      headers: { Authorization: this.authHeader() },
+    });
+
+    if (!response.ok) {
+      throw new PaymentProviderError(
+        `Razorpay order lookup failed (${response.status})`,
+        this.id,
+        await response.text(),
+      );
+    }
+
+    const order = (await response.json()) as {
+      id: string;
+      amount: number;
+      currency: string;
+      status: string;
+    };
+
+    if (order.status === 'paid') {
+      // Reopening the gateway here would invite a second payment for an order
+      // that is already settled. The confirm path can still activate it.
+      throw new PaymentProviderError('This order has already been paid', this.id);
+    }
+
+    return {
+      providerOrderId: order.id,
+      checkout: this.checkoutPayload(order.id, order.amount, order.currency, input),
+    };
+  }
+
+  /**
+   * Everything Razorpay's checkout.js needs, and nothing more. The publishable
+   * key id goes to the browser; the secret never leaves this process.
+   */
+  private checkoutPayload(
+    orderId: string,
+    amountInPaise: number,
+    currency: string,
+    input: CreateOrderInput,
+  ): Record<string, unknown> {
+    return {
+      provider: 'razorpay',
+      key: this.keyId,
+      order_id: orderId,
+      amount: amountInPaise,
+      currency,
+      name: MERCHANT_NAME,
+      description: 'Meal subscription',
+      prefill: {
         name: input.customer.name,
-        prefill: {
-          name: input.customer.name,
-          email: input.customer.email ?? undefined,
-          contact: input.customer.phone,
-        },
+        email: input.customer.email ?? undefined,
+        contact: input.customer.phone,
       },
+      notes: input.notes ?? {},
     };
   }
 

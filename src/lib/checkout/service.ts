@@ -111,28 +111,30 @@ export async function beginCheckout(input: {
     .eq('id', result.payment_id)
     .maybeSingle();
 
-  if (existing?.provider_order_id) {
-    return {
-      subscriptionId: result.subscription_id,
-      paymentId: result.payment_id,
-      amount,
-      replayed: true,
-      checkout: {
-        provider: input.provider,
-        order_id: existing.provider_order_id,
-        amount,
-        currency: 'INR',
-      },
-    };
-  }
-
-  const order = await adapter.createOrder({
+  const orderInput = {
     paymentId: result.payment_id,
     amount,
     currency: 'INR',
     customer: input.customer,
     notes: { subscription_id: result.subscription_id },
-  });
+  };
+
+  if (existing?.provider_order_id) {
+    // Resume rather than create. The browser needs a payload its SDK can
+    // actually open -- a bare order id is not one -- but a second gateway
+    // order against the same payment would be a second chance to charge.
+    const resumed = await adapter.resumeOrder(existing.provider_order_id, orderInput);
+
+    return {
+      subscriptionId: result.subscription_id,
+      paymentId: result.payment_id,
+      amount,
+      replayed: true,
+      checkout: resumed.checkout,
+    };
+  }
+
+  const order = await adapter.createOrder(orderInput);
 
   // payments has no client write policy, so recording the gateway's order id
   // is server work.
