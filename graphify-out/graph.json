@@ -1021,7 +1021,7 @@
       "source_file": "src/app/(site)/account/addresses/page.tsx",
       "source_location": "L1",
       "id": "addresses_page",
-      "community": 0,
+      "community": 106,
       "norm_label": "page.tsx"
     },
     {
@@ -1030,7 +1030,7 @@
       "source_file": "src/app/(site)/account/addresses/page.tsx",
       "source_location": "L30",
       "id": "addresses_page_metadata",
-      "community": 0,
+      "community": 106,
       "norm_label": "metadata"
     },
     {
@@ -1039,7 +1039,7 @@
       "source_file": "src/app/(site)/account/addresses/page.tsx",
       "source_location": "L34",
       "id": "addresses_page_address",
-      "community": 0,
+      "community": 106,
       "norm_label": "address"
     },
     {
@@ -1048,7 +1048,7 @@
       "source_file": "src/app/(site)/account/addresses/page.tsx",
       "source_location": "L60",
       "id": "addresses_page_addressespage",
-      "community": 1,
+      "community": 106,
       "norm_label": "addressespage()"
     },
     {
@@ -1156,7 +1156,7 @@
       "source_file": "src/app/(site)/account/refunds/page.tsx",
       "source_location": "L75",
       "id": "refunds_page_accountrefundspage",
-      "community": 1,
+      "community": 106,
       "norm_label": "accountrefundspage()"
     },
     {
@@ -1201,7 +1201,7 @@
       "source_file": "src/app/(site)/account/reviews/page.tsx",
       "source_location": "L64",
       "id": "reviews_page_accountreviewspage",
-      "community": 1,
+      "community": 106,
       "norm_label": "accountreviewspage()"
     },
     {
@@ -1327,7 +1327,7 @@
       "source_file": "src/app/(site)/offers/page.tsx",
       "source_location": "L1",
       "id": "offers_page",
-      "community": 12,
+      "community": 106,
       "norm_label": "page.tsx"
     },
     {
@@ -1336,7 +1336,7 @@
       "source_file": "src/app/(site)/offers/page.tsx",
       "source_location": "L6",
       "id": "offers_page_metadata",
-      "community": 12,
+      "community": 106,
       "norm_label": "metadata"
     },
     {
@@ -1345,7 +1345,7 @@
       "source_file": "src/app/(site)/offers/page.tsx",
       "source_location": "L11",
       "id": "offers_page_offerspage",
-      "community": 12,
+      "community": 6,
       "norm_label": "offerspage()"
     },
     {
@@ -1354,34 +1354,43 @@
       "source_file": "src/app/(site)/page.tsx",
       "source_location": "L1",
       "id": "site_page",
-      "community": 12,
+      "community": 61,
       "norm_label": "page.tsx"
     },
     {
       "label": "metadata",
       "file_type": "code",
       "source_file": "src/app/(site)/page.tsx",
-      "source_location": "L9",
+      "source_location": "L11",
       "id": "site_page_metadata",
-      "community": 12,
+      "community": 61,
       "norm_label": "metadata"
+    },
+    {
+      "label": "NOTE_PLACEMENT",
+      "file_type": "code",
+      "source_file": "src/app/(site)/page.tsx",
+      "source_location": "L42",
+      "id": "site_page_note_placement",
+      "community": 61,
+      "norm_label": "note_placement"
     },
     {
       "label": "SUBSCRIPTION_STEPS",
       "file_type": "code",
       "source_file": "src/app/(site)/page.tsx",
-      "source_location": "L21",
+      "source_location": "L49",
       "id": "site_page_subscription_steps",
-      "community": 12,
+      "community": 61,
       "norm_label": "subscription_steps"
     },
     {
       "label": "HomePage()",
       "file_type": "code",
       "source_file": "src/app/(site)/page.tsx",
-      "source_location": "L40",
+      "source_location": "L68",
       "id": "site_page_homepage",
-      "community": 12,
+      "community": 6,
       "norm_label": "homepage()"
     },
     {
@@ -1390,7 +1399,7 @@
       "source_file": "src/app/(site)/subscriptions/[slug]/page.tsx",
       "source_location": "L1",
       "id": "slug_page",
-      "community": 12,
+      "community": 6,
       "norm_label": "page.tsx"
     },
     {
@@ -1399,7 +1408,7 @@
       "source_file": "src/app/(site)/subscriptions/[slug]/page.tsx",
       "source_location": "L21",
       "id": "slug_page_generatestaticparams",
-      "community": 12,
+      "community": 6,
       "norm_label": "generatestaticparams()"
     },
     {
@@ -1408,7 +1417,7 @@
       "source_file": "src/app/(site)/subscriptions/[slug]/page.tsx",
       "source_location": "L32",
       "id": "slug_page_configurationerror",
-      "community": 12,
+      "community": 6,
       "norm_label": "configurationerror()"
     },
     {
@@ -1417,7 +1426,7 @@
       "source_file": "src/app/(site)/subscriptions/[slug]/page.tsx",
       "source_location": "L50",
       "id": "slug_page_generatemetadata",
-      "community": 12,
+      "community": 6,
       "norm_label": "generatemetadata()"
     },
     {
@@ -1426,7 +1435,7 @@
       "source_file": "src/app/(site)/subscriptions/[slug]/page.tsx",
       "source_location": "L56",
       "id": "slug_page_planpage",
-      "community": 12,
+      "community": 6,
       "norm_label": "planpage()"
     },
     {
@@ -1462,7 +1471,7 @@
       "source_file": "src/app/(site)/subscriptions/page.tsx",
       "source_location": "L18",
       "id": "subscriptions_page_subscriptionspage",
-      "community": 12,
+      "community": 6,
       "norm_label": "subscriptionspage()"
     },
     {
@@ -1507,7 +1516,7 @@
       "source_file": "src/app/admin/audit/page.tsx",
       "source_location": "L51",
       "id": "audit_page_auditpage",
-      "community": 1,
+      "community": 25,
       "norm_label": "auditpage()"
     },
     {
@@ -1543,7 +1552,7 @@
       "source_file": "src/app/admin/catalog/add-ons/page.tsx",
       "source_location": "L58",
       "id": "add_ons_page_addonspage",
-      "community": 0,
+      "community": 25,
       "norm_label": "addonspage()"
     },
     {
@@ -1579,7 +1588,7 @@
       "source_file": "src/app/admin/catalog/categories/page.tsx",
       "source_location": "L51",
       "id": "categories_page_categoriespage",
-      "community": 0,
+      "community": 25,
       "norm_label": "categoriespage()"
     },
     {
@@ -1615,7 +1624,7 @@
       "source_file": "src/app/admin/catalog/collections/page.tsx",
       "source_location": "L53",
       "id": "collections_page_collectionspage",
-      "community": 0,
+      "community": 25,
       "norm_label": "collectionspage()"
     },
     {
@@ -1651,7 +1660,7 @@
       "source_file": "src/app/admin/catalog/page.tsx",
       "source_location": "L65",
       "id": "catalog_page_catalogpage",
-      "community": 1,
+      "community": 25,
       "norm_label": "catalogpage()"
     },
     {
@@ -1669,7 +1678,7 @@
       "source_file": "src/app/admin/catalog/products/[productId]/page.tsx",
       "source_location": "L38",
       "id": "productid_page_generatemetadata",
-      "community": 0,
+      "community": 25,
       "norm_label": "generatemetadata()"
     },
     {
@@ -1687,7 +1696,7 @@
       "source_file": "src/app/admin/catalog/products/[productId]/page.tsx",
       "source_location": "L87",
       "id": "productid_page_producteditorpage",
-      "community": 1,
+      "community": 25,
       "norm_label": "producteditorpage()"
     },
     {
@@ -1723,7 +1732,7 @@
       "source_file": "src/app/admin/catalog/variants/page.tsx",
       "source_location": "L68",
       "id": "variants_page_variantspage",
-      "community": 0,
+      "community": 25,
       "norm_label": "variantspage()"
     },
     {
@@ -1813,7 +1822,7 @@
       "source_file": "src/app/admin/coupons/page.tsx",
       "source_location": "L121",
       "id": "coupons_page_couponspage",
-      "community": 0,
+      "community": 25,
       "norm_label": "couponspage()"
     },
     {
@@ -1822,7 +1831,7 @@
       "source_file": "src/app/admin/customers/[customerId]/page.tsx",
       "source_location": "L1",
       "id": "customerid_page",
-      "community": 106,
+      "community": 1,
       "norm_label": "page.tsx"
     },
     {
@@ -1840,7 +1849,7 @@
       "source_file": "src/app/admin/customers/[customerId]/page.tsx",
       "source_location": "L51",
       "id": "customerid_page_customer",
-      "community": 106,
+      "community": 1,
       "norm_label": "customer"
     },
     {
@@ -1858,7 +1867,7 @@
       "source_file": "src/app/admin/customers/page.tsx",
       "source_location": "L1",
       "id": "customers_page",
-      "community": 0,
+      "community": 1,
       "norm_label": "page.tsx"
     },
     {
@@ -1867,7 +1876,7 @@
       "source_file": "src/app/admin/customers/page.tsx",
       "source_location": "L32",
       "id": "customers_page_metadata",
-      "community": 0,
+      "community": 1,
       "norm_label": "metadata"
     },
     {
@@ -1876,7 +1885,7 @@
       "source_file": "src/app/admin/customers/page.tsx",
       "source_location": "L36",
       "id": "customers_page_customerrow",
-      "community": 0,
+      "community": 1,
       "norm_label": "customerrow"
     },
     {
@@ -1885,7 +1894,7 @@
       "source_file": "src/app/admin/customers/page.tsx",
       "source_location": "L50",
       "id": "customers_page_source_labels",
-      "community": 0,
+      "community": 1,
       "norm_label": "source_labels"
     },
     {
@@ -1993,7 +2002,7 @@
       "source_file": "src/app/admin/integrations/page.tsx",
       "source_location": "L60",
       "id": "integrations_page_integrationspage",
-      "community": 1,
+      "community": 25,
       "norm_label": "integrationspage()"
     },
     {
@@ -2101,7 +2110,7 @@
       "source_file": "src/app/admin/plans/[planId]/page.tsx",
       "source_location": "L36",
       "id": "planid_page_generatemetadata",
-      "community": 0,
+      "community": 25,
       "norm_label": "generatemetadata()"
     },
     {
@@ -2119,7 +2128,7 @@
       "source_file": "src/app/admin/plans/[planId]/page.tsx",
       "source_location": "L86",
       "id": "planid_page_planeditorpage",
-      "community": 1,
+      "community": 25,
       "norm_label": "planeditorpage()"
     },
     {
@@ -2164,7 +2173,7 @@
       "source_file": "src/app/admin/plans/page.tsx",
       "source_location": "L71",
       "id": "plans_page_planspage",
-      "community": 1,
+      "community": 25,
       "norm_label": "planspage()"
     },
     {
@@ -2236,7 +2245,7 @@
       "source_file": "src/app/admin/reviews/page.tsx",
       "source_location": "L1",
       "id": "src_app_admin_reviews_page_tsx_reviews_page",
-      "community": 1,
+      "community": 25,
       "norm_label": "page.tsx"
     },
     {
@@ -2245,7 +2254,7 @@
       "source_file": "src/app/admin/reviews/page.tsx",
       "source_location": "L31",
       "id": "src_app_admin_reviews_page_tsx_reviews_page_metadata",
-      "community": 1,
+      "community": 25,
       "norm_label": "metadata"
     },
     {
@@ -2254,7 +2263,7 @@
       "source_file": "src/app/admin/reviews/page.tsx",
       "source_location": "L35",
       "id": "reviews_page_filters",
-      "community": 1,
+      "community": 25,
       "norm_label": "filters"
     },
     {
@@ -2263,7 +2272,7 @@
       "source_file": "src/app/admin/reviews/page.tsx",
       "source_location": "L43",
       "id": "src_app_admin_reviews_page_tsx_reviews_page_reviewrow",
-      "community": 1,
+      "community": 25,
       "norm_label": "reviewrow"
     },
     {
@@ -2272,7 +2281,7 @@
       "source_file": "src/app/admin/reviews/page.tsx",
       "source_location": "L57",
       "id": "reviews_page_status_tones",
-      "community": 1,
+      "community": 25,
       "norm_label": "status_tones"
     },
     {
@@ -2281,7 +2290,7 @@
       "source_file": "src/app/admin/reviews/page.tsx",
       "source_location": "L65",
       "id": "reviews_page_rating",
-      "community": 1,
+      "community": 25,
       "norm_label": "rating()"
     },
     {
@@ -2290,7 +2299,7 @@
       "source_file": "src/app/admin/reviews/page.tsx",
       "source_location": "L85",
       "id": "reviews_page_reviewspage",
-      "community": 1,
+      "community": 25,
       "norm_label": "reviewspage()"
     },
     {
@@ -2299,7 +2308,7 @@
       "source_file": "src/app/admin/settings/page.tsx",
       "source_location": "L1",
       "id": "settings_page",
-      "community": 1,
+      "community": 25,
       "norm_label": "page.tsx"
     },
     {
@@ -2308,7 +2317,7 @@
       "source_file": "src/app/admin/settings/page.tsx",
       "source_location": "L20",
       "id": "settings_page_metadata",
-      "community": 1,
+      "community": 25,
       "norm_label": "metadata"
     },
     {
@@ -2317,7 +2326,7 @@
       "source_file": "src/app/admin/settings/page.tsx",
       "source_location": "L24",
       "id": "settings_page_settingrow",
-      "community": 1,
+      "community": 25,
       "norm_label": "settingrow"
     },
     {
@@ -2326,7 +2335,7 @@
       "source_file": "src/app/admin/settings/page.tsx",
       "source_location": "L34",
       "id": "settings_page_group_titles",
-      "community": 1,
+      "community": 25,
       "norm_label": "group_titles"
     },
     {
@@ -2335,7 +2344,7 @@
       "source_file": "src/app/admin/settings/page.tsx",
       "source_location": "L55",
       "id": "settings_page_settingspage",
-      "community": 1,
+      "community": 25,
       "norm_label": "settingspage()"
     },
     {
@@ -2587,7 +2596,7 @@
       "source_file": "src/app/checkout/page.tsx",
       "source_location": "L1",
       "id": "checkout_page",
-      "community": 106,
+      "community": 12,
       "norm_label": "page.tsx"
     },
     {
@@ -2596,7 +2605,7 @@
       "source_file": "src/app/checkout/page.tsx",
       "source_location": "L28",
       "id": "checkout_page_metadata",
-      "community": 106,
+      "community": 12,
       "norm_label": "metadata"
     },
     {
@@ -2605,7 +2614,7 @@
       "source_file": "src/app/checkout/page.tsx",
       "source_location": "L30",
       "id": "checkout_page_quote",
-      "community": 106,
+      "community": 12,
       "norm_label": "quote"
     },
     {
@@ -2686,7 +2695,7 @@
       "source_file": "src/app/kot/kitchen/page.tsx",
       "source_location": "L1",
       "id": "kitchen_page",
-      "community": 1,
+      "community": 25,
       "norm_label": "page.tsx"
     },
     {
@@ -2695,7 +2704,7 @@
       "source_file": "src/app/kot/kitchen/page.tsx",
       "source_location": "L18",
       "id": "kitchen_page_metadata",
-      "community": 1,
+      "community": 25,
       "norm_label": "metadata"
     },
     {
@@ -2704,7 +2713,7 @@
       "source_file": "src/app/kot/kitchen/page.tsx",
       "source_location": "L21",
       "id": "kitchen_page_kitchenpage",
-      "community": 1,
+      "community": 25,
       "norm_label": "kitchenpage()"
     },
     {
@@ -2713,7 +2722,7 @@
       "source_file": "src/app/kot/manager/page.tsx",
       "source_location": "L1",
       "id": "manager_page",
-      "community": 1,
+      "community": 4,
       "norm_label": "page.tsx"
     },
     {
@@ -2722,7 +2731,7 @@
       "source_file": "src/app/kot/manager/page.tsx",
       "source_location": "L18",
       "id": "manager_page_metadata",
-      "community": 1,
+      "community": 4,
       "norm_label": "metadata"
     },
     {
@@ -2731,7 +2740,7 @@
       "source_file": "src/app/kot/manager/page.tsx",
       "source_location": "L22",
       "id": "manager_page_managerpage",
-      "community": 1,
+      "community": 25,
       "norm_label": "managerpage()"
     },
     {
@@ -2747,7 +2756,7 @@
       "label": "sans",
       "file_type": "code",
       "source_file": "src/app/layout.tsx",
-      "source_location": "L18",
+      "source_location": "L19",
       "id": "app_layout_sans",
       "community": 68,
       "norm_label": "sans"
@@ -2756,16 +2765,34 @@
       "label": "mono",
       "file_type": "code",
       "source_file": "src/app/layout.tsx",
-      "source_location": "L24",
+      "source_location": "L25",
       "id": "app_layout_mono",
       "community": 68,
       "norm_label": "mono"
     },
     {
+      "label": "noteDisplay",
+      "file_type": "code",
+      "source_file": "src/app/layout.tsx",
+      "source_location": "L56",
+      "id": "app_layout_notedisplay",
+      "community": 68,
+      "norm_label": "notedisplay"
+    },
+    {
+      "label": "noteText",
+      "file_type": "code",
+      "source_file": "src/app/layout.tsx",
+      "source_location": "L68",
+      "id": "app_layout_notetext",
+      "community": 68,
+      "norm_label": "notetext"
+    },
+    {
       "label": "metadata",
       "file_type": "code",
       "source_file": "src/app/layout.tsx",
-      "source_location": "L30",
+      "source_location": "L77",
       "id": "app_layout_metadata",
       "community": 68,
       "norm_label": "metadata"
@@ -2774,7 +2801,7 @@
       "label": "RootLayout()",
       "file_type": "code",
       "source_file": "src/app/layout.tsx",
-      "source_location": "L39",
+      "source_location": "L86",
       "id": "app_layout_rootlayout",
       "community": 68,
       "norm_label": "rootlayout()"
@@ -2803,7 +2830,7 @@
       "source_file": "src/app/not-found.tsx",
       "source_location": "L10",
       "id": "app_not_found_notfound",
-      "community": 1,
+      "community": 25,
       "norm_label": "notfound()"
     },
     {
@@ -2812,7 +2839,7 @@
       "source_file": "src/app/sign-in/page.tsx",
       "source_location": "L1",
       "id": "sign_in_page",
-      "community": 30,
+      "community": 38,
       "norm_label": "page.tsx"
     },
     {
@@ -2821,7 +2848,7 @@
       "source_file": "src/app/sign-in/page.tsx",
       "source_location": "L18",
       "id": "sign_in_page_metadata",
-      "community": 30,
+      "community": 38,
       "norm_label": "metadata"
     },
     {
@@ -2830,7 +2857,7 @@
       "source_file": "src/app/sign-in/page.tsx",
       "source_location": "L22",
       "id": "sign_in_page_signinpage",
-      "community": 30,
+      "community": 38,
       "norm_label": "signinpage()"
     },
     {
@@ -2875,7 +2902,7 @@
       "source_file": "src/components/account/subscription-controls.tsx",
       "source_location": "L17",
       "id": "account_subscription_controls_subscriptioncontrols",
-      "community": 12,
+      "community": 106,
       "norm_label": "subscriptioncontrols()"
     },
     {
@@ -3091,7 +3118,7 @@
       "source_file": "src/components/checkout/auth-step.tsx",
       "source_location": "L15",
       "id": "checkout_auth_step_checkoutauthstep",
-      "community": 106,
+      "community": 12,
       "norm_label": "checkoutauthstep()"
     },
     {
@@ -3422,7 +3449,7 @@
       "label": "loadFeatures()",
       "file_type": "code",
       "source_file": "src/components/site/hero-motion.tsx",
-      "source_location": "L51",
+      "source_location": "L60",
       "id": "site_hero_motion_loadfeatures",
       "community": 64,
       "norm_label": "loadfeatures()"
@@ -3431,7 +3458,7 @@
       "label": "HeroScrollContext",
       "file_type": "code",
       "source_file": "src/components/site/hero-motion.tsx",
-      "source_location": "L54",
+      "source_location": "L63",
       "id": "site_hero_motion_heroscrollcontext",
       "community": 64,
       "norm_label": "heroscrollcontext"
@@ -3440,7 +3467,7 @@
       "label": "HeroStage()",
       "file_type": "code",
       "source_file": "src/components/site/hero-motion.tsx",
-      "source_location": "L69",
+      "source_location": "L78",
       "id": "site_hero_motion_herostage",
       "community": 64,
       "norm_label": "herostage()"
@@ -3449,7 +3476,7 @@
       "label": "HeroLayer()",
       "file_type": "code",
       "source_file": "src/components/site/hero-motion.tsx",
-      "source_location": "L117",
+      "source_location": "L126",
       "id": "site_hero_motion_herolayer",
       "community": 64,
       "norm_label": "herolayer()"
@@ -3458,7 +3485,7 @@
       "label": "POINTER_SPRING",
       "file_type": "code",
       "source_file": "src/components/site/hero-motion.tsx",
-      "source_location": "L168",
+      "source_location": "L177",
       "id": "site_hero_motion_pointer_spring",
       "community": 64,
       "norm_label": "pointer_spring"
@@ -3467,7 +3494,7 @@
       "label": "LIFT_SPRING",
       "file_type": "code",
       "source_file": "src/components/site/hero-motion.tsx",
-      "source_location": "L169",
+      "source_location": "L178",
       "id": "site_hero_motion_lift_spring",
       "community": 64,
       "norm_label": "lift_spring"
@@ -3476,7 +3503,7 @@
       "label": "PhotoDrift",
       "file_type": "code",
       "source_file": "src/components/site/hero-motion.tsx",
-      "source_location": "L171",
+      "source_location": "L180",
       "id": "site_hero_motion_photodrift",
       "community": 64,
       "norm_label": "photodrift"
@@ -3485,7 +3512,7 @@
       "label": "PhotoDriftContext",
       "file_type": "code",
       "source_file": "src/components/site/hero-motion.tsx",
-      "source_location": "L177",
+      "source_location": "L186",
       "id": "site_hero_motion_photodriftcontext",
       "community": 64,
       "norm_label": "photodriftcontext"
@@ -3494,7 +3521,7 @@
       "label": "TiltCard()",
       "file_type": "code",
       "source_file": "src/components/site/hero-motion.tsx",
-      "source_location": "L202",
+      "source_location": "L211",
       "id": "site_hero_motion_tiltcard",
       "community": 64,
       "norm_label": "tiltcard()"
@@ -3503,7 +3530,7 @@
       "label": "DriftingPhoto()",
       "file_type": "code",
       "source_file": "src/components/site/hero-motion.tsx",
-      "source_location": "L304",
+      "source_location": "L313",
       "id": "site_hero_motion_driftingphoto",
       "community": 64,
       "norm_label": "driftingphoto()"
@@ -3512,10 +3539,19 @@
       "label": "DriftingArrow()",
       "file_type": "code",
       "source_file": "src/components/site/hero-motion.tsx",
-      "source_location": "L333",
+      "source_location": "L342",
       "id": "site_hero_motion_driftingarrow",
       "community": 64,
       "norm_label": "driftingarrow()"
+    },
+    {
+      "label": "Courier()",
+      "file_type": "code",
+      "source_file": "src/components/site/hero-motion.tsx",
+      "source_location": "L383",
+      "id": "site_hero_motion_courier",
+      "community": 64,
+      "norm_label": "courier()"
     },
     {
       "label": "icons.tsx",
@@ -3523,7 +3559,7 @@
       "source_file": "src/components/site/icons.tsx",
       "source_location": "L1",
       "id": "site_icons",
-      "community": 61,
+      "community": 66,
       "norm_label": "icons.tsx"
     },
     {
@@ -3532,7 +3568,7 @@
       "source_file": "src/components/site/icons.tsx",
       "source_location": "L9",
       "id": "site_icons_base",
-      "community": 61,
+      "community": 66,
       "norm_label": "base"
     },
     {
@@ -3541,7 +3577,7 @@
       "source_file": "src/components/site/icons.tsx",
       "source_location": "L18",
       "id": "site_icons_searchicon",
-      "community": 61,
+      "community": 66,
       "norm_label": "searchicon()"
     },
     {
@@ -3550,7 +3586,7 @@
       "source_file": "src/components/site/icons.tsx",
       "source_location": "L27",
       "id": "site_icons_arrowrighticon",
-      "community": 61,
+      "community": 66,
       "norm_label": "arrowrighticon()"
     },
     {
@@ -3559,16 +3595,16 @@
       "source_file": "src/components/site/menu-search.tsx",
       "source_location": "L1",
       "id": "site_menu_search",
-      "community": 61,
+      "community": 66,
       "norm_label": "menu-search.tsx"
     },
     {
       "label": "MenuSearch()",
       "file_type": "code",
       "source_file": "src/components/site/menu-search.tsx",
-      "source_location": "L16",
+      "source_location": "L17",
       "id": "site_menu_search_menusearch",
-      "community": 61,
+      "community": 66,
       "norm_label": "menusearch()"
     },
     {
@@ -3599,12 +3635,30 @@
       "norm_label": "site_nav"
     },
     {
+      "label": "reveal.tsx",
+      "file_type": "code",
+      "source_file": "src/components/site/reveal.tsx",
+      "source_location": "L1",
+      "id": "site_reveal",
+      "community": 61,
+      "norm_label": "reveal.tsx"
+    },
+    {
+      "label": "Reveal()",
+      "file_type": "code",
+      "source_file": "src/components/site/reveal.tsx",
+      "source_location": "L35",
+      "id": "site_reveal_reveal",
+      "community": 61,
+      "norm_label": "reveal()"
+    },
+    {
       "label": "signed-out-notice.tsx",
       "file_type": "code",
       "source_file": "src/components/site/signed-out-notice.tsx",
       "source_location": "L1",
       "id": "site_signed_out_notice",
-      "community": 7,
+      "community": 106,
       "norm_label": "signed-out-notice.tsx"
     },
     {
@@ -3613,7 +3667,7 @@
       "source_file": "src/components/site/signed-out-notice.tsx",
       "source_location": "L15",
       "id": "site_signed_out_notice_signedoutnotice",
-      "community": 7,
+      "community": 106,
       "norm_label": "signedoutnotice()"
     },
     {
@@ -3647,7 +3701,7 @@
       "label": "Step",
       "file_type": "code",
       "source_file": "src/components/site/step-flow.tsx",
-      "source_location": "L35",
+      "source_location": "L42",
       "id": "site_step_flow_step",
       "community": 61,
       "norm_label": "step"
@@ -3656,7 +3710,7 @@
       "label": "Typewriter()",
       "file_type": "code",
       "source_file": "src/components/site/step-flow.tsx",
-      "source_location": "L53",
+      "source_location": "L60",
       "id": "site_step_flow_typewriter",
       "community": 61,
       "norm_label": "typewriter()"
@@ -3665,19 +3719,10 @@
       "label": "StepFlow()",
       "file_type": "code",
       "source_file": "src/components/site/step-flow.tsx",
-      "source_location": "L129",
+      "source_location": "L162",
       "id": "site_step_flow_stepflow",
       "community": 61,
       "norm_label": "stepflow()"
-    },
-    {
-      "label": "StepArrow()",
-      "file_type": "code",
-      "source_file": "src/components/site/step-flow.tsx",
-      "source_location": "L180",
-      "id": "site_step_flow_steparrow",
-      "community": 61,
-      "norm_label": "steparrow()"
     },
     {
       "label": "storefront-hero.tsx",
@@ -3692,7 +3737,7 @@
       "label": "Photo",
       "file_type": "code",
       "source_file": "src/components/site/storefront-hero.tsx",
-      "source_location": "L32",
+      "source_location": "L35",
       "id": "site_storefront_hero_photo",
       "community": 64,
       "norm_label": "photo"
@@ -3701,7 +3746,7 @@
       "label": "ENTER",
       "file_type": "code",
       "source_file": "src/components/site/storefront-hero.tsx",
-      "source_location": "L47",
+      "source_location": "L50",
       "id": "site_storefront_hero_enter",
       "community": 64,
       "norm_label": "enter"
@@ -3710,7 +3755,7 @@
       "label": "enterAt()",
       "file_type": "code",
       "source_file": "src/components/site/storefront-hero.tsx",
-      "source_location": "L56",
+      "source_location": "L59",
       "id": "site_storefront_hero_enterat",
       "community": 64,
       "norm_label": "enterat()"
@@ -3719,7 +3764,7 @@
       "label": "withPhotos()",
       "file_type": "code",
       "source_file": "src/components/site/storefront-hero.tsx",
-      "source_location": "L60",
+      "source_location": "L63",
       "id": "site_storefront_hero_withphotos",
       "community": 64,
       "norm_label": "withphotos()"
@@ -3728,7 +3773,7 @@
       "label": "headlineOffer()",
       "file_type": "code",
       "source_file": "src/components/site/storefront-hero.tsx",
-      "source_location": "L67",
+      "source_location": "L70",
       "id": "site_storefront_hero_headlineoffer",
       "community": 64,
       "norm_label": "headlineoffer()"
@@ -3737,7 +3782,7 @@
       "label": "offerLabel()",
       "file_type": "code",
       "source_file": "src/components/site/storefront-hero.tsx",
-      "source_location": "L75",
+      "source_location": "L78",
       "id": "site_storefront_hero_offerlabel",
       "community": 64,
       "norm_label": "offerlabel()"
@@ -3746,7 +3791,7 @@
       "label": "StorefrontHero()",
       "file_type": "code",
       "source_file": "src/components/site/storefront-hero.tsx",
-      "source_location": "L84",
+      "source_location": "L87",
       "id": "site_storefront_hero_storefronthero",
       "community": 64,
       "norm_label": "storefronthero()"
@@ -3755,7 +3800,7 @@
       "label": "DeliveryCourier()",
       "file_type": "code",
       "source_file": "src/components/site/storefront-hero.tsx",
-      "source_location": "L218",
+      "source_location": "L240",
       "id": "site_storefront_hero_deliverycourier",
       "community": 64,
       "norm_label": "deliverycourier()"
@@ -3764,7 +3809,7 @@
       "label": "HEADLINE",
       "file_type": "code",
       "source_file": "src/components/site/storefront-hero.tsx",
-      "source_location": "L229",
+      "source_location": "L251",
       "id": "site_storefront_hero_headline",
       "community": 64,
       "norm_label": "headline"
@@ -3773,7 +3818,7 @@
       "label": "HeroHeadline()",
       "file_type": "code",
       "source_file": "src/components/site/storefront-hero.tsx",
-      "source_location": "L244",
+      "source_location": "L266",
       "id": "site_storefront_hero_heroheadline",
       "community": 64,
       "norm_label": "heroheadline()"
@@ -3782,9 +3827,9 @@
       "label": "GatewayCard()",
       "file_type": "code",
       "source_file": "src/components/site/storefront-hero.tsx",
-      "source_location": "L290",
+      "source_location": "L312",
       "id": "site_storefront_hero_gatewaycard",
-      "community": 64,
+      "community": 66,
       "norm_label": "gatewaycard()"
     },
     {
@@ -3802,7 +3847,7 @@
       "source_file": "src/components/ui/button-styles.ts",
       "source_location": "L22",
       "id": "ui_button_styles_cx",
-      "community": 61,
+      "community": 66,
       "norm_label": "cx()"
     },
     {
@@ -3847,7 +3892,7 @@
       "source_file": "src/components/ui/button-styles.ts",
       "source_location": "L53",
       "id": "ui_button_styles_buttonclasses",
-      "community": 61,
+      "community": 66,
       "norm_label": "buttonclasses()"
     },
     {
@@ -3883,7 +3928,7 @@
       "source_file": "src/components/ui/confirm-button.tsx",
       "source_location": "L17",
       "id": "ui_confirm_button_confirmbutton",
-      "community": 106,
+      "community": 0,
       "norm_label": "confirmbutton()"
     },
     {
@@ -3928,7 +3973,7 @@
       "source_file": "src/components/ui/primitives.tsx",
       "source_location": "L32",
       "id": "ui_primitives_sectionheading",
-      "community": 1,
+      "community": 0,
       "norm_label": "sectionheading()"
     },
     {
@@ -3991,7 +4036,7 @@
       "source_file": "src/components/ui/primitives.tsx",
       "source_location": "L192",
       "id": "ui_primitives_emptystate",
-      "community": 12,
+      "community": 1,
       "norm_label": "emptystate()"
     },
     {
@@ -4009,7 +4054,7 @@
       "source_file": "src/components/ui/primitives.tsx",
       "source_location": "L248",
       "id": "ui_primitives_field",
-      "community": 106,
+      "community": 0,
       "norm_label": "field()"
     },
     {
@@ -4130,19 +4175,10 @@
       "norm_label": "str()"
     },
     {
-      "label": "nullableStr()",
-      "file_type": "code",
-      "source_file": "src/lib/admin/form.ts",
-      "source_location": "L15",
-      "id": "admin_form_nullablestr",
-      "community": 0,
-      "norm_label": "nullablestr()"
-    },
-    {
       "label": "num()",
       "file_type": "code",
       "source_file": "src/lib/admin/form.ts",
-      "source_location": "L20",
+      "source_location": "L15",
       "id": "admin_form_num",
       "community": 0,
       "norm_label": "num()"
@@ -4151,7 +4187,7 @@
       "label": "nullableNum()",
       "file_type": "code",
       "source_file": "src/lib/admin/form.ts",
-      "source_location": "L25",
+      "source_location": "L20",
       "id": "admin_form_nullablenum",
       "community": 0,
       "norm_label": "nullablenum()"
@@ -4160,7 +4196,7 @@
       "label": "bool()",
       "file_type": "code",
       "source_file": "src/lib/admin/form.ts",
-      "source_location": "L33",
+      "source_location": "L28",
       "id": "admin_form_bool",
       "community": 0,
       "norm_label": "bool()"
@@ -4169,7 +4205,7 @@
       "label": "nullableBool()",
       "file_type": "code",
       "source_file": "src/lib/admin/form.ts",
-      "source_location": "L43",
+      "source_location": "L38",
       "id": "admin_form_nullablebool",
       "community": 0,
       "norm_label": "nullablebool()"
@@ -4178,25 +4214,16 @@
       "label": "list()",
       "file_type": "code",
       "source_file": "src/lib/admin/form.ts",
-      "source_location": "L49",
+      "source_location": "L44",
       "id": "admin_form_list",
       "community": 0,
       "norm_label": "list()"
     },
     {
-      "label": "numList()",
-      "file_type": "code",
-      "source_file": "src/lib/admin/form.ts",
-      "source_location": "L56",
-      "id": "admin_form_numlist",
-      "community": 0,
-      "norm_label": "numlist()"
-    },
-    {
       "label": "slugify()",
       "file_type": "code",
       "source_file": "src/lib/admin/form.ts",
-      "source_location": "L67",
+      "source_location": "L56",
       "id": "admin_form_slugify",
       "community": 0,
       "norm_label": "slugify()"
@@ -4205,7 +4232,7 @@
       "label": "codify()",
       "file_type": "code",
       "source_file": "src/lib/admin/form.ts",
-      "source_location": "L77",
+      "source_location": "L66",
       "id": "admin_form_codify",
       "community": 0,
       "norm_label": "codify()"
@@ -4306,7 +4333,7 @@
       "source_file": "src/lib/auth/permissions.ts",
       "source_location": "L11",
       "id": "auth_permissions_permissions",
-      "community": 1,
+      "community": 0,
       "norm_label": "permissions"
     },
     {
@@ -4335,15 +4362,6 @@
       "id": "auth_permissions_landingpathforrole",
       "community": 30,
       "norm_label": "landingpathforrole()"
-    },
-    {
-      "label": "STAFF_ROLES",
-      "file_type": "code",
-      "source_file": "src/lib/auth/permissions.ts",
-      "source_location": "L74",
-      "id": "auth_permissions_staff_roles",
-      "community": 1,
-      "norm_label": "staff_roles"
     },
     {
       "label": "session.ts",
@@ -4378,7 +4396,7 @@
       "source_file": "src/lib/auth/session.ts",
       "source_location": "L71",
       "id": "auth_session_requiresession",
-      "community": 1,
+      "community": 106,
       "norm_label": "requiresession()"
     },
     {
@@ -4387,7 +4405,7 @@
       "source_file": "src/lib/auth/session.ts",
       "source_location": "L81",
       "id": "auth_session_requirepermission",
-      "community": 1,
+      "community": 25,
       "norm_label": "requirepermission()"
     },
     {
@@ -4407,15 +4425,6 @@
       "id": "auth_session_can",
       "community": 1,
       "norm_label": "can()"
-    },
-    {
-      "label": "authorizeRequest()",
-      "file_type": "code",
-      "source_file": "src/lib/auth/session.ts",
-      "source_location": "L108",
-      "id": "auth_session_authorizerequest",
-      "community": 30,
-      "norm_label": "authorizerequest()"
     },
     {
       "label": "draft.ts",
@@ -4693,7 +4702,7 @@
       "source_file": "src/lib/data/catalog.ts",
       "source_location": "L308",
       "id": "data_catalog_listplans",
-      "community": 12,
+      "community": 6,
       "norm_label": "listplans()"
     },
     {
@@ -4702,7 +4711,7 @@
       "source_file": "src/lib/data/catalog.ts",
       "source_location": "L321",
       "id": "data_catalog_getplan",
-      "community": 12,
+      "community": 6,
       "norm_label": "getplan()"
     },
     {
@@ -4711,7 +4720,7 @@
       "source_file": "src/lib/data/catalog.ts",
       "source_location": "L337",
       "id": "data_catalog_getplanmeals",
-      "community": 12,
+      "community": 6,
       "norm_label": "getplanmeals()"
     },
     {
@@ -4729,7 +4738,7 @@
       "source_file": "src/lib/data/catalog.ts",
       "source_location": "L386",
       "id": "data_catalog_listpublicoffers",
-      "community": 12,
+      "community": 6,
       "norm_label": "listpublicoffers()"
     },
     {
@@ -4738,7 +4747,7 @@
       "source_file": "src/lib/data/catalog.ts",
       "source_location": "L412",
       "id": "data_catalog_deliverywindow",
-      "community": 6,
+      "community": 64,
       "norm_label": "deliverywindow"
     },
     {
@@ -4749,15 +4758,6 @@
       "id": "data_catalog_listdeliverywindows",
       "community": 6,
       "norm_label": "listdeliverywindows()"
-    },
-    {
-      "label": "publicSettings()",
-      "file_type": "code",
-      "source_file": "src/lib/data/catalog.ts",
-      "source_location": "L440",
-      "id": "data_catalog_publicsettings",
-      "community": 6,
-      "norm_label": "publicsettings()"
     },
     {
       "label": "env.ts",
@@ -4859,19 +4859,10 @@
       "norm_label": "money()"
     },
     {
-      "label": "moneyExact()",
-      "file_type": "code",
-      "source_file": "src/lib/format.ts",
-      "source_location": "L35",
-      "id": "lib_format_moneyexact",
-      "community": 12,
-      "norm_label": "moneyexact()"
-    },
-    {
       "label": "dateTime()",
       "file_type": "code",
       "source_file": "src/lib/format.ts",
-      "source_location": "L41",
+      "source_location": "L34",
       "id": "lib_format_datetime",
       "community": 1,
       "norm_label": "datetime()"
@@ -4880,7 +4871,7 @@
       "label": "dateOnly()",
       "file_type": "code",
       "source_file": "src/lib/format.ts",
-      "source_location": "L53",
+      "source_location": "L46",
       "id": "lib_format_dateonly",
       "community": 12,
       "norm_label": "dateonly()"
@@ -4889,7 +4880,7 @@
       "label": "timeOnly()",
       "file_type": "code",
       "source_file": "src/lib/format.ts",
-      "source_location": "L63",
+      "source_location": "L56",
       "id": "lib_format_timeonly",
       "community": 4,
       "norm_label": "timeonly()"
@@ -4898,7 +4889,7 @@
       "label": "clockTime()",
       "file_type": "code",
       "source_file": "src/lib/format.ts",
-      "source_location": "L74",
+      "source_location": "L67",
       "id": "lib_format_clocktime",
       "community": 12,
       "norm_label": "clocktime()"
@@ -4907,7 +4898,7 @@
       "label": "duration()",
       "file_type": "code",
       "source_file": "src/lib/format.ts",
-      "source_location": "L83",
+      "source_location": "L76",
       "id": "lib_format_duration",
       "community": 12,
       "norm_label": "duration()"
@@ -4916,7 +4907,7 @@
       "label": "elapsedSince()",
       "file_type": "code",
       "source_file": "src/lib/format.ts",
-      "source_location": "L100",
+      "source_location": "L93",
       "id": "lib_format_elapsedsince",
       "community": 4,
       "norm_label": "elapsedsince()"
@@ -4925,7 +4916,7 @@
       "label": "untilDeadline()",
       "file_type": "code",
       "source_file": "src/lib/format.ts",
-      "source_location": "L113",
+      "source_location": "L106",
       "id": "lib_format_untildeadline",
       "community": 4,
       "norm_label": "untildeadline()"
@@ -4934,7 +4925,7 @@
       "label": "WEEKDAYS",
       "file_type": "code",
       "source_file": "src/lib/format.ts",
-      "source_location": "L126",
+      "source_location": "L119",
       "id": "lib_format_weekdays",
       "community": 12,
       "norm_label": "weekdays"
@@ -4943,16 +4934,16 @@
       "label": "weekdayName()",
       "file_type": "code",
       "source_file": "src/lib/format.ts",
-      "source_location": "L129",
+      "source_location": "L122",
       "id": "lib_format_weekdayname",
-      "community": 0,
+      "community": 12,
       "norm_label": "weekdayname()"
     },
     {
       "label": "weekdayList()",
       "file_type": "code",
       "source_file": "src/lib/format.ts",
-      "source_location": "L133",
+      "source_location": "L126",
       "id": "lib_format_weekdaylist",
       "community": 12,
       "norm_label": "weekdaylist()"
@@ -4961,7 +4952,7 @@
       "label": "pluralise()",
       "file_type": "code",
       "source_file": "src/lib/format.ts",
-      "source_location": "L144",
+      "source_location": "L137",
       "id": "lib_format_pluralise",
       "community": 62,
       "norm_label": "pluralise()"
@@ -4970,16 +4961,16 @@
       "label": "SOURCE_LABELS",
       "file_type": "code",
       "source_file": "src/lib/format.ts",
-      "source_location": "L149",
+      "source_location": "L142",
       "id": "lib_format_source_labels",
-      "community": 4,
+      "community": 12,
       "norm_label": "source_labels"
     },
     {
       "label": "KOT_STATUS_LABELS",
       "file_type": "code",
       "source_file": "src/lib/format.ts",
-      "source_location": "L155",
+      "source_location": "L148",
       "id": "lib_format_kot_status_labels",
       "community": 12,
       "norm_label": "kot_status_labels"
@@ -4988,7 +4979,7 @@
       "label": "SUBSCRIPTION_STATUS_LABELS",
       "file_type": "code",
       "source_file": "src/lib/format.ts",
-      "source_location": "L168",
+      "source_location": "L161",
       "id": "lib_format_subscription_status_labels",
       "community": 12,
       "norm_label": "subscription_status_labels"
@@ -4997,7 +4988,7 @@
       "label": "PLAN_TYPE_LABELS",
       "file_type": "code",
       "source_file": "src/lib/format.ts",
-      "source_location": "L177",
+      "source_location": "L170",
       "id": "lib_format_plan_type_labels",
       "community": 12,
       "norm_label": "plan_type_labels"
@@ -5181,15 +5172,6 @@
       "id": "marketplace_index_marketplaceadapter",
       "community": 11,
       "norm_label": "marketplaceadapter()"
-    },
-    {
-      "label": "providerForSource()",
-      "file_type": "code",
-      "source_file": "src/lib/marketplace/index.ts",
-      "source_location": "L41",
-      "id": "marketplace_index_providerforsource",
-      "community": 11,
-      "norm_label": "providerforsource()"
     },
     {
       "label": "types.ts",
@@ -6029,15 +6011,6 @@
       "norm_label": "adminclient()"
     },
     {
-      "label": "auditSystemEvent()",
-      "file_type": "code",
-      "source_file": "src/lib/supabase/admin.ts",
-      "source_location": "L47",
-      "id": "supabase_admin_auditsystemevent",
-      "community": 23,
-      "norm_label": "auditsystemevent()"
-    },
-    {
       "label": "client.ts",
       "file_type": "code",
       "source_file": "src/lib/supabase/client.ts",
@@ -6088,7 +6061,7 @@
       "source_file": "src/lib/supabase/server.ts",
       "source_location": "L13",
       "id": "supabase_server_serverclient",
-      "community": 1,
+      "community": 25,
       "norm_label": "serverclient()"
     },
     {
@@ -6682,7 +6655,7 @@
       "source_file": "DESIGN.md",
       "source_location": "L51",
       "id": "design_components",
-      "community": 72,
+      "community": 57,
       "norm_label": "components"
     },
     {
@@ -6691,7 +6664,7 @@
       "source_file": "DESIGN.md",
       "source_location": "L67",
       "id": "design_storefront_components_site",
-      "community": 72,
+      "community": 57,
       "norm_label": "storefront (`components/site/`)"
     },
     {
@@ -6700,7 +6673,7 @@
       "source_file": "DESIGN.md",
       "source_location": "L76",
       "id": "design_server_action_feedback",
-      "community": 72,
+      "community": 57,
       "norm_label": "server-action feedback"
     },
     {
@@ -7019,6 +6992,87 @@
       "norm_label": "get"
     },
     {
+      "label": "StepArrow()",
+      "file_type": "code",
+      "source_file": "src/components/site/step-flow.tsx",
+      "source_location": "L180",
+      "community": 61,
+      "norm_label": "steparrow()",
+      "id": "site_step_flow_steparrow"
+    },
+    {
+      "label": "nullableStr()",
+      "file_type": "code",
+      "source_file": "src/lib/admin/form.ts",
+      "source_location": "L15",
+      "community": 0,
+      "norm_label": "nullablestr()",
+      "id": "admin_form_nullablestr"
+    },
+    {
+      "label": "numList()",
+      "file_type": "code",
+      "source_file": "src/lib/admin/form.ts",
+      "source_location": "L56",
+      "community": 0,
+      "norm_label": "numlist()",
+      "id": "admin_form_numlist"
+    },
+    {
+      "label": "STAFF_ROLES",
+      "file_type": "code",
+      "source_file": "src/lib/auth/permissions.ts",
+      "source_location": "L74",
+      "community": 1,
+      "norm_label": "staff_roles",
+      "id": "auth_permissions_staff_roles"
+    },
+    {
+      "label": "authorizeRequest()",
+      "file_type": "code",
+      "source_file": "src/lib/auth/session.ts",
+      "source_location": "L108",
+      "community": 30,
+      "norm_label": "authorizerequest()",
+      "id": "auth_session_authorizerequest"
+    },
+    {
+      "label": "publicSettings()",
+      "file_type": "code",
+      "source_file": "src/lib/data/catalog.ts",
+      "source_location": "L440",
+      "community": 6,
+      "norm_label": "publicsettings()",
+      "id": "data_catalog_publicsettings"
+    },
+    {
+      "label": "moneyExact()",
+      "file_type": "code",
+      "source_file": "src/lib/format.ts",
+      "source_location": "L35",
+      "community": 12,
+      "norm_label": "moneyexact()",
+      "id": "lib_format_moneyexact"
+    },
+    {
+      "label": "providerForSource()",
+      "file_type": "code",
+      "source_file": "src/lib/marketplace/index.ts",
+      "source_location": "L41",
+      "community": 11,
+      "norm_label": "providerforsource()",
+      "id": "marketplace_index_providerforsource"
+    },
+    {
+      "label": "auditSystemEvent()",
+      "file_type": "code",
+      "source_file": "src/lib/supabase/admin.ts",
+      "source_location": "L47",
+      "community": 23,
+      "norm_label": "auditsystemevent()",
+      "id": "supabase_admin_auditsystemevent"
+    },
+    {
       "label": "geistSans",
       "file_type": "code",
       "source_file": "src/app/layout.tsx",
@@ -7041,7 +7095,7 @@
       "file_type": "code",
       "source_file": "src/components/site/storefront-hero.tsx",
       "source_location": "L228",
-      "community": 61,
+      "community": 64,
       "norm_label": "bleedphoto()",
       "id": "site_storefront_hero_bleedphoto"
     },
@@ -7322,7 +7376,7 @@
       "author": null,
       "contributor": null,
       "rationale": "Order state is deliberately separate from payment state and KOT state - three machines that never write each other's columns (PRD 8, 20).",
-      "community": 29,
+      "community": 5,
       "norm_label": "order_status (enum)",
       "id": "m0001_order_status"
     },
@@ -7444,7 +7498,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 29,
+      "community": 5,
       "norm_label": "coupon_discount_type (enum)",
       "id": "m0001_coupon_discount_type"
     },
@@ -8139,7 +8193,7 @@
       "author": null,
       "contributor": null,
       "rationale": "profile_id is nullable so the Owner can create a customer who has never signed in. Marketing consent is deliberately independent of account status: deleting an account is not permission to keep marketing (PRD 14).",
-      "community": 10,
+      "community": 5,
       "norm_label": "customers (table)",
       "id": "m0005_customers"
     },
@@ -8181,7 +8235,7 @@
       "author": null,
       "contributor": null,
       "rationale": "Keeps the change history but redacts contact PII the log does not need to prove who changed what.",
-      "community": 10,
+      "community": 5,
       "norm_label": "customers_audit (trigger, redacts email/phone)",
       "id": "m0005_trg_customers_audit"
     },
@@ -8360,7 +8414,7 @@
       "author": null,
       "contributor": null,
       "rationale": "Check constraints enforce channel shape: an SX order needs a real subscription delivery; a marketplace order needs an external_order_id. Address/name snapshots mean a later profile edit cannot rewrite what was delivered (PRD 17).",
-      "community": 29,
+      "community": 5,
       "norm_label": "orders (table)",
       "id": "m0007_orders"
     },
@@ -8387,7 +8441,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 29,
+      "community": 5,
       "norm_label": "order_status_events (table)",
       "id": "m0007_order_status_events"
     },
@@ -8456,7 +8510,7 @@
       "author": null,
       "contributor": null,
       "rationale": "A single sequence across all sources, 1..99,999,999; distinct from the daily source-prefixed KOT number (PRD 10).",
-      "community": 29,
+      "community": 5,
       "norm_label": "order_number_seq (sequence)",
       "id": "m0007_order_number_seq"
     },
@@ -8525,7 +8579,7 @@
       "author": null,
       "contributor": null,
       "rationale": "Orders move under server control only, and every move leaves an event.",
-      "community": 29,
+      "community": 5,
       "norm_label": "app.order_record_transition()",
       "id": "m0007_app_order_record_transition"
     },
@@ -8565,7 +8619,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 29,
+      "community": 5,
       "norm_label": "orders_record_transition_ins (trigger)",
       "id": "m0007_trg_orders_record_transition_ins"
     },
@@ -8578,7 +8632,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 29,
+      "community": 5,
       "norm_label": "orders_record_transition_upd (trigger)",
       "id": "m0007_trg_orders_record_transition_upd"
     },
@@ -8647,7 +8701,7 @@
       "author": null,
       "contributor": null,
       "rationale": "A ticket workflow while refund policy is still pending owner approval; creating a request never moves money, it opens a case (PRD 7, 22).",
-      "community": 10,
+      "community": 5,
       "norm_label": "refund_requests (table)",
       "id": "m0008_refund_requests"
     },
@@ -8756,7 +8810,7 @@
       "author": null,
       "contributor": null,
       "rationale": "The 5% first-subscription offer is one row, not a constant: percentage, eligibility and lifetime are all editable. is_auto_visible shows an offer as already unlocked, but it still has to pass server validation (PRD 6, 14).",
-      "community": 29,
+      "community": 5,
       "norm_label": "coupons (table)",
       "id": "m0009_coupons"
     },
@@ -8770,7 +8824,7 @@
       "author": null,
       "contributor": null,
       "rationale": "Eligibility predicates as rows so a new campaign shape needs no schema change.",
-      "community": 29,
+      "community": 5,
       "norm_label": "coupon_rules (table)",
       "id": "m0009_coupon_rules"
     },
@@ -8784,7 +8838,7 @@
       "author": null,
       "contributor": null,
       "rationale": "Partial unique (coupon_id, subscription_id) means one subscription consumes a coupon exactly once, even under retry.",
-      "community": 29,
+      "community": 5,
       "norm_label": "coupon_redemptions (table)",
       "id": "m0009_coupon_redemptions"
     },
@@ -8826,7 +8880,7 @@
       "author": null,
       "contributor": null,
       "rationale": "Server-side coupon validation: the browser may SHOW an offer as unlocked; only this decides whether it applies. 'First subscription' is checked against activated subscriptions, never inferred from the client.",
-      "community": 29,
+      "community": 5,
       "norm_label": "public.validate_coupon()",
       "id": "m0009_validate_coupon"
     },
@@ -9649,7 +9703,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 10,
+      "community": 5,
       "norm_label": "customers_self_read (policy)",
       "id": "m0090_pol_customers_self_read"
     },
@@ -9784,7 +9838,7 @@
       "author": null,
       "contributor": null,
       "rationale": "Only offers meant to be shown (active, auto-visible, in window) are visible without coupons.manage.",
-      "community": 29,
+      "community": 5,
       "norm_label": "coupons_read (policy)",
       "id": "m0090_pol_coupons_read"
     },
@@ -9851,7 +9905,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 10,
+      "community": 5,
       "norm_label": "refund_requests_create (policy)",
       "id": "m0090_pol_refund_requests_create"
     },
@@ -10017,7 +10071,7 @@
       "author": null,
       "contributor": null,
       "rationale": "Does the one thing a customer should be able to do, proving ownership first - rather than widening payments.manage, which would also let them edit a decision already recorded against them. An already-decided case is part of the record, not a draft.",
-      "community": 10,
+      "community": 5,
       "norm_label": "public.withdraw_refund_request()",
       "id": "m0103_withdraw_refund_request"
     },
@@ -10199,7 +10253,7 @@
       "author": null,
       "contributor": null,
       "rationale": "Seeds through the real schema and the real workflow functions rather than inserting into orders or kot_tickets directly, so a regressed invariant makes the seed itself fail. Runs with app.actor_id set to the Developer Admin so permission checks and the audit trail see a real actor. Ends with a self-check block asserting the PRD's core invariants.",
-      "community": 14,
+      "community": 33,
       "norm_label": "demo seed data",
       "id": "seed_demo_seed"
     },
@@ -10213,7 +10267,7 @@
       "author": null,
       "contributor": null,
       "rationale": "One row per authenticated principal, keyed to Supabase auth; customers get a profile too with role = 'customer'. A trigger guards the privilege columns so a self-update cannot escalate role.",
-      "community": 40,
+      "community": 33,
       "norm_label": "auth_profiles table",
       "id": "schema_tbl_auth_profiles"
     },
@@ -10254,7 +10308,7 @@
       "author": null,
       "contributor": null,
       "rationale": "Role quantities are data, never hardcoded: three kitchen accounts share one physical display, and a fourth hire is one more row.",
-      "community": 14,
+      "community": 33,
       "norm_label": "employees table",
       "id": "schema_tbl_employees"
     },
@@ -10295,7 +10349,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 33,
+      "community": 67,
       "norm_label": "delivery_settings table",
       "id": "schema_tbl_delivery_settings"
     },
@@ -10308,7 +10362,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 33,
+      "community": 67,
       "norm_label": "tax_settings table",
       "id": "schema_tbl_tax_settings"
     },
@@ -10479,7 +10533,7 @@
       "author": null,
       "contributor": null,
       "rationale": "Marketing consent is stored with its own timestamp, separate from account state, so disabling a login does not silently change consent and vice versa.",
-      "community": 14,
+      "community": 33,
       "norm_label": "customers table",
       "id": "schema_tbl_customers"
     },
@@ -10760,7 +10814,7 @@
       "author": null,
       "contributor": null,
       "rationale": "Refund policy is not finalised, so the model records a case with a status rather than promising an automatic payout.",
-      "community": 52,
+      "community": 40,
       "norm_label": "refund_requests table",
       "id": "schema_tbl_refund_requests"
     },
@@ -11049,7 +11103,7 @@
       "author": null,
       "contributor": null,
       "rationale": "The single place subscription pricing is computed: subtotal, delivery fee, CGST/SGST split and whether a requested coupon actually applies. Centralising it means the storefront, checkout and invoice can never disagree about the price.",
-      "community": 33,
+      "community": 67,
       "norm_label": "quote_subscription()",
       "id": "schema_rpc_quote_subscription"
     },
@@ -11322,7 +11376,7 @@
       "author": null,
       "contributor": null,
       "rationale": "A customer may take a case back only before it has been decided; that rule lives in the function so the UI cannot loosen it.",
-      "community": 52,
+      "community": 40,
       "norm_label": "withdraw_refund_request()",
       "id": "schema_rpc_withdraw_refund_request"
     },
@@ -11388,7 +11442,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 14,
+      "community": 33,
       "norm_label": "app.current_customer_id()",
       "id": "schema_fn_current_customer_id"
     },
@@ -11495,7 +11549,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 33,
+      "community": 67,
       "norm_label": "app.resolve_delivery_fee()",
       "id": "schema_fn_resolve_delivery_fee"
     },
@@ -11508,7 +11562,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 33,
+      "community": 67,
       "norm_label": "app.resolve_tax_components()",
       "id": "schema_fn_resolve_tax_components"
     },
@@ -11618,7 +11672,7 @@
       "author": null,
       "contributor": null,
       "rationale": "auth_profiles allows a self-update policy, so a trigger blocks changes to role and is_active to stop a customer promoting themselves.",
-      "community": 40,
+      "community": 33,
       "norm_label": "app.guard_profile_privilege_columns()",
       "id": "schema_fn_guard_profile_privilege_columns"
     },
@@ -11742,7 +11796,7 @@
       "author": null,
       "contributor": null,
       "rationale": "Demo data is produced by calling the same functions the app calls instead of inserting frontend-only fake arrays, so the seed doubles as an end-to-end invariant test: if a rule regresses, the seed fails to run.",
-      "community": 14,
+      "community": 33,
       "norm_label": "seed through real workflows",
       "id": "rationale_seed_through_real_workflows"
     },
@@ -11770,7 +11824,7 @@
       "author": null,
       "contributor": null,
       "rationale": "Addresses are deactivated, reviews get a deleted_at, products get archived_at. Subscriptions and delivered orders point at these rows, and a delivered order has to stay readable; business records a food business must keep survive account closure.",
-      "community": 52,
+      "community": 40,
       "norm_label": "retire, never delete",
       "id": "rationale_soft_retire_records"
     },
@@ -11839,7 +11893,7 @@
       "author": null,
       "contributor": null,
       "rationale": "States the data-retention posture in plain language: business records persist after account closure, and marketing consent is a separate switch from account state.",
-      "community": 14,
+      "community": 33,
       "norm_label": "about page",
       "id": "site_about_page"
     },
@@ -11949,7 +12003,7 @@
       "author": null,
       "contributor": null,
       "rationale": "Guards the session once for every account page, but each page still resolves its own customer record: a signed-in staff member has a session and no customer row, and should be told so rather than shown an empty dashboard.",
-      "community": 40,
+      "community": 33,
       "norm_label": "customer account layout",
       "id": "account_layout_shell"
     },
@@ -12056,7 +12110,7 @@
       "author": null,
       "contributor": null,
       "rationale": "Sets is_active false rather than deleting, because subscriptions and delivered orders still point at the row.",
-      "community": 52,
+      "community": 40,
       "norm_label": "retireaddress server action",
       "id": "addresses_retire_address"
     },
@@ -12070,7 +12124,7 @@
       "author": null,
       "contributor": null,
       "rationale": "Refund policy is still being finalised, so the page raises a case and says so plainly rather than implying a guarantee the business has not agreed to.",
-      "community": 52,
+      "community": 40,
       "norm_label": "account refund requests page",
       "id": "account_refunds_page"
     },
@@ -12083,7 +12137,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 52,
+      "community": 40,
       "norm_label": "raiserequest server action",
       "id": "refunds_raise_request"
     },
@@ -12096,7 +12150,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 52,
+      "community": 40,
       "norm_label": "withdrawrequest server action",
       "id": "refunds_withdraw_request"
     },
@@ -12150,7 +12204,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 52,
+      "community": 40,
       "norm_label": "withdrawreview server action",
       "id": "reviews_withdraw_review"
     },
@@ -12258,7 +12312,7 @@
       "author": null,
       "contributor": null,
       "rationale": "Archives via archived_at instead of deleting, keeping historical order items and reviews resolvable.",
-      "community": 52,
+      "community": 40,
       "norm_label": "setarchived server action",
       "id": "product_editor_set_archived"
     },
@@ -12364,7 +12418,7 @@
       "author": null,
       "contributor": null,
       "rationale": "Session-guarded checkout entry. Re-validates the chosen payment provider against configuredPaymentProviders() because the client is not the authority on which gateways have credentials; a draft that has expired is refused before any customer or payment row is created.",
-      "community": 25,
+      "community": 46,
       "norm_label": "post /api/checkout/begin",
       "id": "begin_route_checkoutBegin"
     },
@@ -12448,7 +12502,7 @@
       "author": null,
       "contributor": null,
       "rationale": "Two-way marketplace reconciliation over a rolling 24h window (PRD 16). It records differences and never creates or deletes an order to make numbers agree -- a discrepancy is a finding for a human. Swiggy and Zomato are handled in independent try blocks so one failing provider does not stop the other.",
-      "community": 36,
+      "community": 29,
       "norm_label": "post|get /api/jobs/reconcile",
       "id": "reconcile_route_jobsReconcile"
     },
@@ -12476,7 +12530,7 @@
       "author": null,
       "contributor": null,
       "rationale": "Gate is requireAnyPermission([analyticsView, catalogManage, auditView]). The SECTIONS nav is filtered by session.permissions so a role is not shown a link into a wall -- explicitly a courtesy, not the security boundary: each page guards itself and RLS guards the data underneath.",
-      "community": 25,
+      "community": 18,
       "norm_label": "admin shell layout",
       "id": "layout_adminShell"
     },
@@ -12490,7 +12544,7 @@
       "author": null,
       "contributor": null,
       "rationale": "Skeleton shape mirrors the heading-then-rows layout of admin pages so content does not jump on arrival.",
-      "community": 25,
+      "community": 18,
       "norm_label": "admin loading skeleton",
       "id": "loading_adminSkeleton"
     },
@@ -12504,7 +12558,7 @@
       "author": null,
       "contributor": null,
       "rationale": "Guarded by analytics.view. Reads v_owner_dashboard and v_kot_metrics_daily; cross-source averages are weighted by order count so a quiet channel does not drag the headline. Checks cost_settings.is_dummy_data and warns that profit is only as good as placeholder cost inputs while revenue and timings are real (PRD 12, PRD 22).",
-      "community": 25,
+      "community": 18,
       "norm_label": "admin business overview",
       "id": "page_adminOverview"
     },
@@ -12518,7 +12572,7 @@
       "author": null,
       "contributor": null,
       "rationale": "Guarded by catalog.manage (PRD 13). A group is defined once and attached to many dishes; each option carries its own price, credit and calorie delta so a larger portion legitimately costing an extra credit is data, not an assumption baked into checkout.",
-      "community": 46,
+      "community": 18,
       "norm_label": "admin variant groups",
       "id": "variants_page_adminVariants"
     },
@@ -12574,7 +12628,7 @@
       "author": null,
       "contributor": null,
       "rationale": "Guarded by employees.view or employees.manage (PRD 5). Role quantities are rows not constants, and what a role may do lives in role_permissions, so this screen assigns a role and never a permission. Only session.role === 'developer_admin' may assign developer_admin -- the Owner runs the business and does not hand out system access. Creating the login is the single step needing the service key (no user exists yet to hold a token); everything after runs on the Owner's token so RLS and the audit trigger apply and name them rather than 'system'. If role assignment fails the just-created login is torn down. The current role is re-read from the database rather than trusted from the form so 'unchanged' cannot be asserted into a promotion, and employees/auth_profiles are kept in agreement so a badge never disagrees with permissions.",
-      "community": 60,
+      "community": 36,
       "norm_label": "admin employees",
       "id": "employees_page_adminEmployees"
     },
@@ -12588,7 +12642,7 @@
       "author": null,
       "contributor": null,
       "rationale": "Guarded by integrations.view (PRD 16, PRD 23). The screen exists for honesty: every capability is labelled integrated, mocked or blocked straight from integration_capabilities so nobody can come away believing Swiggy or Zomato are connected when they are not.",
-      "community": 36,
+      "community": 29,
       "norm_label": "admin integration health",
       "id": "integrations_page_adminIntegrations"
     },
@@ -12644,7 +12698,7 @@
       "author": null,
       "contributor": null,
       "rationale": "Guarded by reviews.moderate (PRD 14). Reviews arrive pending and never render publicly until published, and that ordering is enforced by RLS rather than by this screen. Moderation goes through moderate_review, which writes a review_moderation row naming the moderator, so hiding a review is itself part of the audit history. Revalidates /menu as well as the admin path.",
-      "community": 25,
+      "community": 18,
       "norm_label": "admin review moderation",
       "id": "reviews_page_adminReviews"
     },
@@ -12658,7 +12712,7 @@
       "author": null,
       "contributor": null,
       "rationale": "Guarded by settings.manage (PRD 20). This screen is the proof that nothing business-critical is hardcoded: grace period, pause limits, KOT release lead time, tax rates, delivery fee and cost assumptions are all rows that take effect on the next request with no deploy. Values stored as jsonb must survive the round trip -- a number written as a string would break setting_int at read time -- so an input that cannot round-trip is refused with a reason rather than silently swallowed. Unconfirmed values are marked provisional (PRD 22). RLS re-checks settings.manage on write.",
-      "community": 25,
+      "community": 18,
       "norm_label": "admin business settings",
       "id": "settings_page_adminSettings"
     },
@@ -12778,7 +12832,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 25,
+      "community": 46,
       "norm_label": "readdraft()",
       "id": "draft_readDraft"
     },
@@ -12805,7 +12859,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 2,
+      "community": 46,
       "norm_label": "configuredpaymentproviders()",
       "id": "env_configuredPaymentProviders"
     },
@@ -12887,7 +12941,7 @@
       "author": null,
       "contributor": null,
       "rationale": "Returns an adapter whose listOrderIds may answer not-ok with a reason and state, which the reconcile job records as 'skipped' rather than treating as agreement.",
-      "community": 36,
+      "community": 29,
       "norm_label": "marketplaceadapter(provider)",
       "id": "marketplace_marketplaceAdapter"
     },
@@ -12900,7 +12954,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 46,
+      "community": 18,
       "norm_label": "admin form coercion helpers",
       "id": "form_adminFormHelpers"
     },
@@ -12956,7 +13010,7 @@
       "author": null,
       "contributor": null,
       "rationale": "Compares an external id list against internal orders for a window and records missing_internal / missing_external counts as a finding; it does not mutate orders.",
-      "community": 36,
+      "community": 29,
       "norm_label": "reconcile_marketplace_orders() rpc",
       "id": "rpc_reconcile_marketplace_orders"
     },
@@ -12970,7 +13024,7 @@
       "author": null,
       "contributor": null,
       "rationale": "Applies the review status change and writes a review_moderation row naming the moderator, so moderation is auditable.",
-      "community": 25,
+      "community": 18,
       "norm_label": "moderate_review() rpc",
       "id": "rpc_moderate_review"
     },
@@ -13011,7 +13065,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 25,
+      "community": 18,
       "norm_label": "permissions.analyticsview",
       "id": "perm_analyticsView"
     },
@@ -13024,7 +13078,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 46,
+      "community": 18,
       "norm_label": "permissions.catalogmanage",
       "id": "perm_catalogManage"
     },
@@ -13089,7 +13143,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 25,
+      "community": 18,
       "norm_label": "permissions.reviewsmoderate",
       "id": "perm_reviewsModerate"
     },
@@ -13128,7 +13182,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 60,
+      "community": 36,
       "norm_label": "permissions.employeesview",
       "id": "perm_employeesView"
     },
@@ -13141,7 +13195,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 60,
+      "community": 36,
       "norm_label": "permissions.employeesmanage",
       "id": "perm_employeesManage"
     },
@@ -13154,7 +13208,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 25,
+      "community": 18,
       "norm_label": "permissions.settingsmanage",
       "id": "perm_settingsManage"
     },
@@ -13167,7 +13221,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 36,
+      "community": 29,
       "norm_label": "permissions.integrationsview",
       "id": "perm_integrationsView"
     },
@@ -13180,7 +13234,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 25,
+      "community": 18,
       "norm_label": "permissions.auditview",
       "id": "perm_auditView"
     },
@@ -13194,7 +13248,7 @@
       "author": null,
       "contributor": null,
       "rationale": "Only an existing developer_admin may assign developer_admin; the Owner runs the business but does not hand out system-level access.",
-      "community": 60,
+      "community": 36,
       "norm_label": "developer_admin role",
       "id": "role_developerAdmin"
     },
@@ -13235,7 +13289,7 @@
       "author": null,
       "contributor": null,
       "rationale": "Holds role and is_active; deactivating the profile is what actually blocks sign-in, since getSession() refuses an inactive profile.",
-      "community": 60,
+      "community": 36,
       "norm_label": "auth_profiles table",
       "id": "db_auth_profiles"
     },
@@ -13248,7 +13302,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 60,
+      "community": 36,
       "norm_label": "employees table",
       "id": "db_employees"
     },
@@ -13262,7 +13316,7 @@
       "author": null,
       "contributor": null,
       "rationale": "What each role may do is data, not code, which is why the employees screen assigns a role and never a permission.",
-      "community": 60,
+      "community": 18,
       "norm_label": "role_permissions table",
       "id": "db_role_permissions"
     },
@@ -13289,7 +13343,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 18,
+      "community": 32,
       "norm_label": "subscriptions table",
       "id": "db_subscriptions"
     },
@@ -13341,7 +13395,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 25,
+      "community": 18,
       "norm_label": "delivery_windows table",
       "id": "db_delivery_windows"
     },
@@ -13367,7 +13421,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 46,
+      "community": 18,
       "norm_label": "variant_groups table",
       "id": "db_variant_groups"
     },
@@ -13393,7 +13447,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 46,
+      "community": 18,
       "norm_label": "product_variant_groups table",
       "id": "db_product_variant_groups"
     },
@@ -13459,7 +13513,7 @@
       "author": null,
       "contributor": null,
       "rationale": "Reviews arrive pending and RLS, not the admin screen, is what keeps an unpublished review off the public menu.",
-      "community": 25,
+      "community": 18,
       "norm_label": "reviews table",
       "id": "db_reviews"
     },
@@ -13499,7 +13553,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 25,
+      "community": 18,
       "norm_label": "tax_settings table",
       "id": "db_tax_settings"
     },
@@ -13512,7 +13566,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 25,
+      "community": 18,
       "norm_label": "delivery_settings table",
       "id": "db_delivery_settings"
     },
@@ -13526,7 +13580,7 @@
       "author": null,
       "contributor": null,
       "rationale": "Carries is_dummy_data so the dashboard can label profit as an estimate rather than presenting placeholder assumptions as settled policy.",
-      "community": 25,
+      "community": 18,
       "norm_label": "cost_settings table",
       "id": "db_cost_settings"
     },
@@ -13539,7 +13593,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 36,
+      "community": 29,
       "norm_label": "integration_reconciliation table",
       "id": "db_integration_reconciliation"
     },
@@ -13552,7 +13606,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 36,
+      "community": 29,
       "norm_label": "integration_capabilities table",
       "id": "db_integration_capabilities"
     },
@@ -13565,7 +13619,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 25,
+      "community": 18,
       "norm_label": "v_owner_dashboard view",
       "id": "view_owner_dashboard"
     },
@@ -13591,7 +13645,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 36,
+      "community": 29,
       "norm_label": "v_integration_health view",
       "id": "view_integration_health"
     },
@@ -13605,7 +13659,7 @@
       "author": null,
       "contributor": null,
       "rationale": "Three independent layers: the nav hides links a role cannot use (courtesy only), each page calls requirePermission/requireAnyPermission, and RLS plus permission triggers guard the data. No layer is trusted to be the only one -- an Owner's token reaching an endpoint directly is still refused by the database.",
-      "community": 25,
+      "community": 18,
       "norm_label": "defense-in-depth authorization",
       "id": "concept_defenseInDepthAuthorization"
     },
@@ -13619,7 +13673,7 @@
       "author": null,
       "contributor": null,
       "rationale": "A provider without credentials is never offered in the UI and is refused again server-side, because the client is not the authority on what is available.",
-      "community": 25,
+      "community": 18,
       "norm_label": "server-side payment provider allowlist",
       "id": "concept_serverSideProviderAllowlist"
     },
@@ -13703,7 +13757,7 @@
       "author": null,
       "contributor": null,
       "rationale": "The job records missing_internal / missing_external counts and never creates or deletes an order to make totals agree; a discrepancy is a finding for a human, not something to paper over.",
-      "community": 36,
+      "community": 29,
       "norm_label": "reconciliation reports, never repairs",
       "id": "concept_reconciliationIsReadOnly"
     },
@@ -13717,7 +13771,7 @@
       "author": null,
       "contributor": null,
       "rationale": "Mocked or blocked marketplace capabilities, placeholder cost assumptions and unconfirmed settings are labelled as such (PRD 22/23) so no screen lets a reader believe something is live or settled when it is not.",
-      "community": 36,
+      "community": 29,
       "norm_label": "honest integration and estimate labelling",
       "id": "concept_honestIntegrationLabelling"
     },
@@ -13731,7 +13785,7 @@
       "author": null,
       "contributor": null,
       "rationale": "Creating an employee login needs the service key because no user exists yet to hold a token; every subsequent step runs on the Owner's token so RLS and the audit trigger apply and name the real actor. If the role grant fails, the orphan login is deleted rather than left usable.",
-      "community": 60,
+      "community": 36,
       "norm_label": "service key only where no caller token can exist",
       "id": "concept_serviceKeyOnlyWhereNoTokenExists"
     },
@@ -14968,7 +15022,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 60,
+      "community": 18,
       "norm_label": "requiresession",
       "id": "session_requireSession"
     },
@@ -16058,7 +16112,7 @@
       "author": null,
       "contributor": null,
       "rationale": "The list a customer may actually choose from, flagged with isSandbox so the test gateway is always labelled as moving no real money.",
-      "community": 2,
+      "community": 46,
       "norm_label": "availablepaymentproviders()",
       "id": "paymentsindex_availablePaymentProviders"
     },
@@ -16184,7 +16238,7 @@
       "author": null,
       "contributor": null,
       "rationale": "Throws from the constructor when ENABLE_SANDBOX_PAYMENTS==='true' and NODE_ENV==='production' rather than quietly setting enabled=false. Loud, not silent: leaving a fake gateway on in production would be a real incident, so the failure must be impossible to miss. Defence in depth with configuredPaymentProviders(), which already refuses to offer sandbox in production.",
-      "community": 2,
+      "community": 46,
       "norm_label": "sandbox refuses to construct in production",
       "id": "sandbox_productionRefusal"
     },
@@ -16609,7 +16663,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 24,
+      "community": 52,
       "norm_label": "vercel.json \u2014 deployment and crons",
       "id": "vercel_manifest"
     },
@@ -16635,7 +16689,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 24,
+      "community": 52,
       "norm_label": "github actions scheduled jobs workflow",
       "id": "scheduledjobs_workflow"
     },
@@ -16794,7 +16848,7 @@
       "author": null,
       "contributor": null,
       "rationale": "Three accounts on one shared physical wall display, read at arm's length under bad lighting. Because the display is shared and public, staff must never see money \u2014 only kot.view and kot.start_prep.",
-      "community": 41,
+      "community": 24,
       "norm_label": "role: kitchen staff",
       "id": "product_role_kitchen_staff"
     },
@@ -16808,7 +16862,7 @@
       "author": null,
       "contributor": null,
       "rationale": "Business oversight from a laptop: analytics, catalog, plans, coupons, customers, reviews, settings, audit. The Owner watches the kitchen and cannot touch it, so the KOT is read-only.",
-      "community": 41,
+      "community": 24,
       "norm_label": "role: owner",
       "id": "product_role_owner"
     },
@@ -16822,7 +16876,7 @@
       "author": null,
       "contributor": null,
       "rationale": "Maximum Phase 1 access for integrations and configuration; holds every permission \u2014 but still cannot rewrite the append-only audit log.",
-      "community": 19,
+      "community": 41,
       "norm_label": "role: developer admin",
       "id": "product_role_developer_admin"
     },
@@ -16905,7 +16959,7 @@
       "author": null,
       "contributor": null,
       "rationale": "Kitchen sees no money, Owner's KOT has no buttons, Manager has no pricing. The UI enforces what RLS already guarantees \u2014 the UI is the second line, never the only one.",
-      "community": 19,
+      "community": 41,
       "norm_label": "principle: role-shaped interfaces",
       "id": "product_principle_role_shaped_interfaces"
     },
@@ -17045,7 +17099,7 @@
       "author": null,
       "contributor": null,
       "rationale": "role_permissions grants the Owner kot.view and no transition permission; the UI renders 'Read-only view' and the API refuses the transition anyway.",
-      "community": 41,
+      "community": 24,
       "norm_label": "invariant: the owner's kot is read-only",
       "id": "readme_invariant_owner_kot_readonly"
     },
@@ -17059,7 +17113,7 @@
       "author": null,
       "contributor": null,
       "rationale": "Money columns are masked in v_kot_tickets / v_kot_ticket_items and kitchen holds no orders.view \u2014 the board is a shared public display, so masking happens in the view rather than the component.",
-      "community": 41,
+      "community": 24,
       "norm_label": "invariant: kitchen staff get no financial data",
       "id": "readme_invariant_kitchen_no_money"
     },
@@ -17241,7 +17295,7 @@
       "author": null,
       "contributor": null,
       "rationale": "Guarded by CRON_SECRET rather than a session, compared in constant time, and each answers both POST and GET because most hosted schedulers only issue GET.",
-      "community": 24,
+      "community": 52,
       "norm_label": "job endpoints guarded by a constant-time shared secret",
       "id": "readme_cron_secret_guard"
     },
@@ -17255,7 +17309,7 @@
       "author": null,
       "contributor": null,
       "rationale": "Vercel Hobby allows two crons firing at most once daily \u2014 enough for reconciliation, useless for delivery release. GitHub Actions' 5-minute minimum matches what the release job needs; the daily Vercel crons remain as a floor so a disabled workflow degrades into 'late' rather than 'stopped'.",
-      "community": 24,
+      "community": 52,
       "norm_label": "split cron cadence (vercel floor + github actions real cadence)",
       "id": "readme_cron_cadence_split"
     },
@@ -17269,7 +17323,7 @@
       "author": null,
       "contributor": null,
       "rationale": "release_due_deliveries locks rows with SKIP LOCKED and is idempotent, the dispatcher drains a queue, and reconciliation only records findings \u2014 so running both schedulers is safe.",
-      "community": 24,
+      "community": 52,
       "norm_label": "a duplicated scheduler run is a no-op, never a double delivery",
       "id": "readme_duplicate_run_is_noop"
     },
@@ -17283,7 +17337,7 @@
       "author": null,
       "contributor": null,
       "rationale": "It overrides the dashboard Application Preset; with the preset on Other, Vercel runs no Next build and every path returns 404: NOT_FOUND. A 404 on a fresh root path almost always means the preset, not the application.",
-      "community": 24,
+      "community": 52,
       "norm_label": "vercel.json pins framework=nextjs",
       "id": "readme_vercel_framework_preset"
     },
@@ -17324,7 +17378,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 41,
+      "community": 24,
       "norm_label": "demo accounts and roles",
       "id": "readme_demo_accounts"
     },
@@ -17463,7 +17517,7 @@
       "author": null,
       "contributor": null,
       "rationale": "The views mask it and the UI must not reintroduce it \u2014 the design rule mirrors the database guarantee rather than replacing it.",
-      "community": 19,
+      "community": 41,
       "norm_label": "money never renders on kitchen surfaces",
       "id": "design_money_never_on_kitchen_surfaces"
     },
@@ -17937,7 +17991,7 @@
       "author": null,
       "contributor": null,
       "rationale": "role_permissions rows define what each role may do, so a permission change is a row change rather than a deploy.",
-      "community": 19,
+      "community": 41,
       "norm_label": "role permissions are data, not code",
       "id": "rbac_permissions_are_data"
     },
@@ -17979,7 +18033,7 @@
       "author": null,
       "contributor": null,
       "rationale": "Totals and customer phone come back NULL for kitchen and populated for the Owner from the same view; analytics views and the orders table return zero rows to kitchen.",
-      "community": 19,
+      "community": 41,
       "norm_label": "kitchen money masking in v_kot_tickets",
       "id": "rbac_kitchen_money_masking"
     },
@@ -18049,7 +18103,7 @@
       "author": null,
       "contributor": null,
       "rationale": "Runs with if: always() so a notification provider being down never hides a release failure.",
-      "community": 24,
+      "community": 52,
       "norm_label": "job: drain the notification outbox",
       "id": "jobs_notifications_drain"
     },
@@ -18075,7 +18129,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 24,
+      "community": 52,
       "norm_label": "concurrency group prevents delayed runs piling up",
       "id": "jobs_concurrency_group"
     },
@@ -21360,11 +21414,43 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/app/(site)/page.tsx",
+      "source_location": "L42",
+      "weight": 1.0,
+      "source": "site_page",
+      "target": "site_page_note_placement",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/app/(site)/page.tsx",
       "source_location": "L21",
       "weight": 1.0,
       "confidence_score": 1.0,
       "source": "site_page",
       "target": "site_page_subscription_steps"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/app/(site)/page.tsx",
+      "source_location": "L8",
+      "weight": 1.0,
+      "source": "site_page",
+      "target": "site_reveal",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/app/(site)/page.tsx",
+      "source_location": "L8",
+      "weight": 1.0,
+      "source": "site_page",
+      "target": "site_reveal_reveal",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports_from",
@@ -31232,6 +31318,26 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/app/layout.tsx",
+      "source_location": "L56",
+      "weight": 1.0,
+      "source": "app_layout",
+      "target": "app_layout_notedisplay",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/app/layout.tsx",
+      "source_location": "L68",
+      "weight": 1.0,
+      "source": "app_layout",
+      "target": "app_layout_notetext",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/app/layout.tsx",
       "source_location": "L17",
       "weight": 1.0,
       "confidence_score": 1.0,
@@ -34077,6 +34183,16 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/components/site/hero-motion.tsx",
+      "source_location": "L383",
+      "weight": 1.0,
+      "source": "site_hero_motion",
+      "target": "site_hero_motion_courier",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/site/hero-motion.tsx",
       "source_location": "L333",
       "weight": 1.0,
       "confidence_score": 1.0,
@@ -34187,6 +34303,28 @@
       "relation": "imports_from",
       "context": "import",
       "confidence": "EXTRACTED",
+      "source_file": "src/components/site/hero-motion.tsx",
+      "source_location": "L21",
+      "weight": 1.0,
+      "source": "site_hero_motion",
+      "target": "ui_button_styles",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/site/hero-motion.tsx",
+      "source_location": "L21",
+      "weight": 1.0,
+      "source": "site_hero_motion",
+      "target": "ui_button_styles_cx",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
       "source_file": "src/components/site/storefront-hero.tsx",
       "source_location": "L10",
       "weight": 1.0,
@@ -34259,6 +34397,28 @@
       "confidence_score": 1.0,
       "source": "site_storefront_hero",
       "target": "site_hero_motion_driftingarrow"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/components/site/hero-motion.tsx",
+      "source_location": "L387",
+      "weight": 1.0,
+      "source": "site_hero_motion_courier",
+      "target": "ui_button_styles_cx"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/site/storefront-hero.tsx",
+      "source_location": "L9",
+      "weight": 1.0,
+      "source": "site_storefront_hero",
+      "target": "site_hero_motion_courier",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -34500,6 +34660,49 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
+      "source_file": "src/components/site/reveal.tsx",
+      "source_location": "L35",
+      "weight": 1.0,
+      "source": "site_reveal",
+      "target": "site_reveal_reveal",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/site/reveal.tsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "source": "site_reveal",
+      "target": "ui_button_styles",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/site/reveal.tsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "source": "site_reveal",
+      "target": "ui_button_styles_cx",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/components/site/reveal.tsx",
+      "source_location": "L57",
+      "weight": 1.0,
+      "source": "site_reveal_reveal",
+      "target": "ui_button_styles_cx"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
       "source_file": "src/components/site/signed-out-notice.tsx",
       "source_location": "L15",
       "weight": 1.0,
@@ -34665,17 +34868,6 @@
       "source_location": "L136",
       "weight": 1.0,
       "source": "site_step_flow_stepflow",
-      "target": "ui_button_styles_cx"
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/components/site/step-flow.tsx",
-      "source_location": "L184",
-      "weight": 1.0,
-      "source": "site_step_flow_steparrow",
       "target": "ui_button_styles_cx"
     },
     {
@@ -35024,6 +35216,17 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/components/site/storefront-hero.tsx",
+      "source_location": "L142",
+      "weight": 1.0,
+      "source": "site_storefront_hero_storefronthero",
+      "target": "ui_button_styles_buttonclasses"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/components/site/storefront-hero.tsx",
       "source_location": "L198",
       "weight": 1.0,
       "source": "site_storefront_hero_gatewaycard",
@@ -35154,6 +35357,17 @@
       "confidence_score": 1.0,
       "source": "ui_spinner",
       "target": "ui_button_styles"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/components/site/step-flow.tsx",
+      "source_location": "L184",
+      "weight": 1.0,
+      "source": "site_step_flow_steparrow",
+      "target": "ui_button_styles_cx"
     },
     {
       "relation": "calls",
@@ -36059,6 +36273,17 @@
       "confidence_score": 1.0,
       "source": "auth_demo_accounts_demoaccount",
       "target": "auth_permissions_approle"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/auth/demo-accounts.ts",
+      "source_location": "L60",
+      "weight": 1.0,
+      "source": "auth_demo_accounts_demoaccountsenabled",
+      "target": "lib_env_serverenv",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -37145,28 +37370,6 @@
       "source_location": "L356",
       "weight": 1.0,
       "source": "data_catalog_listdeliverywindows",
-      "target": "supabase_server_serverclient"
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/lib/data/catalog.ts",
-      "source_location": "L424",
-      "weight": 1.0,
-      "source": "data_catalog_publicsettings",
-      "target": "supabase_public_publicclient"
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/lib/data/catalog.ts",
-      "source_location": "L378",
-      "weight": 1.0,
-      "source": "data_catalog_publicsettings",
       "target": "supabase_server_serverclient"
     },
     {
@@ -40133,6 +40336,17 @@
       "target": "supabase_public_publicclient"
     },
     {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/lib/data/catalog.ts",
+      "source_location": "L424",
+      "weight": 1.0,
+      "source": "data_catalog_publicsettings",
+      "target": "supabase_public_publicclient"
+    },
+    {
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/lib/supabase/server.ts",
@@ -40140,6 +40354,17 @@
       "weight": 1.0,
       "confidence_score": 1.0,
       "source": "supabase_server",
+      "target": "supabase_server_serverclient"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/lib/data/catalog.ts",
+      "source_location": "L378",
+      "weight": 1.0,
+      "source": "data_catalog_publicsettings",
       "target": "supabase_server_serverclient"
     },
     {
@@ -56763,5 +56988,5 @@
       "rationale": "One idea expressed at every layer: never display, imply or persist a state the system has not actually reached \u2014 no optimistic lies, no invented endpoints, no unvalidated number passing as decided, no silently swallowed refusal."
     }
   ],
-  "built_at_commit": "758611e9464a7901ee81a5a26a28ce3e4bfb732a"
+  "built_at_commit": "c24eaf1b63f1aa41c33ac53e788fa65257f7e49a"
 }

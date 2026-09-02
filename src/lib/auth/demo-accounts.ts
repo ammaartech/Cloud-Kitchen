@@ -56,7 +56,7 @@ export interface DemoAccountList {
   password: string | null;
 }
 
-export function demoAccountsEnabled(): boolean {
+function demoAccountsEnabled(): boolean {
   return serverEnv().SHOW_DEMO_ACCOUNTS === 'true';
 }
 

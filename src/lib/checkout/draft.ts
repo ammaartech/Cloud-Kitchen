@@ -15,7 +15,7 @@ import { z } from 'zod';
  * the customer could have chosen anyway.
  */
 
-export const DRAFT_COOKIE = 'ck_draft';
+const DRAFT_COOKIE = 'ck_draft';
 
 export const draftSchema = z.object({
   /**

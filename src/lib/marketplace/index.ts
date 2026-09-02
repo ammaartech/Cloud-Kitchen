@@ -36,10 +36,3 @@ export function marketplaceAdapter(provider: MarketplaceProvider): MarketplaceAd
   adapters.set(provider, adapter);
   return adapter;
 }
-
-/** Maps our KOT source prefix onto the provider that owns it. */
-export function providerForSource(source: string): MarketplaceProvider | null {
-  if (source === 'SW') return 'swiggy';
-  if (source === 'ZM') return 'zomato';
-  return null;
-}

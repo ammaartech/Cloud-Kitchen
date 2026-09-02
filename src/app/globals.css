@@ -105,7 +105,6 @@
 
   --ck-radius: 0.75rem;
   --ck-radius-lg: 1rem;
-  --ck-radius-pill: 9999px;
 
   /* Confident deceleration. No bounce, no elastic. */
   --ck-ease: cubic-bezier(0.25, 1, 0.5, 1);

@@ -1,16 +1,16 @@
 # Graph Report - Cloud-Kitchen  (2026-09-02)
 
 ## Corpus Check
-- 168 files · ~169,544 words
+- 169 files · ~181,926 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1563 nodes · 3663 edges · 108 communities (88 shown, 20 thin omitted)
+- 1569 nodes · 3679 edges · 108 communities (88 shown, 20 thin omitted)
 - Extraction: 95% EXTRACTED · 5% INFERRED · 0% AMBIGUOUS · INFERRED: 185 edges (avg confidence: 0.83)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `758611e9`
+- Built from commit: `c24eaf1b`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -120,7 +120,7 @@
 
 ## God Nodes (most connected - your core abstractions)
 1. `serverClient()` - 73 edges
-2. `cx()` - 49 edges
+2. `cx()` - 53 edges
 3. `Card()` - 43 edges
 4. `app.audit_trigger()` - 42 edges
 5. `app.has_permission(text)` - 38 edges
@@ -171,16 +171,16 @@
 ## Communities (108 total, 20 thin omitted)
 
 ### Community 0 - "Community 0"
-Cohesion: 0.09
-Nodes (48): AddOnRow, AddOnsPage(), metadata, Address, metadata, CatalogNav(), TABS, ActionFeedback() (+40 more)
+Cohesion: 0.13
+Nodes (39): AddOnRow, metadata, CatalogNav(), TABS, ActionFeedback(), done(), fail(), readable() (+31 more)
 
 ### Community 1 - "Community 1"
-Cohesion: 0.07
-Nodes (55): AddressesPage(), NotFound(), ACTION_TONE, AuditPage(), AuditRow, metadata, AppRole, Permission (+47 more)
+Cohesion: 0.10
+Nodes (32): ACTION_TONE, AuditRow, metadata, AppRole, Permission, STAFF_ROLES, can(), requireAnyPermission() (+24 more)
 
 ### Community 2 - "Community 2"
-Cohesion: 0.05
-Nodes (49): PartnerMarketplaceAdapter, attempt() capability gate + circuit breaker, capabilityState() lookup, interpretPayload() best-effort mapper, PartnerMarketplaceAdapter.verifyWebhook(), Test: review moderation authority and audit, Test: staff roles, addresses, refund cases, Test: verified-purchase badge is derived, not claimed (+41 more)
+Cohesion: 0.06
+Nodes (47): PartnerMarketplaceAdapter, attempt() capability gate + circuit breaker, capabilityState() lookup, interpretPayload() best-effort mapper, PartnerMarketplaceAdapter.verifyWebhook(), Test: review moderation authority and audit, Test: staff roles, addresses, refund cases, Test: verified-purchase badge is derived, not claimed (+39 more)
 
 ### Community 3 - "Community 3"
 Cohesion: 0.15
@@ -188,19 +188,19 @@ Nodes (12): RazorpayAdapter, signaturesMatch(), SandboxAdapter, CreateOrderInput
 
 ### Community 4 - "Community 4"
 Cohesion: 0.20
-Nodes (16): ConnectionBadge(), COLUMNS, KitchenBoard(), GROUPS, ManagerBoard(), useTicketActions(), elapsedSince(), SOURCE_LABELS (+8 more)
+Nodes (16): ConnectionBadge(), COLUMNS, KitchenBoard(), GROUPS, ManagerBoard(), useTicketActions(), elapsedSince(), timeOnly() (+8 more)
 
 ### Community 5 - "Community 5"
-Cohesion: 0.12
-Nodes (27): notification_status (enum), payment_flow (enum), payment_provider (enum), payment_status (enum), plan_type (enum), subscription_status (enum), subscription_plans (table), subscriptions (table) (+19 more)
+Cohesion: 0.08
+Nodes (46): coupon_discount_type (enum), notification_status (enum), order_status (enum), payment_flow (enum), payment_provider (enum), payment_status (enum), plan_type (enum), subscription_status (enum) (+38 more)
 
 ### Community 6 - "Community 6"
-Cohesion: 0.14
-Nodes (18): CATALOG_TAGS, CategoryGroup, CollectionSummary, DeliveryWindow, listCollections(), listDeliveryWindows(), listMenu(), loadRatings() (+10 more)
+Cohesion: 0.12
+Nodes (27): CATALOG_TAGS, CategoryGroup, CollectionSummary, getPlan(), getPlanMeals(), listCollections(), listDeliveryWindows(), listMenu() (+19 more)
 
 ### Community 7 - "Community 7"
-Cohesion: 0.23
-Nodes (9): SignOutButton(), AccountChip, AccountState, AccountNav(), useAccount(), NAV, SITE_NAV, SignedOutNotice() (+1 more)
+Cohesion: 0.26
+Nodes (8): SignOutButton(), AccountChip, AccountState, AccountNav(), useAccount(), NAV, SITE_NAV, SiteHeader()
 
 ### Community 8 - "Community 8"
 Cohesion: 0.05
@@ -211,24 +211,24 @@ Cohesion: 0.09
 Nodes (32): kot_status (enum), order_source (enum), app.current_role(), app.has_any_permission(text[]), app.is_staff(), permissions (table), role_permissions (table), app.resolve_delivery_fee() (+24 more)
 
 ### Community 10 - "Community 10"
-Cohesion: 0.09
-Nodes (38): review_status (enum), app.has_permission(text), app.is_direct_connection(), app.is_service_role(), app.current_customer_id(), customer_addresses (table), customers (table), customer_addresses_audit (trigger, redacts address PII) (+30 more)
+Cohesion: 0.11
+Nodes (32): review_status (enum), app.has_permission(text), app.is_direct_connection(), app.is_service_role(), app.current_customer_id(), customer_addresses (table), customer_addresses_audit (trigger, redacts address PII), app.review_record_moderation() (+24 more)
 
 ### Community 11 - "Community 11"
 Cohesion: 0.13
 Nodes (14): resolveSecret(), AdapterConfig, interpretPayload(), PartnerMarketplaceAdapter, adapters, marketplaceAdapter(), CapabilityState, IncomingOrder (+6 more)
 
 ### Community 12 - "Community 12"
-Cohesion: 0.09
-Nodes (42): AccountPage(), metadata, SubscriptionControls(), AdminOverviewPage(), DailyRow, DashboardRow, metadata, DailyRow (+34 more)
+Cohesion: 0.11
+Nodes (32): AccountPage(), metadata, AdminOverviewPage(), DailyRow, DashboardRow, metadata, DailyRow, RevenueChart() (+24 more)
 
 ### Community 13 - "Community 13"
 Cohesion: 0.17
 Nodes (11): ActAs, actingAs(), asService(), createTestDb(), Db, expectFailure(), HERE, MIGRATIONS (+3 more)
 
 ### Community 14 - "Community 14"
-Cohesion: 0.10
-Nodes (24): continueToCheckout server action, Idempotent Money Paths, Seed Through Real Workflows, Verified-Payment Gate, app.subscription_requires_verified_payment(), begin_subscription_checkout(), confirm_subscription_payment(), fail_subscription_payment() (+16 more)
+Cohesion: 0.12
+Nodes (19): continueToCheckout server action, Idempotent Money Paths, Verified-Payment Gate, app.subscription_requires_verified_payment(), begin_subscription_checkout(), confirm_subscription_payment(), fail_subscription_payment(), generate_subscription_deliveries() (+11 more)
 
 ### Community 15 - "Community 15"
 Cohesion: 0.11
@@ -243,12 +243,12 @@ Cohesion: 0.19
 Nodes (22): subscription_delivery_status (enum), public.record_audit_event(), delivery_windows (table), app.product_is_orderable(), products (table), subscription_deliveries (table), subscription_delivery_items (table), subscription_plan_meals (table) (+14 more)
 
 ### Community 18 - "Community 18"
-Cohesion: 0.17
-Nodes (19): Frozen plan snapshot, No hardcoded business policy, Archive, never hard delete, Admin Offers and Coupons, business_settings table, coupon_rules table, coupons table, products table (+11 more)
+Cohesion: 0.07
+Nodes (43): Defense-in-depth authorization, Frozen plan snapshot, No hardcoded business policy, Server-side payment provider allowlist, Archive, never hard delete, Admin Offers and Coupons, business_settings table, cost_settings table (+35 more)
 
 ### Community 19 - "Community 19"
-Cohesion: 0.13
-Nodes (23): DESIGN.md — Visual System, Global :focus-visible Ring, Never Removed, Layout: Storefront, Admin and KOT Kanban, Money Never Renders on Kitchen Surfaces, Motion Budget and prefers-reduced-motion Kill-Switch, Order-Source Colors Fixed by the PRD (SourceTag), Two Registers: Storefront Light, Operations Dark, Typography: One Family, Tabular Figures, Ops Sizes Up (+15 more)
+Cohesion: 0.17
+Nodes (18): DESIGN.md — Visual System, Global :focus-visible Ring, Never Removed, Layout: Storefront, Admin and KOT Kanban, Motion Budget and prefers-reduced-motion Kill-Switch, Order-Source Colors Fixed by the PRD (SourceTag), Two Registers: Storefront Light, Operations Dark, Typography: One Family, Tabular Figures, Ops Sizes Up, Source-Prefixed Daily KOT Numbering (+10 more)
 
 ### Community 20 - "Community 20"
 Cohesion: 0.16
@@ -267,12 +267,12 @@ Cohesion: 0.12
 Nodes (18): isAuthorisedJob(), serverEnv, serverSchema, ConsoleTransport, dispatchQueuedNotifications(), NotificationChannel, notificationTransport, OutboundNotification (+10 more)
 
 ### Community 24 - "Community 24"
-Cohesion: 0.11
-Nodes (26): Button Family Sharing buttonClasses, Concurrency Group Prevents Delayed Runs Piling Up, Job: Drain the Notification Outbox, KOT State Machine (NEW → COMPLETED), Capability Honesty: No Unverified 'integrated' State, Database-Driven Imagery Constrained by a Host Allowlist, typedRoutes Enabled, Invoices Carry a CGST/SGST Tax Split (+18 more)
+Cohesion: 0.12
+Nodes (23): Button Family Sharing buttonClasses, KOT State Machine (NEW → COMPLETED), Capability Honesty: No Unverified 'integrated' State, Database-Driven Imagery Constrained by a Host Allowlist, typedRoutes Enabled, Invoices Carry a CGST/SGST Tax Split, Principle: The Database Is the Truth, Role: Kitchen Staff (+15 more)
 
 ### Community 25 - "Community 25"
-Cohesion: 0.13
-Nodes (19): POST /api/checkout/begin, Defense-in-depth authorization, Server-side payment provider allowlist, cost_settings table, delivery_settings table, delivery_windows table, reviews table, tax_settings table (+11 more)
+Cohesion: 0.10
+Nodes (28): AddOnsPage(), NotFound(), AuditPage(), requirePermission(), CatalogPage(), CategoriesPage(), CollectionsPage(), CouponsPage() (+20 more)
 
 ### Community 26 - "Community 26"
 Cohesion: 0.12
@@ -287,24 +287,24 @@ Cohesion: 0.15
 Nodes (16): app.business_date(timestamptz), app.business_timezone(), app.setting(text), app.setting_bool(text), app.setting_int(text), app.setting_numeric(text), app.setting_text(text), business_settings (table) (+8 more)
 
 ### Community 29 - "Community 29"
-Cohesion: 0.24
-Nodes (13): coupon_discount_type (enum), order_status (enum), app.order_record_transition(), order_number_seq (sequence), order_status_events (table), orders (table), orders_record_transition_ins (trigger), orders_record_transition_upd (trigger) (+5 more)
+Cohesion: 0.27
+Nodes (10): Honest integration and estimate labelling, Reconciliation reports, never repairs, integration_capabilities table, integration_reconciliation table, Admin Integration Health, marketplaceAdapter(provider), PERMISSIONS.integrationsView, POST|GET /api/jobs/reconcile (+2 more)
 
 ### Community 30 - "Community 30"
-Cohesion: 0.18
-Nodes (13): landingPathForRole(), authorizeRequest(), getSession, bodySchema, POST(), ForbiddenPage(), metadata, GET() (+5 more)
+Cohesion: 0.21
+Nodes (11): landingPathForRole(), authorizeRequest(), getSession, bodySchema, POST(), ForbiddenPage(), metadata, GET() (+3 more)
 
 ### Community 31 - "Community 31"
 Cohesion: 0.18
 Nodes (15): Colour Is Never the Only Indicator, Per-Provider Failure Isolation, Raw-Body-First Signature Verification, Webhook Idempotency on Provider Event Id, Webhook Is Authoritative, Callback Is Cosmetic, Revenue Chart, Marketplace Webhook Route (Swiggy/Zomato), Payment Provider Webhook Route (+7 more)
 
 ### Community 32 - "Community 32"
-Cohesion: 0.22
-Nodes (14): Admin Customer Detail, Admin Customers List, customer_addresses table, customers table, invoices table, orders table, refund_requests table, PERMISSIONS.customersManage (+6 more)
+Cohesion: 0.21
+Nodes (15): Admin Customer Detail, Admin Customers List, customer_addresses table, customers table, invoices table, orders table, refund_requests table, subscriptions table (+7 more)
 
 ### Community 33 - "Community 33"
-Cohesion: 0.15
-Nodes (15): app.resolve_delivery_fee(), app.resolve_tax_components(), quote_subscription(), validate_coupon(), coupon_redemptions table, coupon_rules table, coupons table, delivery_settings table (+7 more)
+Cohesion: 0.12
+Nodes (17): Customer Account Layout, Seed Through Real Workflows, validate_coupon(), auth_profiles table, coupon_redemptions table, coupon_rules table, coupons table, customers table (+9 more)
 
 ### Community 34 - "Community 34"
 Cohesion: 0.21
@@ -316,27 +316,27 @@ Nodes (14): Admin Catalog Products Page, Admin Categories Page, createProduct se
 
 ### Community 36 - "Community 36"
 Cohesion: 0.13
-Nodes (25): adminClient() (service-role Supabase), Honest integration and estimate labelling, Idempotent cron endpoints behind a bearer secret, Payment ownership check, Reconciliation reports, never repairs, POST /api/checkout/confirm, integration_capabilities table, integration_reconciliation table (+17 more)
+Nodes (22): adminClient() (service-role Supabase), Idempotent cron endpoints behind a bearer secret, Payment ownership check, Service key only where no caller token can exist, POST /api/checkout/confirm, auth_profiles table, employees table, payments table (+14 more)
 
 ### Community 37 - "Community 37"
 Cohesion: 0.12
 Nodes (21): /api/checkout/begin endpoint, /api/checkout/sandbox endpoint, /api/kot/eta endpoint, /api/kot/transition endpoint, Report unknown outcomes as unknown, Refuse offline mutations up front, ActionFeedback, fail / done (server-action redirect feedback) (+13 more)
 
 ### Community 38 - "Community 38"
-Cohesion: 0.20
-Nodes (11): CopyButton(), DemoAccount, DemoAccountList, DemoAccounts(), demoAccountsEnabled(), explainAbsence(), listDemoAccounts(), ROLE_LABELS (+3 more)
+Cohesion: 0.18
+Nodes (13): CopyButton(), DemoAccount, DemoAccountList, DemoAccounts(), demoAccountsEnabled(), explainAbsence(), listDemoAccounts(), ROLE_LABELS (+5 more)
 
 ### Community 39 - "Community 39"
 Cohesion: 0.16
 Nodes (14): notification_channel (enum), app.audit_trigger(), app.resolve_tax_components(), tax_settings (table), add_ons (table), categories (table), collection_products (table), collections (table) (+6 more)
 
 ### Community 40 - "Community 40"
-Cohesion: 0.19
-Nodes (12): Account Addresses Page, cancelSubscription server action, Account Dashboard Page, Customer Account Layout, makeDefaultAddress server action, saveAddress server action, addImage / makePrimaryImage actions, cancel_subscription() (+4 more)
+Cohesion: 0.13
+Nodes (19): Account Addresses Page, cancelSubscription server action, Account Dashboard Page, Account Refund Requests Page, makeDefaultAddress server action, retireAddress server action, saveAddress server action, addImage / makePrimaryImage actions (+11 more)
 
 ### Community 41 - "Community 41"
 Cohesion: 0.18
-Nodes (13): Unavailable Product Is Shown, Not Hidden, Role: Customer, Role: Kitchen Staff, Role: Owner, Anonymous Storefront Access Boundary, The Audit Log Cannot Be Rewritten, Audit Visibility Limited to Owner and Developer Admin, Customers See and Act Only on Their Own Records (+5 more)
+Nodes (13): Money Never Renders on Kitchen Surfaces, Unavailable Product Is Shown, Not Hidden, Principle: Role-Shaped Interfaces, Role: Customer, Role: Developer Admin, Anonymous Storefront Access Boundary, The Audit Log Cannot Be Rewritten, Audit Visibility Limited to Owner and Developer Admin (+5 more)
 
 ### Community 42 - "Community 42"
 Cohesion: 0.23
@@ -356,7 +356,7 @@ Nodes (10): contrast(), css, deltaE(), light, luminance(), oklab(), ops, report(
 
 ### Community 46 - "Community 46"
 Cohesion: 0.20
-Nodes (10): Checkout idempotency by draft key, product_variant_groups table, variant_groups table, variants table, draft idempotencyKey, Admin form coercion helpers, PERMISSIONS.catalogManage, begin_subscription_checkout RPC (+2 more)
+Nodes (8): POST /api/checkout/begin, Checkout idempotency by draft key, variants table, draft idempotencyKey, configuredPaymentProviders(), begin_subscription_checkout RPC, Sandbox refuses to construct in production, beginCheckout()
 
 ### Community 47 - "Community 47"
 Cohesion: 0.27
@@ -379,8 +379,8 @@ Cohesion: 0.24
 Nodes (10): Job: Release Due Deliveries Into the KOT, Invariant: History Is Preserved, Configuration as Rows (business_settings), Booking Guards: Balance and Meal Availability, Cancellation Stops Future Deliveries but Preserves the Record, Credit Balance Derived From Ledger Entries, Premium Meals Cost More Credits, Customer-Selected Plans Are Bounded by a Selectable Pool (+2 more)
 
 ### Community 52 - "Community 52"
-Cohesion: 0.25
-Nodes (9): Account Refund Requests Page, retireAddress server action, setArchived server action, Retire, Never Delete, raiseRequest server action, withdrawRequest server action, withdrawReview server action, withdraw_refund_request() (+1 more)
+Cohesion: 0.29
+Nodes (8): Concurrency Group Prevents Delayed Runs Piling Up, Job: Drain the Notification Outbox, Split Cron Cadence (Vercel Floor + GitHub Actions Real Cadence), Job Endpoints Guarded by a Constant-Time Shared Secret, A Duplicated Scheduler Run Is a No-Op, Never a Double Delivery, vercel.json Pins framework=nextjs, GitHub Actions Scheduled Jobs Workflow, vercel.json — Deployment and Crons
 
 ### Community 53 - "Community 53"
 Cohesion: 0.25
@@ -399,8 +399,8 @@ Cohesion: 0.31
 Nodes (9): Test: realtime is wired for the operational tables, SOURCE_LABELS / KOT_STATUS_LABELS, ACTIVE_STATUSES / KITCHEN_STATUSES, providerForSource(source), browserClient() anon browser client, ConnectionState (connecting|live|reconnecting|offline), refetchOne() -- event as signal, not data, resync() full resynchronisation (+1 more)
 
 ### Community 57 - "Community 57"
-Cohesion: 0.22
-Nodes (8): Accessibility & Inclusion, Anti-references, Design Principles, Product, Product Purpose, Register, Users, Front-end Rule: A Refused Write Is Reported, Never Swallowed
+Cohesion: 0.17
+Nodes (11): Components, Server-action feedback, Storefront (`components/site/`), Accessibility & Inclusion, Anti-references, Design Principles, Product, Product Purpose (+3 more)
 
 ### Community 58 - "Community 58"
 Cohesion: 0.29
@@ -411,12 +411,12 @@ Cohesion: 0.10
 Nodes (19): 1. Create a Supabase project, 2. Apply the schema, 3. Seed demo data (optional but recommended), 4. Run, Architecture in one paragraph, Cloud Kitchen — Phase 1, Demonstrating the end-to-end flow, Deploying (+11 more)
 
 ### Community 60 - "Community 60"
-Cohesion: 0.09
-Nodes (27): Role-to-permission mapping is data, not code, KOT state machine enforced in the database, Service key only where no caller token can exist, A hidden button is not a security boundary, auth_profiles table, employees table, role_permissions table, auth_profiles table (+19 more)
+Cohesion: 0.14
+Nodes (18): Role-to-permission mapping is data, not code, KOT state machine enforced in the database, A hidden button is not a security boundary, auth_profiles table, role_permissions table, ROLE_NOTES / ROLE_LABELS / ROLE_ORDER, demoAccountsEnabled (SHOW_DEMO_ACCOUNTS gate), explainAbsence (one-shot server log) (+10 more)
 
 ### Community 61 - "Community 61"
-Cohesion: 0.25
-Nodes (11): ArrowRightIcon(), BASE, SearchIcon(), MenuSearch(), Step, StepArrow(), StepFlow(), Typewriter() (+3 more)
+Cohesion: 0.24
+Nodes (8): metadata, NOTE_PLACEMENT, SUBSCRIPTION_STEPS, Reveal(), Step, StepArrow(), StepFlow(), Typewriter()
 
 ### Community 62 - "Community 62"
 Cohesion: 0.26
@@ -427,24 +427,24 @@ Cohesion: 0.40
 Nodes (6): Checkout Address Step, Server-Computed Quote, Checkout Page, begin_subscription_checkout (RPC), quote_subscription (RPC), customer_addresses (table)
 
 ### Community 64 - "Community 64"
-Cohesion: 0.11
-Nodes (20): DriftingArrow(), DriftingPhoto(), HeroLayer(), HeroScrollContext, HeroStage(), LIFT_SPRING, loadFeatures(), PhotoDrift (+12 more)
+Cohesion: 0.10
+Nodes (22): DeliveryWindow, Courier(), DriftingArrow(), DriftingPhoto(), HeroLayer(), HeroScrollContext, HeroStage(), LIFT_SPRING (+14 more)
 
 ### Community 65 - "Community 65"
 Cohesion: 0.28
 Nodes (6): SignInForm(), Item, TicketItems(), publicEnv, clearAccount(), browserClient()
 
 ### Community 66 - "Community 66"
-Cohesion: 0.42
-Nodes (5): BUTTON_SIZES, BUTTON_VARIANTS, ButtonSize, ButtonVariant, Spinner()
+Cohesion: 0.24
+Nodes (12): ArrowRightIcon(), BASE, SearchIcon(), MenuSearch(), GatewayCard(), BUTTON_SIZES, BUTTON_VARIANTS, buttonClasses() (+4 more)
 
 ### Community 67 - "Community 67"
-Cohesion: 0.40
-Nodes (5): pauseSubscription server action, app.setting() accessors, pause_subscription(), business_settings table, subscription_pauses table
+Cohesion: 0.20
+Nodes (10): pauseSubscription server action, app.resolve_delivery_fee(), app.resolve_tax_components(), app.setting() accessors, pause_subscription(), quote_subscription(), business_settings table, delivery_settings table (+2 more)
 
 ### Community 68 - "Community 68"
-Cohesion: 0.29
-Nodes (5): geistMono, geistSans, metadata, mono, sans
+Cohesion: 0.22
+Nodes (7): geistMono, geistSans, metadata, mono, noteDisplay, noteText, sans
 
 ### Community 69 - "Community 69"
 Cohesion: 0.40
@@ -459,8 +459,8 @@ Cohesion: 0.40
 Nodes (4): body, files, migrationsDir, root
 
 ### Community 72 - "Community 72"
-Cohesion: 0.17
-Nodes (11): Color Palette, Components, Design, Guarding the palette, Layout, Radii, Shadow, Motion, Rules, Server-action feedback (+3 more)
+Cohesion: 0.22
+Nodes (8): Color Palette, Design, Guarding the palette, Layout, Radii, Shadow, Motion, Rules, Theme, Typography
 
 ### Community 73 - "Community 73"
 Cohesion: 0.50
@@ -491,8 +491,8 @@ Cohesion: 0.50
 Nodes (3): AdminNav(), AdminLayout(), SECTIONS
 
 ### Community 106 - "Community 106"
-Cohesion: 0.14
-Nodes (25): metadata, AddressStep(), CheckoutAuthStep(), metadata, Quote, ProfileStep(), Customer, STATUS_NOTE (+17 more)
+Cohesion: 0.11
+Nodes (28): SubscriptionControls(), Address, AddressesPage(), metadata, metadata, requireSession(), AddressStep(), ProfileStep() (+20 more)
 
 ### Community 109 - "Community 109"
 Cohesion: 0.25
@@ -519,7 +519,7 @@ Nodes (3): CashfreeAdapter, environmentFromKey(), signaturesMatch()
   README.md · relation: conceptually_related_to
 
 ## Knowledge Gaps
-- **379 isolated node(s):** `eslintConfig`, `nextConfig`, `name`, `version`, `private` (+374 more)
+- **382 isolated node(s):** `eslintConfig`, `nextConfig`, `name`, `version`, `private` (+377 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **20 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 

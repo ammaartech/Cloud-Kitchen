@@ -70,10 +70,3 @@ export function landingPathForRole(role: AppRole): Route {
       return '/account';
   }
 }
-
-export const STAFF_ROLES: AppRole[] = [
-  'developer_admin',
-  'owner',
-  'branch_manager',
-  'kitchen_staff',
-];

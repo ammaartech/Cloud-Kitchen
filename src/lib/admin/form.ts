@@ -12,11 +12,6 @@ export function str(form: FormData, key: string): string {
   return String(form.get(key) ?? '').trim();
 }
 
-export function nullableStr(form: FormData, key: string): string | null {
-  const value = str(form, key);
-  return value === '' ? null : value;
-}
-
 export function num(form: FormData, key: string, fallback = 0): number {
   const value = Number(str(form, key));
   return Number.isFinite(value) ? value : fallback;
@@ -51,12 +46,6 @@ export function list(form: FormData, key: string): string[] {
     .getAll(key)
     .map((value) => String(value).trim())
     .filter((value) => value !== '');
-}
-
-export function numList(form: FormData, key: string): number[] {
-  return list(form, key)
-    .map(Number)
-    .filter((value) => Number.isFinite(value));
 }
 
 /**

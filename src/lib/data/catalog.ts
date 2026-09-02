@@ -432,24 +432,3 @@ export async function listDeliveryWindows(): Promise<DeliveryWindow[]> {
 
   return (data ?? []) as DeliveryWindow[];
 }
-
-/**
- * Reads a public business setting. Sensitive keys are filtered by RLS, so a
- * storefront call cannot reach one even by asking for it.
- */
-export async function publicSettings(
-  keys: string[],
-): Promise<Record<string, unknown>> {
-  const supabase = publicClient();
-  const { data } = await supabase
-    .from("business_settings")
-    .select("key, value")
-    .in("key", keys);
-
-  return Object.fromEntries(
-    ((data ?? []) as Array<{ key: string; value: unknown }>).map((row) => [
-      row.key,
-      row.value,
-    ]),
-  );
-}

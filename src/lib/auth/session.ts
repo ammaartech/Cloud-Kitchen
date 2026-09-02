@@ -103,20 +103,3 @@ export async function requireAnyPermission(
 export function can(session: SessionProfile | null, permission: Permission): boolean {
   return session?.permissions.has(permission) ?? false;
 }
-
-/** For API routes: returns a 403-shaped result instead of redirecting. */
-export async function authorizeRequest(
-  permission: Permission,
-): Promise<{ ok: true; session: SessionProfile } | { ok: false; status: number; message: string }> {
-  const session = await getSession();
-
-  if (!session) {
-    return { ok: false, status: 401, message: 'Sign in to continue' };
-  }
-
-  if (!session.permissions.has(permission)) {
-    return { ok: false, status: 403, message: 'You do not have access to this action' };
-  }
-
-  return { ok: true, session };
-}

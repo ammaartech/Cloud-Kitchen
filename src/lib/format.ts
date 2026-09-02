@@ -6,7 +6,7 @@
  * 00:30 IST never displays under the previous day.
  */
 
-export const BUSINESS_TIMEZONE = 'Asia/Kolkata';
+const BUSINESS_TIMEZONE = 'Asia/Kolkata';
 
 const currency = new Intl.NumberFormat('en-IN', {
   style: 'currency',
@@ -29,13 +29,6 @@ export function money(value: number | string | null | undefined): string {
   const n = typeof value === 'string' ? Number(value) : value;
   if (Number.isNaN(n)) return '—';
   return Number.isInteger(n) ? currencyWhole.format(n) : currency.format(n);
-}
-
-/** For a column of figures where the decimals should align. */
-export function moneyExact(value: number | string | null | undefined): string {
-  if (value === null || value === undefined) return '—';
-  const n = typeof value === 'string' ? Number(value) : value;
-  return Number.isNaN(n) ? '—' : currency.format(n);
 }
 
 export function dateTime(value: string | Date | null | undefined): string {
