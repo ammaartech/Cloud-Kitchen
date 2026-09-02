@@ -21,7 +21,7 @@ export function KotTabs({
     <div
       role="tablist"
       aria-label="KOT view"
-      className="inline-flex rounded-ck-lg border border-line bg-sunken p-1"
+      className="flex w-full rounded-ck-lg border border-line bg-sunken p-1"
     >
       {TABS.map((tab) => {
         const selected = tab.key === active;
@@ -33,7 +33,7 @@ export function KotTabs({
             aria-selected={selected}
             onClick={() => onChange(tab.key)}
             className={cx(
-              'rounded-ck px-4 py-1.5 text-sm font-medium transition-colors duration-150 ease-ck',
+              'flex-1 rounded-ck px-4 py-2 text-center text-sm font-medium transition-colors duration-150 ease-ck',
               selected
                 ? 'bg-surface text-ink shadow-ck-sm'
                 : 'text-muted hover:text-ink',

@@ -58,7 +58,7 @@ export function ManagerBoard({
   };
 
   return (
-    <div data-surface="ops" className="min-h-dvh bg-bg text-ink">
+    <div className="min-h-dvh bg-bg text-ink">
       <header className="sticky top-0 z-30 border-b border-line bg-surface/95 px-4 py-3 backdrop-blur">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3">
           <div>
