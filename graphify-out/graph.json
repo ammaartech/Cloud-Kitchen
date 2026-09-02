@@ -1021,7 +1021,7 @@
       "source_file": "src/app/(site)/account/addresses/page.tsx",
       "source_location": "L1",
       "id": "addresses_page",
-      "community": 106,
+      "community": 0,
       "norm_label": "page.tsx"
     },
     {
@@ -1030,7 +1030,7 @@
       "source_file": "src/app/(site)/account/addresses/page.tsx",
       "source_location": "L30",
       "id": "addresses_page_metadata",
-      "community": 106,
+      "community": 0,
       "norm_label": "metadata"
     },
     {
@@ -1039,7 +1039,7 @@
       "source_file": "src/app/(site)/account/addresses/page.tsx",
       "source_location": "L34",
       "id": "addresses_page_address",
-      "community": 106,
+      "community": 0,
       "norm_label": "address"
     },
     {
@@ -1048,7 +1048,7 @@
       "source_file": "src/app/(site)/account/addresses/page.tsx",
       "source_location": "L60",
       "id": "addresses_page_addressespage",
-      "community": 106,
+      "community": 52,
       "norm_label": "addressespage()"
     },
     {
@@ -1156,7 +1156,7 @@
       "source_file": "src/app/(site)/account/refunds/page.tsx",
       "source_location": "L75",
       "id": "refunds_page_accountrefundspage",
-      "community": 106,
+      "community": 52,
       "norm_label": "accountrefundspage()"
     },
     {
@@ -1165,7 +1165,7 @@
       "source_file": "src/app/(site)/account/reviews/page.tsx",
       "source_location": "L1",
       "id": "src_app_site_account_reviews_page_tsx_reviews_page",
-      "community": 106,
+      "community": 0,
       "norm_label": "page.tsx"
     },
     {
@@ -1174,7 +1174,7 @@
       "source_file": "src/app/(site)/account/reviews/page.tsx",
       "source_location": "L33",
       "id": "src_app_site_account_reviews_page_tsx_reviews_page_metadata",
-      "community": 106,
+      "community": 0,
       "norm_label": "metadata"
     },
     {
@@ -1183,7 +1183,7 @@
       "source_file": "src/app/(site)/account/reviews/page.tsx",
       "source_location": "L37",
       "id": "src_app_site_account_reviews_page_tsx_reviews_page_reviewrow",
-      "community": 106,
+      "community": 0,
       "norm_label": "reviewrow"
     },
     {
@@ -1192,7 +1192,7 @@
       "source_file": "src/app/(site)/account/reviews/page.tsx",
       "source_location": "L50",
       "id": "reviews_page_status_note",
-      "community": 106,
+      "community": 0,
       "norm_label": "status_note"
     },
     {
@@ -1201,7 +1201,7 @@
       "source_file": "src/app/(site)/account/reviews/page.tsx",
       "source_location": "L64",
       "id": "reviews_page_accountreviewspage",
-      "community": 106,
+      "community": 52,
       "norm_label": "accountreviewspage()"
     },
     {
@@ -1210,7 +1210,7 @@
       "source_file": "src/app/(site)/layout.tsx",
       "source_location": "L1",
       "id": "site_layout",
-      "community": 7,
+      "community": 38,
       "norm_label": "layout.tsx"
     },
     {
@@ -1219,7 +1219,7 @@
       "source_file": "src/app/(site)/layout.tsx",
       "source_location": "L23",
       "id": "site_layout_sitelayout",
-      "community": 30,
+      "community": 38,
       "norm_label": "sitelayout()"
     },
     {
@@ -1327,7 +1327,7 @@
       "source_file": "src/app/(site)/offers/page.tsx",
       "source_location": "L1",
       "id": "offers_page",
-      "community": 106,
+      "community": 12,
       "norm_label": "page.tsx"
     },
     {
@@ -1336,7 +1336,7 @@
       "source_file": "src/app/(site)/offers/page.tsx",
       "source_location": "L6",
       "id": "offers_page_metadata",
-      "community": 106,
+      "community": 12,
       "norm_label": "metadata"
     },
     {
@@ -1354,7 +1354,7 @@
       "source_file": "src/app/(site)/page.tsx",
       "source_location": "L1",
       "id": "site_page",
-      "community": 61,
+      "community": 66,
       "norm_label": "page.tsx"
     },
     {
@@ -1363,7 +1363,7 @@
       "source_file": "src/app/(site)/page.tsx",
       "source_location": "L11",
       "id": "site_page_metadata",
-      "community": 61,
+      "community": 66,
       "norm_label": "metadata"
     },
     {
@@ -1372,7 +1372,7 @@
       "source_file": "src/app/(site)/page.tsx",
       "source_location": "L42",
       "id": "site_page_note_placement",
-      "community": 61,
+      "community": 66,
       "norm_label": "note_placement"
     },
     {
@@ -1381,7 +1381,7 @@
       "source_file": "src/app/(site)/page.tsx",
       "source_location": "L49",
       "id": "site_page_subscription_steps",
-      "community": 61,
+      "community": 66,
       "norm_label": "subscription_steps"
     },
     {
@@ -1480,7 +1480,7 @@
       "source_file": "src/app/admin/audit/page.tsx",
       "source_location": "L1",
       "id": "audit_page",
-      "community": 1,
+      "community": 25,
       "norm_label": "page.tsx"
     },
     {
@@ -1489,7 +1489,7 @@
       "source_file": "src/app/admin/audit/page.tsx",
       "source_location": "L18",
       "id": "audit_page_metadata",
-      "community": 1,
+      "community": 25,
       "norm_label": "metadata"
     },
     {
@@ -1498,7 +1498,7 @@
       "source_file": "src/app/admin/audit/page.tsx",
       "source_location": "L20",
       "id": "audit_page_auditrow",
-      "community": 1,
+      "community": 25,
       "norm_label": "auditrow"
     },
     {
@@ -1507,7 +1507,7 @@
       "source_file": "src/app/admin/audit/page.tsx",
       "source_location": "L32",
       "id": "audit_page_action_tone",
-      "community": 1,
+      "community": 25,
       "norm_label": "action_tone"
     },
     {
@@ -1516,7 +1516,7 @@
       "source_file": "src/app/admin/audit/page.tsx",
       "source_location": "L51",
       "id": "audit_page_auditpage",
-      "community": 25,
+      "community": 52,
       "norm_label": "auditpage()"
     },
     {
@@ -1552,7 +1552,7 @@
       "source_file": "src/app/admin/catalog/add-ons/page.tsx",
       "source_location": "L58",
       "id": "add_ons_page_addonspage",
-      "community": 25,
+      "community": 52,
       "norm_label": "addonspage()"
     },
     {
@@ -1588,7 +1588,7 @@
       "source_file": "src/app/admin/catalog/categories/page.tsx",
       "source_location": "L51",
       "id": "categories_page_categoriespage",
-      "community": 25,
+      "community": 52,
       "norm_label": "categoriespage()"
     },
     {
@@ -1624,7 +1624,7 @@
       "source_file": "src/app/admin/catalog/collections/page.tsx",
       "source_location": "L53",
       "id": "collections_page_collectionspage",
-      "community": 25,
+      "community": 52,
       "norm_label": "collectionspage()"
     },
     {
@@ -1660,7 +1660,7 @@
       "source_file": "src/app/admin/catalog/page.tsx",
       "source_location": "L65",
       "id": "catalog_page_catalogpage",
-      "community": 25,
+      "community": 52,
       "norm_label": "catalogpage()"
     },
     {
@@ -1678,7 +1678,7 @@
       "source_file": "src/app/admin/catalog/products/[productId]/page.tsx",
       "source_location": "L38",
       "id": "productid_page_generatemetadata",
-      "community": 25,
+      "community": 52,
       "norm_label": "generatemetadata()"
     },
     {
@@ -1696,7 +1696,7 @@
       "source_file": "src/app/admin/catalog/products/[productId]/page.tsx",
       "source_location": "L87",
       "id": "productid_page_producteditorpage",
-      "community": 25,
+      "community": 52,
       "norm_label": "producteditorpage()"
     },
     {
@@ -1732,7 +1732,7 @@
       "source_file": "src/app/admin/catalog/variants/page.tsx",
       "source_location": "L68",
       "id": "variants_page_variantspage",
-      "community": 25,
+      "community": 52,
       "norm_label": "variantspage()"
     },
     {
@@ -1822,7 +1822,7 @@
       "source_file": "src/app/admin/coupons/page.tsx",
       "source_location": "L121",
       "id": "coupons_page_couponspage",
-      "community": 25,
+      "community": 52,
       "norm_label": "couponspage()"
     },
     {
@@ -1831,7 +1831,7 @@
       "source_file": "src/app/admin/customers/[customerId]/page.tsx",
       "source_location": "L1",
       "id": "customerid_page",
-      "community": 1,
+      "community": 12,
       "norm_label": "page.tsx"
     },
     {
@@ -1840,7 +1840,7 @@
       "source_file": "src/app/admin/customers/[customerId]/page.tsx",
       "source_location": "L39",
       "id": "customerid_page_generatemetadata",
-      "community": 1,
+      "community": 12,
       "norm_label": "generatemetadata()"
     },
     {
@@ -1849,7 +1849,7 @@
       "source_file": "src/app/admin/customers/[customerId]/page.tsx",
       "source_location": "L51",
       "id": "customerid_page_customer",
-      "community": 1,
+      "community": 12,
       "norm_label": "customer"
     },
     {
@@ -1912,7 +1912,7 @@
       "source_file": "src/app/admin/employees/page.tsx",
       "source_location": "L1",
       "id": "employees_page",
-      "community": 1,
+      "community": 25,
       "norm_label": "page.tsx"
     },
     {
@@ -1921,7 +1921,7 @@
       "source_file": "src/app/admin/employees/page.tsx",
       "source_location": "L33",
       "id": "employees_page_metadata",
-      "community": 1,
+      "community": 25,
       "norm_label": "metadata"
     },
     {
@@ -1930,7 +1930,7 @@
       "source_file": "src/app/admin/employees/page.tsx",
       "source_location": "L37",
       "id": "employees_page_staff_role_labels",
-      "community": 1,
+      "community": 25,
       "norm_label": "staff_role_labels"
     },
     {
@@ -1939,7 +1939,7 @@
       "source_file": "src/app/admin/employees/page.tsx",
       "source_location": "L50",
       "id": "employees_page_employeerow",
-      "community": 1,
+      "community": 25,
       "norm_label": "employeerow"
     },
     {
@@ -1957,7 +1957,7 @@
       "source_file": "src/app/admin/integrations/page.tsx",
       "source_location": "L1",
       "id": "integrations_page",
-      "community": 1,
+      "community": 25,
       "norm_label": "page.tsx"
     },
     {
@@ -1966,7 +1966,7 @@
       "source_file": "src/app/admin/integrations/page.tsx",
       "source_location": "L18",
       "id": "integrations_page_metadata",
-      "community": 1,
+      "community": 25,
       "norm_label": "metadata"
     },
     {
@@ -1975,7 +1975,7 @@
       "source_file": "src/app/admin/integrations/page.tsx",
       "source_location": "L20",
       "id": "integrations_page_healthrow",
-      "community": 1,
+      "community": 25,
       "norm_label": "healthrow"
     },
     {
@@ -1984,7 +1984,7 @@
       "source_file": "src/app/admin/integrations/page.tsx",
       "source_location": "L40",
       "id": "integrations_page_capability_tone",
-      "community": 1,
+      "community": 25,
       "norm_label": "capability_tone"
     },
     {
@@ -1993,7 +1993,7 @@
       "source_file": "src/app/admin/integrations/page.tsx",
       "source_location": "L46",
       "id": "integrations_page_capability_meaning",
-      "community": 1,
+      "community": 25,
       "norm_label": "capability_meaning"
     },
     {
@@ -2002,7 +2002,7 @@
       "source_file": "src/app/admin/integrations/page.tsx",
       "source_location": "L60",
       "id": "integrations_page_integrationspage",
-      "community": 25,
+      "community": 52,
       "norm_label": "integrationspage()"
     },
     {
@@ -2011,7 +2011,7 @@
       "source_file": "src/app/admin/layout.tsx",
       "source_location": "L1",
       "id": "admin_layout",
-      "community": 105,
+      "community": 107,
       "norm_label": "layout.tsx"
     },
     {
@@ -2020,7 +2020,7 @@
       "source_file": "src/app/admin/layout.tsx",
       "source_location": "L25",
       "id": "admin_layout_sections",
-      "community": 105,
+      "community": 107,
       "norm_label": "sections"
     },
     {
@@ -2029,7 +2029,7 @@
       "source_file": "src/app/admin/layout.tsx",
       "source_location": "L39",
       "id": "admin_layout_adminlayout",
-      "community": 105,
+      "community": 107,
       "norm_label": "adminlayout()"
     },
     {
@@ -2110,7 +2110,7 @@
       "source_file": "src/app/admin/plans/[planId]/page.tsx",
       "source_location": "L36",
       "id": "planid_page_generatemetadata",
-      "community": 25,
+      "community": 0,
       "norm_label": "generatemetadata()"
     },
     {
@@ -2128,7 +2128,7 @@
       "source_file": "src/app/admin/plans/[planId]/page.tsx",
       "source_location": "L86",
       "id": "planid_page_planeditorpage",
-      "community": 25,
+      "community": 52,
       "norm_label": "planeditorpage()"
     },
     {
@@ -2173,7 +2173,7 @@
       "source_file": "src/app/admin/plans/page.tsx",
       "source_location": "L71",
       "id": "plans_page_planspage",
-      "community": 25,
+      "community": 52,
       "norm_label": "planspage()"
     },
     {
@@ -2299,7 +2299,7 @@
       "source_file": "src/app/admin/reviews/page.tsx",
       "source_location": "L85",
       "id": "reviews_page_reviewspage",
-      "community": 25,
+      "community": 52,
       "norm_label": "reviewspage()"
     },
     {
@@ -2308,7 +2308,7 @@
       "source_file": "src/app/admin/settings/page.tsx",
       "source_location": "L1",
       "id": "settings_page",
-      "community": 25,
+      "community": 12,
       "norm_label": "page.tsx"
     },
     {
@@ -2317,7 +2317,7 @@
       "source_file": "src/app/admin/settings/page.tsx",
       "source_location": "L20",
       "id": "settings_page_metadata",
-      "community": 25,
+      "community": 12,
       "norm_label": "metadata"
     },
     {
@@ -2326,7 +2326,7 @@
       "source_file": "src/app/admin/settings/page.tsx",
       "source_location": "L24",
       "id": "settings_page_settingrow",
-      "community": 25,
+      "community": 12,
       "norm_label": "settingrow"
     },
     {
@@ -2335,7 +2335,7 @@
       "source_file": "src/app/admin/settings/page.tsx",
       "source_location": "L34",
       "id": "settings_page_group_titles",
-      "community": 25,
+      "community": 12,
       "norm_label": "group_titles"
     },
     {
@@ -2344,7 +2344,7 @@
       "source_file": "src/app/admin/settings/page.tsx",
       "source_location": "L55",
       "id": "settings_page_settingspage",
-      "community": 25,
+      "community": 52,
       "norm_label": "settingspage()"
     },
     {
@@ -2353,7 +2353,7 @@
       "source_file": "src/app/api/account/session/route.ts",
       "source_location": "L1",
       "id": "session_route",
-      "community": 30,
+      "community": 38,
       "norm_label": "route.ts"
     },
     {
@@ -2362,7 +2362,7 @@
       "source_file": "src/app/api/account/session/route.ts",
       "source_location": "L20",
       "id": "session_route_get",
-      "community": 30,
+      "community": 38,
       "norm_label": "get()"
     },
     {
@@ -2371,7 +2371,7 @@
       "source_file": "src/app/api/checkout/begin/route.ts",
       "source_location": "L1",
       "id": "begin_route",
-      "community": 16,
+      "community": 29,
       "norm_label": "route.ts"
     },
     {
@@ -2380,7 +2380,7 @@
       "source_file": "src/app/api/checkout/begin/route.ts",
       "source_location": "L8",
       "id": "begin_route_bodyschema",
-      "community": 16,
+      "community": 29,
       "norm_label": "bodyschema"
     },
     {
@@ -2389,7 +2389,7 @@
       "source_file": "src/app/api/checkout/begin/route.ts",
       "source_location": "L15",
       "id": "begin_route_post",
-      "community": 16,
+      "community": 29,
       "norm_label": "post()"
     },
     {
@@ -2506,7 +2506,7 @@
       "source_file": "src/app/api/kot/eta/route.ts",
       "source_location": "L1",
       "id": "eta_route",
-      "community": 30,
+      "community": 38,
       "norm_label": "route.ts"
     },
     {
@@ -2515,7 +2515,7 @@
       "source_file": "src/app/api/kot/eta/route.ts",
       "source_location": "L6",
       "id": "eta_route_bodyschema",
-      "community": 30,
+      "community": 38,
       "norm_label": "bodyschema"
     },
     {
@@ -2524,8 +2524,44 @@
       "source_file": "src/app/api/kot/eta/route.ts",
       "source_location": "L12",
       "id": "eta_route_post",
-      "community": 30,
+      "community": 38,
       "norm_label": "post()"
+    },
+    {
+      "label": "route.ts",
+      "file_type": "code",
+      "source_file": "src/app/api/kot/history/route.ts",
+      "source_location": "L1",
+      "id": "history_route",
+      "community": 25,
+      "norm_label": "route.ts"
+    },
+    {
+      "label": "querySchema",
+      "file_type": "code",
+      "source_file": "src/app/api/kot/history/route.ts",
+      "source_location": "L7",
+      "id": "history_route_queryschema",
+      "community": 25,
+      "norm_label": "queryschema"
+    },
+    {
+      "label": "istDayRange()",
+      "file_type": "code",
+      "source_file": "src/app/api/kot/history/route.ts",
+      "source_location": "L21",
+      "id": "history_route_istdayrange",
+      "community": 25,
+      "norm_label": "istdayrange()"
+    },
+    {
+      "label": "GET()",
+      "file_type": "code",
+      "source_file": "src/app/api/kot/history/route.ts",
+      "source_location": "L27",
+      "id": "history_route_get",
+      "community": 25,
+      "norm_label": "get()"
     },
     {
       "label": "route.ts",
@@ -2533,7 +2569,7 @@
       "source_file": "src/app/api/kot/transition/route.ts",
       "source_location": "L1",
       "id": "transition_route",
-      "community": 30,
+      "community": 25,
       "norm_label": "route.ts"
     },
     {
@@ -2542,7 +2578,7 @@
       "source_file": "src/app/api/kot/transition/route.ts",
       "source_location": "L6",
       "id": "transition_route_bodyschema",
-      "community": 30,
+      "community": 25,
       "norm_label": "bodyschema"
     },
     {
@@ -2551,7 +2587,7 @@
       "source_file": "src/app/api/kot/transition/route.ts",
       "source_location": "L33",
       "id": "transition_route_post",
-      "community": 30,
+      "community": 25,
       "norm_label": "post()"
     },
     {
@@ -2560,7 +2596,7 @@
       "source_file": "src/app/api/marketplace/[provider]/webhook/route.ts",
       "source_location": "L1",
       "id": "src_app_api_marketplace_provider_webhook_route_ts_webhook_route",
-      "community": 11,
+      "community": 16,
       "norm_label": "route.ts"
     },
     {
@@ -2569,7 +2605,7 @@
       "source_file": "src/app/api/marketplace/[provider]/webhook/route.ts",
       "source_location": "L20",
       "id": "src_app_api_marketplace_provider_webhook_route_ts_webhook_route_post",
-      "community": 11,
+      "community": 16,
       "norm_label": "post()"
     },
     {
@@ -2632,7 +2668,7 @@
       "source_file": "src/app/error.tsx",
       "source_location": "L1",
       "id": "app_error",
-      "community": 106,
+      "community": 12,
       "norm_label": "error.tsx"
     },
     {
@@ -2641,7 +2677,7 @@
       "source_file": "src/app/error.tsx",
       "source_location": "L15",
       "id": "app_error_routeerror",
-      "community": 106,
+      "community": 12,
       "norm_label": "routeerror()"
     },
     {
@@ -2650,7 +2686,7 @@
       "source_file": "src/app/forbidden/page.tsx",
       "source_location": "L1",
       "id": "forbidden_page",
-      "community": 30,
+      "community": 38,
       "norm_label": "page.tsx"
     },
     {
@@ -2659,7 +2695,7 @@
       "source_file": "src/app/forbidden/page.tsx",
       "source_location": "L17",
       "id": "forbidden_page_metadata",
-      "community": 30,
+      "community": 38,
       "norm_label": "metadata"
     },
     {
@@ -2668,7 +2704,7 @@
       "source_file": "src/app/forbidden/page.tsx",
       "source_location": "L25",
       "id": "forbidden_page_forbiddenpage",
-      "community": 30,
+      "community": 38,
       "norm_label": "forbiddenpage()"
     },
     {
@@ -2695,7 +2731,7 @@
       "source_file": "src/app/kot/kitchen/page.tsx",
       "source_location": "L1",
       "id": "kitchen_page",
-      "community": 25,
+      "community": 4,
       "norm_label": "page.tsx"
     },
     {
@@ -2704,7 +2740,7 @@
       "source_file": "src/app/kot/kitchen/page.tsx",
       "source_location": "L18",
       "id": "kitchen_page_metadata",
-      "community": 25,
+      "community": 4,
       "norm_label": "metadata"
     },
     {
@@ -2713,7 +2749,7 @@
       "source_file": "src/app/kot/kitchen/page.tsx",
       "source_location": "L21",
       "id": "kitchen_page_kitchenpage",
-      "community": 25,
+      "community": 52,
       "norm_label": "kitchenpage()"
     },
     {
@@ -2729,19 +2765,46 @@
       "label": "metadata",
       "file_type": "code",
       "source_file": "src/app/kot/manager/page.tsx",
-      "source_location": "L18",
+      "source_location": "L11",
       "id": "manager_page_metadata",
       "community": 4,
       "norm_label": "metadata"
     },
     {
+      "label": "VALID_TABS",
+      "file_type": "code",
+      "source_file": "src/app/kot/manager/page.tsx",
+      "source_location": "L13",
+      "id": "manager_page_valid_tabs",
+      "community": 4,
+      "norm_label": "valid_tabs"
+    },
+    {
       "label": "ManagerPage()",
       "file_type": "code",
       "source_file": "src/app/kot/manager/page.tsx",
-      "source_location": "L22",
+      "source_location": "L15",
       "id": "manager_page_managerpage",
-      "community": 25,
+      "community": 4,
       "norm_label": "managerpage()"
+    },
+    {
+      "label": "pickOne()",
+      "file_type": "code",
+      "source_file": "src/app/kot/manager/page.tsx",
+      "source_location": "L49",
+      "id": "manager_page_pickone",
+      "community": 4,
+      "norm_label": "pickone()"
+    },
+    {
+      "label": "normaliseDate()",
+      "file_type": "code",
+      "source_file": "src/app/kot/manager/page.tsx",
+      "source_location": "L54",
+      "id": "manager_page_normalisedate",
+      "community": 4,
+      "norm_label": "normalisedate()"
     },
     {
       "label": "layout.tsx",
@@ -2812,7 +2875,7 @@
       "source_file": "src/app/not-found.tsx",
       "source_location": "L1",
       "id": "app_not_found",
-      "community": 106,
+      "community": 12,
       "norm_label": "not-found.tsx"
     },
     {
@@ -2821,7 +2884,7 @@
       "source_file": "src/app/not-found.tsx",
       "source_location": "L3",
       "id": "app_not_found_metadata",
-      "community": 106,
+      "community": 12,
       "norm_label": "metadata"
     },
     {
@@ -2830,7 +2893,7 @@
       "source_file": "src/app/not-found.tsx",
       "source_location": "L10",
       "id": "app_not_found_notfound",
-      "community": 25,
+      "community": 52,
       "norm_label": "notfound()"
     },
     {
@@ -2893,7 +2956,7 @@
       "source_file": "src/components/account/subscription-controls.tsx",
       "source_location": "L1",
       "id": "account_subscription_controls",
-      "community": 106,
+      "community": 12,
       "norm_label": "subscription-controls.tsx"
     },
     {
@@ -2902,7 +2965,7 @@
       "source_file": "src/components/account/subscription-controls.tsx",
       "source_location": "L17",
       "id": "account_subscription_controls_subscriptioncontrols",
-      "community": 106,
+      "community": 12,
       "norm_label": "subscriptioncontrols()"
     },
     {
@@ -2911,7 +2974,7 @@
       "source_file": "src/components/admin/admin-nav.tsx",
       "source_location": "L1",
       "id": "admin_admin_nav",
-      "community": 105,
+      "community": 107,
       "norm_label": "admin-nav.tsx"
     },
     {
@@ -2920,7 +2983,7 @@
       "source_file": "src/components/admin/admin-nav.tsx",
       "source_location": "L16",
       "id": "admin_admin_nav_adminnav",
-      "community": 105,
+      "community": 107,
       "norm_label": "adminnav()"
     },
     {
@@ -2956,7 +3019,7 @@
       "source_file": "src/components/admin/revenue-chart.tsx",
       "source_location": "L1",
       "id": "admin_revenue_chart",
-      "community": 12,
+      "community": 4,
       "norm_label": "revenue-chart.tsx"
     },
     {
@@ -2965,7 +3028,7 @@
       "source_file": "src/components/admin/revenue-chart.tsx",
       "source_location": "L3",
       "id": "admin_revenue_chart_dailyrow",
-      "community": 12,
+      "community": 4,
       "norm_label": "dailyrow"
     },
     {
@@ -2974,7 +3037,7 @@
       "source_file": "src/components/admin/revenue-chart.tsx",
       "source_location": "L20",
       "id": "admin_revenue_chart_source_order",
-      "community": 12,
+      "community": 4,
       "norm_label": "source_order"
     },
     {
@@ -2983,7 +3046,7 @@
       "source_file": "src/components/admin/revenue-chart.tsx",
       "source_location": "L22",
       "id": "admin_revenue_chart_source_fill",
-      "community": 12,
+      "community": 4,
       "norm_label": "source_fill"
     },
     {
@@ -3037,7 +3100,7 @@
       "source_file": "src/components/auth/sign-in-form.tsx",
       "source_location": "L1",
       "id": "auth_sign_in_form",
-      "community": 65,
+      "community": 38,
       "norm_label": "sign-in-form.tsx"
     },
     {
@@ -3046,7 +3109,7 @@
       "source_file": "src/components/auth/sign-in-form.tsx",
       "source_location": "L24",
       "id": "auth_sign_in_form_signinform",
-      "community": 65,
+      "community": 38,
       "norm_label": "signinform()"
     },
     {
@@ -3073,7 +3136,7 @@
       "source_file": "src/components/auth/sign-out-button.tsx",
       "source_location": "L1",
       "id": "auth_sign_out_button",
-      "community": 7,
+      "community": 38,
       "norm_label": "sign-out-button.tsx"
     },
     {
@@ -3082,7 +3145,7 @@
       "source_file": "src/components/auth/sign-out-button.tsx",
       "source_location": "L23",
       "id": "auth_sign_out_button_signoutbutton",
-      "community": 7,
+      "community": 38,
       "norm_label": "signoutbutton()"
     },
     {
@@ -3091,7 +3154,7 @@
       "source_file": "src/components/checkout/address-step.tsx",
       "source_location": "L1",
       "id": "checkout_address_step",
-      "community": 106,
+      "community": 12,
       "norm_label": "address-step.tsx"
     },
     {
@@ -3100,7 +3163,7 @@
       "source_file": "src/components/checkout/address-step.tsx",
       "source_location": "L4",
       "id": "checkout_address_step_addressstep",
-      "community": 106,
+      "community": 12,
       "norm_label": "addressstep()"
     },
     {
@@ -3109,7 +3172,7 @@
       "source_file": "src/components/checkout/auth-step.tsx",
       "source_location": "L1",
       "id": "checkout_auth_step",
-      "community": 106,
+      "community": 12,
       "norm_label": "auth-step.tsx"
     },
     {
@@ -3217,7 +3280,7 @@
       "source_file": "src/components/checkout/profile-step.tsx",
       "source_location": "L1",
       "id": "checkout_profile_step",
-      "community": 106,
+      "community": 12,
       "norm_label": "profile-step.tsx"
     },
     {
@@ -3226,7 +3289,7 @@
       "source_file": "src/components/checkout/profile-step.tsx",
       "source_location": "L8",
       "id": "checkout_profile_step_profilestep",
-      "community": 106,
+      "community": 12,
       "norm_label": "profilestep()"
     },
     {
@@ -3246,6 +3309,60 @@
       "id": "kot_connection_badge_connectionbadge",
       "community": 4,
       "norm_label": "connectionbadge()"
+    },
+    {
+      "label": "history-pane.tsx",
+      "file_type": "code",
+      "source_file": "src/components/kot/history-pane.tsx",
+      "source_location": "L1",
+      "id": "kot_history_pane",
+      "community": 4,
+      "norm_label": "history-pane.tsx"
+    },
+    {
+      "label": "ALL_STATUS_FILTERS",
+      "file_type": "code",
+      "source_file": "src/components/kot/history-pane.tsx",
+      "source_location": "L21",
+      "id": "kot_history_pane_all_status_filters",
+      "community": 4,
+      "norm_label": "all_status_filters"
+    },
+    {
+      "label": "StatusFilter",
+      "file_type": "code",
+      "source_file": "src/components/kot/history-pane.tsx",
+      "source_location": "L34",
+      "id": "kot_history_pane_statusfilter",
+      "community": 4,
+      "norm_label": "statusfilter"
+    },
+    {
+      "label": "HistoryPane()",
+      "file_type": "code",
+      "source_file": "src/components/kot/history-pane.tsx",
+      "source_location": "L36",
+      "id": "kot_history_pane_historypane",
+      "community": 4,
+      "norm_label": "historypane()"
+    },
+    {
+      "label": "FilterChip()",
+      "file_type": "code",
+      "source_file": "src/components/kot/history-pane.tsx",
+      "source_location": "L134",
+      "id": "kot_history_pane_filterchip",
+      "community": 4,
+      "norm_label": "filterchip()"
+    },
+    {
+      "label": "countByStatus()",
+      "file_type": "code",
+      "source_file": "src/components/kot/history-pane.tsx",
+      "source_location": "L159",
+      "id": "kot_history_pane_countbystatus",
+      "community": 4,
+      "norm_label": "countbystatus()"
     },
     {
       "label": "kitchen-board.tsx",
@@ -3275,6 +3392,33 @@
       "norm_label": "kitchenboard()"
     },
     {
+      "label": "live-board.tsx",
+      "file_type": "code",
+      "source_file": "src/components/kot/live-board.tsx",
+      "source_location": "L1",
+      "id": "kot_live_board",
+      "community": 4,
+      "norm_label": "live-board.tsx"
+    },
+    {
+      "label": "GROUPS",
+      "file_type": "code",
+      "source_file": "src/components/kot/live-board.tsx",
+      "source_location": "L28",
+      "id": "kot_live_board_groups",
+      "community": 4,
+      "norm_label": "groups"
+    },
+    {
+      "label": "LiveBoard()",
+      "file_type": "code",
+      "source_file": "src/components/kot/live-board.tsx",
+      "source_location": "L46",
+      "id": "kot_live_board_liveboard",
+      "community": 4,
+      "norm_label": "liveboard()"
+    },
+    {
       "label": "manager-board.tsx",
       "file_type": "code",
       "source_file": "src/components/kot/manager-board.tsx",
@@ -3284,22 +3428,58 @@
       "norm_label": "manager-board.tsx"
     },
     {
-      "label": "GROUPS",
-      "file_type": "code",
-      "source_file": "src/components/kot/manager-board.tsx",
-      "source_location": "L37",
-      "id": "kot_manager_board_groups",
-      "community": 4,
-      "norm_label": "groups"
-    },
-    {
       "label": "ManagerBoard()",
       "file_type": "code",
       "source_file": "src/components/kot/manager-board.tsx",
-      "source_location": "L48",
+      "source_location": "L19",
       "id": "kot_manager_board_managerboard",
       "community": 4,
       "norm_label": "managerboard()"
+    },
+    {
+      "label": "tabSubtitle()",
+      "file_type": "code",
+      "source_file": "src/components/kot/manager-board.tsx",
+      "source_location": "L101",
+      "id": "kot_manager_board_tabsubtitle",
+      "community": 4,
+      "norm_label": "tabsubtitle()"
+    },
+    {
+      "label": "tabs.tsx",
+      "file_type": "code",
+      "source_file": "src/components/kot/tabs.tsx",
+      "source_location": "L1",
+      "id": "kot_tabs",
+      "community": 4,
+      "norm_label": "tabs.tsx"
+    },
+    {
+      "label": "KotTabKey",
+      "file_type": "code",
+      "source_file": "src/components/kot/tabs.tsx",
+      "source_location": "L5",
+      "id": "kot_tabs_kottabkey",
+      "community": 4,
+      "norm_label": "kottabkey"
+    },
+    {
+      "label": "TABS",
+      "file_type": "code",
+      "source_file": "src/components/kot/tabs.tsx",
+      "source_location": "L7",
+      "id": "kot_tabs_tabs",
+      "community": 4,
+      "norm_label": "tabs"
+    },
+    {
+      "label": "KotTabs()",
+      "file_type": "code",
+      "source_file": "src/components/kot/tabs.tsx",
+      "source_location": "L13",
+      "id": "kot_tabs_kottabs",
+      "community": 4,
+      "norm_label": "kottabs()"
     },
     {
       "label": "ticket-actions.ts",
@@ -3320,12 +3500,48 @@
       "norm_label": "useticketactions()"
     },
     {
+      "label": "ticket-card-readonly.tsx",
+      "file_type": "code",
+      "source_file": "src/components/kot/ticket-card-readonly.tsx",
+      "source_location": "L1",
+      "id": "kot_ticket_card_readonly",
+      "community": 4,
+      "norm_label": "ticket-card-readonly.tsx"
+    },
+    {
+      "label": "TicketCardReadonly()",
+      "file_type": "code",
+      "source_file": "src/components/kot/ticket-card-readonly.tsx",
+      "source_location": "L17",
+      "id": "kot_ticket_card_readonly_ticketcardreadonly",
+      "community": 4,
+      "norm_label": "ticketcardreadonly()"
+    },
+    {
+      "label": "statusTone()",
+      "file_type": "code",
+      "source_file": "src/components/kot/ticket-card-readonly.tsx",
+      "source_location": "L91",
+      "id": "kot_ticket_card_readonly_statustone",
+      "community": 4,
+      "norm_label": "statustone()"
+    },
+    {
+      "label": "terminalLabel()",
+      "file_type": "code",
+      "source_file": "src/components/kot/ticket-card-readonly.tsx",
+      "source_location": "L111",
+      "id": "kot_ticket_card_readonly_terminallabel",
+      "community": 4,
+      "norm_label": "terminallabel()"
+    },
+    {
       "label": "ticket-items.tsx",
       "file_type": "code",
       "source_file": "src/components/kot/ticket-items.tsx",
       "source_location": "L1",
       "id": "kot_ticket_items",
-      "community": 65,
+      "community": 4,
       "norm_label": "ticket-items.tsx"
     },
     {
@@ -3334,7 +3550,7 @@
       "source_file": "src/components/kot/ticket-items.tsx",
       "source_location": "L7",
       "id": "kot_ticket_items_item",
-      "community": 65,
+      "community": 4,
       "norm_label": "item"
     },
     {
@@ -3343,7 +3559,7 @@
       "source_file": "src/components/kot/ticket-items.tsx",
       "source_location": "L28",
       "id": "kot_ticket_items_ticketitems",
-      "community": 65,
+      "community": 4,
       "norm_label": "ticketitems()"
     },
     {
@@ -3370,7 +3586,7 @@
       "source_file": "src/components/site/account-nav.tsx",
       "source_location": "L1",
       "id": "site_account_nav",
-      "community": 7,
+      "community": 38,
       "norm_label": "account-nav.tsx"
     },
     {
@@ -3379,7 +3595,7 @@
       "source_file": "src/components/site/account-nav.tsx",
       "source_location": "L21",
       "id": "site_account_nav_accountnav",
-      "community": 7,
+      "community": 38,
       "norm_label": "accountnav()"
     },
     {
@@ -3388,7 +3604,7 @@
       "source_file": "src/components/site/account.ts",
       "source_location": "L1",
       "id": "site_account",
-      "community": 7,
+      "community": 38,
       "norm_label": "account.ts"
     },
     {
@@ -3397,7 +3613,7 @@
       "source_file": "src/components/site/account.ts",
       "source_location": "L7",
       "id": "site_account_accountchip",
-      "community": 7,
+      "community": 38,
       "norm_label": "accountchip"
     },
     {
@@ -3406,7 +3622,7 @@
       "source_file": "src/components/site/account.ts",
       "source_location": "L13",
       "id": "site_account_accountstate",
-      "community": 7,
+      "community": 38,
       "norm_label": "accountstate"
     },
     {
@@ -3415,7 +3631,7 @@
       "source_file": "src/components/site/account.ts",
       "source_location": "L40",
       "id": "site_account_load",
-      "community": 7,
+      "community": 38,
       "norm_label": "load()"
     },
     {
@@ -3424,7 +3640,7 @@
       "source_file": "src/components/site/account.ts",
       "source_location": "L65",
       "id": "site_account_clearaccount",
-      "community": 65,
+      "community": 38,
       "norm_label": "clearaccount()"
     },
     {
@@ -3433,7 +3649,7 @@
       "source_file": "src/components/site/account.ts",
       "source_location": "L69",
       "id": "site_account_useaccount",
-      "community": 7,
+      "community": 38,
       "norm_label": "useaccount()"
     },
     {
@@ -3449,7 +3665,7 @@
       "label": "loadFeatures()",
       "file_type": "code",
       "source_file": "src/components/site/hero-motion.tsx",
-      "source_location": "L60",
+      "source_location": "L67",
       "id": "site_hero_motion_loadfeatures",
       "community": 64,
       "norm_label": "loadfeatures()"
@@ -3458,7 +3674,7 @@
       "label": "HeroScrollContext",
       "file_type": "code",
       "source_file": "src/components/site/hero-motion.tsx",
-      "source_location": "L63",
+      "source_location": "L70",
       "id": "site_hero_motion_heroscrollcontext",
       "community": 64,
       "norm_label": "heroscrollcontext"
@@ -3467,7 +3683,7 @@
       "label": "HeroStage()",
       "file_type": "code",
       "source_file": "src/components/site/hero-motion.tsx",
-      "source_location": "L78",
+      "source_location": "L85",
       "id": "site_hero_motion_herostage",
       "community": 64,
       "norm_label": "herostage()"
@@ -3476,7 +3692,7 @@
       "label": "HeroLayer()",
       "file_type": "code",
       "source_file": "src/components/site/hero-motion.tsx",
-      "source_location": "L126",
+      "source_location": "L133",
       "id": "site_hero_motion_herolayer",
       "community": 64,
       "norm_label": "herolayer()"
@@ -3485,7 +3701,7 @@
       "label": "POINTER_SPRING",
       "file_type": "code",
       "source_file": "src/components/site/hero-motion.tsx",
-      "source_location": "L177",
+      "source_location": "L184",
       "id": "site_hero_motion_pointer_spring",
       "community": 64,
       "norm_label": "pointer_spring"
@@ -3494,7 +3710,7 @@
       "label": "LIFT_SPRING",
       "file_type": "code",
       "source_file": "src/components/site/hero-motion.tsx",
-      "source_location": "L178",
+      "source_location": "L185",
       "id": "site_hero_motion_lift_spring",
       "community": 64,
       "norm_label": "lift_spring"
@@ -3503,7 +3719,7 @@
       "label": "PhotoDrift",
       "file_type": "code",
       "source_file": "src/components/site/hero-motion.tsx",
-      "source_location": "L180",
+      "source_location": "L187",
       "id": "site_hero_motion_photodrift",
       "community": 64,
       "norm_label": "photodrift"
@@ -3512,7 +3728,7 @@
       "label": "PhotoDriftContext",
       "file_type": "code",
       "source_file": "src/components/site/hero-motion.tsx",
-      "source_location": "L186",
+      "source_location": "L193",
       "id": "site_hero_motion_photodriftcontext",
       "community": 64,
       "norm_label": "photodriftcontext"
@@ -3521,7 +3737,7 @@
       "label": "TiltCard()",
       "file_type": "code",
       "source_file": "src/components/site/hero-motion.tsx",
-      "source_location": "L211",
+      "source_location": "L218",
       "id": "site_hero_motion_tiltcard",
       "community": 64,
       "norm_label": "tiltcard()"
@@ -3530,7 +3746,7 @@
       "label": "DriftingPhoto()",
       "file_type": "code",
       "source_file": "src/components/site/hero-motion.tsx",
-      "source_location": "L313",
+      "source_location": "L320",
       "id": "site_hero_motion_driftingphoto",
       "community": 64,
       "norm_label": "driftingphoto()"
@@ -3539,19 +3755,46 @@
       "label": "DriftingArrow()",
       "file_type": "code",
       "source_file": "src/components/site/hero-motion.tsx",
-      "source_location": "L342",
+      "source_location": "L349",
       "id": "site_hero_motion_driftingarrow",
       "community": 64,
       "norm_label": "driftingarrow()"
     },
     {
-      "label": "Courier()",
+      "label": "NEVER_CHANGES()",
       "file_type": "code",
       "source_file": "src/components/site/hero-motion.tsx",
-      "source_location": "L383",
-      "id": "site_hero_motion_courier",
+      "source_location": "L368",
+      "id": "site_hero_motion_never_changes",
       "community": 64,
-      "norm_label": "courier()"
+      "norm_label": "never_changes()"
+    },
+    {
+      "label": "ON_CLIENT()",
+      "file_type": "code",
+      "source_file": "src/components/site/hero-motion.tsx",
+      "source_location": "L369",
+      "id": "site_hero_motion_on_client",
+      "community": 64,
+      "norm_label": "on_client()"
+    },
+    {
+      "label": "ON_SERVER()",
+      "file_type": "code",
+      "source_file": "src/components/site/hero-motion.tsx",
+      "source_location": "L370",
+      "id": "site_hero_motion_on_server",
+      "community": 64,
+      "norm_label": "on_server()"
+    },
+    {
+      "label": "DeliveryRun()",
+      "file_type": "code",
+      "source_file": "src/components/site/hero-motion.tsx",
+      "source_location": "L407",
+      "id": "site_hero_motion_deliveryrun",
+      "community": 64,
+      "norm_label": "deliveryrun()"
     },
     {
       "label": "icons.tsx",
@@ -3559,7 +3802,7 @@
       "source_file": "src/components/site/icons.tsx",
       "source_location": "L1",
       "id": "site_icons",
-      "community": 66,
+      "community": 61,
       "norm_label": "icons.tsx"
     },
     {
@@ -3568,7 +3811,7 @@
       "source_file": "src/components/site/icons.tsx",
       "source_location": "L9",
       "id": "site_icons_base",
-      "community": 66,
+      "community": 61,
       "norm_label": "base"
     },
     {
@@ -3577,7 +3820,7 @@
       "source_file": "src/components/site/icons.tsx",
       "source_location": "L18",
       "id": "site_icons_searchicon",
-      "community": 66,
+      "community": 61,
       "norm_label": "searchicon()"
     },
     {
@@ -3586,7 +3829,7 @@
       "source_file": "src/components/site/icons.tsx",
       "source_location": "L27",
       "id": "site_icons_arrowrighticon",
-      "community": 66,
+      "community": 61,
       "norm_label": "arrowrighticon()"
     },
     {
@@ -3595,7 +3838,7 @@
       "source_file": "src/components/site/menu-search.tsx",
       "source_location": "L1",
       "id": "site_menu_search",
-      "community": 66,
+      "community": 61,
       "norm_label": "menu-search.tsx"
     },
     {
@@ -3604,7 +3847,7 @@
       "source_file": "src/components/site/menu-search.tsx",
       "source_location": "L17",
       "id": "site_menu_search_menusearch",
-      "community": 66,
+      "community": 61,
       "norm_label": "menusearch()"
     },
     {
@@ -3622,7 +3865,7 @@
       "source_file": "src/components/site/nav.ts",
       "source_location": "L1",
       "id": "site_nav",
-      "community": 7,
+      "community": 38,
       "norm_label": "nav.ts"
     },
     {
@@ -3631,7 +3874,7 @@
       "source_file": "src/components/site/nav.ts",
       "source_location": "L8",
       "id": "site_nav_site_nav",
-      "community": 7,
+      "community": 38,
       "norm_label": "site_nav"
     },
     {
@@ -3640,7 +3883,7 @@
       "source_file": "src/components/site/reveal.tsx",
       "source_location": "L1",
       "id": "site_reveal",
-      "community": 61,
+      "community": 66,
       "norm_label": "reveal.tsx"
     },
     {
@@ -3649,7 +3892,7 @@
       "source_file": "src/components/site/reveal.tsx",
       "source_location": "L35",
       "id": "site_reveal_reveal",
-      "community": 61,
+      "community": 66,
       "norm_label": "reveal()"
     },
     {
@@ -3658,7 +3901,7 @@
       "source_file": "src/components/site/signed-out-notice.tsx",
       "source_location": "L1",
       "id": "site_signed_out_notice",
-      "community": 106,
+      "community": 38,
       "norm_label": "signed-out-notice.tsx"
     },
     {
@@ -3667,7 +3910,7 @@
       "source_file": "src/components/site/signed-out-notice.tsx",
       "source_location": "L15",
       "id": "site_signed_out_notice_signedoutnotice",
-      "community": 106,
+      "community": 38,
       "norm_label": "signedoutnotice()"
     },
     {
@@ -3676,7 +3919,7 @@
       "source_file": "src/components/site/site-header.tsx",
       "source_location": "L1",
       "id": "site_site_header",
-      "community": 7,
+      "community": 38,
       "norm_label": "site-header.tsx"
     },
     {
@@ -3685,7 +3928,7 @@
       "source_file": "src/components/site/site-header.tsx",
       "source_location": "L18",
       "id": "site_site_header_siteheader",
-      "community": 7,
+      "community": 38,
       "norm_label": "siteheader()"
     },
     {
@@ -3694,34 +3937,34 @@
       "source_file": "src/components/site/step-flow.tsx",
       "source_location": "L1",
       "id": "site_step_flow",
-      "community": 61,
+      "community": 66,
       "norm_label": "step-flow.tsx"
     },
     {
       "label": "Step",
       "file_type": "code",
       "source_file": "src/components/site/step-flow.tsx",
-      "source_location": "L42",
+      "source_location": "L50",
       "id": "site_step_flow_step",
-      "community": 61,
+      "community": 66,
       "norm_label": "step"
     },
     {
       "label": "Typewriter()",
       "file_type": "code",
       "source_file": "src/components/site/step-flow.tsx",
-      "source_location": "L60",
+      "source_location": "L68",
       "id": "site_step_flow_typewriter",
-      "community": 61,
+      "community": 66,
       "norm_label": "typewriter()"
     },
     {
       "label": "StepFlow()",
       "file_type": "code",
       "source_file": "src/components/site/step-flow.tsx",
-      "source_location": "L162",
+      "source_location": "L170",
       "id": "site_step_flow_stepflow",
-      "community": 61,
+      "community": 66,
       "norm_label": "stepflow()"
     },
     {
@@ -3737,7 +3980,7 @@
       "label": "Photo",
       "file_type": "code",
       "source_file": "src/components/site/storefront-hero.tsx",
-      "source_location": "L35",
+      "source_location": "L42",
       "id": "site_storefront_hero_photo",
       "community": 64,
       "norm_label": "photo"
@@ -3746,7 +3989,7 @@
       "label": "ENTER",
       "file_type": "code",
       "source_file": "src/components/site/storefront-hero.tsx",
-      "source_location": "L50",
+      "source_location": "L62",
       "id": "site_storefront_hero_enter",
       "community": 64,
       "norm_label": "enter"
@@ -3755,16 +3998,25 @@
       "label": "enterAt()",
       "file_type": "code",
       "source_file": "src/components/site/storefront-hero.tsx",
-      "source_location": "L59",
+      "source_location": "L70",
       "id": "site_storefront_hero_enterat",
       "community": 64,
       "norm_label": "enterat()"
     },
     {
+      "label": "passAt()",
+      "file_type": "code",
+      "source_file": "src/components/site/storefront-hero.tsx",
+      "source_location": "L108",
+      "id": "site_storefront_hero_passat",
+      "community": 64,
+      "norm_label": "passat()"
+    },
+    {
       "label": "withPhotos()",
       "file_type": "code",
       "source_file": "src/components/site/storefront-hero.tsx",
-      "source_location": "L63",
+      "source_location": "L113",
       "id": "site_storefront_hero_withphotos",
       "community": 64,
       "norm_label": "withphotos()"
@@ -3773,7 +4025,7 @@
       "label": "headlineOffer()",
       "file_type": "code",
       "source_file": "src/components/site/storefront-hero.tsx",
-      "source_location": "L70",
+      "source_location": "L120",
       "id": "site_storefront_hero_headlineoffer",
       "community": 64,
       "norm_label": "headlineoffer()"
@@ -3782,7 +4034,7 @@
       "label": "offerLabel()",
       "file_type": "code",
       "source_file": "src/components/site/storefront-hero.tsx",
-      "source_location": "L78",
+      "source_location": "L128",
       "id": "site_storefront_hero_offerlabel",
       "community": 64,
       "norm_label": "offerlabel()"
@@ -3791,25 +4043,34 @@
       "label": "StorefrontHero()",
       "file_type": "code",
       "source_file": "src/components/site/storefront-hero.tsx",
-      "source_location": "L87",
+      "source_location": "L137",
       "id": "site_storefront_hero_storefronthero",
       "community": 64,
       "norm_label": "storefronthero()"
     },
     {
-      "label": "DeliveryCourier()",
+      "label": "RoadDoodle()",
       "file_type": "code",
       "source_file": "src/components/site/storefront-hero.tsx",
-      "source_location": "L240",
-      "id": "site_storefront_hero_deliverycourier",
+      "source_location": "L327",
+      "id": "site_storefront_hero_roaddoodle",
       "community": 64,
-      "norm_label": "deliverycourier()"
+      "norm_label": "roaddoodle()"
+    },
+    {
+      "label": "DeliveryScene()",
+      "file_type": "code",
+      "source_file": "src/components/site/storefront-hero.tsx",
+      "source_location": "L389",
+      "id": "site_storefront_hero_deliveryscene",
+      "community": 64,
+      "norm_label": "deliveryscene()"
     },
     {
       "label": "HEADLINE",
       "file_type": "code",
       "source_file": "src/components/site/storefront-hero.tsx",
-      "source_location": "L251",
+      "source_location": "L411",
       "id": "site_storefront_hero_headline",
       "community": 64,
       "norm_label": "headline"
@@ -3818,7 +4079,7 @@
       "label": "HeroHeadline()",
       "file_type": "code",
       "source_file": "src/components/site/storefront-hero.tsx",
-      "source_location": "L266",
+      "source_location": "L426",
       "id": "site_storefront_hero_heroheadline",
       "community": 64,
       "norm_label": "heroheadline()"
@@ -3827,9 +4088,9 @@
       "label": "GatewayCard()",
       "file_type": "code",
       "source_file": "src/components/site/storefront-hero.tsx",
-      "source_location": "L312",
+      "source_location": "L472",
       "id": "site_storefront_hero_gatewaycard",
-      "community": 66,
+      "community": 61,
       "norm_label": "gatewaycard()"
     },
     {
@@ -3838,7 +4099,7 @@
       "source_file": "src/components/ui/button-styles.ts",
       "source_location": "L1",
       "id": "ui_button_styles",
-      "community": 66,
+      "community": 61,
       "norm_label": "button-styles.ts"
     },
     {
@@ -3847,7 +4108,7 @@
       "source_file": "src/components/ui/button-styles.ts",
       "source_location": "L22",
       "id": "ui_button_styles_cx",
-      "community": 66,
+      "community": 61,
       "norm_label": "cx()"
     },
     {
@@ -3856,7 +4117,7 @@
       "source_file": "src/components/ui/button-styles.ts",
       "source_location": "L26",
       "id": "ui_button_styles_buttonvariant",
-      "community": 66,
+      "community": 61,
       "norm_label": "buttonvariant"
     },
     {
@@ -3865,7 +4126,7 @@
       "source_file": "src/components/ui/button-styles.ts",
       "source_location": "L33",
       "id": "ui_button_styles_buttonsize",
-      "community": 66,
+      "community": 61,
       "norm_label": "buttonsize"
     },
     {
@@ -3874,7 +4135,7 @@
       "source_file": "src/components/ui/button-styles.ts",
       "source_location": "L35",
       "id": "ui_button_styles_button_variants",
-      "community": 66,
+      "community": 61,
       "norm_label": "button_variants"
     },
     {
@@ -3883,7 +4144,7 @@
       "source_file": "src/components/ui/button-styles.ts",
       "source_location": "L46",
       "id": "ui_button_styles_button_sizes",
-      "community": 66,
+      "community": 61,
       "norm_label": "button_sizes"
     },
     {
@@ -3892,7 +4153,7 @@
       "source_file": "src/components/ui/button-styles.ts",
       "source_location": "L53",
       "id": "ui_button_styles_buttonclasses",
-      "community": 66,
+      "community": 61,
       "norm_label": "buttonclasses()"
     },
     {
@@ -3901,7 +4162,7 @@
       "source_file": "src/components/ui/button.tsx",
       "source_location": "L1",
       "id": "ui_button",
-      "community": 66,
+      "community": 61,
       "norm_label": "button.tsx"
     },
     {
@@ -3910,7 +4171,7 @@
       "source_file": "src/components/ui/button.tsx",
       "source_location": "L21",
       "id": "ui_button_button",
-      "community": 106,
+      "community": 12,
       "norm_label": "button()"
     },
     {
@@ -3919,7 +4180,7 @@
       "source_file": "src/components/ui/confirm-button.tsx",
       "source_location": "L1",
       "id": "ui_confirm_button",
-      "community": 66,
+      "community": 61,
       "norm_label": "confirm-button.tsx"
     },
     {
@@ -3955,7 +4216,7 @@
       "source_file": "src/components/ui/primitives.tsx",
       "source_location": "L1",
       "id": "ui_primitives",
-      "community": 106,
+      "community": 12,
       "norm_label": "primitives.tsx"
     },
     {
@@ -3964,7 +4225,7 @@
       "source_file": "src/components/ui/primitives.tsx",
       "source_location": "L14",
       "id": "ui_primitives_card",
-      "community": 106,
+      "community": 12,
       "norm_label": "card()"
     },
     {
@@ -3982,7 +4243,7 @@
       "source_file": "src/components/ui/primitives.tsx",
       "source_location": "L64",
       "id": "ui_primitives_buttonlink",
-      "community": 106,
+      "community": 12,
       "norm_label": "buttonlink()"
     },
     {
@@ -3991,7 +4252,7 @@
       "source_file": "src/components/ui/primitives.tsx",
       "source_location": "L85",
       "id": "ui_primitives_badgetone",
-      "community": 106,
+      "community": 12,
       "norm_label": "badgetone"
     },
     {
@@ -4000,7 +4261,7 @@
       "source_file": "src/components/ui/primitives.tsx",
       "source_location": "L87",
       "id": "ui_primitives_badge_tones",
-      "community": 106,
+      "community": 12,
       "norm_label": "badge_tones"
     },
     {
@@ -4027,7 +4288,7 @@
       "source_file": "src/components/ui/primitives.tsx",
       "source_location": "L168",
       "id": "ui_primitives_alert",
-      "community": 106,
+      "community": 12,
       "norm_label": "alert()"
     },
     {
@@ -4036,7 +4297,7 @@
       "source_file": "src/components/ui/primitives.tsx",
       "source_location": "L192",
       "id": "ui_primitives_emptystate",
-      "community": 1,
+      "community": 0,
       "norm_label": "emptystate()"
     },
     {
@@ -4063,7 +4324,7 @@
       "source_file": "src/components/ui/primitives.tsx",
       "source_location": "L294",
       "id": "ui_primitives_input",
-      "community": 106,
+      "community": 12,
       "norm_label": "input()"
     },
     {
@@ -4081,7 +4342,7 @@
       "source_file": "src/components/ui/primitives.tsx",
       "source_location": "L306",
       "id": "ui_primitives_textarea",
-      "community": 106,
+      "community": 12,
       "norm_label": "textarea()"
     },
     {
@@ -4099,7 +4360,7 @@
       "source_file": "src/components/ui/spinner.tsx",
       "source_location": "L1",
       "id": "ui_spinner",
-      "community": 66,
+      "community": 61,
       "norm_label": "spinner.tsx"
     },
     {
@@ -4108,8 +4369,71 @@
       "source_file": "src/components/ui/spinner.tsx",
       "source_location": "L3",
       "id": "ui_spinner_spinner",
-      "community": 66,
+      "community": 61,
       "norm_label": "spinner()"
+    },
+    {
+      "label": "use-kot-history.ts",
+      "file_type": "code",
+      "source_file": "src/hooks/use-kot-history.ts",
+      "source_location": "L1",
+      "id": "hooks_use_kot_history",
+      "community": 4,
+      "norm_label": "use-kot-history.ts"
+    },
+    {
+      "label": "HistoryScope",
+      "file_type": "code",
+      "source_file": "src/hooks/use-kot-history.ts",
+      "source_location": "L6",
+      "id": "hooks_use_kot_history_historyscope",
+      "community": 4,
+      "norm_label": "historyscope"
+    },
+    {
+      "label": "HistoryTicket",
+      "file_type": "code",
+      "source_file": "src/hooks/use-kot-history.ts",
+      "source_location": "L8",
+      "id": "hooks_use_kot_history_historyticket",
+      "community": 4,
+      "norm_label": "historyticket"
+    },
+    {
+      "label": "State",
+      "file_type": "code",
+      "source_file": "src/hooks/use-kot-history.ts",
+      "source_location": "L15",
+      "id": "hooks_use_kot_history_state",
+      "community": 4,
+      "norm_label": "state"
+    },
+    {
+      "label": "INITIAL",
+      "file_type": "code",
+      "source_file": "src/hooks/use-kot-history.ts",
+      "source_location": "L21",
+      "id": "hooks_use_kot_history_initial",
+      "community": 4,
+      "norm_label": "initial"
+    },
+    {
+      "label": "useKotHistory()",
+      "file_type": "code",
+      "source_file": "src/hooks/use-kot-history.ts",
+      "source_location": "L23",
+      "id": "hooks_use_kot_history_usekothistory",
+      "community": 4,
+      "norm_label": "usekothistory()"
+    },
+    {
+      "label": "keyOf()",
+      "file_type": "code",
+      "source_file": "src/hooks/use-kot-history.ts",
+      "source_location": "L102",
+      "id": "hooks_use_kot_history_keyof",
+      "community": 4,
+      "norm_label": "keyof()"
     },
     {
       "label": "feedback.tsx",
@@ -4324,7 +4648,7 @@
       "source_file": "src/lib/auth/permissions.ts",
       "source_location": "L1",
       "id": "auth_permissions",
-      "community": 1,
+      "community": 25,
       "norm_label": "permissions.ts"
     },
     {
@@ -4333,7 +4657,7 @@
       "source_file": "src/lib/auth/permissions.ts",
       "source_location": "L11",
       "id": "auth_permissions_permissions",
-      "community": 0,
+      "community": 25,
       "norm_label": "permissions"
     },
     {
@@ -4342,7 +4666,7 @@
       "source_file": "src/lib/auth/permissions.ts",
       "source_location": "L45",
       "id": "auth_permissions_permission",
-      "community": 1,
+      "community": 25,
       "norm_label": "permission"
     },
     {
@@ -4351,7 +4675,7 @@
       "source_file": "src/lib/auth/permissions.ts",
       "source_location": "L47",
       "id": "auth_permissions_approle",
-      "community": 1,
+      "community": 25,
       "norm_label": "approle"
     },
     {
@@ -4360,7 +4684,7 @@
       "source_file": "src/lib/auth/permissions.ts",
       "source_location": "L60",
       "id": "auth_permissions_landingpathforrole",
-      "community": 30,
+      "community": 38,
       "norm_label": "landingpathforrole()"
     },
     {
@@ -4369,7 +4693,7 @@
       "source_file": "src/lib/auth/session.ts",
       "source_location": "L1",
       "id": "auth_session",
-      "community": 1,
+      "community": 25,
       "norm_label": "session.ts"
     },
     {
@@ -4378,7 +4702,7 @@
       "source_file": "src/lib/auth/session.ts",
       "source_location": "L6",
       "id": "auth_session_sessionprofile",
-      "community": 1,
+      "community": 25,
       "norm_label": "sessionprofile"
     },
     {
@@ -4387,7 +4711,7 @@
       "source_file": "src/lib/auth/session.ts",
       "source_location": "L27",
       "id": "auth_session_getsession",
-      "community": 30,
+      "community": 38,
       "norm_label": "getsession"
     },
     {
@@ -4396,7 +4720,7 @@
       "source_file": "src/lib/auth/session.ts",
       "source_location": "L71",
       "id": "auth_session_requiresession",
-      "community": 106,
+      "community": 52,
       "norm_label": "requiresession()"
     },
     {
@@ -4405,7 +4729,7 @@
       "source_file": "src/lib/auth/session.ts",
       "source_location": "L81",
       "id": "auth_session_requirepermission",
-      "community": 25,
+      "community": 52,
       "norm_label": "requirepermission()"
     },
     {
@@ -4432,7 +4756,7 @@
       "source_file": "src/lib/checkout/draft.ts",
       "source_location": "L1",
       "id": "checkout_draft",
-      "community": 16,
+      "community": 6,
       "norm_label": "draft.ts"
     },
     {
@@ -4441,7 +4765,7 @@
       "source_file": "src/lib/checkout/draft.ts",
       "source_location": "L20",
       "id": "checkout_draft_draftschema",
-      "community": 16,
+      "community": 6,
       "norm_label": "draftschema"
     },
     {
@@ -4450,7 +4774,7 @@
       "source_file": "src/lib/checkout/draft.ts",
       "source_location": "L40",
       "id": "checkout_draft_checkoutdraft",
-      "community": 16,
+      "community": 6,
       "norm_label": "checkoutdraft"
     },
     {
@@ -4459,7 +4783,7 @@
       "source_file": "src/lib/checkout/draft.ts",
       "source_location": "L42",
       "id": "checkout_draft_savedraft",
-      "community": 16,
+      "community": 6,
       "norm_label": "savedraft()"
     },
     {
@@ -4468,7 +4792,7 @@
       "source_file": "src/lib/checkout/draft.ts",
       "source_location": "L53",
       "id": "checkout_draft_readdraft",
-      "community": 16,
+      "community": 29,
       "norm_label": "readdraft()"
     },
     {
@@ -4504,7 +4828,7 @@
       "source_file": "src/lib/checkout/service.ts",
       "source_location": "L36",
       "id": "checkout_service_ensurecustomer",
-      "community": 16,
+      "community": 29,
       "norm_label": "ensurecustomer()"
     },
     {
@@ -4747,7 +5071,7 @@
       "source_file": "src/lib/data/catalog.ts",
       "source_location": "L412",
       "id": "data_catalog_deliverywindow",
-      "community": 64,
+      "community": 6,
       "norm_label": "deliverywindow"
     },
     {
@@ -4765,7 +5089,7 @@
       "source_file": "src/lib/env.ts",
       "source_location": "L1",
       "id": "lib_env",
-      "community": 23,
+      "community": 29,
       "norm_label": "env.ts"
     },
     {
@@ -4774,7 +5098,7 @@
       "source_file": "src/lib/env.ts",
       "source_location": "L21",
       "id": "lib_env_blankasundefined",
-      "community": 23,
+      "community": 29,
       "norm_label": "blankasundefined()"
     },
     {
@@ -4783,7 +5107,7 @@
       "source_file": "src/lib/env.ts",
       "source_location": "L24",
       "id": "lib_env_serverschema",
-      "community": 23,
+      "community": 29,
       "norm_label": "serverschema"
     },
     {
@@ -4792,7 +5116,7 @@
       "source_file": "src/lib/env.ts",
       "source_location": "L97",
       "id": "lib_env_serverenv",
-      "community": 23,
+      "community": 29,
       "norm_label": "serverenv"
     },
     {
@@ -4801,7 +5125,7 @@
       "source_file": "src/lib/env.ts",
       "source_location": "L117",
       "id": "lib_env_publicenv",
-      "community": 65,
+      "community": 38,
       "norm_label": "publicenv"
     },
     {
@@ -4810,7 +5134,7 @@
       "source_file": "src/lib/env.ts",
       "source_location": "L128",
       "id": "lib_env_configuredpaymentproviders",
-      "community": 16,
+      "community": 29,
       "norm_label": "configuredpaymentproviders()"
     },
     {
@@ -4864,7 +5188,7 @@
       "source_file": "src/lib/format.ts",
       "source_location": "L34",
       "id": "lib_format_datetime",
-      "community": 1,
+      "community": 25,
       "norm_label": "datetime()"
     },
     {
@@ -4963,7 +5287,7 @@
       "source_file": "src/lib/format.ts",
       "source_location": "L142",
       "id": "lib_format_source_labels",
-      "community": 12,
+      "community": 4,
       "norm_label": "source_labels"
     },
     {
@@ -4972,7 +5296,7 @@
       "source_file": "src/lib/format.ts",
       "source_location": "L148",
       "id": "lib_format_kot_status_labels",
-      "community": 12,
+      "community": 4,
       "norm_label": "kot_status_labels"
     },
     {
@@ -5010,6 +5334,24 @@
       "id": "jobs_auth_isauthorisedjob",
       "community": 23,
       "norm_label": "isauthorisedjob()"
+    },
+    {
+      "label": "date.ts",
+      "file_type": "code",
+      "source_file": "src/lib/kot/date.ts",
+      "source_location": "L1",
+      "id": "kot_date",
+      "community": 4,
+      "norm_label": "date.ts"
+    },
+    {
+      "label": "todayISO()",
+      "file_type": "code",
+      "source_file": "src/lib/kot/date.ts",
+      "source_location": "L9",
+      "id": "kot_date_todayiso",
+      "community": 4,
+      "norm_label": "todayiso()"
     },
     {
       "label": "adapter.ts",
@@ -5170,7 +5512,7 @@
       "source_file": "src/lib/marketplace/index.ts",
       "source_location": "L16",
       "id": "marketplace_index_marketplaceadapter",
-      "community": 11,
+      "community": 16,
       "norm_label": "marketplaceadapter()"
     },
     {
@@ -5476,7 +5818,7 @@
       "source_file": "src/lib/payments/cashfree.ts",
       "source_location": "L22",
       "id": "payments_cashfree_environmentfromkey",
-      "community": 109,
+      "community": 3,
       "norm_label": "environmentfromkey()"
     },
     {
@@ -5485,7 +5827,7 @@
       "source_file": "src/lib/payments/cashfree.ts",
       "source_location": "L29",
       "id": "payments_cashfree_signaturesmatch",
-      "community": 109,
+      "community": 3,
       "norm_label": "signaturesmatch()"
     },
     {
@@ -5494,7 +5836,7 @@
       "source_file": "src/lib/payments/cashfree.ts",
       "source_location": "L43",
       "id": "payments_cashfree_cashfreeadapter",
-      "community": 109,
+      "community": 3,
       "norm_label": "cashfreeadapter"
     },
     {
@@ -5503,7 +5845,7 @@
       "source_file": "src/lib/payments/cashfree.ts",
       "source_location": "L55",
       "id": "payments_cashfree_cashfreeadapter_constructor",
-      "community": 109,
+      "community": 3,
       "norm_label": ".constructor()"
     },
     {
@@ -5512,7 +5854,7 @@
       "source_file": "src/lib/payments/cashfree.ts",
       "source_location": "L89",
       "id": "payments_cashfree_cashfreeadapter_isconfigured",
-      "community": 109,
+      "community": 3,
       "norm_label": ".isconfigured()"
     },
     {
@@ -5521,7 +5863,7 @@
       "source_file": "src/lib/payments/cashfree.ts",
       "source_location": "L93",
       "id": "payments_cashfree_cashfreeadapter_headers",
-      "community": 109,
+      "community": 3,
       "norm_label": ".headers()"
     },
     {
@@ -5530,7 +5872,7 @@
       "source_file": "src/lib/payments/cashfree.ts",
       "source_location": "L102",
       "id": "payments_cashfree_cashfreeadapter_createorder",
-      "community": 109,
+      "community": 3,
       "norm_label": ".createorder()"
     },
     {
@@ -5539,7 +5881,7 @@
       "source_file": "src/lib/payments/cashfree.ts",
       "source_location": "L161",
       "id": "payments_cashfree_cashfreeadapter_resumeorder",
-      "community": 109,
+      "community": 3,
       "norm_label": ".resumeorder()"
     },
     {
@@ -5548,7 +5890,7 @@
       "source_file": "src/lib/payments/cashfree.ts",
       "source_location": "L213",
       "id": "payments_cashfree_cashfreeadapter_verifycallback",
-      "community": 109,
+      "community": 3,
       "norm_label": ".verifycallback()"
     },
     {
@@ -5557,7 +5899,7 @@
       "source_file": "src/lib/payments/cashfree.ts",
       "source_location": "L262",
       "id": "payments_cashfree_cashfreeadapter_verifywebhook",
-      "community": 109,
+      "community": 3,
       "norm_label": ".verifywebhook()"
     },
     {
@@ -5566,7 +5908,7 @@
       "source_file": "src/lib/payments/cashfree.ts",
       "source_location": "L316",
       "id": "payments_cashfree_cashfreeadapter_refund",
-      "community": 109,
+      "community": 3,
       "norm_label": ".refund()"
     },
     {
@@ -5575,7 +5917,7 @@
       "source_file": "src/lib/payments/index.ts",
       "source_location": "L1",
       "id": "payments_index",
-      "community": 16,
+      "community": 3,
       "norm_label": "index.ts"
     },
     {
@@ -5584,7 +5926,7 @@
       "source_file": "src/lib/payments/index.ts",
       "source_location": "L10",
       "id": "payments_index_adapters",
-      "community": 16,
+      "community": 3,
       "norm_label": "adapters"
     },
     {
@@ -5593,7 +5935,7 @@
       "source_file": "src/lib/payments/index.ts",
       "source_location": "L12",
       "id": "payments_index_display_names",
-      "community": 16,
+      "community": 3,
       "norm_label": "display_names"
     },
     {
@@ -5611,7 +5953,7 @@
       "source_file": "src/lib/payments/index.ts",
       "source_location": "L59",
       "id": "payments_index_availablepaymentproviders",
-      "community": 16,
+      "community": 3,
       "norm_label": "availablepaymentproviders()"
     },
     {
@@ -5629,7 +5971,7 @@
       "source_file": "src/lib/payments/razorpay.ts",
       "source_location": "L20",
       "id": "payments_razorpay_signaturesmatch",
-      "community": 3,
+      "community": 65,
       "norm_label": "signaturesmatch()"
     },
     {
@@ -5638,7 +5980,7 @@
       "source_file": "src/lib/payments/razorpay.ts",
       "source_location": "L33",
       "id": "payments_razorpay_razorpayadapter",
-      "community": 3,
+      "community": 65,
       "norm_label": "razorpayadapter"
     },
     {
@@ -5647,7 +5989,7 @@
       "source_file": "src/lib/payments/razorpay.ts",
       "source_location": "L41",
       "id": "payments_razorpay_razorpayadapter_constructor",
-      "community": 3,
+      "community": 65,
       "norm_label": ".constructor()"
     },
     {
@@ -5656,7 +5998,7 @@
       "source_file": "src/lib/payments/razorpay.ts",
       "source_location": "L48",
       "id": "payments_razorpay_razorpayadapter_isconfigured",
-      "community": 3,
+      "community": 65,
       "norm_label": ".isconfigured()"
     },
     {
@@ -5665,7 +6007,7 @@
       "source_file": "src/lib/payments/razorpay.ts",
       "source_location": "L52",
       "id": "payments_razorpay_razorpayadapter_authheader",
-      "community": 3,
+      "community": 65,
       "norm_label": ".authheader()"
     },
     {
@@ -5674,7 +6016,7 @@
       "source_file": "src/lib/payments/razorpay.ts",
       "source_location": "L56",
       "id": "payments_razorpay_razorpayadapter_createorder",
-      "community": 3,
+      "community": 65,
       "norm_label": ".createorder()"
     },
     {
@@ -5683,7 +6025,7 @@
       "source_file": "src/lib/payments/razorpay.ts",
       "source_location": "L97",
       "id": "payments_razorpay_razorpayadapter_resumeorder",
-      "community": 3,
+      "community": 65,
       "norm_label": ".resumeorder()"
     },
     {
@@ -5692,7 +6034,7 @@
       "source_file": "src/lib/payments/razorpay.ts",
       "source_location": "L140",
       "id": "payments_razorpay_razorpayadapter_checkoutpayload",
-      "community": 3,
+      "community": 65,
       "norm_label": ".checkoutpayload()"
     },
     {
@@ -5701,7 +6043,7 @@
       "source_file": "src/lib/payments/razorpay.ts",
       "source_location": "L167",
       "id": "payments_razorpay_razorpayadapter_verifycallback",
-      "community": 3,
+      "community": 65,
       "norm_label": ".verifycallback()"
     },
     {
@@ -5710,7 +6052,7 @@
       "source_file": "src/lib/payments/razorpay.ts",
       "source_location": "L195",
       "id": "payments_razorpay_razorpayadapter_verifywebhook",
-      "community": 3,
+      "community": 65,
       "norm_label": ".verifywebhook()"
     },
     {
@@ -5719,7 +6061,7 @@
       "source_file": "src/lib/payments/razorpay.ts",
       "source_location": "L243",
       "id": "payments_razorpay_razorpayadapter_refund",
-      "community": 3,
+      "community": 65,
       "norm_label": ".refund()"
     },
     {
@@ -5737,7 +6079,7 @@
       "source_file": "src/lib/payments/sandbox.ts",
       "source_location": "L29",
       "id": "payments_sandbox_sandboxadapter",
-      "community": 3,
+      "community": 105,
       "norm_label": "sandboxadapter"
     },
     {
@@ -5746,7 +6088,7 @@
       "source_file": "src/lib/payments/sandbox.ts",
       "source_location": "L36",
       "id": "payments_sandbox_sandboxadapter_constructor",
-      "community": 3,
+      "community": 105,
       "norm_label": ".constructor()"
     },
     {
@@ -5755,7 +6097,7 @@
       "source_file": "src/lib/payments/sandbox.ts",
       "source_location": "L53",
       "id": "payments_sandbox_sandboxadapter_isconfigured",
-      "community": 3,
+      "community": 105,
       "norm_label": ".isconfigured()"
     },
     {
@@ -5764,7 +6106,7 @@
       "source_file": "src/lib/payments/sandbox.ts",
       "source_location": "L57",
       "id": "payments_sandbox_sandboxadapter_sign",
-      "community": 3,
+      "community": 105,
       "norm_label": ".sign()"
     },
     {
@@ -5773,7 +6115,7 @@
       "source_file": "src/lib/payments/sandbox.ts",
       "source_location": "L63",
       "id": "payments_sandbox_sandboxadapter_createorder",
-      "community": 3,
+      "community": 105,
       "norm_label": ".createorder()"
     },
     {
@@ -5782,7 +6124,7 @@
       "source_file": "src/lib/payments/sandbox.ts",
       "source_location": "L85",
       "id": "payments_sandbox_sandboxadapter_resumeorder",
-      "community": 3,
+      "community": 105,
       "norm_label": ".resumeorder()"
     },
     {
@@ -5791,7 +6133,7 @@
       "source_file": "src/lib/payments/sandbox.ts",
       "source_location": "L98",
       "id": "payments_sandbox_sandboxadapter_signoutcome",
-      "community": 3,
+      "community": 105,
       "norm_label": ".signoutcome()"
     },
     {
@@ -5800,7 +6142,7 @@
       "source_file": "src/lib/payments/sandbox.ts",
       "source_location": "L105",
       "id": "payments_sandbox_sandboxadapter_verifycallback",
-      "community": 3,
+      "community": 105,
       "norm_label": ".verifycallback()"
     },
     {
@@ -5809,7 +6151,7 @@
       "source_file": "src/lib/payments/sandbox.ts",
       "source_location": "L144",
       "id": "payments_sandbox_sandboxadapter_verifywebhook",
-      "community": 3,
+      "community": 105,
       "norm_label": ".verifywebhook()"
     },
     {
@@ -5845,7 +6187,7 @@
       "source_file": "src/lib/payments/types.ts",
       "source_location": "L17",
       "id": "payments_types_createorderinput",
-      "community": 3,
+      "community": 65,
       "norm_label": "createorderinput"
     },
     {
@@ -5998,7 +6340,7 @@
       "source_file": "src/lib/supabase/admin.ts",
       "source_location": "L1",
       "id": "supabase_admin",
-      "community": 23,
+      "community": 16,
       "norm_label": "admin.ts"
     },
     {
@@ -6016,7 +6358,7 @@
       "source_file": "src/lib/supabase/client.ts",
       "source_location": "L1",
       "id": "supabase_client",
-      "community": 65,
+      "community": 38,
       "norm_label": "client.ts"
     },
     {
@@ -6025,7 +6367,7 @@
       "source_file": "src/lib/supabase/client.ts",
       "source_location": "L15",
       "id": "supabase_client_browserclient",
-      "community": 65,
+      "community": 38,
       "norm_label": "browserclient()"
     },
     {
@@ -6034,7 +6376,7 @@
       "source_file": "src/lib/supabase/public.ts",
       "source_location": "L1",
       "id": "supabase_public",
-      "community": 23,
+      "community": 29,
       "norm_label": "public.ts"
     },
     {
@@ -6052,7 +6394,7 @@
       "source_file": "src/lib/supabase/server.ts",
       "source_location": "L1",
       "id": "supabase_server",
-      "community": 1,
+      "community": 25,
       "norm_label": "server.ts"
     },
     {
@@ -6061,7 +6403,7 @@
       "source_file": "src/lib/supabase/server.ts",
       "source_location": "L13",
       "id": "supabase_server_serverclient",
-      "community": 25,
+      "community": 52,
       "norm_label": "serverclient()"
     },
     {
@@ -6070,7 +6412,7 @@
       "source_file": "src/proxy.ts",
       "source_location": "L1",
       "id": "src_proxy",
-      "community": 23,
+      "community": 29,
       "norm_label": "proxy.ts"
     },
     {
@@ -6079,7 +6421,7 @@
       "source_file": "src/proxy.ts",
       "source_location": "L33",
       "id": "src_proxy_hasauthcookie",
-      "community": 23,
+      "community": 29,
       "norm_label": "hasauthcookie()"
     },
     {
@@ -6088,7 +6430,7 @@
       "source_file": "src/proxy.ts",
       "source_location": "L39",
       "id": "src_proxy_proxy",
-      "community": 23,
+      "community": 29,
       "norm_label": "proxy()"
     },
     {
@@ -6097,7 +6439,7 @@
       "source_file": "src/proxy.ts",
       "source_location": "L78",
       "id": "src_proxy_config",
-      "community": 23,
+      "community": 29,
       "norm_label": "config"
     },
     {
@@ -6655,7 +6997,7 @@
       "source_file": "DESIGN.md",
       "source_location": "L51",
       "id": "design_components",
-      "community": 57,
+      "community": 72,
       "norm_label": "components"
     },
     {
@@ -6664,7 +7006,7 @@
       "source_file": "DESIGN.md",
       "source_location": "L67",
       "id": "design_storefront_components_site",
-      "community": 57,
+      "community": 72,
       "norm_label": "storefront (`components/site/`)"
     },
     {
@@ -6673,7 +7015,7 @@
       "source_file": "DESIGN.md",
       "source_location": "L76",
       "id": "design_server_action_feedback",
-      "community": 57,
+      "community": 72,
       "norm_label": "server-action feedback"
     },
     {
@@ -6992,11 +7334,38 @@
       "norm_label": "get"
     },
     {
+      "label": "DeliveryCourier()",
+      "file_type": "code",
+      "source_file": "src/components/site/storefront-hero.tsx",
+      "source_location": "L324",
+      "community": 64,
+      "norm_label": "deliverycourier()",
+      "id": "site_storefront_hero_deliverycourier"
+    },
+    {
+      "label": "GROUPS",
+      "file_type": "code",
+      "source_file": "src/components/kot/manager-board.tsx",
+      "source_location": "L37",
+      "community": 4,
+      "norm_label": "groups",
+      "id": "kot_manager_board_groups"
+    },
+    {
+      "label": "Courier()",
+      "file_type": "code",
+      "source_file": "src/components/site/hero-motion.tsx",
+      "source_location": "L383",
+      "community": 64,
+      "norm_label": "courier()",
+      "id": "site_hero_motion_courier"
+    },
+    {
       "label": "StepArrow()",
       "file_type": "code",
       "source_file": "src/components/site/step-flow.tsx",
       "source_location": "L180",
-      "community": 61,
+      "community": 66,
       "norm_label": "steparrow()",
       "id": "site_step_flow_steparrow"
     },
@@ -7023,7 +7392,7 @@
       "file_type": "code",
       "source_file": "src/lib/auth/permissions.ts",
       "source_location": "L74",
-      "community": 1,
+      "community": 25,
       "norm_label": "staff_roles",
       "id": "auth_permissions_staff_roles"
     },
@@ -7032,7 +7401,7 @@
       "file_type": "code",
       "source_file": "src/lib/auth/session.ts",
       "source_location": "L108",
-      "community": 30,
+      "community": 38,
       "norm_label": "authorizerequest()",
       "id": "auth_session_authorizerequest"
     },
@@ -7068,7 +7437,7 @@
       "file_type": "code",
       "source_file": "src/lib/supabase/admin.ts",
       "source_location": "L47",
-      "community": 23,
+      "community": 16,
       "norm_label": "auditsystemevent()",
       "id": "supabase_admin_auditsystemevent"
     },
@@ -7104,7 +7473,7 @@
       "file_type": "code",
       "source_file": "src/app/(site)/layout.tsx",
       "source_location": "L15",
-      "community": 7,
+      "community": 38,
       "norm_label": "nav",
       "id": "site_layout_nav"
     },
@@ -10253,7 +10622,7 @@
       "author": null,
       "contributor": null,
       "rationale": "Seeds through the real schema and the real workflow functions rather than inserting into orders or kot_tickets directly, so a regressed invariant makes the seed itself fail. Runs with app.actor_id set to the Developer Admin so permission checks and the audit trail see a real actor. Ends with a self-check block asserting the PRD's core invariants.",
-      "community": 33,
+      "community": 14,
       "norm_label": "demo seed data",
       "id": "seed_demo_seed"
     },
@@ -10267,7 +10636,7 @@
       "author": null,
       "contributor": null,
       "rationale": "One row per authenticated principal, keyed to Supabase auth; customers get a profile too with role = 'customer'. A trigger guards the privilege columns so a self-update cannot escalate role.",
-      "community": 33,
+      "community": 40,
       "norm_label": "auth_profiles table",
       "id": "schema_tbl_auth_profiles"
     },
@@ -10308,7 +10677,7 @@
       "author": null,
       "contributor": null,
       "rationale": "Role quantities are data, never hardcoded: three kitchen accounts share one physical display, and a fourth hire is one more row.",
-      "community": 33,
+      "community": 14,
       "norm_label": "employees table",
       "id": "schema_tbl_employees"
     },
@@ -10349,7 +10718,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 67,
+      "community": 33,
       "norm_label": "delivery_settings table",
       "id": "schema_tbl_delivery_settings"
     },
@@ -10362,7 +10731,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 67,
+      "community": 33,
       "norm_label": "tax_settings table",
       "id": "schema_tbl_tax_settings"
     },
@@ -10533,7 +10902,7 @@
       "author": null,
       "contributor": null,
       "rationale": "Marketing consent is stored with its own timestamp, separate from account state, so disabling a login does not silently change consent and vice versa.",
-      "community": 33,
+      "community": 14,
       "norm_label": "customers table",
       "id": "schema_tbl_customers"
     },
@@ -10814,7 +11183,7 @@
       "author": null,
       "contributor": null,
       "rationale": "Refund policy is not finalised, so the model records a case with a status rather than promising an automatic payout.",
-      "community": 40,
+      "community": 30,
       "norm_label": "refund_requests table",
       "id": "schema_tbl_refund_requests"
     },
@@ -11103,7 +11472,7 @@
       "author": null,
       "contributor": null,
       "rationale": "The single place subscription pricing is computed: subtotal, delivery fee, CGST/SGST split and whether a requested coupon actually applies. Centralising it means the storefront, checkout and invoice can never disagree about the price.",
-      "community": 67,
+      "community": 33,
       "norm_label": "quote_subscription()",
       "id": "schema_rpc_quote_subscription"
     },
@@ -11376,7 +11745,7 @@
       "author": null,
       "contributor": null,
       "rationale": "A customer may take a case back only before it has been decided; that rule lives in the function so the UI cannot loosen it.",
-      "community": 40,
+      "community": 30,
       "norm_label": "withdraw_refund_request()",
       "id": "schema_rpc_withdraw_refund_request"
     },
@@ -11442,7 +11811,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 33,
+      "community": 14,
       "norm_label": "app.current_customer_id()",
       "id": "schema_fn_current_customer_id"
     },
@@ -11549,7 +11918,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 67,
+      "community": 33,
       "norm_label": "app.resolve_delivery_fee()",
       "id": "schema_fn_resolve_delivery_fee"
     },
@@ -11562,7 +11931,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 67,
+      "community": 33,
       "norm_label": "app.resolve_tax_components()",
       "id": "schema_fn_resolve_tax_components"
     },
@@ -11672,7 +12041,7 @@
       "author": null,
       "contributor": null,
       "rationale": "auth_profiles allows a self-update policy, so a trigger blocks changes to role and is_active to stop a customer promoting themselves.",
-      "community": 33,
+      "community": 40,
       "norm_label": "app.guard_profile_privilege_columns()",
       "id": "schema_fn_guard_profile_privilege_columns"
     },
@@ -11796,7 +12165,7 @@
       "author": null,
       "contributor": null,
       "rationale": "Demo data is produced by calling the same functions the app calls instead of inserting frontend-only fake arrays, so the seed doubles as an end-to-end invariant test: if a rule regresses, the seed fails to run.",
-      "community": 33,
+      "community": 14,
       "norm_label": "seed through real workflows",
       "id": "rationale_seed_through_real_workflows"
     },
@@ -11824,7 +12193,7 @@
       "author": null,
       "contributor": null,
       "rationale": "Addresses are deactivated, reviews get a deleted_at, products get archived_at. Subscriptions and delivered orders point at these rows, and a delivered order has to stay readable; business records a food business must keep survive account closure.",
-      "community": 40,
+      "community": 30,
       "norm_label": "retire, never delete",
       "id": "rationale_soft_retire_records"
     },
@@ -11893,7 +12262,7 @@
       "author": null,
       "contributor": null,
       "rationale": "States the data-retention posture in plain language: business records persist after account closure, and marketing consent is a separate switch from account state.",
-      "community": 33,
+      "community": 14,
       "norm_label": "about page",
       "id": "site_about_page"
     },
@@ -12003,7 +12372,7 @@
       "author": null,
       "contributor": null,
       "rationale": "Guards the session once for every account page, but each page still resolves its own customer record: a signed-in staff member has a session and no customer row, and should be told so rather than shown an empty dashboard.",
-      "community": 33,
+      "community": 40,
       "norm_label": "customer account layout",
       "id": "account_layout_shell"
     },
@@ -12110,7 +12479,7 @@
       "author": null,
       "contributor": null,
       "rationale": "Sets is_active false rather than deleting, because subscriptions and delivered orders still point at the row.",
-      "community": 40,
+      "community": 30,
       "norm_label": "retireaddress server action",
       "id": "addresses_retire_address"
     },
@@ -12124,7 +12493,7 @@
       "author": null,
       "contributor": null,
       "rationale": "Refund policy is still being finalised, so the page raises a case and says so plainly rather than implying a guarantee the business has not agreed to.",
-      "community": 40,
+      "community": 30,
       "norm_label": "account refund requests page",
       "id": "account_refunds_page"
     },
@@ -12137,7 +12506,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 40,
+      "community": 30,
       "norm_label": "raiserequest server action",
       "id": "refunds_raise_request"
     },
@@ -12150,7 +12519,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 40,
+      "community": 30,
       "norm_label": "withdrawrequest server action",
       "id": "refunds_withdraw_request"
     },
@@ -12204,7 +12573,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 40,
+      "community": 30,
       "norm_label": "withdrawreview server action",
       "id": "reviews_withdraw_review"
     },
@@ -12312,7 +12681,7 @@
       "author": null,
       "contributor": null,
       "rationale": "Archives via archived_at instead of deleting, keeping historical order items and reviews resolvable.",
-      "community": 40,
+      "community": 30,
       "norm_label": "setarchived server action",
       "id": "product_editor_set_archived"
     },
@@ -12418,7 +12787,7 @@
       "author": null,
       "contributor": null,
       "rationale": "Session-guarded checkout entry. Re-validates the chosen payment provider against configuredPaymentProviders() because the client is not the authority on which gateways have credentials; a draft that has expired is refused before any customer or payment row is created.",
-      "community": 46,
+      "community": 18,
       "norm_label": "post /api/checkout/begin",
       "id": "begin_route_checkoutBegin"
     },
@@ -12502,7 +12871,7 @@
       "author": null,
       "contributor": null,
       "rationale": "Two-way marketplace reconciliation over a rolling 24h window (PRD 16). It records differences and never creates or deletes an order to make numbers agree -- a discrepancy is a finding for a human. Swiggy and Zomato are handled in independent try blocks so one failing provider does not stop the other.",
-      "community": 29,
+      "community": 36,
       "norm_label": "post|get /api/jobs/reconcile",
       "id": "reconcile_route_jobsReconcile"
     },
@@ -12572,7 +12941,7 @@
       "author": null,
       "contributor": null,
       "rationale": "Guarded by catalog.manage (PRD 13). A group is defined once and attached to many dishes; each option carries its own price, credit and calorie delta so a larger portion legitimately costing an extra credit is data, not an assumption baked into checkout.",
-      "community": 18,
+      "community": 46,
       "norm_label": "admin variant groups",
       "id": "variants_page_adminVariants"
     },
@@ -12586,7 +12955,7 @@
       "author": null,
       "contributor": null,
       "rationale": "Guarded by coupons.manage (PRD 14). Every coupon behaviour -- percentage, caps, window, eligibility rules -- is a row, so the 5% first-subscription offer can be retuned or retired without a deploy. Dates are anchored to Asia/Kolkata (PRD 10) so 'valid until 31 March' does not expire at 05:30 on a UTC deployment. Eligibility is still decided server-side by validate_coupon() at checkout; this screen only authors the rules. A redeemed coupon is not deletable because deleting it would erase a discount someone actually received.",
-      "community": 18,
+      "community": 7,
       "norm_label": "admin offers and coupons",
       "id": "coupons_page_adminCoupons"
     },
@@ -12628,7 +12997,7 @@
       "author": null,
       "contributor": null,
       "rationale": "Guarded by employees.view or employees.manage (PRD 5). Role quantities are rows not constants, and what a role may do lives in role_permissions, so this screen assigns a role and never a permission. Only session.role === 'developer_admin' may assign developer_admin -- the Owner runs the business and does not hand out system access. Creating the login is the single step needing the service key (no user exists yet to hold a token); everything after runs on the Owner's token so RLS and the audit trigger apply and name them rather than 'system'. If role assignment fails the just-created login is torn down. The current role is re-read from the database rather than trusted from the form so 'unchanged' cannot be asserted into a promotion, and employees/auth_profiles are kept in agreement so a badge never disagrees with permissions.",
-      "community": 36,
+      "community": 60,
       "norm_label": "admin employees",
       "id": "employees_page_adminEmployees"
     },
@@ -12642,7 +13011,7 @@
       "author": null,
       "contributor": null,
       "rationale": "Guarded by integrations.view (PRD 16, PRD 23). The screen exists for honesty: every capability is labelled integrated, mocked or blocked straight from integration_capabilities so nobody can come away believing Swiggy or Zomato are connected when they are not.",
-      "community": 29,
+      "community": 36,
       "norm_label": "admin integration health",
       "id": "integrations_page_adminIntegrations"
     },
@@ -12656,7 +13025,7 @@
       "author": null,
       "contributor": null,
       "rationale": "Guarded by plans.manage (PRD 7, PRD 13). Creation asks only for the commercial minimum so step one is not forty fields; a new plan is never published until its menu and windows exist. Plans are archived, never deleted, because live subscribers reference them, and archiving also unpublishes so a 'deleted' plan cannot keep selling.",
-      "community": 18,
+      "community": 7,
       "norm_label": "admin subscription plans",
       "id": "plans_page_adminPlans"
     },
@@ -12670,7 +13039,7 @@
       "author": null,
       "contributor": null,
       "rationale": "Guarded by plans.manage (PRD 7, PRD 13). Three separate forms -- commercial terms, rule overrides, menu -- so saving a price does not resubmit the menu and adjusting a pause limit cannot blank a delivery window. Null overrides mean 'inherit the global setting', genuinely different from zero. Windows are replaced wholesale rather than diffed because the form always submits the complete set and a partial update would leave a plan sellable in a window the Owner just unticked. Editing a plan never rewrites what an existing customer bought -- purchases carry a frozen plan_snapshot (migration 0006).",
-      "community": 18,
+      "community": 7,
       "norm_label": "admin plan editor",
       "id": "planId_page_adminPlanEditor"
     },
@@ -12739,7 +13108,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 18,
+      "community": 7,
       "norm_label": "requirepermission()",
       "id": "session_requirePermission"
     },
@@ -12832,7 +13201,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 46,
+      "community": 18,
       "norm_label": "readdraft()",
       "id": "draft_readDraft"
     },
@@ -12859,7 +13228,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 46,
+      "community": 2,
       "norm_label": "configuredpaymentproviders()",
       "id": "env_configuredPaymentProviders"
     },
@@ -12941,7 +13310,7 @@
       "author": null,
       "contributor": null,
       "rationale": "Returns an adapter whose listOrderIds may answer not-ok with a reason and state, which the reconcile job records as 'skipped' rather than treating as agreement.",
-      "community": 29,
+      "community": 36,
       "norm_label": "marketplaceadapter(provider)",
       "id": "marketplace_marketplaceAdapter"
     },
@@ -12954,7 +13323,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 18,
+      "community": 46,
       "norm_label": "admin form coercion helpers",
       "id": "form_adminFormHelpers"
     },
@@ -12996,7 +13365,7 @@
       "author": null,
       "contributor": null,
       "rationale": "Decides what is due from the configurable lead time, locks with SKIP LOCKED and is idempotent, so overlapping cron runs are safe.",
-      "community": 18,
+      "community": 7,
       "norm_label": "release_due_deliveries() rpc",
       "id": "rpc_release_due_deliveries"
     },
@@ -13010,7 +13379,7 @@
       "author": null,
       "contributor": null,
       "rationale": "Compares an external id list against internal orders for a window and records missing_internal / missing_external counts as a finding; it does not mutate orders.",
-      "community": 29,
+      "community": 36,
       "norm_label": "reconcile_marketplace_orders() rpc",
       "id": "rpc_reconcile_marketplace_orders"
     },
@@ -13052,7 +13421,7 @@
       "author": null,
       "contributor": null,
       "rationale": "Coupon eligibility is decided server-side at checkout; the admin coupons screen only authors the rules it reads.",
-      "community": 18,
+      "community": 7,
       "norm_label": "validate_coupon() rpc",
       "id": "rpc_validate_coupon"
     },
@@ -13078,7 +13447,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 18,
+      "community": 46,
       "norm_label": "permissions.catalogmanage",
       "id": "perm_catalogManage"
     },
@@ -13091,7 +13460,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 18,
+      "community": 7,
       "norm_label": "permissions.plansmanage",
       "id": "perm_plansManage"
     },
@@ -13104,7 +13473,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 18,
+      "community": 7,
       "norm_label": "permissions.couponsmanage",
       "id": "perm_couponsManage"
     },
@@ -13182,7 +13551,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 36,
+      "community": 60,
       "norm_label": "permissions.employeesview",
       "id": "perm_employeesView"
     },
@@ -13195,7 +13564,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 36,
+      "community": 60,
       "norm_label": "permissions.employeesmanage",
       "id": "perm_employeesManage"
     },
@@ -13221,7 +13590,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 29,
+      "community": 36,
       "norm_label": "permissions.integrationsview",
       "id": "perm_integrationsView"
     },
@@ -13248,7 +13617,7 @@
       "author": null,
       "contributor": null,
       "rationale": "Only an existing developer_admin may assign developer_admin; the Owner runs the business but does not hand out system-level access.",
-      "community": 36,
+      "community": 60,
       "norm_label": "developer_admin role",
       "id": "role_developerAdmin"
     },
@@ -13289,7 +13658,7 @@
       "author": null,
       "contributor": null,
       "rationale": "Holds role and is_active; deactivating the profile is what actually blocks sign-in, since getSession() refuses an inactive profile.",
-      "community": 36,
+      "community": 60,
       "norm_label": "auth_profiles table",
       "id": "db_auth_profiles"
     },
@@ -13302,7 +13671,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 36,
+      "community": 60,
       "norm_label": "employees table",
       "id": "db_employees"
     },
@@ -13316,7 +13685,7 @@
       "author": null,
       "contributor": null,
       "rationale": "What each role may do is data, not code, which is why the employees screen assigns a role and never a permission.",
-      "community": 18,
+      "community": 60,
       "norm_label": "role_permissions table",
       "id": "db_role_permissions"
     },
@@ -13343,7 +13712,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 32,
+      "community": 7,
       "norm_label": "subscriptions table",
       "id": "db_subscriptions"
     },
@@ -13356,7 +13725,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 18,
+      "community": 7,
       "norm_label": "subscription_plans table",
       "id": "db_subscription_plans"
     },
@@ -13369,7 +13738,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 18,
+      "community": 7,
       "norm_label": "subscription_plan_windows table",
       "id": "db_subscription_plan_windows"
     },
@@ -13382,7 +13751,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 18,
+      "community": 7,
       "norm_label": "subscription_plan_meals table",
       "id": "db_subscription_plan_meals"
     },
@@ -13408,7 +13777,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 18,
+      "community": 7,
       "norm_label": "products table",
       "id": "db_products"
     },
@@ -13421,7 +13790,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 18,
+      "community": 46,
       "norm_label": "variant_groups table",
       "id": "db_variant_groups"
     },
@@ -13447,7 +13816,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 18,
+      "community": 46,
       "norm_label": "product_variant_groups table",
       "id": "db_product_variant_groups"
     },
@@ -13460,7 +13829,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 18,
+      "community": 7,
       "norm_label": "coupons table",
       "id": "db_coupons"
     },
@@ -13473,7 +13842,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 18,
+      "community": 7,
       "norm_label": "coupon_rules table",
       "id": "db_coupon_rules"
     },
@@ -13540,7 +13909,7 @@
       "author": null,
       "contributor": null,
       "rationale": "jsonb key/value store for grace period, pause limits and KOT release lead time; types must round-trip or setting_int breaks at read time.",
-      "community": 18,
+      "community": 7,
       "norm_label": "business_settings table",
       "id": "db_business_settings"
     },
@@ -13593,7 +13962,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 29,
+      "community": 36,
       "norm_label": "integration_reconciliation table",
       "id": "db_integration_reconciliation"
     },
@@ -13606,7 +13975,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 29,
+      "community": 36,
       "norm_label": "integration_capabilities table",
       "id": "db_integration_capabilities"
     },
@@ -13645,7 +14014,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 29,
+      "community": 36,
       "norm_label": "v_integration_health view",
       "id": "view_integration_health"
     },
@@ -13729,7 +14098,7 @@
       "author": null,
       "contributor": null,
       "rationale": "Grace periods, pause and skip limits, KOT release lead time, tax and delivery rates, cost assumptions, coupon percentages, variant price deltas and role permissions are all rows the Owner edits, effective on the next request with no deploy.",
-      "community": 18,
+      "community": 7,
       "norm_label": "no hardcoded business policy",
       "id": "concept_noHardcodedBusinessPolicy"
     },
@@ -13743,7 +14112,7 @@
       "author": null,
       "contributor": null,
       "rationale": "Customers are deactivated, plans archived (and unpublished so they stop selling), addresses retired, and redeemed coupons kept -- because the orders, invoices, payments and discounts behind them are legitimate business records.",
-      "community": 18,
+      "community": 7,
       "norm_label": "archive, never hard delete",
       "id": "concept_softDeletePreservesRecords"
     },
@@ -13757,7 +14126,7 @@
       "author": null,
       "contributor": null,
       "rationale": "The job records missing_internal / missing_external counts and never creates or deletes an order to make totals agree; a discrepancy is a finding for a human, not something to paper over.",
-      "community": 29,
+      "community": 36,
       "norm_label": "reconciliation reports, never repairs",
       "id": "concept_reconciliationIsReadOnly"
     },
@@ -13771,7 +14140,7 @@
       "author": null,
       "contributor": null,
       "rationale": "Mocked or blocked marketplace capabilities, placeholder cost assumptions and unconfirmed settings are labelled as such (PRD 22/23) so no screen lets a reader believe something is live or settled when it is not.",
-      "community": 29,
+      "community": 36,
       "norm_label": "honest integration and estimate labelling",
       "id": "concept_honestIntegrationLabelling"
     },
@@ -13785,7 +14154,7 @@
       "author": null,
       "contributor": null,
       "rationale": "Creating an employee login needs the service key because no user exists yet to hold a token; every subsequent step runs on the Owner's token so RLS and the audit trigger apply and name the real actor. If the role grant fails, the orphan login is deleted rather than left usable.",
-      "community": 36,
+      "community": 60,
       "norm_label": "service key only where no caller token can exist",
       "id": "concept_serviceKeyOnlyWhereNoTokenExists"
     },
@@ -13799,7 +14168,7 @@
       "author": null,
       "contributor": null,
       "rationale": "A purchase carries a plan_snapshot (migration 0006), so editing a plan's price, menu or windows never retroactively rewrites what an existing subscriber bought.",
-      "community": 18,
+      "community": 7,
       "norm_label": "frozen plan snapshot",
       "id": "concept_frozenPlanSnapshot"
     },
@@ -15022,7 +15391,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 18,
+      "community": 60,
       "norm_label": "requiresession",
       "id": "session_requireSession"
     },
@@ -16112,7 +16481,7 @@
       "author": null,
       "contributor": null,
       "rationale": "The list a customer may actually choose from, flagged with isSandbox so the test gateway is always labelled as moving no real money.",
-      "community": 46,
+      "community": 2,
       "norm_label": "availablepaymentproviders()",
       "id": "paymentsindex_availablePaymentProviders"
     },
@@ -16238,7 +16607,7 @@
       "author": null,
       "contributor": null,
       "rationale": "Throws from the constructor when ENABLE_SANDBOX_PAYMENTS==='true' and NODE_ENV==='production' rather than quietly setting enabled=false. Loud, not silent: leaving a fake gateway on in production would be a real incident, so the failure must be impossible to miss. Defence in depth with configuredPaymentProviders(), which already refuses to offer sandbox in production.",
-      "community": 46,
+      "community": 2,
       "norm_label": "sandbox refuses to construct in production",
       "id": "sandbox_productionRefusal"
     },
@@ -16663,7 +17032,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 52,
+      "community": 24,
       "norm_label": "vercel.json \u2014 deployment and crons",
       "id": "vercel_manifest"
     },
@@ -16689,7 +17058,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 52,
+      "community": 24,
       "norm_label": "github actions scheduled jobs workflow",
       "id": "scheduledjobs_workflow"
     },
@@ -16848,7 +17217,7 @@
       "author": null,
       "contributor": null,
       "rationale": "Three accounts on one shared physical wall display, read at arm's length under bad lighting. Because the display is shared and public, staff must never see money \u2014 only kot.view and kot.start_prep.",
-      "community": 24,
+      "community": 41,
       "norm_label": "role: kitchen staff",
       "id": "product_role_kitchen_staff"
     },
@@ -16862,7 +17231,7 @@
       "author": null,
       "contributor": null,
       "rationale": "Business oversight from a laptop: analytics, catalog, plans, coupons, customers, reviews, settings, audit. The Owner watches the kitchen and cannot touch it, so the KOT is read-only.",
-      "community": 24,
+      "community": 41,
       "norm_label": "role: owner",
       "id": "product_role_owner"
     },
@@ -16876,7 +17245,7 @@
       "author": null,
       "contributor": null,
       "rationale": "Maximum Phase 1 access for integrations and configuration; holds every permission \u2014 but still cannot rewrite the append-only audit log.",
-      "community": 41,
+      "community": 19,
       "norm_label": "role: developer admin",
       "id": "product_role_developer_admin"
     },
@@ -16959,7 +17328,7 @@
       "author": null,
       "contributor": null,
       "rationale": "Kitchen sees no money, Owner's KOT has no buttons, Manager has no pricing. The UI enforces what RLS already guarantees \u2014 the UI is the second line, never the only one.",
-      "community": 41,
+      "community": 19,
       "norm_label": "principle: role-shaped interfaces",
       "id": "product_principle_role_shaped_interfaces"
     },
@@ -17099,7 +17468,7 @@
       "author": null,
       "contributor": null,
       "rationale": "role_permissions grants the Owner kot.view and no transition permission; the UI renders 'Read-only view' and the API refuses the transition anyway.",
-      "community": 24,
+      "community": 41,
       "norm_label": "invariant: the owner's kot is read-only",
       "id": "readme_invariant_owner_kot_readonly"
     },
@@ -17113,7 +17482,7 @@
       "author": null,
       "contributor": null,
       "rationale": "Money columns are masked in v_kot_tickets / v_kot_ticket_items and kitchen holds no orders.view \u2014 the board is a shared public display, so masking happens in the view rather than the component.",
-      "community": 24,
+      "community": 41,
       "norm_label": "invariant: kitchen staff get no financial data",
       "id": "readme_invariant_kitchen_no_money"
     },
@@ -17295,7 +17664,7 @@
       "author": null,
       "contributor": null,
       "rationale": "Guarded by CRON_SECRET rather than a session, compared in constant time, and each answers both POST and GET because most hosted schedulers only issue GET.",
-      "community": 52,
+      "community": 24,
       "norm_label": "job endpoints guarded by a constant-time shared secret",
       "id": "readme_cron_secret_guard"
     },
@@ -17309,7 +17678,7 @@
       "author": null,
       "contributor": null,
       "rationale": "Vercel Hobby allows two crons firing at most once daily \u2014 enough for reconciliation, useless for delivery release. GitHub Actions' 5-minute minimum matches what the release job needs; the daily Vercel crons remain as a floor so a disabled workflow degrades into 'late' rather than 'stopped'.",
-      "community": 52,
+      "community": 24,
       "norm_label": "split cron cadence (vercel floor + github actions real cadence)",
       "id": "readme_cron_cadence_split"
     },
@@ -17323,7 +17692,7 @@
       "author": null,
       "contributor": null,
       "rationale": "release_due_deliveries locks rows with SKIP LOCKED and is idempotent, the dispatcher drains a queue, and reconciliation only records findings \u2014 so running both schedulers is safe.",
-      "community": 52,
+      "community": 24,
       "norm_label": "a duplicated scheduler run is a no-op, never a double delivery",
       "id": "readme_duplicate_run_is_noop"
     },
@@ -17337,7 +17706,7 @@
       "author": null,
       "contributor": null,
       "rationale": "It overrides the dashboard Application Preset; with the preset on Other, Vercel runs no Next build and every path returns 404: NOT_FOUND. A 404 on a fresh root path almost always means the preset, not the application.",
-      "community": 52,
+      "community": 24,
       "norm_label": "vercel.json pins framework=nextjs",
       "id": "readme_vercel_framework_preset"
     },
@@ -17378,7 +17747,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 24,
+      "community": 41,
       "norm_label": "demo accounts and roles",
       "id": "readme_demo_accounts"
     },
@@ -17517,7 +17886,7 @@
       "author": null,
       "contributor": null,
       "rationale": "The views mask it and the UI must not reintroduce it \u2014 the design rule mirrors the database guarantee rather than replacing it.",
-      "community": 41,
+      "community": 19,
       "norm_label": "money never renders on kitchen surfaces",
       "id": "design_money_never_on_kitchen_surfaces"
     },
@@ -17991,7 +18360,7 @@
       "author": null,
       "contributor": null,
       "rationale": "role_permissions rows define what each role may do, so a permission change is a row change rather than a deploy.",
-      "community": 41,
+      "community": 19,
       "norm_label": "role permissions are data, not code",
       "id": "rbac_permissions_are_data"
     },
@@ -18033,7 +18402,7 @@
       "author": null,
       "contributor": null,
       "rationale": "Totals and customer phone come back NULL for kitchen and populated for the Owner from the same view; analytics views and the orders table return zero rows to kitchen.",
-      "community": 41,
+      "community": 19,
       "norm_label": "kitchen money masking in v_kot_tickets",
       "id": "rbac_kitchen_money_masking"
     },
@@ -18103,7 +18472,7 @@
       "author": null,
       "contributor": null,
       "rationale": "Runs with if: always() so a notification provider being down never hides a release failure.",
-      "community": 52,
+      "community": 24,
       "norm_label": "job: drain the notification outbox",
       "id": "jobs_notifications_drain"
     },
@@ -18129,7 +18498,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 52,
+      "community": 24,
       "norm_label": "concurrency group prevents delayed runs piling up",
       "id": "jobs_concurrency_group"
     },
@@ -21416,9 +21785,9 @@
       "source_file": "src/app/(site)/page.tsx",
       "source_location": "L42",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "site_page",
-      "target": "site_page_note_placement",
-      "confidence_score": 1.0
+      "target": "site_page_note_placement"
     },
     {
       "relation": "contains",
@@ -21437,9 +21806,9 @@
       "source_file": "src/app/(site)/page.tsx",
       "source_location": "L8",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "site_page",
-      "target": "site_reveal",
-      "confidence_score": 1.0
+      "target": "site_reveal"
     },
     {
       "relation": "imports",
@@ -21448,9 +21817,9 @@
       "source_file": "src/app/(site)/page.tsx",
       "source_location": "L8",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "site_page",
-      "target": "site_reveal_reveal",
-      "confidence_score": 1.0
+      "target": "site_reveal_reveal"
     },
     {
       "relation": "imports_from",
@@ -30039,6 +30408,135 @@
       "relation": "imports_from",
       "context": "import",
       "confidence": "EXTRACTED",
+      "source_file": "src/app/api/kot/history/route.ts",
+      "source_location": "L4",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "history_route",
+      "target": "auth_permissions"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/app/api/kot/history/route.ts",
+      "source_location": "L4",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "history_route",
+      "target": "auth_permissions_permissions"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/app/api/kot/history/route.ts",
+      "source_location": "L3",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "history_route",
+      "target": "auth_session"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/app/api/kot/history/route.ts",
+      "source_location": "L3",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "history_route",
+      "target": "auth_session_getsession"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/app/api/kot/history/route.ts",
+      "source_location": "L27",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "history_route",
+      "target": "history_route_get"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/app/api/kot/history/route.ts",
+      "source_location": "L21",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "history_route",
+      "target": "history_route_istdayrange"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/app/api/kot/history/route.ts",
+      "source_location": "L7",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "history_route",
+      "target": "history_route_queryschema"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/app/api/kot/history/route.ts",
+      "source_location": "L5",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "history_route",
+      "target": "supabase_server"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/app/api/kot/history/route.ts",
+      "source_location": "L5",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "history_route",
+      "target": "supabase_server_serverclient"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/app/api/kot/history/route.ts",
+      "source_location": "L46",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "history_route_get",
+      "target": "history_route_istdayrange"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/app/api/kot/history/route.ts",
+      "source_location": "L28",
+      "weight": 1.0,
+      "source": "history_route_get",
+      "target": "auth_session_getsession"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/app/api/kot/history/route.ts",
+      "source_location": "L48",
+      "weight": 1.0,
+      "source": "history_route_get",
+      "target": "supabase_server_serverclient"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
       "source_file": "src/app/api/kot/transition/route.ts",
       "source_location": "L3",
       "weight": 1.0,
@@ -31160,6 +31658,28 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/app/kot/manager/page.tsx",
+      "source_location": "L7",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "manager_page",
+      "target": "kot_date"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/app/kot/manager/page.tsx",
+      "source_location": "L7",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "manager_page",
+      "target": "kot_date_todayiso"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/app/kot/manager/page.tsx",
       "source_location": "L4",
       "weight": 1.0,
       "confidence_score": 1.0,
@@ -31176,6 +31696,28 @@
       "confidence_score": 1.0,
       "source": "manager_page",
       "target": "kot_manager_board_managerboard"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/app/kot/manager/page.tsx",
+      "source_location": "L6",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "manager_page",
+      "target": "kot_tabs"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/app/kot/manager/page.tsx",
+      "source_location": "L6",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "manager_page",
+      "target": "kot_tabs_kottabkey"
     },
     {
       "relation": "contains",
@@ -31196,6 +31738,36 @@
       "confidence_score": 1.0,
       "source": "manager_page",
       "target": "manager_page_metadata"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/app/kot/manager/page.tsx",
+      "source_location": "L54",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "manager_page",
+      "target": "manager_page_normalisedate"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/app/kot/manager/page.tsx",
+      "source_location": "L49",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "manager_page",
+      "target": "manager_page_pickone"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/app/kot/manager/page.tsx",
+      "source_location": "L13",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "manager_page",
+      "target": "manager_page_valid_tabs"
     },
     {
       "relation": "imports_from",
@@ -31269,6 +31841,39 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/app/kot/manager/page.tsx",
+      "source_location": "L28",
+      "weight": 1.0,
+      "source": "manager_page_managerpage",
+      "target": "kot_date_todayiso"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/app/kot/manager/page.tsx",
+      "source_location": "L28",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "manager_page_managerpage",
+      "target": "manager_page_normalisedate"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/app/kot/manager/page.tsx",
+      "source_location": "L24",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "manager_page_managerpage",
+      "target": "manager_page_pickone"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/app/kot/manager/page.tsx",
       "source_location": "L14",
       "weight": 1.0,
       "source": "manager_page_managerpage",
@@ -31320,9 +31925,9 @@
       "source_file": "src/app/layout.tsx",
       "source_location": "L56",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "app_layout",
-      "target": "app_layout_notedisplay",
-      "confidence_score": 1.0
+      "target": "app_layout_notedisplay"
     },
     {
       "relation": "contains",
@@ -31330,9 +31935,9 @@
       "source_file": "src/app/layout.tsx",
       "source_location": "L68",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "app_layout",
-      "target": "app_layout_notetext",
-      "confidence_score": 1.0
+      "target": "app_layout_notetext"
     },
     {
       "relation": "contains",
@@ -33229,6 +33834,17 @@
       "relation": "imports_from",
       "context": "import",
       "confidence": "EXTRACTED",
+      "source_file": "src/components/kot/live-board.tsx",
+      "source_location": "L6",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "kot_live_board",
+      "target": "kot_connection_badge"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
       "source_file": "src/components/kot/manager-board.tsx",
       "source_location": "L6",
       "weight": 1.0,
@@ -33262,12 +33878,315 @@
       "relation": "imports",
       "context": "import",
       "confidence": "EXTRACTED",
+      "source_file": "src/components/kot/live-board.tsx",
+      "source_location": "L6",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "kot_live_board",
+      "target": "kot_connection_badge_connectionbadge"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
       "source_file": "src/components/kot/manager-board.tsx",
       "source_location": "L6",
       "weight": 1.0,
       "confidence_score": 1.0,
       "source": "kot_manager_board",
       "target": "kot_connection_badge_connectionbadge"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/kot/history-pane.tsx",
+      "source_location": "L12",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "kot_history_pane",
+      "target": "hooks_use_kot_history"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/kot/history-pane.tsx",
+      "source_location": "L12",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "kot_history_pane",
+      "target": "hooks_use_kot_history_historyscope"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/kot/history-pane.tsx",
+      "source_location": "L12",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "kot_history_pane",
+      "target": "hooks_use_kot_history_historyticket"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/kot/history-pane.tsx",
+      "source_location": "L12",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "kot_history_pane",
+      "target": "hooks_use_kot_history_usekothistory"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/kot/history-pane.tsx",
+      "source_location": "L19",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "kot_history_pane",
+      "target": "kot_date"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/kot/history-pane.tsx",
+      "source_location": "L19",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "kot_history_pane",
+      "target": "kot_date_todayiso"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/kot/history-pane.tsx",
+      "source_location": "L21",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "kot_history_pane",
+      "target": "kot_history_pane_all_status_filters"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/kot/history-pane.tsx",
+      "source_location": "L159",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "kot_history_pane",
+      "target": "kot_history_pane_countbystatus"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/kot/history-pane.tsx",
+      "source_location": "L134",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "kot_history_pane",
+      "target": "kot_history_pane_filterchip"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/kot/history-pane.tsx",
+      "source_location": "L36",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "kot_history_pane",
+      "target": "kot_history_pane_historypane"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/kot/history-pane.tsx",
+      "source_location": "L34",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "kot_history_pane",
+      "target": "kot_history_pane_statusfilter"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/kot/history-pane.tsx",
+      "source_location": "L17",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "kot_history_pane",
+      "target": "kot_ticket_card_readonly"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/kot/history-pane.tsx",
+      "source_location": "L17",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "kot_history_pane",
+      "target": "kot_ticket_card_readonly_ticketcardreadonly"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/kot/history-pane.tsx",
+      "source_location": "L18",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "kot_history_pane",
+      "target": "lib_format"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/kot/history-pane.tsx",
+      "source_location": "L18",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "kot_history_pane",
+      "target": "lib_format_kot_status_labels"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/kot/history-pane.tsx",
+      "source_location": "L4",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "kot_history_pane",
+      "target": "ui_button_button"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/kot/history-pane.tsx",
+      "source_location": "L4",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "kot_history_pane",
+      "target": "ui_button_styles_cx"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/kot/history-pane.tsx",
+      "source_location": "L4",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "kot_history_pane",
+      "target": "ui_primitives"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/kot/history-pane.tsx",
+      "source_location": "L4",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "kot_history_pane",
+      "target": "ui_primitives_alert"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/kot/history-pane.tsx",
+      "source_location": "L4",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "kot_history_pane",
+      "target": "ui_primitives_emptystate"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/kot/history-pane.tsx",
+      "source_location": "L4",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "kot_history_pane",
+      "target": "ui_primitives_input"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/kot/history-pane.tsx",
+      "source_location": "L4",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "kot_history_pane",
+      "target": "ui_primitives_skeleton"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/kot/manager-board.tsx",
+      "source_location": "L10",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "kot_manager_board",
+      "target": "kot_history_pane"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/components/kot/history-pane.tsx",
+      "source_location": "L45",
+      "weight": 1.0,
+      "source": "kot_history_pane_historypane",
+      "target": "hooks_use_kot_history_usekothistory"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/components/kot/history-pane.tsx",
+      "source_location": "L66",
+      "weight": 1.0,
+      "source": "kot_history_pane_historypane",
+      "target": "kot_date_todayiso"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/kot/manager-board.tsx",
+      "source_location": "L10",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "kot_manager_board",
+      "target": "kot_history_pane_historypane"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/components/kot/history-pane.tsx",
+      "source_location": "L147",
+      "weight": 1.0,
+      "source": "kot_history_pane_filterchip",
+      "target": "ui_button_styles_cx"
     },
     {
       "relation": "contains",
@@ -33523,6 +34442,334 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
+      "source_file": "src/components/kot/live-board.tsx",
+      "source_location": "L28",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "kot_live_board",
+      "target": "kot_live_board_groups"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/kot/live-board.tsx",
+      "source_location": "L46",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "kot_live_board",
+      "target": "kot_live_board_liveboard"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/kot/live-board.tsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "kot_live_board",
+      "target": "kot_ticket_actions"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/kot/live-board.tsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "kot_live_board",
+      "target": "kot_ticket_actions_useticketactions"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/kot/live-board.tsx",
+      "source_location": "L7",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "kot_live_board",
+      "target": "kot_ticket_items"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/kot/live-board.tsx",
+      "source_location": "L7",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "kot_live_board",
+      "target": "kot_ticket_items_ticketitems"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/kot/live-board.tsx",
+      "source_location": "L19",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "kot_live_board",
+      "target": "lib_format"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/kot/live-board.tsx",
+      "source_location": "L19",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "kot_live_board",
+      "target": "lib_format_elapsedsince"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/kot/live-board.tsx",
+      "source_location": "L19",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "kot_live_board",
+      "target": "lib_format_kot_status_labels"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/kot/live-board.tsx",
+      "source_location": "L19",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "kot_live_board",
+      "target": "lib_format_money"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/kot/live-board.tsx",
+      "source_location": "L19",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "kot_live_board",
+      "target": "lib_format_source_labels"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/kot/live-board.tsx",
+      "source_location": "L19",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "kot_live_board",
+      "target": "lib_format_timeonly"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/kot/live-board.tsx",
+      "source_location": "L19",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "kot_live_board",
+      "target": "lib_format_untildeadline"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/kot/live-board.tsx",
+      "source_location": "L4",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "kot_live_board",
+      "target": "realtime_kot_board_shared_boardticket"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/kot/live-board.tsx",
+      "source_location": "L4",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "kot_live_board",
+      "target": "realtime_use_kot_board"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/kot/live-board.tsx",
+      "source_location": "L4",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "kot_live_board",
+      "target": "realtime_use_kot_board_usekotboard"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/kot/live-board.tsx",
+      "source_location": "L8",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "kot_live_board",
+      "target": "ui_button_button"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/kot/live-board.tsx",
+      "source_location": "L8",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "kot_live_board",
+      "target": "ui_button_styles_cx"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/kot/live-board.tsx",
+      "source_location": "L8",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "kot_live_board",
+      "target": "ui_primitives"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/kot/live-board.tsx",
+      "source_location": "L8",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "kot_live_board",
+      "target": "ui_primitives_alert"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/kot/live-board.tsx",
+      "source_location": "L8",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "kot_live_board",
+      "target": "ui_primitives_badge"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/kot/live-board.tsx",
+      "source_location": "L8",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "kot_live_board",
+      "target": "ui_primitives_card"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/kot/live-board.tsx",
+      "source_location": "L8",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "kot_live_board",
+      "target": "ui_primitives_emptystate"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/kot/live-board.tsx",
+      "source_location": "L8",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "kot_live_board",
+      "target": "ui_primitives_input"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/kot/live-board.tsx",
+      "source_location": "L8",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "kot_live_board",
+      "target": "ui_primitives_sourcetag"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/kot/live-board.tsx",
+      "source_location": "L8",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "kot_live_board",
+      "target": "ui_spinner_spinner"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/kot/manager-board.tsx",
+      "source_location": "L8",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "kot_manager_board",
+      "target": "kot_live_board"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/components/kot/live-board.tsx",
+      "source_location": "L54",
+      "weight": 1.0,
+      "source": "kot_live_board_liveboard",
+      "target": "kot_ticket_actions_useticketactions"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/components/kot/live-board.tsx",
+      "source_location": "L53",
+      "weight": 1.0,
+      "source": "kot_live_board_liveboard",
+      "target": "realtime_use_kot_board_usekotboard"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/kot/manager-board.tsx",
+      "source_location": "L8",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "kot_manager_board",
+      "target": "kot_live_board_liveboard"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
       "source_file": "src/components/kot/manager-board.tsx",
       "source_location": "L37",
       "weight": 1.0,
@@ -33539,6 +34786,49 @@
       "confidence_score": 1.0,
       "source": "kot_manager_board",
       "target": "kot_manager_board_managerboard"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/kot/manager-board.tsx",
+      "source_location": "L101",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "kot_manager_board",
+      "target": "kot_manager_board_tabsubtitle"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/kot/manager-board.tsx",
+      "source_location": "L9",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "kot_manager_board",
+      "target": "kot_tabs"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/kot/manager-board.tsx",
+      "source_location": "L9",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "kot_manager_board",
+      "target": "kot_tabs_kottabkey"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/kot/manager-board.tsx",
+      "source_location": "L9",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "kot_manager_board",
+      "target": "kot_tabs_kottabs"
     },
     {
       "relation": "imports_from",
@@ -33808,6 +35098,17 @@
       "relation": "calls",
       "context": "call",
       "confidence": "EXTRACTED",
+      "source_file": "src/components/kot/manager-board.tsx",
+      "source_location": "L66",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "kot_manager_board_managerboard",
+      "target": "kot_manager_board_tabsubtitle"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/components/kot/manager-board.tsx",
       "source_location": "L59",
@@ -33829,12 +35130,281 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
+      "source_file": "src/components/kot/tabs.tsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "kot_tabs",
+      "target": "kot_tabs_kottabkey"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/kot/tabs.tsx",
+      "source_location": "L13",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "kot_tabs",
+      "target": "kot_tabs_kottabs"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/kot/tabs.tsx",
+      "source_location": "L7",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "kot_tabs",
+      "target": "kot_tabs_tabs"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/kot/tabs.tsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "kot_tabs",
+      "target": "ui_button_styles_cx"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/kot/tabs.tsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "kot_tabs",
+      "target": "ui_primitives"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
       "source_file": "src/components/kot/ticket-actions.ts",
       "source_location": "L17",
       "weight": 1.0,
       "confidence_score": 1.0,
       "source": "kot_ticket_actions",
       "target": "kot_ticket_actions_useticketactions"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/kot/ticket-card-readonly.tsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "kot_ticket_card_readonly",
+      "target": "hooks_use_kot_history"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/kot/ticket-card-readonly.tsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "kot_ticket_card_readonly",
+      "target": "hooks_use_kot_history_historyticket"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/kot/ticket-card-readonly.tsx",
+      "source_location": "L91",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "kot_ticket_card_readonly",
+      "target": "kot_ticket_card_readonly_statustone"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/kot/ticket-card-readonly.tsx",
+      "source_location": "L111",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "kot_ticket_card_readonly",
+      "target": "kot_ticket_card_readonly_terminallabel"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/kot/ticket-card-readonly.tsx",
+      "source_location": "L17",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "kot_ticket_card_readonly",
+      "target": "kot_ticket_card_readonly_ticketcardreadonly"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/kot/ticket-card-readonly.tsx",
+      "source_location": "L4",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "kot_ticket_card_readonly",
+      "target": "kot_ticket_items"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/kot/ticket-card-readonly.tsx",
+      "source_location": "L4",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "kot_ticket_card_readonly",
+      "target": "kot_ticket_items_ticketitems"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/kot/ticket-card-readonly.tsx",
+      "source_location": "L6",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "kot_ticket_card_readonly",
+      "target": "lib_format"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/kot/ticket-card-readonly.tsx",
+      "source_location": "L6",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "kot_ticket_card_readonly",
+      "target": "lib_format_kot_status_labels"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/kot/ticket-card-readonly.tsx",
+      "source_location": "L6",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "kot_ticket_card_readonly",
+      "target": "lib_format_money"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/kot/ticket-card-readonly.tsx",
+      "source_location": "L6",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "kot_ticket_card_readonly",
+      "target": "lib_format_source_labels"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/kot/ticket-card-readonly.tsx",
+      "source_location": "L6",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "kot_ticket_card_readonly",
+      "target": "lib_format_timeonly"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/kot/ticket-card-readonly.tsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "kot_ticket_card_readonly",
+      "target": "ui_primitives"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/kot/ticket-card-readonly.tsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "kot_ticket_card_readonly",
+      "target": "ui_primitives_badge"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/kot/ticket-card-readonly.tsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "kot_ticket_card_readonly",
+      "target": "ui_primitives_card"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/kot/ticket-card-readonly.tsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "kot_ticket_card_readonly",
+      "target": "ui_primitives_sourcetag"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/kot/ticket-card-readonly.tsx",
+      "source_location": "L18",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "kot_ticket_card_readonly_ticketcardreadonly",
+      "target": "kot_ticket_card_readonly_statustone"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/kot/ticket-card-readonly.tsx",
+      "source_location": "L19",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "kot_ticket_card_readonly_ticketcardreadonly",
+      "target": "kot_ticket_card_readonly_terminallabel"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/components/kot/ticket-card-readonly.tsx",
+      "source_location": "L38",
+      "weight": 1.0,
+      "source": "kot_ticket_card_readonly_ticketcardreadonly",
+      "target": "lib_format_money"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/components/kot/ticket-card-readonly.tsx",
+      "source_location": "L46",
+      "weight": 1.0,
+      "source": "kot_ticket_card_readonly_ticketcardreadonly",
+      "target": "lib_format_timeonly"
     },
     {
       "relation": "contains",
@@ -34185,9 +35755,19 @@
       "source_file": "src/components/site/hero-motion.tsx",
       "source_location": "L383",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "site_hero_motion",
-      "target": "site_hero_motion_courier",
-      "confidence_score": 1.0
+      "target": "site_hero_motion_courier"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/site/hero-motion.tsx",
+      "source_location": "L390",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "site_hero_motion",
+      "target": "site_hero_motion_deliveryrun"
     },
     {
       "relation": "contains",
@@ -34263,6 +35843,36 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/components/site/hero-motion.tsx",
+      "source_location": "L368",
+      "weight": 1.0,
+      "source": "site_hero_motion",
+      "target": "site_hero_motion_never_changes",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/site/hero-motion.tsx",
+      "source_location": "L369",
+      "weight": 1.0,
+      "source": "site_hero_motion",
+      "target": "site_hero_motion_on_client",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/site/hero-motion.tsx",
+      "source_location": "L370",
+      "weight": 1.0,
+      "source": "site_hero_motion",
+      "target": "site_hero_motion_on_server",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/site/hero-motion.tsx",
       "source_location": "L171",
       "weight": 1.0,
       "confidence_score": 1.0,
@@ -34306,9 +35916,9 @@
       "source_file": "src/components/site/hero-motion.tsx",
       "source_location": "L21",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "site_hero_motion",
-      "target": "ui_button_styles",
-      "confidence_score": 1.0
+      "target": "ui_button_styles"
     },
     {
       "relation": "imports",
@@ -34317,9 +35927,9 @@
       "source_file": "src/components/site/hero-motion.tsx",
       "source_location": "L21",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "site_hero_motion",
-      "target": "ui_button_styles_cx",
-      "confidence_score": 1.0
+      "target": "ui_button_styles_cx"
     },
     {
       "relation": "imports_from",
@@ -34404,9 +36014,9 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/components/site/hero-motion.tsx",
-      "source_location": "L387",
+      "source_location": "L395",
       "weight": 1.0,
-      "source": "site_hero_motion_courier",
+      "source": "site_hero_motion_deliveryrun",
       "target": "ui_button_styles_cx"
     },
     {
@@ -34416,9 +36026,9 @@
       "source_file": "src/components/site/storefront-hero.tsx",
       "source_location": "L9",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "site_storefront_hero",
-      "target": "site_hero_motion_courier",
-      "confidence_score": 1.0
+      "target": "site_hero_motion_deliveryrun"
     },
     {
       "relation": "contains",
@@ -34663,9 +36273,9 @@
       "source_file": "src/components/site/reveal.tsx",
       "source_location": "L35",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "site_reveal",
-      "target": "site_reveal_reveal",
-      "confidence_score": 1.0
+      "target": "site_reveal_reveal"
     },
     {
       "relation": "imports_from",
@@ -34674,9 +36284,9 @@
       "source_file": "src/components/site/reveal.tsx",
       "source_location": "L5",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "site_reveal",
-      "target": "ui_button_styles",
-      "confidence_score": 1.0
+      "target": "ui_button_styles"
     },
     {
       "relation": "imports",
@@ -34685,9 +36295,9 @@
       "source_file": "src/components/site/reveal.tsx",
       "source_location": "L5",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "site_reveal",
-      "target": "ui_button_styles_cx",
-      "confidence_score": 1.0
+      "target": "ui_button_styles_cx"
     },
     {
       "relation": "calls",
@@ -34970,6 +36580,17 @@
       "target": "lib_format_pluralise"
     },
     {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/site/storefront-hero.tsx",
+      "source_location": "L9",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "site_storefront_hero",
+      "target": "site_hero_motion_courier"
+    },
+    {
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/components/site/storefront-hero.tsx",
@@ -34988,6 +36609,16 @@
       "confidence_score": 1.0,
       "source": "site_storefront_hero",
       "target": "site_storefront_hero_deliverycourier"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/site/storefront-hero.tsx",
+      "source_location": "L363",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "site_storefront_hero",
+      "target": "site_storefront_hero_deliveryscene"
     },
     {
       "relation": "contains",
@@ -35063,11 +36694,31 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/components/site/storefront-hero.tsx",
+      "source_location": "L102",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "site_storefront_hero",
+      "target": "site_storefront_hero_passat"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/site/storefront-hero.tsx",
       "source_location": "L26",
       "weight": 1.0,
       "confidence_score": 1.0,
       "source": "site_storefront_hero",
       "target": "site_storefront_hero_photo"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/site/storefront-hero.tsx",
+      "source_location": "L246",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "site_storefront_hero",
+      "target": "site_storefront_hero_roaddoodle"
     },
     {
       "relation": "contains",
@@ -35357,6 +37008,17 @@
       "confidence_score": 1.0,
       "source": "ui_spinner",
       "target": "ui_button_styles"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/components/site/hero-motion.tsx",
+      "source_location": "L387",
+      "weight": 1.0,
+      "source": "site_hero_motion_courier",
+      "target": "ui_button_styles_cx"
     },
     {
       "relation": "calls",
@@ -35980,6 +37642,110 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
+      "source_file": "src/hooks/use-kot-history.ts",
+      "source_location": "L6",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "hooks_use_kot_history",
+      "target": "hooks_use_kot_history_historyscope"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/hooks/use-kot-history.ts",
+      "source_location": "L8",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "hooks_use_kot_history",
+      "target": "hooks_use_kot_history_historyticket"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/hooks/use-kot-history.ts",
+      "source_location": "L21",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "hooks_use_kot_history",
+      "target": "hooks_use_kot_history_initial"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/hooks/use-kot-history.ts",
+      "source_location": "L102",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "hooks_use_kot_history",
+      "target": "hooks_use_kot_history_keyof"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/hooks/use-kot-history.ts",
+      "source_location": "L15",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "hooks_use_kot_history",
+      "target": "hooks_use_kot_history_state"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/hooks/use-kot-history.ts",
+      "source_location": "L23",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "hooks_use_kot_history",
+      "target": "hooks_use_kot_history_usekothistory"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/hooks/use-kot-history.ts",
+      "source_location": "L4",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "hooks_use_kot_history",
+      "target": "realtime_kot_board_shared"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/hooks/use-kot-history.ts",
+      "source_location": "L4",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "hooks_use_kot_history",
+      "target": "realtime_kot_board_shared_boardticket"
+    },
+    {
+      "relation": "inherits",
+      "context": "type",
+      "confidence": "EXTRACTED",
+      "source_file": "src/hooks/use-kot-history.ts",
+      "source_location": "L8",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "hooks_use_kot_history_historyticket",
+      "target": "realtime_kot_board_shared_boardticket"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/hooks/use-kot-history.ts",
+      "source_location": "L83",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "hooks_use_kot_history_usekothistory",
+      "target": "hooks_use_kot_history_keyof"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
       "source_file": "src/lib/admin/feedback.tsx",
       "source_location": "L41",
       "weight": 1.0,
@@ -36281,9 +38047,9 @@
       "source_file": "src/lib/auth/demo-accounts.ts",
       "source_location": "L60",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "auth_demo_accounts_demoaccountsenabled",
-      "target": "lib_env_serverenv",
-      "confidence_score": 1.0
+      "target": "lib_env_serverenv"
     },
     {
       "relation": "calls",
@@ -37917,6 +39683,16 @@
       "confidence_score": 1.0,
       "source": "jobs_auth",
       "target": "jobs_auth_isauthorisedjob"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/kot/date.ts",
+      "source_location": "L9",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "kot_date",
+      "target": "kot_date_todayiso"
     },
     {
       "relation": "contains",
@@ -56988,5 +58764,5 @@
       "rationale": "One idea expressed at every layer: never display, imply or persist a state the system has not actually reached \u2014 no optimistic lies, no invented endpoints, no unvalidated number passing as decided, no silently swallowed refusal."
     }
   ],
-  "built_at_commit": "c24eaf1b63f1aa41c33ac53e788fa65257f7e49a"
+  "built_at_commit": "fa57e904088ff528f161513e5ba7672a3d4d237d"
 }

@@ -6,7 +6,14 @@ import type { DeliveryWindow, PlanSummary, ProductCard, PublicOffer } from '@/li
 import { clockTime, money, pluralise } from '@/lib/format';
 import { buttonClasses, cx } from '@/components/ui/button-styles';
 import { ArrowRightIcon } from './icons';
-import { Courier, DriftingArrow, DriftingPhoto, HeroLayer, HeroStage, TiltCard } from './hero-motion';
+import {
+  DeliveryRun,
+  DriftingArrow,
+  DriftingPhoto,
+  HeroLayer,
+  HeroStage,
+  TiltCard,
+} from './hero-motion';
 
 /**
  * The storefront hero.
@@ -41,23 +48,66 @@ const CORNER_FADE = 'radial-gradient(115% 115% at 100% 100%, #000 42%, transpare
  * The entrance running order, in milliseconds.
  *
  * One list, in the order the eye should pick things up, so the choreography can
- * be read and retimed in one place rather than inferred from five `style`
+ * be read and retimed in one place rather than inferred from four `style`
  * attributes scattered through the markup. The whole thing is over inside a
  * second and a half, under a headline that keeps rolling until ~3.15s -- see
  * the note above `.hero-enter` in `globals.css` for why the two are not
  * chained together.
+ *
+ * The delivery windows used to be the last entry here and are not any more.
+ * They are no longer part of the page's arrival at all: they are handed over by
+ * the courier as he passes, on his clock rather than the load's -- see
+ * `passAt` and the note over `.delivery-window` in `globals.css`.
  */
 const ENTER = {
   subtitle: 140,
   cta: 260,
   primaryCard: 380,
   secondaryCard: 480,
-  windows: 620,
 } as const;
 
 /** The custom property `.hero-enter` reads its delay from. */
 function enterAt(ms: number): CSSProperties {
   return { '--enter-at': `${ms}ms` } as CSSProperties;
+}
+
+/**
+ * How far into the courier's ride a delivery window is handed over, as a
+ * fraction of it.
+ *
+ * The windows are a centred flex row, so they occupy roughly the middle of the
+ * page and the courier is level with them over the back half of his crossing --
+ * he spends the front half out on the empty road to their left. `PASS_FROM` and
+ * `PASS_TO` are that stretch, and the list is spread evenly across it.
+ *
+ * Both numbers were measured off the run rather than guessed. The first pass
+ * started them at 0.28 on the reasoning that the labels occupy the middle of the
+ * page, which ignored that he enters from outside it: every window then arrived
+ * while he was still several hundred pixels short of it, and three labels
+ * appearing ahead of the rider read as a coincidence rather than a delivery.
+ * These are the fractions at which he is actually level with each one, pulled
+ * back by about the length of the wipe so the label is mid-arrival as he draws
+ * alongside rather than starting from nothing once he is past.
+ *
+ * `PASS_TO` stops well short of 1 for a reason that only shows up at the far
+ * end: the wipe takes time of its own, so a last window starting as he arrives
+ * finishes well after he has parked, and the run ends with the page still
+ * moving after the thing causing the movement has stopped. Ending the last wipe
+ * with the brake is what makes the sequence resolve.
+ *
+ * Derived from the count rather than hard-coded to three, because the windows
+ * come from the database: a kitchen that serves two meals gets two, spread
+ * across the same stretch, and the run still reads the same way. The single
+ * window case has nothing to spread, so it lands in the middle of the stretch
+ * rather than at the start of it -- which is also where a lone centred item
+ * actually sits.
+ */
+const PASS_FROM = 0.44;
+const PASS_TO = 0.8;
+
+function passAt(index: number, count: number): CSSProperties {
+  const spread = count > 1 ? index / (count - 1) : 0.5;
+  return { '--pass-at': PASS_FROM + (PASS_TO - PASS_FROM) * spread } as CSSProperties;
 }
 
 function withPhotos(menu: ProductCard[]): Photo[] {
@@ -109,7 +159,21 @@ export function StorefrontHero({
 
   return (
     <HeroStage className="storefront-hero border-b border-line bg-sunken">
-      <div className="mx-auto max-w-6xl px-4 pt-14 pb-20 sm:pt-20 lg:pt-24 lg:pb-24">
+      {/* The bottom padding is what sets the gap between the delivery windows
+          and the road, and it is the only thing that can: the lane is out of
+          flow and anchored to the section's bottom edge, so margin on the
+          windows pushes the section taller and takes the lane down with it,
+          leaving the gap exactly where it was. Less padding is the windows
+          sitting lower in the scene.
+
+          It is trimmed to just clear the rooftops rather than to look
+          comfortable. The houses are the tallest thing in the lane and they
+          reach its very top, so this cannot go below the lane's own height
+          without the third window landing on a roof -- the row is centred and
+          the houses are hard right, and at around 1280px those two overlap.
+          It steps at the breakpoints the scene does, because what it is
+          clearing is the houses' height. */}
+      <div className="mx-auto max-w-6xl px-4 pt-14 pb-32 sm:pt-20 sm:pb-40 lg:pt-24 lg:pb-52">
         {/* The three scroll planes, in depth order. The copy is nearest, so it
             leaves fastest and gives up the most opacity; the cards sit behind
             it and hold on longer, because they are still the actions and a
@@ -183,67 +247,163 @@ export function StorefrontHero({
           </div>
         </HeroLayer>
 
-        {windows.length ? (
-          <HeroLayer depth={0.28} fade={0.3} className="mt-12">
-            <dl
-              style={enterAt(ENTER.windows)}
-              className="hero-enter flex flex-wrap justify-center gap-x-10 gap-y-3 border-t border-line pt-6"
-            >
-              {windows.map((window) => (
-                <div key={window.id} className="flex items-baseline gap-2">
-                  <dt className="text-sm font-semibold text-ink">{window.label}</dt>
-                  <dd className="text-sm tabular text-muted">
-                    {clockTime(window.starts_at)} &ndash; {clockTime(window.ends_at)}
-                  </dd>
-                </div>
-              ))}
-            </dl>
-          </HeroLayer>
-        ) : null}
-      </div>
+        {/* The windows and the delivery scene are one unit now, so they sit
+            inside a single wrapper rather than being a content row with a
+            drawing parked underneath it. The wrapper is in flow and unpositioned
+            on purpose: the lane inside it is absolutely positioned, and with
+            nothing positioned between it and the section it resolves against the
+            section and reaches both edges of the page.
 
-      <DeliveryCourier />
+            Deliberately outside every `HeroLayer` -- a `HeroLayer` transforms,
+            and a transformed ancestor becomes the containing block for
+            absolutely positioned descendants, which would re-anchor the lane to
+            a zero-height div and drop the whole scene out of the hero. It costs
+            the windows the parallax they used to drift with; that is the price
+            of the road reaching the edges, and it is worth it. */}
+        <DeliveryRun
+          windows={
+            windows.length ? (
+              /* `max-w-3xl` inside a `max-w-6xl` container, which is narrower
+                 than it needs to be for the type and is the point. The last
+                 column has to sit where the courier actually stops, and he
+                 stops short of the right edge by the width of the houses --
+                 spread across the full container, the third window would land
+                 behind them, where he never reaches it and the hand-over stops
+                 reading as one.
+
+                 One column until 40rem. Three columns of this type on a phone
+                 is about 120px each, and "12:00 pm - 2:30 pm" does not go in
+                 120px at any size worth calling large. */
+              <dl className="mx-auto mt-12 grid max-w-3xl grid-cols-1 gap-y-9 border-t border-line pt-10 sm:grid-cols-3 sm:gap-x-8">
+                {windows.map((window, index) => (
+                  <div
+                    key={window.id}
+                    className="delivery-window text-center"
+                    style={passAt(index, windows.length)}
+                  >
+                    <dt className="delivery-window-label font-semibold text-balance text-ink">
+                      {window.label}
+                    </dt>
+                    <dd className="delivery-window-time mt-1.5 tabular text-muted">
+                      {clockTime(window.starts_at)} &ndash; {clockTime(window.ends_at)}
+                    </dd>
+                  </div>
+                ))}
+              </dl>
+            ) : null
+          }
+          scene={<DeliveryScene />}
+        />
+      </div>
     </HeroStage>
   );
 }
 
 /**
- * The courier who turns up once the introduction is over.
+ * The road the courier rides, drawn rather than borrowed.
  *
- * Decoration, and `aria-hidden` accordingly -- the delivery windows directly
- * above him already say in words what he says in a picture, and a screen reader
- * announcing a scooter here would be repeating them. He is positioned out of
- * flow against the section, so the hero measures exactly the same with him as
- * without: nothing above him moves, at any width, whether or not he ever rides.
+ * The hero used to end on its own bottom rule and let that stand in for a road.
+ * It could not stay one once there was somewhere to ride *from* and *to*: a
+ * section divider that is also the surface a scooter travels reads as a
+ * scooter balanced on a border, and the two buildings now standing on it need
+ * ground of their own rather than the edge of a box.
  *
- * The lane is a separate element because something has to clip the run-up, and
- * that something must not be the section -- an `overflow` on the section would
- * reach the focus ring on the action above.
+ * `preserveAspectRatio="none"` because the road has to span whatever the
+ * container is, and the hand-drawn wobble is the one thing that survives being
+ * stretched -- a road is a road at any length. What does not survive it is the
+ * stroke, which would come out squashed thin horizontally and fat vertically,
+ * so every path carries `vectorEffect="non-scaling-stroke"` and keeps its
+ * width in screen pixels no matter what the viewBox is doing around it. The
+ * viewBox height is close to the height the band is actually drawn at, which
+ * keeps the vertical scale near 1:1 and the wobble the amplitude it was drawn
+ * with.
  *
- * He parks on the container's right edge rather than at some fraction of it, so
- * he lines up with the gateway card standing directly above him. It is the same
- * grid line, which is the difference between an illustration that was placed
- * and one that was dropped.
- *
- * Deliberately outside every `HeroLayer`, so he does not drift on scroll like
- * the rest of the hero does. The lane is absolutely positioned against the
- * section, and a `HeroLayer` transforms -- a transformed ancestor becomes the
- * containing block for absolutely positioned descendants, so wrapping him would
- * re-anchor the lane to a zero-height div and drop him out of the hero
- * entirely. He is also the one element here that already has a scripted arrival
- * of his own to finish.
- *
- * The lane is server-rendered; only the courier inside it is a client
- * component, and only because his ride has to wait until someone is looking at
- * this strip -- see `Courier` in `hero-motion.tsx`.
+ * Three lines and no more: the near edge the buildings and the courier stand
+ * on, a broken centre line, and the far edge. Everything else that could go on
+ * a road -- markings, kerbstones, tufts of grass -- is detail at a size where
+ * there is no room for detail, and the strip is under three-quarters of an inch
+ * tall on a phone.
  */
-function DeliveryCourier() {
+function RoadDoodle() {
   return (
-    <div className="courier-lane" aria-hidden>
-      <div className="mx-auto flex max-w-6xl justify-end px-4">
-        <Courier />
-      </div>
-    </div>
+    <svg
+      className="scene-road"
+      viewBox="0 0 1200 18"
+      preserveAspectRatio="none"
+      aria-hidden
+      focusable="false"
+    >
+      <g fill="none" stroke="currentColor" strokeLinecap="round">
+        {/* The near edge, and the line everything in the scene stands on -- so
+            it is the heaviest of the three, the way the ground is.
+
+            Every wobble is written as its own `Q` rather than chained with
+            `T`. `T` mirrors the previous control point, which is fine for two
+            or three but compounds over a dozen: a small unevenness early on
+            grows into a lurch by the far end, and the arc that fixes it is
+            nowhere near the arc that caused it. Spelling out each control
+            point costs a line apiece and makes the amplitudes and the spacing
+            adjustable where you can see them -- which is what keeps this
+            looking drawn rather than plotted, because a wave of one amplitude
+            at one wavelength is a sine, not a hand. */}
+        <path
+          d="M0 3.8 Q 58 2 122 3.6 Q 186 5.4 252 3.4 Q 314 1.8 378 3.9 Q 448 5.2 512 3.5 Q 572 2.1 642 3.3 Q 706 5.3 768 3.8 Q 832 2.2 898 3.5 Q 962 5 1028 3.6 Q 1092 2.1 1200 3.4"
+          strokeWidth="1.75"
+          vectorEffect="non-scaling-stroke"
+        />
+        <path
+          d="M10 9.4 Q 130 10.8 254 9.5 Q 380 8.3 508 9.7 Q 636 11 762 9.5 Q 886 8.2 1014 9.6 Q 1120 10.6 1190 9.5"
+          strokeWidth="1.25"
+          strokeDasharray="15 20"
+          vectorEffect="non-scaling-stroke"
+        />
+        <path
+          d="M0 15.2 Q 66 17 134 15.5 Q 198 13.8 268 15.3 Q 336 17.1 404 15.6 Q 472 13.9 542 15.2 Q 610 16.9 678 15.5 Q 748 13.9 816 15.3 Q 884 17 952 15.4 Q 1024 13.8 1096 15.5 Q 1156 16.8 1200 15.3"
+          strokeWidth="1.25"
+          vectorEffect="non-scaling-stroke"
+        />
+      </g>
+    </svg>
+  );
+}
+
+/**
+ * What the courier rides through: a road across the whole page, a row of houses
+ * at the far end of it, and the courier himself.
+ *
+ * Nothing here is wrapped in a container. The lane it goes into spans the
+ * section edge to edge, so the road leaves by both sides of the page and the
+ * houses sit hard against the right of it rather than on the content column's
+ * grid line. That break from the column is the point -- the street is wider than
+ * the page's text, which is what makes it read as somewhere the page is rather
+ * than a picture the page contains.
+ *
+ * There is no longer a building on the left. The courier arrives from outside
+ * the frame instead, which is both the older convention and the more honest one:
+ * a delivery was already on its way before you looked at it.
+ *
+ * All server-rendered, and handed to `DeliveryRun` as a slot -- the client
+ * component is only the ref and the class that starts the sequence, and only
+ * because it has to wait until someone is looking at this strip.
+ */
+function DeliveryScene() {
+  return (
+    <>
+      <RoadDoodle />
+      <span className="scene-homes" />
+
+      {/* One span per transform. The track is the ground he covers, the run
+          carries him across it, the bob is the road under his wheels, and the
+          courier himself takes the brake -- four elements because a single
+          `transform` cannot hold three animations on three different clocks. */}
+      <span className="courier-track">
+        <span className="courier-run">
+          <span className="courier-bob">
+            <span className="courier" />
+          </span>
+        </span>
+      </span>
+    </>
   );
 }
 

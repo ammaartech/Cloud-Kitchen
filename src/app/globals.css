@@ -571,160 +571,511 @@ h3 {
 }
 
 /* --------------------------------------------------------------------------
-   The courier.
+   The delivery run.
 
-   The hero already ends on a full-bleed horizontal rule. This makes that rule a
-   road: a courier rides in from off-canvas and parks on it once the headline
-   has finished resolving. The introduction says what the kitchen is, and then
-   the delivery turns up -- which is also, in order, what the section says in
-   words directly above him.
+   A courier rides in from off-canvas left, crosses the full width of the page,
+   and pulls up at a row of houses on the right. As he passes beneath them the
+   delivery windows -- Breakfast, Lunch, Dinner -- arrive one at a time in his
+   wake. The section says in words that the kitchen cooks to a schedule you set;
+   this is the schedule turning up.
 
-   One-shot, like everything else in the system. An idle loop is the obvious
-   instinct here and it is the wrong one: this is the surface people choose food
-   on, and something moving forever at the edge of it competes with the
-   photography for exactly the attention the photography is there to get. He
-   arrives, he stops, the page is still again.
+   The kitchen he used to set off from is gone. It was a second building at the
+   opposite end and it cost more than it paid for: it ate the left third of the
+   road, so the crossing that is the whole point of the strip started already
+   part-finished, and the arrival it gave him at the near end was an arrival
+   nobody was waiting for. Riding in from outside the frame is the older and
+   better convention -- the journey started before you looked, which is exactly
+   what a delivery is.
 
-   He is the one part of the entrance that does not start on the page's clock.
-   The rule he parks on is the last thing in the hero, which on a laptop puts
-   him just under the fold -- so timed off the headline roll he rode in, braked
-   and parked while the visitor was still reading the sentence at the top, and
-   anyone who scrolled down half a second later found an empty road. `.courier`
-   holds him at the kerb; `.is-riding` is added by `hero-motion.tsx` when he
-   reaches the viewport, and that is the only thing that starts him.
+   The road runs the full width of the section rather than the width of the
+   content column, and that is the point: it leaves by both edges of the page,
+   so this is a street the page happens to cross rather than a picture sitting
+   in a box. It reaches those edges from a lane absolutely positioned against
+   the section, which is how it gets there without a `100vw` anywhere -- `100vw`
+   counts the scrollbar on Windows and would hand the page a horizontal scroll
+   nobody asked for.
 
-   His run is his own duration rather than a fraction of `--roll-run`: nothing
-   about him is chained to the headline any more, and the two are now free to
-   be retuned separately.
+   The reveal is why the windows and the drawing now live under one wrapper. The
+   windows are real content and must stay outside the `aria-hidden` lane -- a
+   screen reader has to read the delivery times, and hiding them to buy an
+   animation would be a poor trade. So `is-running` goes on a wrapper holding
+   both, and the lane inside it carries the observer.
 
-   The artwork is a mask rather than an `<img>` because it is single-colour line
-   art. A mask lets it be painted out of the ramp -- illustration being one of
-   the two sanctioned reasons to reach for a step directly -- so it belongs to
-   the palette instead of importing a black of its own, and it follows the
-   surface if this section ever flips. It is deliberately one step lighter than
-   `brand`: colour on this page is spent on the actions, and a courier in full
-   brand green would compete with the buttons standing right above him.
+   Still one-shot, for the reason the old note gave and it still holds: this is
+   the surface people choose food on, and something moving forever at the edge
+   of it competes with the photography for exactly the attention the photography
+   is there to get. He arrives, he stops, the page is still again.
+
+   None of it is on the page's load clock. The strip is the last thing in the
+   hero, which on a laptop puts it under the fold -- so timed off the headline
+   roll the whole run would play out while the visitor was still reading the
+   sentence at the top, and anyone scrolling down a moment later would find a
+   parked scooter, an empty road and three timings already sitting there.
+   `is-running` is added by `DeliveryRun` in `hero-motion.tsx` when the lane
+   reaches the viewport, and that is the only thing that starts any of it.
+
+   Both drawings are masks rather than `<img>`s because both are single-colour
+   line art. A mask paints them out of the ramp -- illustration being one of the
+   two sanctioned reasons to reach for a step directly -- so they belong to the
+   palette instead of importing a black of their own. The courier rides at full
+   ink and the houses are held back: he is the thing moving and the thing to
+   watch, and scenery drawn at the same weight as its subject stops being
+   scenery.
    -------------------------------------------------------------------------- */
+
+/* Every measurement the run needs, on the wrapper rather than the lane, because
+   the windows outside the lane read the ride's timings off it too. Custom
+   properties inherit, so the lane still gets all of them. */
+.delivery-run {
+  --homes-h: 5rem;
+  --courier-h: 2.25rem;
+  --road-h: 1.125rem;
+
+  /* Each drawing's native ratio, so `contain` never has to letterbox and
+     nothing has to be re-measured when a height above changes. These track the
+     files in `public/`: change an asset's dimensions and these change with it,
+     or the box stops matching the artwork and `contain` starts letterboxing the
+     difference. */
+  --homes-w: calc(var(--homes-h) * 723 / 360);
+  --courier-w: calc(var(--courier-h) * 2257 / 2156);
+
+  /* How far the road sits off the bottom of the lane. It has to be an explicit
+     offset rather than padding on the lane: everything in here is absolutely
+     positioned, and an absolutely positioned box is laid out against its
+     ancestor's *padding box* -- padding on the lane would not move it a pixel.
+     Without the lift the road's far edge and the section's own bottom border
+     land within a pixel of each other and read as one thickened rule with a
+     dashed line floating above it. */
+  --road-lift: 0.5rem;
+
+  /* Where the road surface sits inside the road band, and what everything
+     standing on the road is measured up from -- get it wrong and the houses
+     either float above the surface or sink through it. The drawing puts its
+     near edge 3.6 of 18 viewBox units down, and this sits a fraction below that
+     rather than exactly on it: things resting on a drawn line look planted when
+     they break it slightly and balanced on it when they do not. */
+  --ground: calc(var(--road-h) * 14.2 / 18);
+
+  /* His whole ride, kerb to kerb, and it has been wrong in both directions.
+     Under two seconds he reads as a swipe effect rather than a vehicle. At six
+     he was crossing at about eighty pixels a second, which is a crawl -- and a
+     delivery you give up watching before it arrives is worse than one that goes
+     past a little briskly, because nobody sees the arrival either way. This is
+     quick enough to hold the eye for the whole crossing, slow enough to still
+     be somebody travelling rather than something sliding into place. */
+  --ride-run: 3.6s;
+  /* When he sets off, and it is the last link in the assembly chain: the road
+     finishes laying itself at 720ms, the houses land on that frame and take
+     360ms to settle, and he pulls away as they do. The route has to exist
+     before anything travels it and the address has to exist before anyone rides
+     to it -- but only just, because the assembling is preamble and the preamble
+     is not what anyone stayed for. */
+  --ride-at: 1.05s;
+  /* Near enough to a straight line through the middle, with only the pull-away
+     and the roll-to-stop eased. A vehicle holds its speed; the easing belongs
+     at the two ends, where he is actually changing it.
+
+     Both control points matter and the second one is the trap. Pulling it in
+     towards the start -- a low x with a high y, which is what most of this
+     file's curves look like -- front-loads the distance: he was past the
+     halfway point a third of the way through his run and then crawled the rest,
+     which is the same crawl an ease-out gives you and the thing this curve
+     exists to avoid. Keeping the two roughly mirrored holds the speed flat
+     between them. */
+  --ride-ease: cubic-bezier(0.34, 0.1, 0.62, 0.92);
+}
+
+/* --------------------------------------------------------------------------
+   The delivery windows, handed over as he passes.
+
+   Each waits out its own fraction of the ride and then arrives. The fraction is
+   `--pass-at`, set per item in `storefront-hero.tsx` from its place in the
+   list, so this works for however many windows the kitchen actually has rather
+   than for exactly three.
+
+   They are timed against the ride rather than pinned to his measured position,
+   and that is deliberate. Matching x to the pixel would mean reading a flex
+   row's layout back out at runtime and re-reading it on every resize, for a
+   coincidence nobody can check -- the eye reads *sequence*, and three labels
+   arriving left to right under a scooter traveling left to right is read as
+   cause whether or not the frames line up exactly.
+
+   They rise as they fade, and only a little: the lift comes from the road,
+   which is where he is, so the timing arrives from him rather than from
+   nowhere.
+
+   The animation is attached only under `is-running` -- never as a base rule
+   that a class then overrides. That ordering is the whole failure mode: these
+   are the delivery times, real content, and with no JavaScript and no observer
+   they have to be simply present. A `both`-filled animation sitting on the base
+   rule would hold them at the keyframe's opening frame, which is `opacity: 0`,
+   and hide the times from everyone whose page never got that far. */
+/* Nearly the size of the section heading below the fold, which is the loudest
+   voice on the page after the hero itself -- these are the one piece of hard
+   fact in the whole introduction, so they are allowed to be the thing you read
+   next. Held just under `.section-display` on purpose: matching it exactly would
+   put two things of equal weight in the same eyeline with nothing to say which
+   comes first.
+
+   Continuous rather than stepped, and the low end is not decorative -- at three
+   columns on a phone the label has about 120px to live in, which is what the
+   1.5rem floor is sized for. */
+.delivery-window-label {
+  font-size: clamp(1.5rem, 3.4vw, 2.75rem);
+  /* Large type needs less leading, and the display end of the tracking ramp --
+     same rule as `.section-display` and the hero headline. */
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.delivery-window-time {
+  font-size: clamp(1rem, 1.8vw, 1.375rem);
+  line-height: 1.3;
+}
+
+/* The hand-over itself: a soft-edged band slid across from the right, so the
+   window is uncovered left to right -- the direction the courier is travelling,
+   at the moment he draws level with it.
+
+   A mask rather than an opacity fade, because "fades in from the left" and
+   "fades in" are different things and only one of them follows the bike. The
+   gradient is three element-widths wide and travels two of them: at `100%` the
+   element sits entirely under the transparent tail and at `0%` entirely under
+   the opaque head, so it starts fully hidden, ends fully shown, and spends the
+   middle of the run with the soft band lying across it. The band is what makes
+   it a fade rather than a wipe -- a hard edge here reads as a shutter.
+
+   Hidden from the start, and hidden by `is-armed` -- a class `DeliveryRun` adds
+   once it is alive -- rather than by a base rule. The distinction is the whole
+   failure mode. The drawing hides itself in base rules because it is
+   decoration: where nothing runs, nothing should appear. These are the delivery
+   times, which is content, and a base rule would hide them permanently on any
+   page whose JavaScript never arrived. Keying it to a class that only exists
+   when scripting does means the worst case leaves the times on the page at full
+   size instead of leaving a blank strip where the schedule should be.
+
+   The animation then needs no `from` state of its own for the mask: the
+   backwards fill of `both` holds it at `100%` -- the armed, hidden position --
+   through the whole delay, so there is no gap between being hidden and starting
+   to be revealed. */
+.delivery-run.is-armed .delivery-window {
+  mask-image: linear-gradient(90deg, #000 0 35%, transparent 65% 100%);
+  mask-size: 300% 100%;
+  mask-repeat: no-repeat;
+  mask-position: 100% 0;
+  -webkit-mask-image: linear-gradient(90deg, #000 0 35%, transparent 65% 100%);
+  -webkit-mask-size: 300% 100%;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: 100% 0;
+}
+
+.delivery-run.is-running .delivery-window {
+  animation: window-handover 760ms var(--ck-ease)
+    calc(var(--ride-at) + var(--ride-run) * var(--pass-at, 0.5)) both;
+}
+
+@keyframes window-handover {
+  from {
+    mask-position: 100% 0;
+    -webkit-mask-position: 100% 0;
+  }
+  to {
+    mask-position: 0 0;
+    -webkit-mask-position: 0 0;
+  }
+}
+
 .courier-lane {
   position: absolute;
   inset-inline: 0;
   bottom: 0;
-  /* Headroom for the brake pitch. The run-up starts a full viewport to the
-     left, so something has to clip it; scoping `overflow` to this strip keeps
-     that clip away from the search field's focus ring further up the hero. */
-  padding-top: 0.5rem;
+  /* Tall enough for the houses standing on the road, plus the lift underneath
+     it. The courier is far shorter than they are, so his brake pitch has all
+     the headroom it needs without asking for any. */
+  height: calc(var(--homes-h) + var(--ground) + var(--road-lift));
+  /* What hides the courier's run-up: he starts a good way left of the page and
+     has to be clipped until he crosses the edge. Scoping `overflow` to this
+     strip also keeps the clip away from the search field's focus ring further
+     up the hero. */
   overflow: hidden;
   pointer-events: none;
 }
 
-/* Everything the courier is lives behind this guard. Where masks are not
-   supported the rule never applies and the element stays an empty box -- the
-   alternative failure is a solid coloured rectangle parked on the rule, which
-   is a great deal worse than no courier at all. */
+.scene-homes,
+.courier-track {
+  position: absolute;
+  bottom: calc(var(--road-lift) + var(--ground));
+}
+
+/* Hard against the page's right edge rather than the content column's, which is
+   the same decision the road makes and for the same reason: the street leaves
+   the frame. Pulled in to the column instead, the houses left a strip of empty
+   road to their right and the run stopped looking like it went anywhere. */
+.scene-homes {
+  right: 0;
+  width: var(--homes-w);
+  height: var(--homes-h);
+}
+
+/* The corridor he covers. It starts outside the lane -- far enough left that he
+   is fully clipped before he sets off, so he enters the frame already at speed
+   instead of materialising in the corner -- and stops short of the houses so he
+   arrives at them rather than parking in somebody's front room. */
+.courier-track {
+  left: calc(-1 * var(--courier-w) - 3rem);
+  right: calc(var(--homes-w) + 0.75rem);
+  height: var(--courier-h);
+}
+
+/* Three nested spans for three transforms, because they run on different clocks
+   and one element can only hold one `transform`: the run is the travel, the bob
+   is the road under his wheels, and the courier himself is the brake. Written
+   as a single keyframe track they would have to be interleaved by hand and
+   retuned together every time any one of them changed. */
+.courier-run {
+  display: block;
+  width: 100%;
+}
+
+.courier-bob {
+  display: block;
+  width: var(--courier-w);
+}
+
+.scene-road {
+  position: absolute;
+  inset-inline: 0;
+  bottom: var(--road-lift);
+  width: 100%;
+  height: var(--road-h);
+  color: var(--color-ink);
+  /* It unrolls from the right, which is the end that matters: the houses stand
+     there, so the road is laid from the destination back towards the empty edge
+     the courier will come in from. The route exists before the address does,
+     the address before the rider -- which is the order the whole strip is read
+     in. Unrolling the other way put the road's arrival at the far end from
+     everything it was arriving at. */
+  transform-origin: right center;
+  /* Hidden by a base rule, which is the one place in this block where that is
+     the right way round: the drawing is decoration, so where animation never
+     runs it should be absent rather than sitting there half-drawn. The houses
+     and the courier do the same inside the `@supports` guard below, so the
+     scene is all of it or none of it -- never a road with nobody on it. The
+     delivery windows above deliberately do *not* follow this rule, because they
+     are content and not decoration. */
+  opacity: 0;
+}
+
+/* Everything the drawings are lives behind this guard. Where masks are not
+   supported the rules never apply and the elements stay empty boxes -- the
+   alternative failure is two solid coloured rectangles parked on the rule,
+   which is a great deal worse than no scene at all. */
 @supports (mask-image: url('/delivery-scooter.png')) or
   (-webkit-mask-image: url('/delivery-scooter.png')) {
+  .scene-homes,
   .courier {
-    height: 2.75rem;
-    /* The source artwork's own ratio, so `contain` never has to letterbox and
-       the wheels sit flush on the rule at every size. */
+    /* Ink, both of them -- one hand, one pen. What separates the courier from
+       the scenery is the opacity their keyframes land on, not a paler colour:
+       the houses are the same drawing further away. */
+    background-color: var(--color-ink);
+    mask-repeat: no-repeat;
+    /* Bottom-anchored rather than centred: both stand on a shared ground line,
+       and centring inside a box that is not the drawing's own ratio would lift
+       them off it by whatever the letterboxing came to. */
+    mask-position: bottom center;
+    mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-position: bottom center;
+    -webkit-mask-size: contain;
+    opacity: 0;
+  }
+
+  .scene-homes {
+    mask-image: url('/customer-homes.png');
+    -webkit-mask-image: url('/customer-homes.png');
+  }
+
+  .courier {
+    display: block;
+    height: var(--courier-h);
+    /* The source artwork's own ratio, so the wheels sit flush on the road at
+       every size. */
     aspect-ratio: 2257 / 2156;
 
-    background-color: var(--color-dark-slate-grey-600);
     mask-image: url('/delivery-scooter.png');
-    mask-repeat: no-repeat;
-    mask-position: center;
-    mask-size: contain;
     -webkit-mask-image: url('/delivery-scooter.png');
-    -webkit-mask-repeat: no-repeat;
-    -webkit-mask-position: center;
-    -webkit-mask-size: contain;
 
     /* The front contact patch, so the brake pitches over the front wheel
        instead of rotating about his middle. */
     transform-origin: 72% 100%;
-    opacity: 0;
-    /* His whole ride, kerb to parked. Long, because he is a delivery and not a
-       transition: a scooter that crosses the screen in under two seconds reads
-       as a swipe effect, where one that takes the better part of four is
-       something making its way to an address. He is also the only thing moving
-       on this strip, so there is nothing for him to hold up. */
-    --ride-run: 3.4s;
-    /* His own curve, and the one place on this page that does not use
-       `--ck-ease`. That curve opens at four times its average speed -- superb
-       for a panel that should feel like it was already there, wrong for a
-       vehicle, which would enter the frame at a sprint and then crawl the last
-       third. This one leaves at roughly the speed it holds (0.28/0.25 is a
-       slope of about 1) and spends its ease on the arrival instead, so he
-       cruises in at one pace and rolls to a stop. */
-    --ride-ease: cubic-bezier(0.25, 0.28, 0.45, 1);
   }
 
-  /* The beat between the strip appearing and him setting off. Long enough that
-     he starts *after* the visitor has arrived rather than in the same frame --
-     an arrival is only an arrival if there was a moment of road before it --
-     and short enough that nobody has scrolled past by the time he moves. */
-  .courier.is-riding {
-    animation: courier-arrive var(--ride-run) var(--ride-ease) 140ms both;
+  /* The strip assembles in one chain, and the three delays below are the chain
+     -- each one starts where the last finishes, so nothing here overlaps by
+     accident. The road lays itself right to left (160 + 560 = 720ms), the
+     houses land the instant it is finished, and the courier sets off as they
+     settle. Retiming any of the three means retiming the ones after it.
+
+     `scaleX` is what makes the road read as unrolling rather than fading in:
+     the far end genuinely arrives last. */
+  .delivery-run.is-running .scene-road {
+    animation: road-unroll 560ms var(--ck-ease) 160ms both;
   }
 
+  /* On the road's last frame, not before it. They used to arrive halfway
+     through the unroll, which made them look like they were being drawn *by*
+     it -- and the road passes their doorstep in its first few frames, so
+     nothing about that ordering read as cause. Quick, too: this is a cue
+     landing, not scenery drifting in. */
+  .delivery-run.is-running .scene-homes {
+    animation: scene-settle 360ms var(--ck-ease) 720ms both;
+  }
+
+  /* `100%` here is the run's own width, which is the track -- from off-canvas
+     left to the houses. Subtracting his own width is what parks his nose at the
+     near kerb instead of hanging it over them. It is the same measuring problem
+     `.step-hop` has further down this file, solved the same way: put the
+     percentage on a block that spans the distance you mean. */
+  .delivery-run.is-running .courier-run {
+    animation: courier-travel var(--ride-run) var(--ride-ease) var(--ride-at) both;
+  }
+
+  /* The road under the wheels. An iteration count rather than a duration, and
+     the count is chosen to run out a little before the brake starts, so he is
+     level again by the time he is stopping -- a scooter still bouncing as it
+     stops is a scooter nobody rode.
+
+     Both numbers move whenever `--ride-run` does, and in the same direction:
+     the period is how fast the road is passing under him, so a quicker crossing
+     has to bounce quicker or he looks like he is floating over it, and the
+     count then has to be refigured to still land before the brake. */
+  .delivery-run.is-running .courier-bob {
+    animation: courier-bob 440ms ease-in-out var(--ride-at) 7 both;
+  }
+
+  .delivery-run.is-running .courier {
+    animation: courier-brake var(--ride-run) linear var(--ride-at) both;
+  }
+
+  /* The narrow steps used to be much smaller than this, and the reason no longer
+     exists. With a building at each end of the road, the two of them together
+     ate most of a phone's width and left the courier a corridor barely longer
+     than he was -- so the crossing that is the whole point of the strip had to
+     be traded away to fit them. Starting him off-canvas gives that width back:
+     there is now only one building on the road, and his run-up is outside the
+     frame entirely, so the houses can be drawn at a size that reads without
+     costing him anywhere to ride.
+
+     The courier is held to about a third of them, which is a deliberate split
+     of the difference. Matched to them he was the tallest thing in the scene, a
+     rider's head above a third-floor window, and three houses turned into a
+     model village -- the drawing stops being a street the moment its scale
+     stops being believable. Left where he started he was a quarter of their
+     height and read as a speck. A third is close enough to true that the street
+     holds, and large enough that the thing the whole sequence is about can be
+     seen without looking for it. The rest of his prominence comes from full ink
+     and from being the only thing moving. */
   @media (min-width: 40rem) {
-    .courier {
-      height: 3.5rem;
+    .delivery-run {
+      --homes-h: 7.5rem;
+      --courier-h: 3.25rem;
+      --road-h: 1.5rem;
     }
   }
 
   @media (min-width: 64rem) {
-    .courier {
-      height: 4rem;
+    .delivery-run {
+      --homes-h: 10.5rem;
+      --courier-h: 4rem;
+      --road-h: 1.75rem;
     }
   }
 }
 
-/* The run-up is `-100vw` rather than a multiple of his own width: the parked
-   spot is a fraction of the container, so only a viewport-relative distance is
-   guaranteed to start him off-screen at every width.
-
-   Blurred while moving and sharp at rest, which is the rule the headline roll
-   already follows -- the two then read as one piece of motion rather than as
-   two things that happen to run near each other.
-
-   The last three beats are the brake. He overruns the spot, pitches forward
-   over the front wheel as he stops, and rocks back level. Opacity is a
-   keyframe rather than a base rule so the failure modes stay the right way
-   round: he is decoration, so where animation never runs he never appears. */
-@keyframes courier-arrive {
-  0% {
+@keyframes road-unroll {
+  from {
     opacity: 0;
-    transform: translate3d(-100vw, 0, 0) rotate(0deg);
-    filter: blur(1.2px);
+    transform: scaleX(0);
   }
-  4% {
+  25% {
+    opacity: 0.6;
+  }
+  to {
+    opacity: 0.6;
+    transform: scaleX(1);
+  }
+}
+
+/* Just short of full ink -- enough to sit behind the courier without reading as
+   faded. The lift is small on purpose: buildings that slide in are a UI
+   animation, buildings that settle are a scene being set. */
+@keyframes scene-settle {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 0.5rem, 0);
+  }
+  to {
+    opacity: 0.85;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes courier-travel {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(calc(100% - var(--courier-w)), 0, 0);
+  }
+}
+
+@keyframes courier-bob {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(0, -1.5px, 0);
+  }
+}
+
+/* Only the stop. He is at full opacity from the first frame -- there is no
+   fade-up any more, because the lane's `overflow` is doing that job now: he
+   starts outside it and is simply not visible until he crosses the edge, which
+   is what riding in looks like. An object that materialises in open road is not
+   an object that rode in.
+
+   He then holds level for four-fifths of the crossing, overruns the spot,
+   pitches forward over the front wheel and rocks back. The level hold is
+   explicit rather than left to interpolate: with only the two brake frames the
+   rotation would ease up from zero across the whole ride, and he would arrive
+   already leaning. Gentle, too, because the pitch has to match the speed he is
+   losing -- a hard nose-dive out of a slow roll is a stop nobody made.
+
+   `linear` on this one, unlike the travel, because the percentages below are
+   already the shape of the brake -- easing them would be easing an ease.
+
+   No motion blur anywhere in here, and that is a consequence of the duration
+   above. Blur is a speed cue and at this pace he has not earned one: a blurred
+   object that is visibly ambling reads as out of focus rather than as quick.
+   Opacity is still a keyframe rather than a base rule so the failure mode stays
+   the right way round -- he is decoration, so where animation never runs he
+   never appears. */
+@keyframes courier-brake {
+  0%,
+  80% {
     opacity: 1;
+    transform: rotate(0deg);
   }
-  /* Barely any smear, and the reason is the duration above. Motion blur is a
-     speed cue, and he is no longer travelling fast enough to earn much of one
-     -- a blurred object that is visibly ambling reads as out of focus rather
-     than as quick. What is left is enough to take the hard edge off the line
-     art while he is moving; it is gone well before the brake. */
-  35% {
-    filter: blur(0px);
+  88% {
+    transform: rotate(1.4deg);
   }
-  /* Deliberately no transform here: leaving the travel to interpolate across
-     one long 0%-to-84% segment is what gives the approach its single unbroken
-     glide. These last beats are only the brake -- he overruns the spot,
-     pitches forward over the front wheel, and rocks back level. Gentler than
-     they were, because the pitch has to match the speed he is losing: a hard
-     nose-dive out of a slow roll is a stop nobody made. */
-  84% {
-    transform: translate3d(2.2%, 0, 0) rotate(1.5deg);
-  }
-  93% {
-    transform: translate3d(0, 0, 0) rotate(-0.6deg);
+  95% {
+    transform: rotate(-0.5deg);
   }
   100% {
     opacity: 1;
-    transform: translate3d(0, 0, 0) rotate(0deg);
-    filter: blur(0px);
+    transform: rotate(0deg);
   }
 }
 
@@ -930,9 +1281,15 @@ h3 {
 
 /* One duration for all four, which is the point of the relay: every number
    crosses the same single column, so the same time on each is the same speed on
-   each. */
+   each.
+
+   Paced against `STEP_STEP` in `step-flow.tsx`, and the two only work as a pair
+   -- the gap between them *is* the overlap, the moment where the next number is
+   already away while the last one settles. Change one without the other and the
+   relay either turns into four separate animations played in a queue or puts
+   all four in the air at once. */
 .step-flow.is-revealed .step-hop {
-  animation: step-hop 760ms var(--deal-ease) var(--step-at) both;
+  animation: step-hop 900ms var(--deal-ease) var(--step-at) both;
 }
 
 /* Opacity only, and deliberately nothing else. This is the copy the whole
@@ -944,7 +1301,7 @@ h3 {
    develops under a badge that has already landed rather than assembling itself
    in mid-flight. */
 .step-flow.is-revealed .step-copy {
-  animation: step-copy-in 520ms var(--ck-ease) calc(var(--step-at) + 480ms) both;
+  animation: step-copy-in 620ms var(--ck-ease) calc(var(--step-at) + 580ms) both;
 }
 
 /* The hidden state is in the keyframe and nowhere else, so a visitor whose

@@ -1,6 +1,13 @@
 'use client';
 
-import { createContext, useContext, useRef, type PointerEvent, type ReactNode } from 'react';
+import {
+  createContext,
+  useContext,
+  useRef,
+  useSyncExternalStore,
+  type PointerEvent,
+  type ReactNode,
+} from 'react';
 import {
   LazyMotion,
   useInView,
@@ -352,37 +359,95 @@ export function DriftingArrow({ children }: { children: ReactNode }) {
 }
 
 
+/* The three arguments `DeliveryRun` hands `useSyncExternalStore`, hoisted so
+   they are stable identities rather than new closures on every render -- a
+   changing `subscribe` makes the hook resubscribe each time. Nothing here is
+   really a store: the only question being asked is "am I in a browser yet", and
+   the answer changes exactly once, at hydration, so there is nothing to
+   subscribe to. */
+const NEVER_CHANGES = () => () => {};
+const ON_CLIENT = () => true;
+const ON_SERVER = () => false;
+
 /**
- * The courier, held at the kerb until he is on screen.
+ * The delivery run, held at the kerb until the strip is on screen.
  *
- * He is the one piece of the entrance that is *not* on the CSS clock, and the
- * reason is where he stands: parked on the rule at the bottom of the hero,
- * which on a laptop is a hundred-odd pixels below the fold. Timed off the
- * headline roll he finished riding at ~3.5s, while the visitor was still
- * reading the sentence at the top -- so by the time anyone scrolled down to the
- * road, the delivery had already been and gone. An arrival nobody sees is not
- * an arrival.
+ * This is the one piece of the entrance that is *not* on the CSS clock, and the
+ * reason is where it sits: on the rule at the bottom of the hero, which on a
+ * laptop is a hundred-odd pixels below the fold. Timed off the headline roll,
+ * the courier finished riding at ~3.5s while the visitor was still reading the
+ * sentence at the top -- so by the time anyone scrolled down to the road, the
+ * delivery had already been and gone. An arrival nobody sees is not an
+ * arrival, and the run is several times longer now than it was then, which
+ * only widens the window in which it can be missed.
+ *
+ * All this component owns is the ref and the class. The windows and the scene
+ * -- the road, the houses, the courier -- both arrive as slots from the server
+ * component that lays them out, so two drawings, an inline SVG and a
+ * data-driven list of delivery times all stay out of the client bundle.
+ * Everything they do is keyframes hanging off `is-running`.
  *
  * `useInView` is a bare `IntersectionObserver` hook -- no feature bundle, and
- * already in this chunk -- so the ride costs nothing beyond the observer
- * itself. `once`, because he is an arrival and not a status: a courier who
- * re-rides every time the hero scrolls back past would be the idle loop the
+ * already in this chunk -- so the run costs nothing beyond the observer itself.
+ * `once`, because this is an arrival and not a status: a courier who re-rides
+ * every time the hero scrolls back past would be the idle loop the
  * stylesheet's note is careful to rule out.
  *
  * `amount` is deliberately partial rather than `all`. The lane sits flush on
- * the section's bottom edge, so on a short viewport the last few pixels of him
- * may never clear the fold at all, and a threshold he cannot reach is a
- * courier who never comes.
+ * the section's bottom edge, so on a short viewport its last few pixels may
+ * never clear the fold at all, and a threshold it cannot reach is a courier who
+ * never comes.
  *
- * The base rule keeps him invisible and the ride lives entirely in the class,
- * which keeps the failure mode the way the stylesheet already has it: where
- * this never runs -- no JavaScript, no observer -- he simply never appears,
- * rather than popping in parked and then jumping back to the kerb once
- * hydration catches up.
+ * The base rules keep the scene invisible and the whole sequence lives in the
+ * class, which keeps the failure mode the way the stylesheet already has it:
+ * where this never runs -- no JavaScript, no observer -- nothing appears,
+ * rather than a fully drawn scene popping in parked and then snapping back to
+ * the kerb once hydration catches up.
  */
-export function Courier() {
+export function DeliveryRun({ windows, scene }: { windows: ReactNode; scene: ReactNode }) {
   const ref = useRef<HTMLDivElement>(null);
-  const riding = useInView(ref, { once: true, amount: 0.6 });
+  const running = useInView(ref, { once: true, amount: 0.55 });
 
-  return <div ref={ref} className={cx('courier', riding && 'is-riding')} />;
+  // Two states, not one, and the second exists entirely to keep the delivery
+  // times safe. The drawing can hide itself in a base rule because it is
+  // decoration -- where nothing runs, nothing should appear. The times cannot:
+  // they are content, and a base rule that hides them would hide them for good
+  // on any page whose JavaScript never arrives.
+  //
+  // So the hiding is done by a class that only exists once this component is
+  // alive in a browser. Scripting is proven by the class being there at all,
+  // which means the failures that matter -- no JavaScript, a blocked bundle, an
+  // error during hydration -- leave the times exactly where the server put them:
+  // on the page, at full size, readable. The cost is that the server's first
+  // paint shows them before hydration hides them, and that is invisible in
+  // practice: this strip is at the very bottom of the hero, under the fold on
+  // any normal viewport, so by the time it is scrolled to hydration is long
+  // done.
+  //
+  // `useSyncExternalStore` rather than the usual mounted flag in an effect.
+  // It is the same idea -- server says no, client says yes -- but it is a
+  // *render-time* difference React already understands rather than a state
+  // write scheduled after paint, so hydration resolves it in one pass instead
+  // of rendering the unarmed markup and then immediately re-rendering it.
+  const armed = useSyncExternalStore(NEVER_CHANGES, ON_CLIENT, ON_SERVER);
+
+  return (
+    <div className={cx('delivery-run', armed && 'is-armed', running && 'is-running')}>
+      {windows}
+
+      {/* The observer goes on the lane and the class goes on the wrapper, which
+          is why this takes two slots rather than `children`. The wrapper is in
+          flow and only as tall as the windows, so watching *it* would start the
+          run while the road was still below the fold -- the exact failure this
+          component exists to prevent. The lane is the strip itself, so it is
+          the thing that has to be on screen.
+
+          `aria-hidden` stops here rather than on the wrapper: the drawing is
+          decoration and repeats what the windows above already say in words,
+          but those windows are the delivery times and have to stay readable. */}
+      <div ref={ref} className="courier-lane" aria-hidden>
+        {scene}
+      </div>
+    </div>
+  );
 }

@@ -25,8 +25,13 @@ import { cx } from '@/components/ui/button-styles';
  * picture rather than a blank one.
  */
 
-/** Milliseconds per character. Fast enough not to be a wait, slow enough to read as typing. */
-const CHAR_STEP = 34;
+/**
+ * Milliseconds per character. Fast enough not to be a wait, slow enough to read
+ * as typing -- and nearer the second than it was: at 34ms the whole heading was
+ * down in well under a second, which is quick enough that it registered as a
+ * flicker on the way to being text rather than as something being written.
+ */
+const CHAR_STEP = 46;
 /**
  * Milliseconds between one number setting off and the next.
  *
@@ -36,8 +41,11 @@ const CHAR_STEP = 34;
  * into four things moving at the same time. The small remaining overlap is what
  * keeps it from feeling like four animations played in a queue -- the next is
  * already easing away as the last one settles.
+ *
+ * Paced with the glide below it in `globals.css`: raise one and the other has
+ * to follow, or the overlap this number exists to control moves on its own.
  */
-const STEP_STEP = 520;
+const STEP_STEP = 720;
 
 type Step = { title: string; body: string };
 

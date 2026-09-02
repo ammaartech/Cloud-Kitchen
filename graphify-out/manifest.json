@@ -275,8 +275,8 @@
     "semantic_hash": ""
   },
   "C:\\Users\\Ammaar\\Desktop\\Cloud-Kitchen\\src\\app\\kot\\manager\\page.tsx": {
-    "mtime": 1788313936.0206783,
-    "ast_hash": "8ed46b91a56da7984c8f65b7c198496e",
+    "mtime": 1788356256.8608806,
+    "ast_hash": "8e2b8e577740f704cf79c83b6cc62bd9",
     "semantic_hash": ""
   },
   "C:\\Users\\Ammaar\\Desktop\\Cloud-Kitchen\\src\\app\\layout.tsx": {
@@ -375,8 +375,8 @@
     "semantic_hash": ""
   },
   "C:\\Users\\Ammaar\\Desktop\\Cloud-Kitchen\\src\\components\\kot\\manager-board.tsx": {
-    "mtime": 1788190687.3969474,
-    "ast_hash": "e83796ca72bcfa5633890511782b7882",
+    "mtime": 1788356256.866855,
+    "ast_hash": "fbeb6925bae8aaf08ed0ff2ded5deb21",
     "semantic_hash": ""
   },
   "C:\\Users\\Ammaar\\Desktop\\Cloud-Kitchen\\src\\components\\kot\\ticket-actions.ts": {
@@ -415,8 +415,8 @@
     "semantic_hash": ""
   },
   "C:\\Users\\Ammaar\\Desktop\\Cloud-Kitchen\\src\\components\\site\\storefront-hero.tsx": {
-    "mtime": 1788344438.97471,
-    "ast_hash": "35af186bc29359c24f351654f048fced",
+    "mtime": 1788363505.8031054,
+    "ast_hash": "02ad6a6b794bfac045925b0faab830c5",
     "semantic_hash": ""
   },
   "C:\\Users\\Ammaar\\Desktop\\Cloud-Kitchen\\src\\components\\ui\\button-styles.ts": {
@@ -835,8 +835,8 @@
     "semantic_hash": ""
   },
   "C:\\Users\\Ammaar\\Desktop\\Cloud-Kitchen\\src\\components\\site\\hero-motion.tsx": {
-    "mtime": 1788320471.1482565,
-    "ast_hash": "d2ceded0608562c1b1d0b90bb5083608",
+    "mtime": 1788363585.1968286,
+    "ast_hash": "65e1e50ddec4c97213f1867be8cc6dff",
     "semantic_hash": ""
   },
   "C:\\Users\\Ammaar\\Desktop\\Cloud-Kitchen\\src\\components\\site\\motion-features.ts": {
@@ -845,8 +845,8 @@
     "semantic_hash": ""
   },
   "C:\\Users\\Ammaar\\Desktop\\Cloud-Kitchen\\src\\components\\site\\step-flow.tsx": {
-    "mtime": 1788336007.0878682,
-    "ast_hash": "3ddf349b87305ed204dba0a0516243f9",
+    "mtime": 1788358955.6502595,
+    "ast_hash": "c6d6d44721a036e10fcd8680365960e5",
     "semantic_hash": ""
   },
   "C:\\Users\\Ammaar\\Desktop\\Cloud-Kitchen\\src\\components\\ui\\hourglass.tsx": {
@@ -877,6 +877,46 @@
   "C:\\Users\\Ammaar\\Desktop\\Cloud-Kitchen\\public\\cheff.png": {
     "mtime": 1788337205.7200315,
     "ast_hash": "fe9a54fd30bbcbcc43d5352c4f9037e6",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Ammaar\\Desktop\\Cloud-Kitchen\\src\\app\\api\\kot\\history\\route.ts": {
+    "mtime": 1788356256.8597136,
+    "ast_hash": "4c4682b42029f66277164de2fc1f5093",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Ammaar\\Desktop\\Cloud-Kitchen\\src\\components\\kot\\history-pane.tsx": {
+    "mtime": 1788356256.86378,
+    "ast_hash": "b37e93abf06331cc9f76b57dc4cd6ac8",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Ammaar\\Desktop\\Cloud-Kitchen\\src\\components\\kot\\live-board.tsx": {
+    "mtime": 1788356256.8648453,
+    "ast_hash": "5d3b815c4b5a38e91f694bdcafd037ef",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Ammaar\\Desktop\\Cloud-Kitchen\\src\\components\\kot\\tabs.tsx": {
+    "mtime": 1788356256.866855,
+    "ast_hash": "c3d951411bde45030a66d9a9e4f8f51e",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Ammaar\\Desktop\\Cloud-Kitchen\\src\\components\\kot\\ticket-card-readonly.tsx": {
+    "mtime": 1788356256.8688655,
+    "ast_hash": "192e807388390dd8a9f1ade0f4a43c37",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Ammaar\\Desktop\\Cloud-Kitchen\\src\\hooks\\use-kot-history.ts": {
+    "mtime": 1788356256.8706913,
+    "ast_hash": "9c2cab70e2bf4d5631f6587829d5f18b",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Ammaar\\Desktop\\Cloud-Kitchen\\src\\lib\\kot\\date.ts": {
+    "mtime": 1788356256.8731134,
+    "ast_hash": "365fa88e336b75fe9dc9ebe8f436f3e0",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Ammaar\\Desktop\\Cloud-Kitchen\\public\\customer-homes.png": {
+    "mtime": 1788360223.634,
+    "ast_hash": "f2c834884bc950c4418ecee71a384bd3",
     "semantic_hash": ""
   }
 }
