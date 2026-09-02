@@ -513,7 +513,7 @@ h3 {
    The headline roll above used to be the only thing on this surface that
    moved, and a single element animating over four that are perfectly still
    does not read as a page arriving -- it reads as a static page with a widget
-   on it. These are the other four: the sub-heading, the search field, the two
+   on it. These are the other four: the sub-heading, the call to action, the two
    gateway cards and the delivery windows, each rising into place.
 
    They are deliberately *not* chained off `--roll-run` the way the courier is.
@@ -1047,6 +1047,34 @@ h3 {
   background-color: var(--ck-text);
   border-color: var(--ck-text);
   color: #fff;
+}
+
+/* --------------------------------------------------------------------------
+   The hero's action, at the size of the field it replaced.
+
+   `btn-plain` says what the shape and the hover are; this says how big. The two
+   are separate because everywhere else on the page that rectangle is a small
+   secondary action, and only here is it the one thing the hero is asking for --
+   so it takes the search field's whole footprint rather than sitting in the
+   middle of it as a label.
+
+   The measurements are that field's, not new ones: 42rem wide, and 3.625rem
+   tall because that is what the pill measured -- a 2.5rem control, 0.5rem of
+   padding either side of it, and the hairline. Nothing above or below it moved.
+
+   `display: flex` overrides the `inline-flex` every button carries, because an
+   inline box does not centre on `margin-inline: auto` -- the width and the
+   centring have to come from the same rule or the button sits left.
+   -------------------------------------------------------------------------- */
+.hero-cta {
+  display: flex;
+  margin-inline: auto;
+  width: 100%;
+  max-width: 42rem;
+  height: 3.625rem;
+  /* One step up from the shared `lg`. At this width 16px reads as a caption
+     that happens to be inside a rectangle rather than as the button's label. */
+  font-size: 1.125rem;
 }
 
 /* --------------------------------------------------------------------------

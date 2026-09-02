@@ -1,4 +1,3 @@
-import type { CSSProperties } from 'react';
 import { buttonClasses, cx } from '@/components/ui/button-styles';
 import { SearchIcon } from './icons';
 
@@ -9,45 +8,31 @@ import { SearchIcon } from './icons';
  * is bookmarkable, and needs no client component. The menu page reads `q` and
  * filters against it -- this control is never decorative.
  *
- * `hero` is the pill that sits on the home page's tinted ground; `inline` is
- * the ordinary field on the menu page itself, where the visitor refines a
- * search they have already run.
+ * One tone, and it used to be two. The other was a pill for the home page's
+ * hero, which is now a call to action instead: searching a menu is something a
+ * visitor does once they are already looking at it, not the first thing a
+ * kitchen that cooks one menu a day should ask for. The hero variant went with
+ * it rather than staying here unused.
  */
 export function MenuSearch({
   defaultValue = '',
-  tone = 'inline',
   className,
-  style,
 }: {
   defaultValue?: string;
-  tone?: 'hero' | 'inline';
   className?: string;
-  /** Pass-through for the hero's entrance delay; see `.hero-enter`. */
-  style?: CSSProperties;
 }) {
-  const hero = tone === 'hero';
-  const id = hero ? 'hero-menu-search' : 'menu-search';
-
   return (
     <form
       role="search"
       action="/menu"
       method="get"
-      style={style}
       className={cx(
-        'flex items-center gap-2 border border-line-strong bg-surface',
+        'flex items-center gap-2 rounded-ck border border-line-strong bg-surface p-1.5',
         'focus-within:outline-2 focus-within:outline-brand focus-within:outline-offset-2',
-        // The hero field is the first thing on this page a visitor can put a
-        // cursor in, so focus lifts it off the ground rather than only ringing
-        // it. Shadow only -- a transform here would fight the entrance
-        // keyframe the hero hands down through `className`.
-        hero
-          ? 'rounded-full p-2 shadow-ck transition-shadow duration-300 ease-ck focus-within:shadow-ck-lg'
-          : 'rounded-ck p-1.5',
         className,
       )}
     >
-      <label htmlFor={id} className="sr-only">
+      <label htmlFor="menu-search" className="sr-only">
         Search the menu
       </label>
 
@@ -56,31 +41,24 @@ export function MenuSearch({
       <SearchIcon className="ml-2 hidden shrink-0 text-muted sm:block" />
 
       <input
-        id={id}
+        id="menu-search"
         name="q"
         type="search"
         defaultValue={defaultValue}
         autoComplete="off"
         placeholder="Try paneer, dal, or high protein"
-        // 16px on the hero field, because anything smaller makes iOS zoom the
-        // page on focus. The form draws the focus ring for both controls, so
-        // the input suppresses its own rather than nesting two.
         className={cx(
-          'ml-2 min-w-0 flex-1 bg-transparent text-ink placeholder:text-placeholder sm:ml-0',
-          // The form draws the ring for the whole pill, so the input must not
+          'ml-2 min-w-0 flex-1 bg-transparent py-1.5 text-sm text-ink placeholder:text-placeholder sm:ml-0',
+          // The form draws the ring for the whole field, so the input must not
           // draw a second one inside it. This opt-out was already written and
           // was doing nothing until the base ring moved into `@layer base` --
           // an unlayered rule beats a utility whatever the specificity, so the
-          // pill was ringed once around itself and again around the field.
+          // field was ringed once around itself and again around the input.
           'focus-visible:outline-none',
-          hero ? 'py-2 text-base' : 'py-1.5 text-sm',
         )}
       />
 
-      <button
-        type="submit"
-        className={buttonClasses('primary', hero ? 'md' : 'sm', 'shrink-0 px-3 sm:px-5')}
-      >
+      <button type="submit" className={buttonClasses('primary', 'sm', 'shrink-0 px-3 sm:px-5')}>
         <SearchIcon className="size-4 sm:hidden" />
         <span className="sr-only sm:not-sr-only">Search</span>
       </button>

@@ -6,15 +6,18 @@ import type { DeliveryWindow, PlanSummary, ProductCard, PublicOffer } from '@/li
 import { clockTime, money, pluralise } from '@/lib/format';
 import { buttonClasses, cx } from '@/components/ui/button-styles';
 import { ArrowRightIcon } from './icons';
-import { MenuSearch } from './menu-search';
 import { Courier, DriftingArrow, DriftingPhoto, HeroLayer, HeroStage, TiltCard } from './hero-motion';
 
 /**
  * The storefront hero.
  *
  * The composition follows the large Indian delivery apps -- headline, one
- * search field, two gateway cards -- because that is the shape a customer in
- * this market already knows how to read. The treatment does not: a barely
+ * full-width action, two gateway cards -- because that is the shape a customer
+ * in this market already knows how to read. What sat in that slot before was a
+ * menu search, and a search field on a kitchen that cooks one menu a day is a
+ * question with nothing behind it: the visitor has nothing to search for yet,
+ * and the answer is the same page either way. The slot now asks for the thing
+ * the page exists to sell. The treatment does not follow the apps: a barely
  * tinted ground with white cards, colour spent only on the actions. The food
  * photography, not the background, carries the appetite.
  *
@@ -46,7 +49,7 @@ const CORNER_FADE = 'radial-gradient(115% 115% at 100% 100%, #000 42%, transpare
  */
 const ENTER = {
   subtitle: 140,
-  search: 260,
+  cta: 260,
   primaryCard: 380,
   secondaryCard: 480,
   windows: 620,
@@ -124,11 +127,26 @@ export function StorefrontHero({
             delivered on a schedule you set.
           </p>
 
-          <MenuSearch
-            tone="hero"
-            style={enterAt(ENTER.search)}
-            className="hero-enter mx-auto mt-8 max-w-2xl sm:mt-10"
-          />
+          {/* The one action in the copy layer, and a real link rather than a
+              styled div: it is a destination, so it is an anchor, and the
+              whole rectangle is the hit area. `btn-plain` is the same square
+              hairline that fills on hover as the plan buttons further down the
+              page -- one shape for "press this", used at two sizes -- and
+              `hero-cta` gives it the footprint the search field had. Lower
+              case, and written that way rather than transformed, for the same
+              reason as the headings below: the accessible name should be the
+              words that are actually on the button. */}
+          <Link
+            href="/subscriptions"
+            style={enterAt(ENTER.cta)}
+            className={buttonClasses(
+              'outline',
+              'lg',
+              'hero-enter hero-cta btn-plain mt-8 sm:mt-10',
+            )}
+          >
+            start a plan today
+          </Link>
         </HeroLayer>
 
         {/* Two up only from lg. Between 640px and 1024px a two-column split
@@ -200,7 +218,7 @@ export function StorefrontHero({
  *
  * The lane is a separate element because something has to clip the run-up, and
  * that something must not be the section -- an `overflow` on the section would
- * reach the search field's focus ring.
+ * reach the focus ring on the action above.
  *
  * He parks on the container's right edge rather than at some fraction of it, so
  * he lines up with the gateway card standing directly above him. It is the same
