@@ -9,6 +9,8 @@ Two registers share one token system:
 - **Storefront** (default `:root`): light and calm. White cards on a barely tinted ground, colour spent on actions and state rather than on surfaces. The food photography carries the appetite.
 - **Operations** (`[data-surface="ops"]`, set by the KOT screens): dark, high-contrast ramp for kitchen glanceability. Components are surface-agnostic; the attribute flips the variables.
 
+One surface sits outside both: the **mission band** (`.mission`) that closes the home page — ramp step 800, the only dark ground on the storefront. It is deliberately *not* the ops surface, which is tuned for a cook reading a wall screen rather than for a closing statement. It carries its own `--ck-mission-*` inks and re-points two inherited tokens for everything inside it: `--ck-focus` (the brand-green ring is invisible on that ground) and `--ck-mark` (the marginalia invert to light). Re-pointing rather than overriding is what keeps the components inside it surface-agnostic.
+
 ## Color Palette
 
 One hue carries the system: a dark-slate-grey/green ramp, exposed whole as `--color-dark-slate-grey-50` … `-950` (reach for a step directly only for chart series and illustration). Neutrals are tinted toward that hue rather than toward grey, so everything reads as one material. Semantic tokens are built on top; components use those.
@@ -42,6 +44,7 @@ Three constraints shaped these and are not free to change casually:
 ## Typography
 
 - Family: **Inter** (`--font-inter`) for everything; **JetBrains Mono** (`--font-jetbrains-mono`) for ticket codes and tabular data. One family — this is product UI.
+- **The kitchen's own voice is set in two other faces**, and they are a system rather than decoration: **Zodiak** (`--font-zodiak`, serif) and **Cabinet Grotesk** (`--font-cabinet`, grotesque), paired on the contrast axis so neither can be mistaken for the other. They appear exactly where someone is *speaking* rather than where something is being operated — the plan notes, which are a piece of paper someone wrote on, and the home page's mission band, which is the kitchen making a promise. Inter appears on neither, and that exclusion is the whole point: Inter is what the surrounding interface is already set in. Both load `preload: false` (below the fold on one route each) and are never used on admin or KOT.
 - **`subsets` must include `latin-ext`.** The rupee sign (U+20B9) lives there, not in `latin`. Loading `latin` alone leaves every price on the site falling back to a system font, which is what the previous setup did.
 - `cv05` is on globally: the lower-case *l* gets a tail, so `l` / `I` / `1` stay apart in dish names and ticket codes.
 - Fixed rem scale, tight ratio. `.tabular` (tabular-nums) on any column of figures.
@@ -70,6 +73,7 @@ family lives in its own files because it needs `'use client'`.
 | --- | --- |
 | `SiteHeader` | The shell's top bar, one light register on every route. The layout hands it a flattened account, never the session. |
 | `StorefrontHero` | Headline (see `HeroHeadline` — the rolling introduction), one search field, two gateway cards, delivery windows, on a lightly tinted ground. The composition follows the Indian delivery apps; the treatment does not — colour is spent on the actions, and the food photography carries the appetite. Every figure is read from the database, and a missing one renders nothing rather than a placeholder. |
+| `MissionSection` | The home page's closing statement: who the kitchen cooks for. A full-bleed dark-green band (the one dark storefront surface), a mission statement set large in Zodiak, and two audiences — the desk and the hostel — each a photograph, a lower-case label, a heading and one link. Not cards: the photograph gives each block its edge. Photographs come from the catalogue, offset past the two the hero has already spent, so the page never shows a dish twice. |
 | `MenuSearch` | One GET form to `/menu`, as a `hero` pill or an `inline` field. No JavaScript, bookmarkable, and the menu page really does filter on `q`. |
 | `icons` | `SearchIcon`, `ArrowRightIcon`. One 24-unit grid, one stroke weight, no icon dependency. |
 
@@ -89,6 +93,15 @@ comes to believe a setting changed when it did not.
 - Motion: 150–250ms color/opacity transitions; `ck-flash` one-shot pulse when a ticket changes (realtime visibility); global `prefers-reduced-motion` kill-switch, which flattens delays as well as durations.
 - **No page-load choreography, with one exception**: the storefront hero headline (`.hero-roll` / `.hero-part` in globals.css). Three phrases roll through a slot and settle as one sentence — the home page is the only surface where a visitor is being introduced rather than working. The rule holds everywhere else.
 - Failure modes decide base rules for any reveal. Content that must survive is never hidden by a base rule, only inside keyframes, so a renderer that never animates still shows it; decoration does the reverse, starting transparent so it can only ever appear by animating. Never gate real content on a class-triggered transition.
+
+## Illustration
+
+One hand throughout: black line art, drawn rather than sourced. Two ways of putting it on the page, and the choice is not stylistic.
+
+- **As a mask** (`.courier`, `.scene-homes`, `.tool-mark`): the file supplies the shape, `background-color` supplies the ink. The drawing then belongs to the palette and follows the surface — which is why the mission band inverts its marginalia by re-pointing `--ck-mark` and needs no second set of files. Always behind an `@supports (mask-image: …)` guard: unguarded, an unsupported mask degrades into a solid rectangle.
+- **As the artwork itself** (`.calendar-mark`, `.chef-mark`): shown exactly as drawn, when the drawing's own weight is the point.
+
+`.tool-mark` is the marginalia system — five kitchen tools in `public/tools/`, placed in the empty page margins either side of the `max-w-6xl` column, centred there by `calc((100% - 72rem) / 4)` so they hold their position at any width. They render only where that margin actually exists (`90rem` in the hero, `80rem` on the mission band); below it, nothing. A decorative ladle sitting on a headline is worse than no ladle.
 
 ## Layout
 

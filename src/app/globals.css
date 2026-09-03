@@ -129,6 +129,69 @@
      yellow, so it reads as a line drawn on the paper rather than a seam in it. */
   --ck-note-rule: rgb(13 23 20 / 0.14);
 
+  /* The mission band at the foot of the home page -- the one dark surface on
+     the storefront, and the only place the light register is put down.
+     Deliberately not the ops surface: that ramp is calibrated for a cook
+     reading a wall screen at arm's length under bad lighting, and reusing it
+     here would dress a marketing close in kitchen equipment. These are their
+     own tokens because they answer a different question.
+
+     `mission` is ramp step 800 rather than 900 or 950, and the difference is
+     the whole point of the band. The two darker steps read as near-black --
+     dark mode, which is a treatment -- where 800 still reads as *green*, which
+     is the brand. A colour has to be light enough to have a hue at all.
+
+     Every ink here was checked against that ground rather than chosen to look
+     right: `ink` 11.09:1, `muted` 9.14:1, `subtle` 5.99:1, all comfortably past
+     4.5. `check:contrast` holds them there.
+
+     `focus` is the one that would have been missed. The global ring is brand
+     green, which on this ground sits at about 1.4:1 and effectively disappears
+     -- a keyboard visitor would tab into the band and lose the cursor. Step 400
+     puts it back at 4.76:1. The ops surface solves the same problem the same
+     way; see the note over `--ck-focus`. */
+  --ck-mission: #254139;        /* 800 */
+  --ck-mission-ink: #ffffff;    /* 11.09:1 */
+  --ck-mission-muted: #dfece8;  /* 100,  9.14:1 */
+  --ck-mission-subtle: #9ec7bb; /* 300,  5.99:1 */
+  --ck-mission-focus: #7db5a4;  /* 400,  4.76:1 -- a ring needs 3 */
+  /* The underline under a link, and the only rule drawn on this surface. Light
+     at low alpha rather than a darker green: it has to sit *over* the ground
+     the way an underline does, not behind it like a seam. */
+  --ck-mission-line: rgb(239 246 244 / 0.28);
+
+  /* The ink the marginalia -- the drawn kitchen tools out in the page margins
+     -- are painted in. Two values for one idea: the drawings are masks, so the
+     same file is the same drawing on any ground and only the paint changes.
+     That is the whole reason they are masks rather than the PNGs themselves.
+     An inverted second copy of every tool would be five more files to keep in
+     step, and they would still be wrong on the third surface.
+
+     Alpha rather than a solid step, because these sit behind real text and
+     have to stay *underneath* it in the reading order even where nothing
+     overlaps. Around a sixth of full ink is the point where they read as
+     something drawn on the page rather than something printed on it.
+
+     `--ck-mark` is what every mark actually paints with; the mission band
+     re-points it at the inverted value the same way it re-points the focus
+     ring. Nothing that draws a mark has to know which surface it is on. */
+  /* Ink, at full strength, exactly as the tools were drawn. These were a 17%
+     wash to begin with, on the reasoning that marginalia should sit under the
+     text -- but a wash is what made them read as a watermark printed on the
+     page rather than as drawings made on it, and the hand is the whole point
+     of them. The chef and the calendar in the plans section are shown as drawn
+     for the same reason. What keeps them subordinate is where they are and how
+     much of the page they take, not how faint they are. */
+  --ck-mark: var(--ck-text);
+  /* The same drawings on the mission band, and not the same value inverted.
+     The light marks live on a dark green with a display statement over it,
+     where the dark marks live in empty near-white margins with nothing to
+     compete with -- so the ink that reads as "drawn on the page" is different
+     on each. Full strength here would put four utensils in argument with the
+     statement; the 0.13 this started at was so faint the drawings barely
+     registered as being there at all. */
+  --ck-mark-invert: rgb(239 246 244 / 0.22);
+
   /* Shadows are tinted with the ramp's darkest step, not neutral black, so
      they sit in the same material as everything else. */
   --ck-shadow-sm: 0 1px 2px rgb(13 23 20 / 0.05);
@@ -338,6 +401,10 @@ h3 {
 .storefront-hero {
   --roll-run: 3.15s;
   position: relative;
+  /* Absorbs the scrollbar's width, which is all the bowl panel's full-bleed
+     overshoots by. `clip` rather than `hidden`: `hidden` would make this
+     section a scroll container of its own. See the note over `.hero-bowl`. */
+  overflow-x: clip;
 }
 
 .hero-headline {
@@ -1422,6 +1489,59 @@ h3 {
    inline box does not centre on `margin-inline: auto` -- the width and the
    centring have to come from the same rule or the button sits left.
    -------------------------------------------------------------------------- */
+/* --------------------------------------------------------------------------
+   The hero split: copy on the left, the food running off the right.
+
+   One centred column was the problem this solves. A headline centred in a
+   `max-w-6xl` container on a wide screen leaves roughly a third of the page
+   empty on each side, and empty is not the same as airy: there was nothing out
+   there for the eye to travel to, so the surface read as unfinished. Two
+   columns from `lg`, with the right one carrying a photograph that leaves the
+   page, gives the composition somewhere to go.
+
+   `1fr 1.06fr` rather than an even split. The right column is a picture and
+   the left is text with a natural measure; giving the picture the extra
+   fraction is what stops the seam landing exactly on the centre line, which is
+   the arrangement that reads as two documents side by side.
+
+   One column below `lg`, photograph underneath. A 50/50 split on a phone is
+   two columns of nothing.
+   -------------------------------------------------------------------------- */
+.hero-split {
+  display: grid;
+  gap: 2.5rem;
+}
+
+@media (min-width: 64rem) {
+  .hero-split {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.06fr);
+    /* Top-aligned rather than centred, and the copy is then pushed down by its
+       own padding below. Centring tied the headline's position to the
+       photograph's height: the panel got taller when it was pulled up to the
+       section edge, and centring dutifully pushed the headline further down to
+       match, which is the opposite of what a taller picture should do. Where
+       the words sit is now its own decision. */
+    align-items: start;
+    gap: 3.5rem;
+  }
+
+  /* Raised. The headline is the first thing on the page and was sitting a
+     third of the way down it. This is the only number here chosen by eye
+     rather than derived from something -- it is where the first line lands
+     against the top of the photograph beside it. */
+  .hero-copy {
+    padding-top: clamp(1.5rem, 3.2vw, 3.25rem);
+  }
+
+  /* The copy stops being centred at the same breakpoint the split appears.
+     Everything that centred it is a utility on the element, so these are the
+     two things the utilities cannot reach: the rolling headline's own grid,
+     and the button's auto margins. */
+  .hero-copy .hero-roll {
+    place-items: center start;
+  }
+}
+
 .hero-cta {
   display: flex;
   margin-inline: auto;
@@ -1431,6 +1551,155 @@ h3 {
   /* One step up from the shared `lg`. At this width 16px reads as a caption
      that happens to be inside a rectangle rather than as the button's label. */
   font-size: 1.125rem;
+}
+
+/* In the split it is a button again rather than a bar. Full width made sense
+   when it sat under a centred headline and had the whole column to answer to;
+   in a half-width column it just becomes a long empty rectangle, and the
+   references this layout follows all end their copy on something compact. */
+@media (min-width: 64rem) {
+  .hero-cta {
+    margin-inline: 0;
+    /* `fit-content`, not `auto`. The rule above makes this a flex container,
+       which is block-level, so `width: auto` still fills the column and the
+       button stays the full-width bar this is trying to stop being. */
+    width: fit-content;
+    padding-inline: 2.75rem;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   The bowl panel.
+
+   Full-bleed to the right edge of the window without a horizontal scrollbar,
+   which is the one genuinely awkward part.
+
+   The usual trick for this is `margin-right: calc(50% - 50vw)`, and it is
+   wrong here. Percentage margins resolve against the *containing block*, and
+   this panel's containing block is its grid cell -- about 547px on a 1600px
+   screen -- not the 1120px content column the trick assumes. It overshot by
+   nearly 300px, which `overflow-x: clip` then hid, leaving a panel far wider
+   and a photograph far more cropped than intended with nothing on screen to
+   say so.
+
+   So the gutter is measured directly instead: half of whatever the window has
+   over the container's own maximum, plus the container's padding. No
+   percentage, so nothing depends on what this element happens to be sitting
+   in. `max(0px, …)` keeps it from going positive and pulling the panel inward
+   once the window is narrower than the container.
+
+   `vw` includes the scrollbar while the document does not, so this still
+   overshoots by the scrollbar's width on any page tall enough to scroll.
+   `overflow-x: clip` on the section absorbs that -- `clip` rather than
+   `hidden`, which would make the section a scroll container of its own.
+
+   The curve is a border radius rather than a `clip-path`, and that is a
+   robustness decision rather than a stylistic one. `clip-path: path()` takes
+   absolute coordinates and would have to be re-authored at every width; an
+   elliptical radius is a ratio, so the same one line describes the curve at
+   1280px and at 2560px. The horizontal and vertical radii are deliberately
+   unequal -- a matched pair gives a circular corner, and it is the mismatch
+   that makes this read as a long sweep rather than as a very round rectangle.
+   The vertical radii are larger than half the panel, so the browser scales
+   them down proportionally and the arc runs the whole height with no straight
+   segment left in the middle, which is the shape the references use.
+   -------------------------------------------------------------------------- */
+.hero-bowl {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  aspect-ratio: 5 / 4;
+  border-radius: var(--ck-radius-lg);
+  /* Seen while the photograph loads and behind the scrim at the curve. The
+     same green the page closes on. */
+  background-color: var(--ck-mission);
+}
+
+.hero-bowl-defs {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+/* Stacked under the copy rather than beside it, so the panel is as wide as the
+   page and its height is whatever the ratio says. 5:4 is right on a phone and
+   far too tall the moment the page is wider than one: at 820px it came out
+   788 by 630, a photograph you scroll past rather than look at. From `sm` it
+   is a landscape band instead. */
+@media (min-width: 40rem) {
+  .hero-bowl {
+    aspect-ratio: 16 / 9;
+  }
+}
+
+@media (min-width: 64rem) {
+  .hero-bowl {
+    margin-right: calc(-1 * (max(0px, (100vw - 72rem) / 2) + 1rem));
+    /* Up through the container's top padding, so the photograph starts at the
+       section's own edge instead of below a band of empty ground. That strip
+       was the last thing making this read as a picture placed *in* the hero
+       rather than as one wall of it.
+
+       -6rem is `lg:pt-24` on the container, negated. The two are a pair: if
+       that padding changes, this has to change with it. The height adds the
+       same 6rem back so the panel grows upward only -- its bottom edge stays
+       where the layout already put it. */
+    margin-top: -6rem;
+    /* Height comes from the copy beside it rather than from a ratio: the panel
+       should finish level with the words, and a fixed aspect on a column this
+       wide would run it far past them. */
+    aspect-ratio: auto;
+    /* A definite height, and it has to be definite rather than a `min-height`.
+       The photograph inside is `height: 100%`, and a percentage height against
+       a parent whose height is `auto` resolves to `auto` too -- so the image
+       fell back to its own intrinsic ratio and made the panel as tall as the
+       picture was, 1181px against the 608 intended. `min-height` does not fix
+       that; only a real height does. With one, `object-fit: cover` finally has
+       a box to crop into, which is the entire reason it is there. */
+    height: calc(clamp(30rem, 40vw, 38rem) + 6rem);
+  }
+
+  /* The drawn curve replaces the radius entirely. `-webkit-` first and
+     unprefixed second: WebKit still wants the prefix for a `url()` reference,
+     and where both are understood the later one wins anyway. */
+  .hero-bowl {
+    border-radius: 0;
+    -webkit-clip-path: url('#hero-bowl-curve');
+    clip-path: url('#hero-bowl-curve');
+  }
+}
+
+.hero-bowl-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* See `BOWL_OVERSCALE`. The drift below moves inside this margin. */
+  transform: scale(var(--bowl-scale, 1.06));
+  /* Slower than any of the drawings: the biggest thing on the surface should
+     be the calmest thing on it. See `@keyframes bowl-breathe`. */
+  animation: bowl-breathe 15s ease-in-out infinite;
+}
+
+/* The photograph resolving into the brand rather than stopping at the curve.
+
+   An edge treatment, and the restraint is the whole point of it. The first
+   pass carried the green to 58% of the panel at better than half strength,
+   which stopped being an edge and became a colour cast: the left third of the
+   dish went grey-green and the food -- the entire reason the panel exists --
+   was the part of the photograph you could not read. It now clears the food
+   well before the middle. Far enough to give the curve somewhere to resolve
+   and the drawn tool a ground to be seen against; no further. */
+.hero-bowl-scrim {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: linear-gradient(
+    100deg,
+    color-mix(in srgb, var(--ck-mission) 92%, transparent) 0%,
+    color-mix(in srgb, var(--ck-mission) 34%, transparent) 17%,
+    transparent 38%
+  );
 }
 
 /* --------------------------------------------------------------------------
@@ -1799,6 +2068,579 @@ h3 {
     opacity: 1;
     transform: none;
   }
+}
+
+/* --------------------------------------------------------------------------
+   The mission band: who the kitchen cooks for.
+
+   The home page's closing statement, and the one place the storefront puts the
+   light register down. Everything above it is white or a tint of white -- the
+   hero's ground, the plain page, the paper the plans are stuck to -- and a
+   fifth near-white section would have let the page stop rather than end. This
+   changes key instead. See the note at the top of `components/site/mission.tsx`
+   for why the audiences are split in two and why neither of them is a card.
+
+   The band re-points `--ck-focus` at itself rather than inheriting the global
+   one. That token is brand green, which is roughly 1.4:1 against this ground:
+   a keyboard visitor tabbing into the two links would have watched the ring
+   vanish. It is a custom property, so setting it on the section is enough to
+   reach every control inside without any of them knowing where they are --
+   exactly the move the ops surface makes, for exactly the same reason.
+   -------------------------------------------------------------------------- */
+.mission {
+  /* Positioned so the drawn tools in the page gutters resolve against the
+     band rather than against the content column -- the gutters are the part
+     of this section that lies *outside* the column. `clip` rather than
+     `hidden` for the same reason as the hero: it absorbs a mark that reaches
+     a pixel too far without turning the section into a scroll container. */
+  position: relative;
+  overflow-x: clip;
+  background-color: var(--ck-mission);
+  color: var(--ck-mission-ink);
+  --ck-focus: var(--ck-mission-focus);
+  /* The inversion, and all of it. Every tool drawn on this band is the same
+     file as the ones in the hero margins; this line is what turns the ink
+     light so they survive the dark ground. See `--ck-mark`. */
+  --ck-mark: var(--ck-mark-invert);
+}
+
+/* --------------------------------------------------------------------------
+   Type on the band.
+
+   Zodiak and Cabinet Grotesk carry all of it and Inter appears nowhere, which
+   is the rule the plan notes follow and the reason those two faces were brought
+   into the project at all. They are the voice of the people who cook; Inter is
+   the voice of the thing being operated. A mission statement belongs to the
+   first of those, so this is the second half of a system rather than a third
+   typographic idea -- see the note over `.note-kind`.
+
+   The statement takes the same clamp as `.section-display` and a looser
+   tracking than it. Zodiak is a serif: it is drawn with more space in it than
+   Inter and its serifs already do the work of separating one letter from the
+   next, so the -0.03em that keeps a large Inter heading from falling apart
+   closes this one up until the serifs collide.
+   -------------------------------------------------------------------------- */
+.mission-statement {
+  font-family: var(--font-zodiak), Georgia, serif;
+  font-size: clamp(2rem, 4.2vw, 3.5rem);
+  font-weight: 600;
+  line-height: 1.1;
+  /* Overrides the -0.02em every h2 carries, which is an Inter number. */
+  letter-spacing: -0.015em;
+  color: var(--ck-mission-ink);
+}
+
+.mission-lede {
+  font-family: var(--font-cabinet), system-ui, sans-serif;
+  font-size: clamp(1rem, 1.35vw, 1.1875rem);
+  line-height: 1.6;
+  color: var(--ck-mission-muted);
+}
+
+/* Lower case, at reading size, in the muted ink -- deliberately none of the
+   things a section kicker is. The tiny tracked-out capital label above a
+   heading is the most worn scaffold on the web, and two of them side by side
+   would have been the tell. What these actually carry is a contrast the reader
+   needs: the same food, two different days it arrives into. That is a
+   taxonomy, and a taxonomy can be written in ordinary words. */
+.mission-label {
+  font-family: var(--font-cabinet), system-ui, sans-serif;
+  font-size: 0.9375rem;
+  color: var(--ck-mission-subtle);
+}
+
+.mission-title {
+  font-family: var(--font-zodiak), Georgia, serif;
+  font-size: clamp(1.5rem, 2.3vw, 1.9375rem);
+  font-weight: 600;
+  line-height: 1.18;
+  letter-spacing: -0.01em;
+  color: var(--ck-mission-ink);
+}
+
+.mission-body {
+  font-family: var(--font-cabinet), system-ui, sans-serif;
+  font-size: 1rem;
+  line-height: 1.65;
+  color: var(--ck-mission-muted);
+  /* Well inside the 65-75ch ceiling. The column is already half the page and
+     these are three sentences, not an essay -- a measure this short is what
+     keeps the two areas reading as a pair of remarks rather than two columns
+     of body copy. */
+  max-width: 44ch;
+  /* The floor under the link's `margin-top: auto`, which distributes whatever
+     space is left over -- and on the taller of the two areas that is none. The
+     same arrangement the plan notes use for their price; see `.note-body`. */
+  margin-bottom: 1.5rem;
+}
+
+/* --------------------------------------------------------------------------
+   Keeping the two areas level.
+
+   A column, so the link can be pushed to the bottom of it. The two titles do
+   not always take the same number of lines -- "Home food, a long way from
+   home" wraps to two around 820px where "Lunch stops being a decision" is
+   still on one -- and without this the second column's body and link both sit
+   a line lower than the first's. One line of drift between two things
+   presented as a pair reads as a fault rather than as a difference in the
+   copy, which is the same reason the plan notes were made one height and the
+   hero's gateway cards were made to fill their row.
+
+   The height comes from the grid: the row stretches both articles to match,
+   and `100%` is what lets a child of that stretched box actually use it. A
+   block element left to itself would size to its own content and the stretch
+   would do nothing, which is exactly the bug it fixes.
+   -------------------------------------------------------------------------- */
+.mission-area {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* --------------------------------------------------------------------------
+   The link out of each area.
+
+   An underline rather than a button, because the band already has two large
+   photographs and a display statement, and a third weight of emphasis in it
+   would flatten all three. The rule starts at the muted line colour and comes
+   up to the ink on hover, so the link is quietly underlined at rest and firmly
+   underlined when pointed at -- the arrow moves at the same moment, which is
+   the same acknowledgement the hero's gateway cards give.
+   -------------------------------------------------------------------------- */
+.mission-link {
+  /* Bottom of the column, so the two links sit on one line however the titles
+     above them wrap. `inline-flex` would stretch to the column's full width
+     under `align-items: stretch`, taking the underline with it across empty
+     space, so the box is sized to its own label and then aligned left. */
+  margin-top: auto;
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-cabinet), system-ui, sans-serif;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--ck-mission-ink);
+  text-decoration: underline;
+  text-decoration-color: var(--ck-mission-line);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.4em;
+  transition: text-decoration-color 200ms var(--ck-ease);
+}
+
+.mission-link:hover {
+  text-decoration-color: currentColor;
+}
+
+.mission-arrow {
+  transition: transform 300ms var(--ck-ease);
+}
+
+.mission-link:hover .mission-arrow {
+  transform: translateX(0.25rem);
+}
+
+/* --------------------------------------------------------------------------
+   The photographs.
+
+   Real dishes, read from the catalogue and offset past the two the hero has
+   already spent, so the page never shows the same plate twice. The frame is
+   what clips them; the image inside it is what moves.
+
+   A ground colour on the frame rather than nothing, because these load over the
+   network and an empty frame on a dark band flashes as a hole in the surface.
+   Ink at low alpha keeps it a shade of the band rather than a grey rectangle
+   sitting on top of it.
+   -------------------------------------------------------------------------- */
+.mission-shot {
+  overflow: hidden;
+  border-radius: var(--ck-radius);
+  background-color: rgb(13 23 20 / 0.35);
+  aspect-ratio: 4 / 3;
+  margin-bottom: 1.75rem;
+}
+
+.mission-shot-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* --------------------------------------------------------------------------
+   Arrival.
+
+   Two motions with one job each, and they are related rather than stacked: the
+   block rises into place, and the photograph inside it settles out of a slight
+   overscale as it does -- the way a picture comes to rest in a frame rather
+   than appearing in one. The photograph takes longer than the block on purpose;
+   finishing together would read as one movement in two parts, and the point is
+   that the heavier thing keeps moving after the lighter one has stopped.
+
+   The stagger is 140ms and applies to both, so the second area is a beat behind
+   the first all the way through rather than catching up partway.
+
+   Nothing here is hidden by a base rule. `is-revealed` is added by `Reveal`
+   when the band reaches the viewport, so with no JavaScript -- an old engine, a
+   headless renderer, a screenshot service -- no keyframe ever runs and the
+   section is simply there, photographs and all. `--reveal-at` is the delay
+   `Reveal` publishes; the per-area offsets are added to it rather than
+   replacing it, so the whole band can still be pushed later from the page
+   without these two drifting out of order.
+   -------------------------------------------------------------------------- */
+.mission-areas.is-revealed > .mission-area {
+  animation: reveal-up 700ms var(--ck-ease) var(--reveal-at, 0ms) both;
+}
+
+.mission-areas.is-revealed > .mission-area:nth-child(2) {
+  animation-delay: calc(var(--reveal-at, 0ms) + 140ms);
+}
+
+.mission-areas.is-revealed .mission-shot-img {
+  animation: mission-settle 1200ms var(--ck-ease) var(--reveal-at, 0ms) both;
+}
+
+.mission-areas.is-revealed > .mission-area:nth-child(2) .mission-shot-img {
+  animation-delay: calc(var(--reveal-at, 0ms) + 140ms);
+}
+
+/* 1.05 and no further. The frame clips whatever the image does, so a larger
+   start would crop the dish at the moment it is least recognisable and then
+   grow the plate back into view -- which reads as a zoom effect rather than as
+   something settling. */
+@keyframes mission-settle {
+  from {
+    transform: scale(1.05);
+  }
+  to {
+    transform: none;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Marginalia: the kitchen's tools, drawn out in the page margins.
+
+   The same hand as the courier, the houses, the chef and the calendar, and the
+   same technique as the first two: each tool is a mask, not a picture. What
+   ships is one black-line PNG per tool; the colour comes from `--ck-mark`,
+   which the surface underneath sets. That is why the mission band needs no
+   inverted copies of anything -- it re-points one custom property and the same
+   five drawings come out light on the green. Five files, every ground.
+
+   They live in the margins on purpose. A page laid out to `max-w-6xl` on a
+   1920px screen is a 1152px column with 384px of nothing either side of it,
+   and that emptiness is the one place a drawing can go without negotiating
+   with the text. `left`/`right` are computed rather than fixed for the same
+   reason: `(100% - 72rem) / 4` is the centre line of that empty margin at any
+   width, so each mark stays centred in the space it was given instead of being
+   nailed to a pixel that only works on one screen.
+
+   Below the width where the margin exists, none of them render at all. The
+   rule the plans section's chef already follows: a decorative ladle sitting on
+   top of a headline is worse than no ladle. `90rem` is where the margin first
+   reaches about 144px, which is a little wider than the widest of these.
+
+   Everything is inside an `@supports` guard, exactly as the courier is. Where
+   masks are unsupported none of these rules apply, the spans stay empty, and
+   nothing is drawn -- as against five solid rectangles parked in the margins,
+   which is what an unguarded mask degrades into.
+
+   `opacity: 0` in the base rule and full opacity only inside a keyframe. These
+   are decoration, so they take the failure mode decoration takes here: where
+   no animation ever runs they never appear. Content on this site does the
+   reverse.
+   -------------------------------------------------------------------------- */
+.tool-mark {
+  position: absolute;
+  display: none;
+  pointer-events: none;
+  width: var(--tool-w);
+  aspect-ratio: var(--tool-ratio);
+  /* The tilt is `rotate`, the individual transform property, rather than
+     `transform: rotate(...)`, and that is what lets the mark breathe.
+     `translate`, `rotate` and `scale` are separate properties that compose in
+     a fixed order -- translate, then rotate, then scale, then whatever
+     `transform` says -- so the resting tilt and the breathing scale can be
+     written independently and never overwrite one another. Declaring both
+     through `transform` would have meant the breathing keyframe restating the
+     tilt in every frame, and the tilt is per-drawing. */
+  rotate: var(--tool-tilt, 0deg);
+  opacity: 0;
+}
+
+@supports (mask-image: url('/tools/spatula.png')) or
+  (-webkit-mask-image: url('/tools/spatula.png')) {
+  .tool-mark {
+    background-color: var(--ck-mark);
+    mask-repeat: no-repeat;
+    mask-size: contain;
+    mask-position: center;
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-size: contain;
+    -webkit-mask-position: center;
+  }
+
+  /* The ones out in the hero's margins, and the width at which those margins
+     can hold them. Direct children only -- the tool drawn inside the bowl
+     panel is not in a margin and has its own rule below. */
+  @media (min-width: 90rem) {
+    .storefront-hero > .tool-mark {
+      display: block;
+      /* Two animations on one element, and they never collide: the entrance
+         writes `opacity`, the breathing writes `scale` and `translate`. */
+      animation:
+        tool-in 1100ms var(--ck-ease) var(--tool-at, 900ms) both,
+        tool-breathe var(--breathe-run, 8s) ease-in-out var(--breathe-at, 0s) infinite;
+    }
+  }
+
+  /* The one *inside* the mission band's column comes in lower than the rest,
+     because the space it uses is inside the content column rather than outside
+     it -- the statement is `max-w-4xl` in a `max-w-6xl` container, so there is
+     room to its right before the page margins are involved at all. */
+  @media (min-width: 80rem) {
+    .mission-mark {
+      display: block;
+    }
+
+    .mission-mark.is-revealed {
+      animation:
+        tool-in 1100ms var(--ck-ease) 240ms both,
+        tool-breathe var(--breathe-run, 8s) ease-in-out var(--breathe-at, 0s) infinite;
+    }
+  }
+
+  /* The band's gutter marks wait for the same 90rem the hero's do -- they are
+     in the same gutters. Unlike the hero's they arrive on a `Reveal` rather
+     than on a page-load delay: this section is well below the fold, and an
+     entrance that ran at load would be one nobody was there to see. */
+  @media (min-width: 90rem) {
+    .mission > .tool-mark {
+      display: block;
+    }
+
+    .mission > .tool-mark.is-revealed {
+      animation:
+        tool-in 1100ms var(--ck-ease) var(--tool-at, 0ms) both,
+        tool-breathe var(--breathe-run, 8s) ease-in-out var(--breathe-at, 0s) infinite;
+    }
+  }
+}
+
+@keyframes tool-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Breathing.
+
+   The one repeating animation in this stylesheet besides the hourglass, and
+   the rule it breaks is worth naming rather than quietly stepping around:
+   everything else here runs once, because motion beside content competes with
+   the content. These are the exception on two grounds. They are not beside
+   the content -- they are out in the page gutters, in space nothing else uses
+   -- and they are drawings of objects rather than interface, which is the one
+   thing on the page that gains from looking alive rather than placed.
+
+   Kept honest by three numbers. Three and a half per cent of scale and a
+   couple of pixels of lift is under the threshold where the eye tracks it as
+   movement; anything larger and seven utensils gently pumping becomes the most
+   distracting thing on the page. Eight seconds or so is slow enough to read as
+   breath rather than as a pulse. And every drawing gets its own period and its
+   own *negative* delay, which starts it partway through its cycle: give them a
+   shared timing and they inhale together, which is the tell that turns a room
+   of objects into a row of machines.
+
+   Only `scale` and `translate` -- both compositor properties, neither of them
+   triggering layout or paint. `rotate` is left alone because it carries each
+   drawing's resting tilt.
+
+   The global `prefers-reduced-motion` block flattens duration and forces a
+   single iteration, so this stops entirely for anyone who has asked for that.
+   -------------------------------------------------------------------------- */
+@keyframes tool-breathe {
+  0%,
+  100% {
+    scale: 1;
+    translate: 0 0;
+  }
+  50% {
+    scale: 1.035;
+    translate: 0 -0.15rem;
+  }
+}
+
+/* The photograph breathes too, and at a fraction of the amplitude. Scale reads
+   proportionally: the same 3.5% that is barely visible on a 5rem drawing is a
+   30px swing on a panel this size, which would be a photograph pumping rather
+   than a page that is alive. It also runs slower than any of the drawings, so
+   the largest thing on the surface is the calmest.
+
+   This multiplies with the overscale already on the image rather than
+   replacing it -- `scale` composes with `transform`, it does not overwrite it
+   -- so the peak is 1.06 x 1.02, comfortably inside the margin the frame's
+   clip was given to hide. */
+@keyframes bowl-breathe {
+  0%,
+  100% {
+    scale: 1;
+  }
+  50% {
+    scale: 1.02;
+  }
+}
+
+/* Placement, and it is a composition rather than a pattern -- which is why
+   these are four hand-written rules and not an `nth-child` loop. No two tilt
+   the same way, the pair on each side lean apart so neither side reads as
+   drifting, and the sizes are set against each other rather than each to
+   taste: the ladle is the narrowest drawing of the five and would vanish at
+   the spatula's width, so it is given less width and ends up covering roughly
+   the same area.
+
+   `--tool-ratio` is each drawing's own aspect, so `mask-size: contain` has
+   nothing to letterbox and the tool fills its box exactly.
+
+   The delays put all four after the hero's own entrance has finished (the
+   cards land at 480ms and take 900ms). The marginalia is the last thing to
+   arrive because it is the least important thing on the surface. */
+/* Centred in the gutter, wherever the gutter is. Both surfaces that carry
+   marginalia are full-bleed sections holding a 72rem column, so the same
+   expression finds the middle of the empty space on either side of it. */
+.storefront-hero > .tool-mark,
+.mission > .tool-mark {
+  left: calc((100% - 72rem) / 4 - var(--tool-w) / 2);
+}
+
+.storefront-hero > .tool-mark-right,
+.mission > .tool-mark-right {
+  left: auto;
+  right: calc((100% - 72rem) / 4 - var(--tool-w) / 2);
+}
+
+.tool-spatula {
+  --breathe-run: 7.5s;
+  --breathe-at: -0.4s;
+  top: 8rem;
+  --tool-w: clamp(5.5rem, 7vw, 8rem);
+  --tool-ratio: 499 / 476;
+  --tool-tilt: -14deg;
+  --tool-at: 980ms;
+  mask-image: url('/tools/spatula.png');
+  -webkit-mask-image: url('/tools/spatula.png');
+}
+
+/* The spoon and knife, and it is here because the ladle is not.
+
+   Now that the marks are drawn at full ink rather than as a wash, the five
+   drawings stopped being interchangeable. Four of them are pure outline; the
+   ladle is mostly solid -- its bowl is filled in -- and at full ink that is not
+   a heavier line, it is a black blob next to a line drawing. Holding it back
+   with its own alpha was the earlier fix and it stops working once everything
+   else is opaque: the ladle simply read as grey while the spatula read as
+   black, which looks like a mistake rather than a weighting.
+
+   So the margin takes the outlined drawing instead. Same hand, same weight,
+   and the pair now reads as two marks by one pen. */
+.tool-spoon-knife {
+  --breathe-run: 9.1s;
+  --breathe-at: -3.2s;
+  top: 30rem;
+  --tool-w: clamp(3.75rem, 4.8vw, 5.25rem);
+  --tool-ratio: 289 / 462;
+  --tool-tilt: -7deg;
+  --tool-at: 1260ms;
+  mask-image: url('/tools/spoon-knife.png');
+  -webkit-mask-image: url('/tools/spoon-knife.png');
+}
+
+/* Level with the gateway cards rather than with the headline. The photograph
+   now occupies the right margin for the whole height of the split, so this had
+   to drop below where the panel ends or be drawn on top of the food. */
+.tool-grater {
+  --breathe-run: 8.3s;
+  --breathe-at: -5.6s;
+  top: 48rem;
+  --tool-w: clamp(4.5rem, 5.5vw, 6.5rem);
+  --tool-ratio: 344 / 394;
+  --tool-tilt: 12deg;
+  --tool-at: 1400ms;
+  mask-image: url('/tools/grater.png');
+  -webkit-mask-image: url('/tools/grater.png');
+}
+
+/* The fifth, and the only one that is not in a page margin: it stands in the
+   gap to the right of the mission statement, which is empty because the
+   statement is deliberately set to a narrower measure than the band it sits
+   in. Anchored to the content container rather than to the section, so it
+   tracks the column rather than the window. */
+.mission-mark {
+  --breathe-run: 10.4s;
+  --breathe-at: -1.7s;
+  /* Clear of the band's top edge rather than tucked into it. At 1.5rem the
+     spoon's handle ran within a few pixels of where the green starts, which
+     reads as a drawing that has been cropped rather than one that has been
+     placed. */
+  top: 3.5rem;
+  right: 0;
+  --tool-w: clamp(8rem, 11vw, 13rem);
+  --tool-ratio: 384 / 552;
+  --tool-tilt: -8deg;
+  mask-image: url('/tools/spoon-spatula.png');
+  -webkit-mask-image: url('/tools/spoon-spatula.png');
+}
+
+/* The three out in the band's gutters, placed against each other rather than
+   each to taste. They are spread down the full height of the section -- one
+   level with the statement, two level with the two areas -- so the band is
+   framed along its edges instead of having its decoration bunched at the top.
+   No two lean the same way, and the pair on the left lean apart so that side
+   does not read as drifting.
+ *
+ * Sizes are set by area rather than by width. The pan is nearly four times as
+ * wide as it is tall and the mitt is taller than it is wide; matching their
+ * widths would have made one of them three times the other on the page. These
+ * are the widths at which the three cover roughly the same amount of gutter,
+ * which is what actually reads as a set.
+ *
+ * The delays stagger them down the page in the order the eye meets them. */
+.tool-pan {
+  --breathe-run: 8.9s;
+  --breathe-at: -4.3s;
+  top: 9rem;
+  --tool-w: clamp(7rem, 9.5vw, 10.5rem);
+  --tool-ratio: 897 / 236;
+  --tool-tilt: -8deg;
+  mask-image: url('/tools/pan.png');
+  -webkit-mask-image: url('/tools/pan.png');
+}
+
+.tool-ladle-side {
+  --breathe-run: 9.7s;
+  --breathe-at: -6.1s;
+  top: 34rem;
+  --tool-w: clamp(6rem, 8vw, 9rem);
+  --tool-ratio: 729 / 420;
+  --tool-tilt: 11deg;
+  --tool-at: 160ms;
+  mask-image: url('/tools/ladle-side.png');
+  -webkit-mask-image: url('/tools/ladle-side.png');
+}
+
+.tool-mitt {
+  --breathe-run: 7.9s;
+  --breathe-at: -2.5s;
+  top: 41rem;
+  --tool-w: clamp(4rem, 5.2vw, 5.75rem);
+  --tool-ratio: 291 / 402;
+  --tool-tilt: -6deg;
+  --tool-at: 320ms;
+  mask-image: url('/tools/mitt.png');
+  -webkit-mask-image: url('/tools/mitt.png');
 }
 
 /* --------------------------------------------------------------------------

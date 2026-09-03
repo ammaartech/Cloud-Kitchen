@@ -137,6 +137,17 @@ const pairs = (t, on) => [
         ['white / brand-hover', WHITE, t['brand-hover'], 4.5],
         ['white / danger', WHITE, t.danger, 4.5],
         ['white / success', WHITE, t.success, 4.5],
+
+        // The mission band at the foot of the home page. It is the one dark
+        // surface on the storefront and it does not inherit the ops ramp, so
+        // its inks are checked here rather than anywhere else. The focus ring
+        // is the reason this block exists: the global ring is brand green,
+        // which is invisible on this ground, and the band re-points the token
+        // at a light step. Held to 3:1 like every other ring.
+        ['mission ink / mission', t['mission-ink'], t.mission, 4.5],
+        ['mission muted / mission', t['mission-muted'], t.mission, 4.5],
+        ['mission subtle / mission', t['mission-subtle'], t.mission, 4.5],
+        ['mission focus ring / mission', t['mission-focus'], t.mission, 3],
       ]
     : [
         ['ops accent / surface', t.accent, t.surface, 4.5],

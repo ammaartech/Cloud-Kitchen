@@ -1,10 +1,10 @@
-import Link from 'next/link';
 import Image from 'next/image';
 import type { CSSProperties } from 'react';
 import { listPlans, listMenu, listPublicOffers, listDeliveryWindows } from '@/lib/data/catalog';
 import { money, PLAN_TYPE_LABELS } from '@/lib/format';
-import { ButtonLink, Card } from '@/components/ui/primitives';
+import { ButtonLink } from '@/components/ui/primitives';
 import { StorefrontHero } from '@/components/site/storefront-hero';
+import { MissionSection } from '@/components/site/mission';
 import { Reveal } from '@/components/site/reveal';
 import { StepFlow, Typewriter } from '@/components/site/step-flow';
 
@@ -72,8 +72,6 @@ export default async function HomePage() {
     listPublicOffers(),
     listDeliveryWindows(),
   ]);
-
-  const featured = menu.filter((product) => product.isAvailable).slice(0, 3);
 
   return (
     <>
@@ -244,46 +242,13 @@ export default async function HomePage() {
       </section>
 
       {/* ---------------------------------------------------------------- */}
-      {/* Menu preview                                                      */}
+      {/* Who we cook for                                                   */}
       {/* ---------------------------------------------------------------- */}
-      <section className="mx-auto max-w-6xl px-4 py-16">
-        <div className="flex flex-wrap items-end justify-between gap-4">
-          <div>
-            <h2 className="text-2xl font-semibold tracking-tight">What we cook</h2>
-            <p className="mt-1 text-muted">
-              The menu is for browsing — meals are ordered through a subscription.
-            </p>
-          </div>
-          <Link href="/menu" className="text-sm font-medium text-brand hover:underline">
-            See the full menu →
-          </Link>
-        </div>
-
-        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {featured.map((product) => (
-            <Card key={product.id} className="flex gap-4 p-4">
-              {product.imageUrl ? (
-                <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-ck bg-sunken">
-                  <Image
-                    src={product.imageUrl}
-                    alt={product.imageAlt}
-                    fill
-                    sizes="80px"
-                    className="object-cover"
-                  />
-                </div>
-              ) : null}
-              <div className="min-w-0">
-                <h3 className="font-medium">{product.name}</h3>
-                <p className="mt-0.5 line-clamp-2 text-sm text-muted">
-                  {product.shortDescription}
-                </p>
-                <p className="mt-1 text-sm font-medium tabular">{money(product.basePrice)}</p>
-              </div>
-            </Card>
-          ))}
-        </div>
-      </section>
+      {/* The page's closing statement, and the one dark band on the
+          storefront. It replaced a three-dish preview of the menu -- a smaller
+          copy of a page the header already links to, which is a weak note to
+          end a home page on. See the note at the top of `mission.tsx`. */}
+      <MissionSection menu={menu} />
     </>
   );
 }

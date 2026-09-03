@@ -5,6 +5,7 @@ import { Fragment, type CSSProperties, type ReactNode } from 'react';
 import type { DeliveryWindow, PlanSummary, ProductCard, PublicOffer } from '@/lib/data/catalog';
 import { clockTime, money, pluralise } from '@/lib/format';
 import { buttonClasses, cx } from '@/components/ui/button-styles';
+import { withPhotos, type Photo } from './photos';
 import { ArrowRightIcon } from './icons';
 import {
   DeliveryRun,
@@ -38,9 +39,6 @@ import {
  * themselves hydrate.
  */
 
-/** A product we can actually show a photograph of. */
-type Photo = ProductCard & { imageUrl: string };
-
 /** Dissolves a card photo outward from the corner it is anchored in. */
 const CORNER_FADE = 'radial-gradient(115% 115% at 100% 100%, #000 42%, transparent 74%)';
 
@@ -65,6 +63,59 @@ const ENTER = {
   primaryCard: 380,
   secondaryCard: 480,
 } as const;
+
+/**
+ * How far the bowl's photograph is over-scaled at rest.
+ *
+ * The panel it sits in is clipped by a curve, and a photograph that exactly
+ * fills its clip has nowhere to go: the slow drift below would drag a hard
+ * edge into view at the top or the side. A few per cent of overscale is the
+ * margin that drift moves inside.
+ */
+const BOWL_OVERSCALE = 1.06;
+
+/**
+ * The panel's curved edge, in the 0-1 coordinates
+ * `clipPathUnits="objectBoundingBox"` wants: the whole panel, with its left
+ * side cut by a curve.
+ *
+ * It replaced a `border-radius`, which can only ever draw a symmetrical arc --
+ * leaving the top edge and returning to the bottom at the same distance. This
+ * one enters at 0.26 across and leaves at 0.145, so the curve leans and the
+ * panel reads as cut rather than filleted. Being a ratio rather than a length,
+ * it is the same curve at 1280px and at 2560px with nothing to recalculate.
+ *
+ * The shape is the whole of the treatment, and that is the second decision
+ * here rather than an absence of one. A hand-drawn ink line used to be stroked
+ * along this curve and drew itself on as the hero arrived. It is gone: a curve
+ * at this size is already a large gesture, and outlining it pointed the eye at
+ * the join instead of at either side of it. The references this layout follows
+ * all leave the edge clean and let the shape carry it.
+ *
+ * Three edges are drawn and one is not. The left is the long lean; the bottom
+ * is a shallow wave that lifts as it runs right, so the panel *leaves* the page
+ * rather than being cut off square by it; the top and right are the box itself,
+ * because those two are where the photograph runs off the screen and an edge
+ * you cannot see needs no shape.
+ *
+ * The bottom wave is deliberately shallow -- it lifts about a tenth of the
+ * panel's height across its whole width. Any deeper and the empty ground it
+ * opens up underneath stops reading as the photograph leaving and starts
+ * reading as a gap where something failed to load.
+ *
+ * The left curve stops at 0.92 rather than running all the way to 1, and that
+ * is what makes the corner disappear. A curve arriving at the very bottom edge
+ * is travelling steeply downward when it gets there, and the wave leaving it
+ * has to travel sideways -- two directions that cannot be reconciled at a
+ * point, so the join showed as a visible kink. Handing over above the floor
+ * lets the outgoing control point continue the direction the incoming one was
+ * already going, and the two read as one edge. The wave then dips to 1.02,
+ * just past the box: it flattens along the bottom for a moment instead of
+ * touching it and immediately leaving, which is what gives the sweep its
+ * weight. Anything outside the box is simply not painted.
+ */
+const BOWL_CLIP =
+  'M 1 0 L 0.26 0 C 0.10 0.12, 0.015 0.28, 0.018 0.46 C 0.021 0.64, 0.075 0.80, 0.155 0.92 C 0.30 1.02, 0.47 0.90, 0.64 0.93 C 0.79 0.955, 0.89 0.90, 1 0.87 Z';
 
 /** The custom property `.hero-enter` reads its delay from. */
 function enterAt(ms: number): CSSProperties {
@@ -110,12 +161,6 @@ function passAt(index: number, count: number): CSSProperties {
   return { '--pass-at': PASS_FROM + (PASS_TO - PASS_FROM) * spread } as CSSProperties;
 }
 
-function withPhotos(menu: ProductCard[]): Photo[] {
-  return menu.filter(
-    (product): product is Photo => Boolean(product.imageUrl) && product.isAvailable,
-  );
-}
-
 /** The offer worth leading with: the deepest percentage, else the first one. */
 function headlineOffer(offers: PublicOffer[]): PublicOffer | null {
   const percent = offers
@@ -159,6 +204,24 @@ export function StorefrontHero({
 
   return (
     <HeroStage className="storefront-hero border-b border-line bg-sunken">
+      {/* The kitchen's tools, drawn in the margins either side of the column.
+          Direct children of the section and deliberately outside every
+          `HeroLayer`: a layer transforms, and a transformed ancestor becomes
+          the containing block for anything absolutely positioned inside it,
+          which would anchor these to a drifting box instead of to the page.
+          The same reason the delivery scene sits out here.
+
+          Decoration, so `aria-hidden` and `pointer-events: none` -- and so
+          they render only where there is real margin to put them in. All of
+          that lives in `.tool-mark` in `globals.css`. */}
+      {/* Only the left margin carries marks now. The right one is where the
+          photograph runs off the page, so the two that used to sit out there
+          would be drawn on top of the food; the spoon and knife moved inside
+          the panel (painted light -- see `HeroBowl`) and the grater dropped to
+          sit beside the cards, below where the panel ends. */}
+      <span className="tool-mark tool-spatula" aria-hidden />
+      <span className="tool-mark tool-spoon-knife" aria-hidden />
+      <span className="tool-mark tool-mark-right tool-grater" aria-hidden />
       {/* The bottom padding is what sets the gap between the delivery windows
           and the road, and it is the only thing that can: the lane is out of
           flow and anchored to the section's bottom edge, so margin on the
@@ -180,16 +243,29 @@ export function StorefrontHero({
             visitor scrolling back up should find them where they left them.
             The differences between the depths are the parallax -- see
             `HeroLayer`. */}
-        <HeroLayer depth={1.15} fade={0.55}>
-          <HeroHeadline />
+        {/* The split, and the whole shape of the surface.
 
-          <p
-            style={enterAt(ENTER.subtitle)}
-            className="hero-enter mx-auto mt-5 max-w-xl text-center text-base text-pretty text-muted sm:text-lg"
-          >
-            Not a marketplace with ten thousand dishes. A small menu cooked each morning and
-            delivered on a schedule you set.
-          </p>
+            The hero was one centred column: a headline in the middle of the
+            page with a third of the width empty either side of it, which read
+            as unfinished rather than as airy -- there was nothing out there for
+            the eye to go to. It is two columns from `lg` now. The copy takes
+            the left and stops being centred; the right is a photograph of the
+            food, running off the edge of the page behind a curve.
+
+            Below `lg` it is one column again and the photograph goes underneath
+            the copy rather than beside it. A 50/50 split on a phone is two
+            columns of nothing. */}
+        <div className="hero-split">
+          <HeroLayer depth={1.15} fade={0.55} className="hero-copy">
+            <HeroHeadline />
+
+            <p
+              style={enterAt(ENTER.subtitle)}
+              className="hero-enter mx-auto mt-5 max-w-xl text-center text-base text-pretty text-muted sm:text-lg lg:mx-0 lg:text-left"
+            >
+              Not a marketplace with ten thousand dishes. A small menu cooked each morning
+              and delivered on a schedule you set.
+            </p>
 
           {/* The one action in the copy layer, and a real link rather than a
               styled div: it is a destination, so it is an anchor, and the
@@ -200,23 +276,32 @@ export function StorefrontHero({
               case, and written that way rather than transformed, for the same
               reason as the headings below: the accessible name should be the
               words that are actually on the button. */}
-          <Link
-            href="/subscriptions"
-            style={enterAt(ENTER.cta)}
-            className={buttonClasses(
-              'outline',
-              'lg',
-              'hero-enter hero-cta btn-plain mt-8 sm:mt-10',
-            )}
-          >
-            start a plan today
-          </Link>
-        </HeroLayer>
+            <Link
+              href="/subscriptions"
+              style={enterAt(ENTER.cta)}
+              className={buttonClasses(
+                'outline',
+                'lg',
+                'hero-enter hero-cta btn-plain mt-8 sm:mt-10',
+              )}
+            >
+              start a plan today
+            </Link>
+          </HeroLayer>
+
+          {/* Its own plane, drifting slower than the copy beside it. The two
+              columns leaving at the same rate would be one picture scrolling;
+              the difference between the depths is what makes the photograph sit
+              behind the words rather than next to them. */}
+          <HeroLayer depth={0.72} fade={0.16} className="hero-bowl-layer">
+            <HeroBowl photo={photos[0]} />
+          </HeroLayer>
+        </div>
 
         {/* Two up only from lg. Between 640px and 1024px a two-column split
             makes each card narrower than its own photograph needs, and the
             heading ends up sitting on the food. */}
-        <HeroLayer depth={0.5} fade={0.12} className="mt-10 sm:mt-12">
+        <HeroLayer depth={0.5} fade={0.12} className="mt-14 sm:mt-16">
           <div className="grid gap-4 sm:gap-5 lg:grid-cols-2">
             <GatewayCard
               href="/subscriptions"
@@ -228,9 +313,8 @@ export function StorefrontHero({
                   ? `From ${money(cheapest.price)} for ${cheapest.billingPeriodDays} days`
                   : null
               }
-              photo={photos[0]}
+              photo={photos[1] ?? photos[0]}
               enterAfter={ENTER.primaryCard}
-              priority
             />
 
             <GatewayCard
@@ -241,7 +325,7 @@ export function StorefrontHero({
                 available.length ? `${pluralise(available.length, 'dish', 'dishes')} today` : null
               }
               footnote={vegetarian.length ? `${vegetarian.length} of them vegetarian` : null}
-              photo={photos[1] ?? photos[0]}
+              photo={photos[2] ?? photos[0]}
               enterAfter={ENTER.secondaryCard}
             />
           </div>
@@ -296,6 +380,79 @@ export function StorefrontHero({
         />
       </div>
     </HeroStage>
+  );
+}
+
+/**
+ * The bowl: the page's one photograph at full size.
+ *
+ * The hero used to be text on a tinted ground and nothing else, and it read as
+ * unfinished for a reason that had nothing to do with spacing -- a kitchen's
+ * front page with no food on it. This is the food, at the size the food should
+ * be.
+ *
+ * Three things make it a composition rather than a picture in a box:
+ *
+ * 1. **It runs off the page.** The panel is pulled past the content column to
+ *    the right edge of the viewport, so the photograph is a view onto
+ *    something larger rather than an object with four visible sides. See
+ *    `.hero-bowl` for how that is done without a horizontal scrollbar.
+ *
+ * 2. **The edge facing the words is a curve, not a line.** A straight seam down
+ *    the middle of a hero splits it into two documents; a curve reads as one
+ *    surface with something behind it.
+ *
+ * 3. **The green comes back at the curve.** A scrim in the band colour is laid
+ *    along the curved edge, so the photograph resolves into the brand rather
+ *    than stopping. It is also what gives the drawn tool over it a ground quiet
+ *    enough to be seen against -- a line drawing on open food photography is
+ *    invisible at any ink.
+ *
+ * The alt is empty on purpose. The dish is decorative here: it illustrates the
+ * headline beside it rather than saying anything the headline does not, and it
+ * is not a link to itself. `priority` because at `lg` this is the largest thing
+ * above the fold and therefore the LCP element -- it is the one image on the
+ * page worth pre-empting the network for.
+ */
+function HeroBowl({ photo }: { photo?: Photo }) {
+  if (!photo) return null;
+
+  return (
+    <div className="hero-bowl">
+      <Image
+        src={photo.imageUrl}
+        alt=""
+        width={1400}
+        height={1400}
+        sizes="(max-width: 64rem) 100vw, 56vw"
+        priority
+        style={{ '--bowl-scale': BOWL_OVERSCALE } as CSSProperties}
+        className="hero-bowl-img"
+      />
+
+      {/* What the photograph fades into at the curve, so the panel resolves
+          into the brand rather than stopping on a hard edge.
+
+          There was a drawn spoon and knife over the photograph here as well,
+          and it is gone. The marginalia works in the margins because a margin
+          is empty: a line drawing needs a quiet ground, and a photograph is
+          the opposite of one. However the ink was tuned it read as a sticker
+          left on the picture rather than as something drawn on the page, and
+          `object-fit: cover` re-crops the photograph at every width, so the
+          ground under it was never the same twice. The drawings belong where
+          there is nothing else. */}
+      <span className="hero-bowl-scrim" aria-hidden />
+
+      {/* Definition only -- it draws nothing and takes no space. Kept next to
+          the element that uses it so the two cannot be separated by a tidy-up.
+          `objectBoundingBox` is what makes the clip responsive: the path is
+          written in fractions of this panel, so it needs no breakpoints. */}
+      <svg className="hero-bowl-defs" aria-hidden focusable="false">
+        <clipPath id="hero-bowl-curve" clipPathUnits="objectBoundingBox">
+          <path d={BOWL_CLIP} />
+        </clipPath>
+      </svg>
+    </div>
   );
 }
 
@@ -425,7 +582,7 @@ const HEADLINE = ['One kitchen.', 'One menu a day.', 'For you.'] as const;
  */
 function HeroHeadline() {
   return (
-    <h1 className="hero-headline mx-auto max-w-3xl text-center text-4xl leading-[1.08] font-semibold text-balance text-ink sm:text-5xl lg:max-w-5xl lg:text-6xl">
+    <h1 className="hero-headline mx-auto max-w-3xl text-center text-4xl leading-[1.08] font-semibold text-balance text-ink sm:text-5xl lg:mx-0 lg:max-w-none lg:text-left lg:text-6xl">
       <span className="hero-roll" aria-hidden>
         <span className="hero-roll-window">
           <span className="hero-roll-track">
@@ -496,7 +653,7 @@ function GatewayCard({
     >
       <TiltCard
         className={cx(
-          'relative isolate flex min-h-56 flex-col overflow-hidden rounded-ck-lg border border-line',
+          'relative isolate flex h-full min-h-56 flex-col overflow-hidden rounded-ck-lg border border-line',
           'bg-surface p-6 shadow-ck-sm transition-shadow duration-300 ease-ck',
           'group-hover:shadow-ck group-focus-visible:shadow-ck',
           // The fourth state. Hover says the card can be pressed and focus says
