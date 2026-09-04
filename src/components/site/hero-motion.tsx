@@ -163,19 +163,21 @@ const TILT = 5.5;
 /**
  * How far the photograph lags behind the card, in pixels at the far corner.
  *
- * Bounded by geometry rather than by taste, and the two numbers below are a
- * pair -- change one and check the other. The photograph is pinned flush into
- * the card's bottom-right corner and the card clips it, so any inward drift
- * uncovers card background along those two edges. `PHOTO_REST_SCALE` is what
- * pays for it: the drifting box is the size of the card, so scaling it about
- * its centre pushes the pinned corner outward by 4% of the card's width and
- * height, and that overhang has to exceed the drift on both axes.
+ * Bounded by geometry rather than by taste. The photograph is pinned to the
+ * card's right edge and the card clips it, so any inward drift uncovers card
+ * background unless something covers it first. Two things do, and they are
+ * covering different axes now that the gateway cards are rows about 90px tall
+ * rather than 288px panels.
  *
- * The binding case is the card's height, which is fixed at `min-h-72` (288px):
- * 288 x 0.04 = 11.5px of cover for 10px of drift. Width is only tighter than
- * that on a card narrower than 250px, and the cards are single-column and
- * full-width below `lg` -- so a card that narrow is a phone, where the drift
- * never runs at all.
+ * Horizontally it is still `PHOTO_REST_SCALE`: the drifting box is the size of
+ * the card, so scaling it about its centre pushes the pinned edge outward by 4%
+ * of the card's width -- 20px on a 500px row, against 10px of drift.
+ *
+ * Vertically that arithmetic stopped working, because 4% of 90px is 3.6px and
+ * the drift is 10. The cover is a fixed overhang on the photograph instead: it
+ * is hung 20px past the row top and bottom (`-inset-y-5` in
+ * `storefront-hero.tsx`), which does not shrink with the card the way a
+ * percentage does. Change either and check this one.
  */
 const PHOTO_DRIFT = 10;
 /** Constant, so the cover above cannot lag the drift while two springs settle. */

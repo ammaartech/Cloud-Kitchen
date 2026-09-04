@@ -20,8 +20,11 @@ import {
  * The storefront hero.
  *
  * The composition follows the large Indian delivery apps -- headline, one
- * full-width action, two gateway cards -- because that is the shape a customer
- * in this market already knows how to read. What sat in that slot before was a
+ * action, two gateways -- because that is the shape a customer in this market
+ * already knows how to read. All four now sit in the left column of the split,
+ * beside the photograph rather than under it, which is the one place the
+ * arrangement departs from those apps and does so for the reason they would:
+ * everything the page is selling has to be on screen when the page arrives. What sat in that slot before was a
  * menu search, and a search field on a kitchen that cooks one menu a day is a
  * question with nothing behind it: the visitor has nothing to search for yet,
  * and the answer is the same page either way. The slot now asks for the thing
@@ -39,15 +42,27 @@ import {
  * themselves hydrate.
  */
 
-/** Dissolves a card photo outward from the corner it is anchored in. */
-const CORNER_FADE = 'radial-gradient(115% 115% at 100% 100%, #000 42%, transparent 74%)';
+/**
+ * Dissolves a card photo leftward, into the copy beside it.
+ *
+ * The gateway cards used to be tall panels with the photograph pinned into a
+ * corner, and a radial mask was the right shape for that. They are rows now --
+ * see `GatewayCard` -- so the photograph holds the right end at the card's full
+ * height and has exactly one edge to resolve: the vertical one facing the
+ * words. A horizontal ramp is that edge. A radial fade on a box this short
+ * guttered the picture at both corners to soften an edge nobody was looking at.
+ */
+const ROW_FADE = 'linear-gradient(270deg, #000 38%, transparent 92%)';
 
 /**
  * The entrance running order, in milliseconds.
  *
  * One list, in the order the eye should pick things up, so the choreography can
  * be read and retimed in one place rather than inferred from four `style`
- * attributes scattered through the markup. The whole thing is over inside a
+ * attributes scattered through the markup. The two cards still arrive last even
+ * though they no longer sit last on the page: they are the answer to the
+ * headline, and an answer that lands before the question has been asked reads
+ * as a menu rather than as a reply. The whole thing is over inside a
  * second and a half, under a headline that keeps rolling until ~3.15s -- see
  * the note above `.hero-enter` in `globals.css` for why the two are not
  * chained together.
@@ -287,6 +302,70 @@ export function StorefrontHero({
             >
               start a plan today
             </Link>
+
+            {/* The two gateways, and they are here rather than in a band of
+                their own below the split -- which is where they were, and where
+                nobody saw them.
+
+                The cost of the old arrangement was not subtle. Two 288px panels
+                under a 608px photograph put the only two links to the things
+                this kitchen sells about a screen and a half down: on a laptop
+                you had to scroll past a finished-looking hero to find out there
+                was anything under it, and a hero that looks finished is one
+                people stop at. The left column meanwhile ran out of copy after
+                the button and held a column-width of empty ground for the rest
+                of the photograph's height, so the page was paying for the space
+                twice -- empty above, cramped below.
+
+                Putting them in that empty ground answers both at once, and it
+                is what changes the cards' shape as well: half a column is not
+                wide enough for a panel with a heading, a photograph and a
+                button stacked inside it, but it is a natural width for a row.
+                See `GatewayCard`. Two of them stacked cost about 190px, against
+                the 650 the band cost, and the whole hero now resolves inside
+                one screen.
+
+                They share the copy's plane rather than getting a `HeroLayer` of
+                their own. They did have one, at a shallower depth, back when
+                they were a separate band that had to hold its own against the
+                photograph; sitting directly under the button they are part of
+                the copy, and giving them a second parallax rate would slide
+                them away from the sentence they answer.
+
+                Held to the subtitle's measure below `lg`, where the column is
+                the whole page: rows the full width of a 1024px container with
+                a centred paragraph above them read as a different section that
+                happens to be adjacent. From `lg` the column itself is the
+                measure and the cap comes off. */}
+            <div className="mx-auto mt-10 grid w-full max-w-xl gap-3 sm:mt-12 lg:mx-0 lg:max-w-none">
+              <GatewayCard
+                href="/subscriptions"
+                title="Meal subscriptions"
+                subtitle="Cooked to your schedule"
+                pill={offerPill ?? (plans.length ? pluralise(plans.length, 'plan') : null)}
+                footnote={
+                  cheapest
+                    ? `From ${money(cheapest.price)} for ${cheapest.billingPeriodDays} days`
+                    : null
+                }
+                photo={photos[1] ?? photos[0]}
+                enterAfter={ENTER.primaryCard}
+              />
+
+              <GatewayCard
+                href="/menu"
+                title="Today&rsquo;s menu"
+                subtitle="What the kitchen is cooking"
+                pill={
+                  available.length
+                    ? `${pluralise(available.length, 'dish', 'dishes')} today`
+                    : null
+                }
+                footnote={vegetarian.length ? `${vegetarian.length} of them vegetarian` : null}
+                photo={photos[2] ?? photos[0]}
+                enterAfter={ENTER.secondaryCard}
+              />
+            </div>
           </HeroLayer>
 
           {/* Its own plane, drifting slower than the copy beside it. The two
@@ -297,39 +376,6 @@ export function StorefrontHero({
             <HeroBowl photo={photos[0]} />
           </HeroLayer>
         </div>
-
-        {/* Two up only from lg. Between 640px and 1024px a two-column split
-            makes each card narrower than its own photograph needs, and the
-            heading ends up sitting on the food. */}
-        <HeroLayer depth={0.5} fade={0.12} className="mt-14 sm:mt-16">
-          <div className="grid gap-4 sm:gap-5 lg:grid-cols-2">
-            <GatewayCard
-              href="/subscriptions"
-              title="Meal subscriptions"
-              subtitle="Cooked to your schedule"
-              pill={offerPill ?? (plans.length ? pluralise(plans.length, 'plan') : null)}
-              footnote={
-                cheapest
-                  ? `From ${money(cheapest.price)} for ${cheapest.billingPeriodDays} days`
-                  : null
-              }
-              photo={photos[1] ?? photos[0]}
-              enterAfter={ENTER.primaryCard}
-            />
-
-            <GatewayCard
-              href="/menu"
-              title="Today&rsquo;s menu"
-              subtitle="What the kitchen is cooking"
-              pill={
-                available.length ? `${pluralise(available.length, 'dish', 'dishes')} today` : null
-              }
-              footnote={vegetarian.length ? `${vegetarian.length} of them vegetarian` : null}
-              photo={photos[2] ?? photos[0]}
-              enterAfter={ENTER.secondaryCard}
-            />
-          </div>
-        </HeroLayer>
 
         {/* The windows and the delivery scene are one unit now, so they sit
             inside a single wrapper rather than being a content row with a
@@ -613,12 +659,30 @@ function HeroHeadline() {
 /**
  * One of the two gateways out of the hero.
  *
- * The whole card is the link, so "Explore" is a styled span rather than a
- * button -- a button inside an anchor is invalid, and a second tab stop for the
- * same destination is noise. It borrows `buttonClasses` so it cannot drift away
- * from a real button.
+ * A row: title and count on one line, the detail under it, the photograph
+ * holding the right end, an arrow at the point of exit. It was a 288px panel
+ * with the same five things stacked vertically, and the shape changed with the
+ * position -- see the note beside the pair in `StorefrontHero`. Half a hero
+ * column will not take a panel, and a row is what fits a measure like that
+ * anyway; the two together cost about a third of what the band did, which is
+ * the whole reason the hero now resolves without scrolling.
  *
- * The anchor and the card are now two elements rather than one, and the split
+ * What went in the trade is the "Explore" button, and it went deliberately
+ * rather than for space. A row whose entire surface is the link does not need a
+ * second thing inside it saying so, and a filled pill on a card this short
+ * would be the loudest object in the hero -- louder than "start a plan today"
+ * directly above it, which is the one action this surface is actually selling.
+ * The arrow is the same promise at a weight that does not outrank the button it
+ * sits under: brand-filled, so it still reads as the live end of the row, but
+ * the size of a glyph rather than of a control.
+ *
+ * The right end is padding rather than a layout column -- `pr-24 sm:pr-36`,
+ * paired with the photograph's own width. The picture is out of flow and
+ * dissolves leftward into the card, so there is nothing for a flex track to
+ * measure; reserving the space on the box is what keeps the type off the food.
+ * Change one of the pair and change the other.
+ *
+ * The anchor and the card are two elements rather than one, and the split
  * is along the axis of what owns which transform. The anchor owns the
  * entrance, which is CSS and runs at first paint; the `TiltCard` inside it owns
  * the lean, which is spring-driven and runs on pointer input. One element
@@ -653,8 +717,8 @@ function GatewayCard({
     >
       <TiltCard
         className={cx(
-          'relative isolate flex h-full min-h-56 flex-col overflow-hidden rounded-ck-lg border border-line',
-          'bg-surface p-6 shadow-ck-sm transition-shadow duration-300 ease-ck',
+          'relative isolate flex items-center gap-4 overflow-hidden rounded-ck-lg border border-line',
+          'bg-surface py-4 pr-24 pl-5 shadow-ck-sm transition-shadow duration-300 ease-ck',
           'group-hover:shadow-ck group-focus-visible:shadow-ck',
           // The fourth state. Hover says the card can be pressed and focus says
           // it can be reached, but until this rule there was nothing between
@@ -665,39 +729,56 @@ function GatewayCard({
           // a pressed card is also a hovered one, and the later of two equally
           // specific rules is the one that wins.
           'group-active:shadow-ck-sm',
-          'sm:min-h-72 sm:p-8',
+          'sm:py-5 sm:pr-36 sm:pl-6',
         )}
       >
-        <h2 className="max-w-[52%] text-lg font-semibold tracking-caps text-ink uppercase sm:text-2xl">
-          {title}
-        </h2>
-        {/* Sentence case, and the one line on this card that changed shape
-            rather than size. It was a second line of capitals under the first,
-            and two lines of capitals do not make a hierarchy -- they make two
-            headings, both shouting, and the eye has to read them to find out
-            which one matters. Hierarchy is contrast: the title is large, heavy
-            and set in capitals, so the line explaining it should be none of
-            those things. Nothing about the size changed; it just stopped
-            competing. */}
-        <p className="mt-1.5 max-w-[52%] text-sm text-muted sm:text-base">{subtitle}</p>
+        <div className="min-w-0 flex-1">
+          {/* The title and its number on one line, because they are one fact:
+              "meal subscriptions, four plans" is what the visitor came to find
+              out, and stacking the count under the heading turned a single
+              glance into two. It wraps rather than truncates -- a count that
+              disappears at a narrow width is worse than a heading on two
+              lines. */}
+          <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1.5">
+            <h2 className="text-sm leading-tight font-semibold tracking-caps text-ink uppercase sm:text-base">
+              {title}
+            </h2>
+            {pill ? (
+              <span className="rounded-full bg-brand-soft px-2 py-0.5 text-[0.6875rem] leading-4 font-bold tracking-wide text-brand uppercase">
+                {pill}
+              </span>
+            ) : null}
+          </div>
 
-        {pill ? (
-          <span className="mt-4 w-fit rounded-full bg-brand-soft px-3 py-1 text-xs font-bold tracking-wide text-brand uppercase">
-            {pill}
-          </span>
-        ) : null}
+          {/* Sentence case, and the one line on this card that changed shape
+              rather than size. It was a second line of capitals under the
+              first, and two lines of capitals do not make a hierarchy -- they
+              make two headings, both shouting, and the eye has to read them to
+              find out which one matters. Hierarchy is contrast: the title is
+              set in capitals and this is not.
 
-        <div className="mt-auto pt-8">
-          {footnote ? (
-            <p className="mb-3 max-w-[52%] text-xs font-medium text-muted">{footnote}</p>
-          ) : null}
-          <span className={buttonClasses('primary', 'md', 'pointer-events-none w-fit')}>
-            Explore
-            <DriftingArrow>
-              <ArrowRightIcon className="transition-transform duration-300 ease-ck group-hover:translate-x-1" />
-            </DriftingArrow>
-          </span>
+              The footnote joins it rather than taking a line of its own. It is
+              the same register -- what the card is, then what it costs -- and
+              on a row a third line is a third of the card's height for a
+              clause. `truncate` is the guard for the narrowest phones, where
+              the price is the half that survives being cut. */}
+          <p className="mt-1.5 truncate text-xs text-muted sm:text-[0.8125rem]">
+            {subtitle}
+            {footnote ? <> &middot; {footnote}</> : null}
+          </p>
         </div>
+
+        <span
+          className={cx(
+            'relative grid size-9 shrink-0 place-items-center rounded-full border border-transparent',
+            'bg-brand text-white transition-colors duration-150 ease-ck',
+            'group-hover:bg-brand-hover group-active:bg-ink sm:size-10',
+          )}
+        >
+          <DriftingArrow>
+            <ArrowRightIcon className="transition-transform duration-300 ease-ck group-hover:translate-x-0.5" />
+          </DriftingArrow>
+        </span>
 
         {photo ? (
           <DriftingPhoto>
@@ -708,13 +789,18 @@ function GatewayCard({
               alt=""
               width={384}
               height={384}
-              sizes="(max-width: 640px) 144px, 208px"
+              sizes="(max-width: 640px) 96px, 144px"
               priority={priority}
-              // Anchored in the corner and dissolved toward the card's interior, so
-              // the photograph reads as part of the card rather than a pasted-on
-              // thumbnail -- and so the corner nearest the copy is already gone.
-              style={{ maskImage: CORNER_FADE, WebkitMaskImage: CORNER_FADE }}
-              className="absolute right-0 bottom-0 size-36 object-cover sm:size-48 lg:size-52"
+              // Hung past the row top and bottom rather than fitted to it, and
+              // that overhang is load-bearing: the photograph drifts up to 10px
+              // against the card's lean, and a picture flush with a 90px row has
+              // nothing to give -- the drift would pull card background into
+              // view along the top or bottom edge. On the old 288px panel the
+              // rest scale covered it; on a row it cannot, so the cover is a
+              // fixed 20px either side instead of a percentage of a height that
+              // is now too small to spare one.
+              style={{ maskImage: ROW_FADE, WebkitMaskImage: ROW_FADE }}
+              className="absolute -inset-y-5 right-0 w-24 object-cover sm:w-36"
             />
           </DriftingPhoto>
         ) : null}

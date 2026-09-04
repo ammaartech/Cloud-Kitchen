@@ -2558,9 +2558,19 @@ h3 {
   -webkit-mask-image: url('/tools/spoon-knife.png');
 }
 
-/* Level with the gateway cards rather than with the headline. The photograph
-   now occupies the right margin for the whole height of the split, so this had
-   to drop below where the panel ends or be drawn on top of the food. */
+/* Below where the panel ends, which is the only place on this side it can go:
+   the photograph occupies the right margin for the whole height of the split,
+   and above this the mark would be drawn on top of the food. It used to be
+   level with the gateway cards; those have moved up into the copy column and
+   it is level with the delivery windows now, which is why it stays at 48rem
+   rather than following them.
+
+   It cannot follow them, and the two numbers that say so are worth keeping
+   together. The panel's bottom edge tops out at 44rem (`clamp(...38rem) + 6rem`
+   at the widest, less the 6rem it is pulled up by), and the road's lane claims
+   roughly the section's bottom padding. 48rem is inside the gap those two
+   leave, which is now about 110px tall -- moving this up clips the food,
+   moving it down puts a grater on a rooftop. */
 .tool-grater {
   --breathe-run: 8.3s;
   --breathe-at: -5.6s;
