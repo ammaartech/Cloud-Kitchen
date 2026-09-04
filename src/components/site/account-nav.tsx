@@ -25,11 +25,15 @@ export function AccountNav() {
     <div className="ml-auto flex h-9 items-center gap-2">
       {account ? (
         <>
+          {/* The one thing in this bar that is not set in capitals. It is a
+              person's name, and a name in all caps is a different word about a
+              different kind of thing -- the label beside it is a control, this
+              is who you are. */}
           <span className="hidden text-sm text-subtle sm:inline">{account.name}</span>
-          <ButtonLink href={account.href} variant="secondary" size="sm">
+          <ButtonLink href={account.href} variant="secondary" size="sm" className="btn-caps btn-square">
             {account.label}
           </ButtonLink>
-          <SignOutButton />
+          <SignOutButton className="btn-caps btn-square" />
         </>
       ) : (
         <>
@@ -37,12 +41,17 @@ export function AccountNav() {
             href="/sign-in"
             variant="ghost"
             size="sm"
-            className="hidden sm:inline-flex"
+            className="btn-caps btn-square hidden sm:inline-flex"
           >
             Sign in
           </ButtonLink>
-          <ButtonLink href="/subscriptions" size="sm">
-            Start a plan
+          {/* The hero's words, exactly. This is the same action as the big
+              rectangle in the hero column, and once the bar started carrying
+              the hero's links it was carrying half of that column already --
+              two labels for one destination is the reader having to work out
+              whether they are the same thing. */}
+          <ButtonLink href="/subscriptions" size="sm" className="btn-caps btn-square">
+            Start a plan today
           </ButtonLink>
         </>
       )}

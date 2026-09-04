@@ -83,9 +83,12 @@ const HeroScrollContext = createContext<MotionValue<number> | null>(null);
  * scroll position and buys motion that keeps gliding after the wheel stops.
  */
 export function HeroStage({
+  id,
   className,
   children,
 }: {
+  /** The scroll target for the header's wordmark -- see `SECTIONS` in `nav.ts`. */
+  id?: string;
   className?: string;
   children: ReactNode;
 }) {
@@ -109,7 +112,7 @@ export function HeroStage({
   return (
     <LazyMotion features={loadFeatures} strict>
       <HeroScrollContext.Provider value={reduced ? null : smoothed}>
-        <section ref={ref} className={className}>
+        <section ref={ref} id={id} className={className}>
           {children}
         </section>
       </HeroScrollContext.Provider>
@@ -185,6 +188,33 @@ const PHOTO_REST_SCALE = 1.08;
 
 const POINTER_SPRING = { stiffness: 260, damping: 26, mass: 0.6 } as const;
 const LIFT_SPRING = { stiffness: 200, damping: 30, mass: 0.8 } as const;
+/**
+ * The press, and it is stiff where the other two are soft.
+ *
+ * The lean and the lift are ambient -- they follow a pointer that is already
+ * moving, and a slow settle is what makes them read as weight. A press is the
+ * opposite kind of event: the card has to be visibly moving inside the same
+ * frame the finger goes down, or the feedback arrives after the decision it
+ * was meant to confirm. This settles in about 120ms, which is the band a press
+ * wants, and `damping` is set high enough that it does not overshoot -- a
+ * button that bounces back past its resting size reads as a toy.
+ *
+ * A spring rather than a transition because this one is interrupted constantly:
+ * a press released mid-travel, or a pointer dragged off the card, reverses from
+ * wherever the scale actually is. A keyframe would restart from the top.
+ */
+const PRESS_SPRING = { stiffness: 520, damping: 34, mass: 0.5 } as const;
+/**
+ * How far the card gives under a press.
+ *
+ * Emil Kowalski's number for a button is 0.97, and it is right for a button --
+ * a control the size of a word, where three per cent is a couple of pixels. On
+ * a row half the width of the hero the same ratio is a 15px shove, which stops
+ * reading as a press and starts reading as the card falling away from the
+ * pointer. The travel that matters is absolute, not proportional, so the big
+ * surface takes the smaller number.
+ */
+const PRESS_SCALE = 0.985;
 
 type PhotoDrift = {
   x: MotionValue<number>;
@@ -232,15 +262,25 @@ export function TiltCard({
   // 0 at rest, 1 while the card is engaged -- the single gate for everything
   // that should only be visible during the interaction.
   const engaged = useMotionValue(0);
+  // 0 at rest, 1 while a finger or button is down on the card.
+  const held = useMotionValue(0);
 
   const sx = useSpring(px, POINTER_SPRING);
   const sy = useSpring(py, POINTER_SPRING);
   const lift = useSpring(engaged, LIFT_SPRING);
+  const press = useSpring(held, PRESS_SPRING);
 
   const rotateX = useTransform(sy, [-0.5, 0.5], [TILT, -TILT]);
   const rotateY = useTransform(sx, [-0.5, 0.5], [-TILT, TILT]);
   const y = useTransform(lift, [0, 1], [0, -6]);
-  const scale = useTransform(lift, [0, 1], [1, 1.012]);
+  // Two springs into one scale, because a card can be lifted and pressed at the
+  // same moment and `transform` has room for exactly one of them. They are
+  // added rather than multiplied: both are fractions of a per cent or two, so
+  // the difference is invisible, and a sum is the version that can be read.
+  const scale = useTransform<number, number>(
+    [lift, press],
+    ([lifted, pressed]) => 1 + lifted * 0.012 - pressed * (1 - PRESS_SCALE),
+  );
 
   // The sheen, in per-cent of the card, tracking the pointer.
   const sheenX = useTransform(sx, [-0.5, 0.5], [8, 92]);
@@ -266,16 +306,48 @@ export function TiltCard({
     px.set(0);
     py.set(0);
     engaged.set(0);
+    held.set(0);
   }
 
   function engage() {
     if (!reduced) engaged.set(1);
   }
 
+  /**
+   * The press, and it is the one thing here that is not gated on a mouse.
+   *
+   * The lean and the sheen are decoration and are suppressed for a reduced-motion
+   * visitor and for a finger, which has no hover to track. This is feedback --
+   * the card acknowledging that it was pressed at the moment it was pressed --
+   * and on a phone it is the *only* acknowledgement there is, because every
+   * hover state above it is behind a `(hover: hover)` query that never matches.
+   * Taking it away on touch would leave the one device with no pointer feedback
+   * at all as the one device with no feedback at all.
+   *
+   * Reduced motion still opts out. 1.5% over 120ms is not what triggers motion
+   * sickness, but the setting is a request for a still interface and the anchor
+   * underneath still has its focus ring and the shadow that fades with it.
+   */
+  function hold() {
+    if (!reduced) held.set(1);
+  }
+
+  function letGo() {
+    held.set(0);
+  }
+
   return (
     <MotionDiv
       onPointerMove={track}
       onPointerLeave={release}
+      onPointerDown={hold}
+      // `up` is the release that follows a real press; `cancel` is the one that
+      // follows the browser taking the pointer away -- a scroll starting under
+      // the finger, a context menu, a gesture claimed by the OS. Without the
+      // second, a card pressed and then scrolled past stays shrunk for as long
+      // as the page is open.
+      onPointerUp={letGo}
+      onPointerCancel={letGo}
       // A keyboard visitor never fires a pointer event, so the lift is bound to
       // focus as well -- otherwise tabbing to the card is the one way of
       // reaching it that gets no acknowledgement at all. The lean stays at rest

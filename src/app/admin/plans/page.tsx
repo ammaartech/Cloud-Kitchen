@@ -155,7 +155,6 @@ export default async function PlansPage({ searchParams }: PageProps<'/admin/plan
 
     revalidatePath(PATH);
     revalidateStorefront('/subscriptions');
-    revalidateStorefront('/meal-plans');
   }
 
   async function setArchived(formData: FormData) {

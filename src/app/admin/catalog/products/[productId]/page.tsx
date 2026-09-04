@@ -373,7 +373,6 @@ export default async function ProductEditorPage({
 
     revalidatePath(path);
     revalidateStorefront('/menu');
-    revalidateStorefront('/meal-plans');
     done(path, 'Collections saved.');
   }
 

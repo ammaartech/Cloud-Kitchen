@@ -1,5 +1,10 @@
 import { revalidatePath } from 'next/cache';
-import { revalidateStorefront } from '@/lib/data/catalog-cache';
+// No `revalidateStorefront` here, and its absence is deliberate. Collections
+// had exactly one public surface -- the `/meal-plans` page -- and that page is
+// gone: its delivery windows duplicated the hero's, and its dish grid
+// duplicated the menu's. Nothing on the storefront reads collections now, so
+// there is no storefront cache for editing one to bust. Re-surface them and
+// this import comes back with them.
 import { requirePermission } from '@/lib/auth/session';
 import { PERMISSIONS } from '@/lib/auth/permissions';
 import { serverClient } from '@/lib/supabase/server';
@@ -91,7 +96,6 @@ export default async function CollectionsPage({
     if (error) fail(PATH, readable(error));
 
     revalidatePath(PATH);
-    revalidateStorefront('/meal-plans');
     done(PATH, 'Collection created.');
   }
 
@@ -114,7 +118,6 @@ export default async function CollectionsPage({
     if (error) fail(PATH, readable(error));
 
     revalidatePath(PATH);
-    revalidateStorefront('/meal-plans');
     done(PATH, 'Collection saved.');
   }
 
@@ -132,7 +135,6 @@ export default async function CollectionsPage({
     if (error) fail(PATH, readable(error));
 
     revalidatePath(PATH);
-    revalidateStorefront('/meal-plans');
     done(PATH, 'Collection deleted. The dishes in it are untouched.');
   }
 

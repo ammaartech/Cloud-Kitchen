@@ -312,7 +312,6 @@ export default async function PlanEditorPage({
     revalidatePath(path);
     revalidatePath('/admin/plans');
     revalidateStorefront('/subscriptions');
-    revalidateStorefront('/meal-plans');
   }
 
   const fixedMeals = meals.filter((meal) => !meal.is_selectable);

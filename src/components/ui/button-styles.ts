@@ -17,6 +17,20 @@
  * Every variant defines default, hover, active and disabled. Colours come from
  * tokens rather than ramp steps so the ops surface flips them; each state was
  * checked at 4.5:1 on both surfaces.
+ *
+ * The press is the one thing here that is not colour. Every button in this
+ * system used to answer a press by changing shade, which is a state *report*
+ * rather than a response -- the interface tells you afterwards that something
+ * was pressed, instead of moving under the finger while it is being pressed.
+ * `active:scale-[0.97]` is the response, and it is on the shared definition
+ * rather than on the buttons that seemed to want it, because a system where
+ * only some buttons give under the finger is worse than one where none do:
+ * the ones that do not read as broken.
+ *
+ * 0.97 rather than something more visible. The scale takes the label and the
+ * icons with it -- that is what makes it read as one object being pushed
+ * rather than a box resizing around its contents -- so three per cent is
+ * already a legible amount of travel on a control the size of a word.
  */
 
 export function cx(...parts: Array<string | false | null | undefined>): string {
@@ -57,7 +71,21 @@ export function buttonClasses(
 ): string {
   return cx(
     'inline-flex items-center justify-center gap-2 rounded-full border font-medium',
-    'cursor-pointer transition-colors duration-150 ease-ck',
+    // The properties are named rather than left to `transition-colors`, which
+    // would not carry the press, and rather than `all`, which would carry
+    // everything including layout properties nothing here should be animating.
+    //
+    // `scale`, not `transform`, and that is a Tailwind v4 detail worth writing
+    // down because it fails silently. v4 compiles `scale-[0.97]` to the
+    // independent `scale:` property rather than to `transform: scale(...)`.
+    // Listing `transform` here therefore transitions a property this button
+    // never sets: the press still worked, but it snapped in and snapped back
+    // with no easing at all, which is the one thing a press should not do.
+    //
+    // 150ms sits inside the 100-160ms a press wants: below it the button reads
+    // as twitchy, above it the response arrives after the finger has left.
+    'cursor-pointer transition-[scale,color,background-color,border-color] duration-150 ease-ck',
+    'active:scale-[0.97]',
     'disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-45',
     BUTTON_VARIANTS[variant],
     BUTTON_SIZES[size],

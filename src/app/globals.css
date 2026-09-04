@@ -129,36 +129,23 @@
      yellow, so it reads as a line drawn on the paper rather than a seam in it. */
   --ck-note-rule: rgb(13 23 20 / 0.14);
 
-  /* The mission band at the foot of the home page -- the one dark surface on
-     the storefront, and the only place the light register is put down.
-     Deliberately not the ops surface: that ramp is calibrated for a cook
-     reading a wall screen at arm's length under bad lighting, and reusing it
-     here would dress a marketing close in kitchen equipment. These are their
-     own tokens because they answer a different question.
+  /* The one dark green on the storefront. It was the ground of a mission band
+     at the foot of the home page; the band is gone and the colour is not --
+     the hero's bowl panel is painted with it, and the gradient that fades the
+     photograph out into the page is mixed from it.
 
-     `mission` is ramp step 800 rather than 900 or 950, and the difference is
-     the whole point of the band. The two darker steps read as near-black --
-     dark mode, which is a treatment -- where 800 still reads as *green*, which
-     is the brand. A colour has to be light enough to have a hue at all.
+     Ramp step 800 rather than 900 or 950, and that is why it survived the band
+     rather than being replaced by ink. The two darker steps read as near-black
+     -- dark mode, which is a treatment -- where 800 still reads as *green*,
+     which is the brand. A colour has to be light enough to have a hue at all.
 
-     Every ink here was checked against that ground rather than chosen to look
-     right: `ink` 11.09:1, `muted` 9.14:1, `subtle` 5.99:1, all comfortably past
-     4.5. `check:contrast` holds them there.
-
-     `focus` is the one that would have been missed. The global ring is brand
-     green, which on this ground sits at about 1.4:1 and effectively disappears
-     -- a keyboard visitor would tab into the band and lose the cursor. Step 400
-     puts it back at 4.76:1. The ops surface solves the same problem the same
-     way; see the note over `--ck-focus`. */
+     The light ink palette that went with it did not survive: `mission-ink`,
+     `-muted`, `-subtle`, `-focus` and `-line` were five tokens whose only
+     reader was the component that was deleted, and nothing on the storefront
+     sets type on this colour now -- the bowl panel is a photograph. They are
+     the sort of thing that sits in a stylesheet for a year looking like a
+     palette somebody meant to use. */
   --ck-mission: #254139;        /* 800 */
-  --ck-mission-ink: #ffffff;    /* 11.09:1 */
-  --ck-mission-muted: #dfece8;  /* 100,  9.14:1 */
-  --ck-mission-subtle: #9ec7bb; /* 300,  5.99:1 */
-  --ck-mission-focus: #7db5a4;  /* 400,  4.76:1 -- a ring needs 3 */
-  /* The underline under a link, and the only rule drawn on this surface. Light
-     at low alpha rather than a darker green: it has to sit *over* the ground
-     the way an underline does, not behind it like a seam. */
-  --ck-mission-line: rgb(239 246 244 / 0.28);
 
   /* The ink the marginalia -- the drawn kitchen tools out in the page margins
      -- are painted in. Two values for one idea: the drawings are masks, so the
@@ -167,14 +154,12 @@
      An inverted second copy of every tool would be five more files to keep in
      step, and they would still be wrong on the third surface.
 
-     Alpha rather than a solid step, because these sit behind real text and
-     have to stay *underneath* it in the reading order even where nothing
-     overlaps. Around a sixth of full ink is the point where they read as
-     something drawn on the page rather than something printed on it.
-
-     `--ck-mark` is what every mark actually paints with; the mission band
-     re-points it at the inverted value the same way it re-points the focus
-     ring. Nothing that draws a mark has to know which surface it is on. */
+     One value rather than two. There used to be a second, inverted ink for
+     the same drawings on the dark mission band, on the argument that what
+     reads as "drawn on the page" differs by ground -- which was true, and
+     stopped mattering when the band went. The marginalia only ever appear in
+     the near-white margins now, so `--ck-mark` is what every mark paints with
+     and there is no surface for it to be wrong on. */
   /* Ink, at full strength, exactly as the tools were drawn. These were a 17%
      wash to begin with, on the reasoning that marginalia should sit under the
      text -- but a wash is what made them read as a watermark printed on the
@@ -183,14 +168,6 @@
      for the same reason. What keeps them subordinate is where they are and how
      much of the page they take, not how faint they are. */
   --ck-mark: var(--ck-text);
-  /* The same drawings on the mission band, and not the same value inverted.
-     The light marks live on a dark green with a display statement over it,
-     where the dark marks live in empty near-white margins with nothing to
-     compete with -- so the ink that reads as "drawn on the page" is different
-     on each. Full strength here would put four utensils in argument with the
-     statement; the 0.13 this started at was so faint the drawings barely
-     registered as being there at all. */
-  --ck-mark-invert: rgb(239 246 244 / 0.22);
 
   /* Shadows are tinted with the ramp's darkest step, not neutral black, so
      they sit in the same material as everything else. */
@@ -410,8 +387,8 @@ h3 {
 .hero-headline {
   position: relative;
   /* The display end of the tracking ramp, and the only place on the site that
-     needs one. The headline triples in size between 375px and a desktop -- 36px
-     to 60px -- and a single letter-spacing value cannot be right at both ends:
+     needs one. The headline triples in size between 375px and a desktop -- 45px
+     to 75px -- and a single letter-spacing value cannot be right at both ends:
      what reads as tight at 36px reads as gappy at 60px, because the space
      between letters grows with the type while the eye's tolerance for it does
      not. So it tightens as it grows, and stops at -0.03em: past about -0.04em
@@ -428,9 +405,14 @@ h3 {
   }
 }
 
+/* -0.034em, not -0.03. The headline went up a quarter in size and tracking is a
+   ratio of it, so holding the old value would have let the letters drift apart
+   at exactly the size where they are most visible. This is the far end of what
+   Inter takes: past about -0.04em its round letters start to touch and the line
+   reads as cramped rather than as set. */
 @media (min-width: 64rem) {
   .hero-headline {
-    letter-spacing: -0.03em;
+    letter-spacing: -0.034em;
   }
 }
 
@@ -599,8 +581,24 @@ h3 {
    `--enter-at` is set per element at the call site, so the running order lives
    with the markup it orders rather than in a stack of nth-child rules here.
    -------------------------------------------------------------------------- */
+/* `backwards` rather than `both`.
+
+   `both` keeps the closing keyframe applied for the life of the element, so
+   this animation goes on owning `transform` and `opacity` long after it has
+   finished -- and an animation's value beats any transition on the same
+   property. Nothing is broken by that today: the call to action's
+   `active:scale-[0.97]` reaches it anyway, because Tailwind v4 compiles that to
+   the independent `scale` property rather than to `transform`. It is a trap
+   left armed rather than a bug, and the next `transform` anyone puts on this
+   element is the one that springs it -- silently, because a dead transition
+   looks exactly like a transition someone forgot to write.
+
+   `backwards` holds the *opening* frame through the delay, which is the only
+   part this animation actually needs, and hands both properties back when it
+   is done. Safe here precisely because the closing frame is the element's
+   resting state: there is nothing to keep. */
 .hero-enter {
-  animation: hero-enter 800ms var(--ck-ease) var(--enter-at, 0ms) both;
+  animation: hero-enter 800ms var(--ck-ease) var(--enter-at, 0ms) backwards;
 }
 
 /* The cards' variant, and the reason there are two: this one moves without
@@ -612,9 +610,12 @@ h3 {
    Paint out by the whole length of this animation -- paying in the number the
    page was just optimised for, to buy a fade nobody asked for. Translating a
    fully opaque card costs nothing: it is painted on the first frame, and it
-   arrives from slightly below. */
+   arrives from slightly below.
+
+   `backwards` for the reason given over `.hero-enter`: the closing frame is the
+   resting state, so there is nothing worth holding the property for. */
 .hero-enter-lift {
-  animation: hero-enter-lift 900ms var(--ck-ease) var(--enter-at, 0ms) both;
+  animation: hero-enter-lift 900ms var(--ck-ease) var(--enter-at, 0ms) backwards;
 }
 
 @keyframes hero-enter {
@@ -1356,7 +1357,7 @@ h3 {
    relay either turns into four separate animations played in a queue or puts
    all four in the air at once. */
 .step-flow.is-revealed .step-hop {
-  animation: step-hop 900ms var(--deal-ease) var(--step-at) both;
+  animation: step-hop 620ms var(--deal-ease) var(--step-at) both;
 }
 
 /* Opacity only, and deliberately nothing else. This is the copy the whole
@@ -1366,9 +1367,12 @@ h3 {
 
    It waits out most of the number's journey before it starts, so the step
    develops under a badge that has already landed rather than assembling itself
-   in mid-flight. */
+   in mid-flight. 280ms of that wait now, and 400ms of fade, where it was 580
+   and 620 -- see `STEP_STEP` in `step-flow.tsx` for what the whole sequence
+   was costing the last step to read. The shape of the beat is the same; it
+   just stops being the slowest thing on the page. */
 .step-flow.is-revealed .step-copy {
-  animation: step-copy-in 620ms var(--ck-ease) calc(var(--step-at) + 580ms) both;
+  animation: step-copy-in 400ms var(--ck-ease) calc(var(--step-at) + 280ms) both;
 }
 
 /* The hidden state is in the keyframe and nowhere else, so a visitor whose
@@ -1457,10 +1461,21 @@ h3 {
   color: var(--ck-brand);
 }
 
-.btn-plain:hover {
-  background-color: var(--ck-brand);
-  border-color: var(--ck-brand);
-  color: #fff;
+/* Behind a hover query, and it has to be written out because this is hand-rolled
+   CSS. Tailwind v4 compiles every `hover:` utility inside `@media (hover: hover)`
+   already; the rules in this file bypass that machinery entirely, so on a phone
+   this one fired on tap and left the button sitting filled green with no pointer
+   anywhere near it -- a control stuck in a state the visitor cannot clear.
+   `pointer: fine` excludes the coarse-pointer devices that claim hover support.
+
+   The query changes nothing about specificity, so this still beats
+   `hover:bg-brand-soft-hover` by source order the way the note above describes. */
+@media (hover: hover) and (pointer: fine) {
+  .btn-plain:hover {
+    background-color: var(--ck-brand);
+    border-color: var(--ck-brand);
+    color: #fff;
+  }
 }
 
 /* Press goes past the fill to the ink, so the third state is distinguishable
@@ -1530,7 +1545,19 @@ h3 {
      rather than derived from something -- it is where the first line lands
      against the top of the photograph beside it. */
   .hero-copy {
-    padding-top: clamp(1.5rem, 3.2vw, 3.25rem);
+    /* Named rather than inline, because `.hero-nav` climbs back out of it --
+       see `--hero-nav-lift`. The two have to agree, and the only way to
+       guarantee that is for one of them to be the other's arithmetic.
+
+       Halved, which is what brings the headline up. It is worth being precise
+       about what this number moves and what it does not: the nav row's lift is
+       `--copy-lead` plus a constant, and the row starts at `--copy-lead`, so the
+       row's position on the page works out to that constant and nothing else.
+       Changing the lead therefore moves the headline and everything under it
+       without moving the row at all -- the gap between the two closes, which is
+       exactly the requested change and none of the ones that were not. */
+    --copy-lead: clamp(0.75rem, 1.5vw, 1.5rem);
+    padding-top: var(--copy-lead);
   }
 
   /* The copy stops being centred at the same breakpoint the split appears.
@@ -1542,30 +1569,139 @@ h3 {
   }
 }
 
+/* The action, at the width of the cards under it.
+
+   36rem, not 42, and full-width in the column rather than fitted to its label.
+   Both numbers are the gateway cards' -- they are `max-w-xl` centred below `lg`
+   and the whole column above it, and this now says the same thing twice rather
+   than nearly the same thing twice. The three of them are one stack of actions
+   down the left of the hero, and a stack whose members are three different
+   widths reads as three unrelated things that happen to be near each other.
+
+   `display: flex` overrides the `inline-flex` every button carries, because an
+   inline box does not centre on `margin-inline: auto` -- the width and the
+   centring have to come from the same rule or the button sits left. The label
+   itself is centred by `justify-center` from `buttonClasses`, which is why
+   there is nothing about it here. */
 .hero-cta {
   display: flex;
+  /* The containing block for the wipe below. */
+  position: relative;
   margin-inline: auto;
   width: 100%;
-  max-width: 42rem;
+  max-width: 36rem;
   height: 3.625rem;
   /* One step up from the shared `lg`. At this width 16px reads as a caption
      that happens to be inside a rectangle rather than as the button's label. */
   font-size: 1.125rem;
 }
 
-/* In the split it is a button again rather than a bar. Full width made sense
-   when it sat under a centred headline and had the whole column to answer to;
-   in a half-width column it just becomes a long empty rectangle, and the
-   references this layout follows all end their copy on something compact. */
+/* The column's full width in the split, matching the cards directly beneath it.
+
+   It used to be `fit-content` here, on the argument that a full-width bar in a
+   half-width column is a long empty rectangle. That argument was made when this
+   button sat alone; it does not survive the cards moving up into the same
+   column. Two full-width cards under a button fitted to its own label is not
+   restraint, it is a ragged left-hand edge -- and the edge is the thing the eye
+   actually follows down a column. Alignment beats the emptiness it costs. */
 @media (min-width: 64rem) {
   .hero-cta {
     margin-inline: 0;
-    /* `fit-content`, not `auto`. The rule above makes this a flex container,
-       which is block-level, so `width: auto` still fills the column and the
-       button stays the full-width bar this is trying to stop being. */
-    width: fit-content;
-    padding-inline: 2.75rem;
+    width: 100%;
+    max-width: none;
   }
+}
+
+/* --------------------------------------------------------------------------
+   The hero action's fill, and it is a wipe rather than a crossfade.
+
+   `.btn-plain` answers a hover by transitioning `background-color`: the whole
+   rectangle goes from empty to green at once, everywhere, and the label has to
+   change from green to white at the same time. Those two are the problem. A
+   colour crossfade has no direction, so nothing about it says which way the
+   press is going; and for the length of the transition the label is a blend of
+   two colours over a ground that is also a blend of two colours, which is the
+   one moment in the interaction where the words are least readable.
+
+   This wipes instead. A second copy of the button -- filled green, label
+   already white -- is laid exactly over the first and clipped to nothing with
+   `clip-path: inset(0 100% 0 0)`. Hovering animates the clip open from the left.
+   No colour anywhere is transitioning: every pixel is either the resting button
+   or the filled one, and the boundary between them travels across the control.
+   The letters change colour exactly as the edge crosses them, which is a thing
+   a `background-color` transition cannot do at any duration.
+
+   `clip-path` is the sanctioned fourth animatable property alongside transform
+   and opacity -- it is composited, so this costs no layout and no paint.
+
+   The two durations are asymmetric on purpose. Filling is the deliberate half
+   and gets 300ms, right at the ceiling for a UI animation and the most this
+   surface will take; emptying is the system getting out of the way and gets
+   200ms. Slow where the visitor is deciding, fast where the interface is
+   responding.
+   -------------------------------------------------------------------------- */
+.hero-cta-fill {
+  position: absolute;
+  /* Absolute insets resolve against the padding box, so this covers everything
+     inside the hairline and leaves the border itself to `.btn-plain`, which is
+     already drawing it in brand. */
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--ck-brand);
+  color: #fff;
+  /* Retracted to the left edge. Not `scaleX(0)`, which would squash the label
+     as it went; the clip leaves the copy underneath at its true size and only
+     changes how much of it is painted. */
+  clip-path: inset(0 100% 0 0);
+  transition: clip-path 200ms var(--ck-ease);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  /* The flat fill has to be called off, or it lands under the wipe instantly
+     and there is nothing left for the wipe to reveal. Same specificity as
+     `.btn-plain:hover`, later in the file, so this wins on source order. */
+  .hero-cta:hover {
+    background-color: transparent;
+    color: var(--ck-brand);
+  }
+
+  .hero-cta:hover .hero-cta-fill {
+    clip-path: inset(0 0 0 0);
+    transition-duration: 300ms;
+  }
+}
+
+/* Keyboard reach gets the filled state too -- the focus ring says where you
+   are, this says what you are about to do -- but arrives at it without the
+   travel. A wipe is a response to a pointer crossing the control; there is no
+   pointer here, and 300ms of animation between two tab stops is 300ms of the
+   page moving while someone is trying to navigate it. */
+.hero-cta:focus-visible {
+  background-color: transparent;
+  color: var(--ck-brand);
+}
+
+.hero-cta:focus-visible .hero-cta-fill {
+  clip-path: inset(0 0 0 0);
+  transition-duration: 0ms;
+}
+
+/* Press goes past the fill to the ink, matching `.btn-plain:active`, and it
+   completes the wipe rather than waiting for it: a press is an answer, and an
+   answer should already be there. Ungated, because a press is real on every
+   device -- this is the whole of the interaction on a phone, where the hover
+   above never runs. */
+.hero-cta:active {
+  background-color: transparent;
+  color: var(--ck-brand);
+}
+
+.hero-cta:active .hero-cta-fill {
+  background-color: var(--ck-text);
+  clip-path: inset(0 0 0 0);
+  transition-duration: 120ms;
 }
 
 /* --------------------------------------------------------------------------
@@ -1833,40 +1969,112 @@ h3 {
   background-size: 160px 160px, auto, auto;
   background-repeat: repeat, no-repeat, no-repeat;
 
-  /* Four layers, because one shadow is what makes a thing look like it is
-     floating rather than resting on something.
+  /* The containing block for the two shadow layers below. */
+  position: relative;
 
-     Contact is tight and almost black: the hairline of dark right where the
-     paper still touches the page, and the only part of this that says "on"
-     rather than "above". Ambient is broad and weak, the light the note blocks.
-     The lift is offset low and spread wide -- the note is glued at the top and
-     standing off the page at the bottom, so its shadow is not symmetrical.
+  /* The curl, and the only shadow left on the element itself.
 
-     The inset is the curl. It shades the inside of the bottom edge, so the
-     sheet reads as bending away from the page rather than being cut off flat,
-     and it lines up with the swept bottom-right corner above. */
-  box-shadow:
-    0 1px 1px rgb(13 23 20 / 0.11),
-    0 5px 10px -6px rgb(13 23 20 / 0.24),
-    0 18px 26px -16px rgb(13 23 20 / 0.5),
-    inset 0 -16px 20px -16px rgb(13 23 20 / 0.15);
+     It shades the inside of the bottom edge, so the sheet reads as bending away
+     from the page rather than being cut off flat, and it lines up with the
+     swept bottom-right corner above. It stays here because it is the one layer
+     that is identical in both states -- a note that is lifted is still curled
+     by the same amount -- so there is nothing for it to cross-fade with. */
+  box-shadow: inset 0 -16px 20px -16px rgb(13 23 20 / 0.15);
 
   /* Lift before rotate, so the offset is vertical on the page rather than
      along the note's own tilted axis. */
   transform: translateY(var(--note-lift, 0)) rotate(var(--note-tilt, 0deg));
-  transition:
-    transform 220ms var(--ck-ease),
-    box-shadow 220ms var(--ck-ease);
+  transition: transform 220ms var(--ck-ease);
 }
 
-.sticky-note:hover,
-.sticky-note:focus-within {
-  transform: translateY(calc(var(--note-lift, 0px) - 4px)) rotate(0deg);
+/* --------------------------------------------------------------------------
+   The note's two shadows, as elements that cross-fade rather than as one shadow
+   that transitions.
+
+   `transition: box-shadow` re-rasterises a large blurred region on every frame
+   for the whole 220ms, and there are four of these in a row. Opacity is
+   composited: each shadow is drawn once and the GPU decides how much of it
+   shows. The picture is identical and the per-frame work is gone.
+
+   It has to be a cross-fade rather than one shadow fading in over the other,
+   and that is the part worth writing down. The resting and raised shadows are
+   close relatives -- same three layers, slightly further and slightly stronger
+   -- so simply revealing the raised one on top of the resting one composites
+   two nearly-identical dark blurs into something markedly darker than either.
+   The resting copy has to leave as the raised copy arrives.
+
+   Three layers each. Contact is tight and almost black: the hairline of dark
+   right where the paper still touches the page, and the only part of this that
+   says "on" rather than "above". Ambient is broad and weak, the light the note
+   blocks. The lift is offset low and spread wide -- the note is glued at the
+   top and standing off the page at the bottom, so its shadow is not
+   symmetrical.
+
+   Both are drawn entirely outside the note's own box, so neither ever paints
+   over the paper and neither needs a z-index to stay out of the way.
+   -------------------------------------------------------------------------- */
+.sticky-note::before,
+.sticky-note::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  /* The corners are four separate elliptical radii on the parent; `inherit`
+     carries all of them, where a re-declared shorthand would flatten them. */
+  border-radius: inherit;
+  pointer-events: none;
+  transition: opacity 220ms var(--ck-ease);
+}
+
+/* Resting. */
+.sticky-note::before {
+  opacity: 1;
+  box-shadow:
+    0 1px 1px rgb(13 23 20 / 0.11),
+    0 5px 10px -6px rgb(13 23 20 / 0.24),
+    0 18px 26px -16px rgb(13 23 20 / 0.5);
+}
+
+/* Raised. */
+.sticky-note::after {
+  opacity: 0;
   box-shadow:
     0 1px 1px rgb(13 23 20 / 0.11),
     0 8px 14px -8px rgb(13 23 20 / 0.26),
-    0 26px 34px -20px rgb(13 23 20 / 0.55),
-    inset 0 -16px 20px -16px rgb(13 23 20 / 0.15);
+    0 26px 34px -20px rgb(13 23 20 / 0.55);
+}
+
+/* The lifted state: the note comes up off the page and straightens as it does.
+
+   The two ways in are gated differently. Focus is a real intent on every
+   device and stays ungated; a hover on a touch screen is a tap that never
+   lifts, and left a note standing up until something else was tapped. CSS
+   cannot gate one selector out of a list, so the hover half is a second rule
+   inside the query -- three declarations each now that the shadows have moved
+   out, which is cheap enough to say twice. */
+.sticky-note:focus-within {
+  transform: translateY(calc(var(--note-lift, 0px) - 4px)) rotate(0deg);
+}
+
+.sticky-note:focus-within::before {
+  opacity: 0;
+}
+
+.sticky-note:focus-within::after {
+  opacity: 1;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .sticky-note:hover {
+    transform: translateY(calc(var(--note-lift, 0px) - 4px)) rotate(0deg);
+  }
+
+  .sticky-note:hover::before {
+    opacity: 0;
+  }
+
+  .sticky-note:hover::after {
+    opacity: 1;
+  }
 }
 
 /* The price sits on the bottom edge of every note rather than wherever its own
@@ -2040,12 +2248,62 @@ h3 {
    makes a pair is that each does the thing its subject would do. He follows
    her by a beat for the same reason: two illustrations arriving in the same
    frame is one event, and this section has room for two. */
-.calendar-mark.is-revealed {
-  animation: art-set-down 900ms var(--ck-ease) 160ms both;
+/* The arrival, and then the same wander the drawn tools have.
+
+   These two are `<img>` rather than masks and they are much larger, so they get
+   the amplitudes in absolute terms rather than the tool defaults -- but they
+   are the same kind of object doing the same thing, and a page where the small
+   drawings drift and the large ones are nailed down reads as two different
+   pages. Their drift and sway are the two slowest on the site: scale is
+   relative, and the same arc that is a gentle sway on a 5rem utensil is a
+   noticeable swing on a 15rem calendar.
+
+   The arrival owns `transform` and holds it with `both`; these own `translate`
+   and `rotate`. Separate properties, so the entrance can finish and hand over
+   without either animation knowing about the other. `--tool-tilt` is unset on
+   both -- the calendar's tilt is drawn into the artwork rather than applied by
+   this stylesheet -- so `tool-sway` falls back to swaying about square, which
+   is what it should do. */
+.calendar-mark.is-revealed,
+.chef-mark.is-revealed {
+  /* Wider than they are tall, where the hero's tools cannot be. These two sit
+     in a full-bleed band with the whole page margin either side of them, so the
+     horizontal has room the hero's gutter does not -- see the note over
+     `.tool-mark`. 56px across against 28px down is the motion reading as a
+     drift rather than as a bob. */
+  --drift-x: 3.5rem;
+  --drift-y: 1.75rem;
+  --dx: calc(var(--drift-x) * var(--drift-turn, 1));
+  --dy: var(--drift-y);
+  --sway: 2.4deg;
 }
 
+/* Circuit A, running right. */
+.calendar-mark.is-revealed {
+  --drift-turn: 1;
+  --drift-run: 22s;
+  --drift-at: -13s;
+  --sway-run: 15s;
+  --sway-at: -6s;
+  animation:
+    art-set-down 900ms var(--ck-ease) 160ms both,
+    tool-drift var(--drift-run, 26s) ease-in-out var(--drift-at, 0s) infinite,
+    tool-sway var(--sway-run, 19s) ease-in-out var(--sway-at, 0s) infinite;
+}
+
+/* Circuit B, mirrored -- so the chef leaves as the calendar returns, on a
+   different shape, in the opposite direction, leaning the other way. */
 .chef-mark.is-revealed {
-  animation: art-stand-up 900ms var(--ck-ease) 320ms both;
+  --drift-turn: -1;
+  --sway: -2.4deg;
+  --drift-run: 18s;
+  --drift-at: -24s;
+  --sway-run: 13s;
+  --sway-at: -17s;
+  animation:
+    art-stand-up 900ms var(--ck-ease) 320ms both,
+    tool-drift-b var(--drift-run, 26s) ease-in-out var(--drift-at, 0s) infinite,
+    tool-sway var(--sway-run, 19s) ease-in-out var(--sway-at, 0s) infinite;
 }
 
 @keyframes art-set-down {
@@ -2066,252 +2324,6 @@ h3 {
   }
   to {
     opacity: 1;
-    transform: none;
-  }
-}
-
-/* --------------------------------------------------------------------------
-   The mission band: who the kitchen cooks for.
-
-   The home page's closing statement, and the one place the storefront puts the
-   light register down. Everything above it is white or a tint of white -- the
-   hero's ground, the plain page, the paper the plans are stuck to -- and a
-   fifth near-white section would have let the page stop rather than end. This
-   changes key instead. See the note at the top of `components/site/mission.tsx`
-   for why the audiences are split in two and why neither of them is a card.
-
-   The band re-points `--ck-focus` at itself rather than inheriting the global
-   one. That token is brand green, which is roughly 1.4:1 against this ground:
-   a keyboard visitor tabbing into the two links would have watched the ring
-   vanish. It is a custom property, so setting it on the section is enough to
-   reach every control inside without any of them knowing where they are --
-   exactly the move the ops surface makes, for exactly the same reason.
-   -------------------------------------------------------------------------- */
-.mission {
-  /* Positioned so the drawn tools in the page gutters resolve against the
-     band rather than against the content column -- the gutters are the part
-     of this section that lies *outside* the column. `clip` rather than
-     `hidden` for the same reason as the hero: it absorbs a mark that reaches
-     a pixel too far without turning the section into a scroll container. */
-  position: relative;
-  overflow-x: clip;
-  background-color: var(--ck-mission);
-  color: var(--ck-mission-ink);
-  --ck-focus: var(--ck-mission-focus);
-  /* The inversion, and all of it. Every tool drawn on this band is the same
-     file as the ones in the hero margins; this line is what turns the ink
-     light so they survive the dark ground. See `--ck-mark`. */
-  --ck-mark: var(--ck-mark-invert);
-}
-
-/* --------------------------------------------------------------------------
-   Type on the band.
-
-   Zodiak and Cabinet Grotesk carry all of it and Inter appears nowhere, which
-   is the rule the plan notes follow and the reason those two faces were brought
-   into the project at all. They are the voice of the people who cook; Inter is
-   the voice of the thing being operated. A mission statement belongs to the
-   first of those, so this is the second half of a system rather than a third
-   typographic idea -- see the note over `.note-kind`.
-
-   The statement takes the same clamp as `.section-display` and a looser
-   tracking than it. Zodiak is a serif: it is drawn with more space in it than
-   Inter and its serifs already do the work of separating one letter from the
-   next, so the -0.03em that keeps a large Inter heading from falling apart
-   closes this one up until the serifs collide.
-   -------------------------------------------------------------------------- */
-.mission-statement {
-  font-family: var(--font-zodiak), Georgia, serif;
-  font-size: clamp(2rem, 4.2vw, 3.5rem);
-  font-weight: 600;
-  line-height: 1.1;
-  /* Overrides the -0.02em every h2 carries, which is an Inter number. */
-  letter-spacing: -0.015em;
-  color: var(--ck-mission-ink);
-}
-
-.mission-lede {
-  font-family: var(--font-cabinet), system-ui, sans-serif;
-  font-size: clamp(1rem, 1.35vw, 1.1875rem);
-  line-height: 1.6;
-  color: var(--ck-mission-muted);
-}
-
-/* Lower case, at reading size, in the muted ink -- deliberately none of the
-   things a section kicker is. The tiny tracked-out capital label above a
-   heading is the most worn scaffold on the web, and two of them side by side
-   would have been the tell. What these actually carry is a contrast the reader
-   needs: the same food, two different days it arrives into. That is a
-   taxonomy, and a taxonomy can be written in ordinary words. */
-.mission-label {
-  font-family: var(--font-cabinet), system-ui, sans-serif;
-  font-size: 0.9375rem;
-  color: var(--ck-mission-subtle);
-}
-
-.mission-title {
-  font-family: var(--font-zodiak), Georgia, serif;
-  font-size: clamp(1.5rem, 2.3vw, 1.9375rem);
-  font-weight: 600;
-  line-height: 1.18;
-  letter-spacing: -0.01em;
-  color: var(--ck-mission-ink);
-}
-
-.mission-body {
-  font-family: var(--font-cabinet), system-ui, sans-serif;
-  font-size: 1rem;
-  line-height: 1.65;
-  color: var(--ck-mission-muted);
-  /* Well inside the 65-75ch ceiling. The column is already half the page and
-     these are three sentences, not an essay -- a measure this short is what
-     keeps the two areas reading as a pair of remarks rather than two columns
-     of body copy. */
-  max-width: 44ch;
-  /* The floor under the link's `margin-top: auto`, which distributes whatever
-     space is left over -- and on the taller of the two areas that is none. The
-     same arrangement the plan notes use for their price; see `.note-body`. */
-  margin-bottom: 1.5rem;
-}
-
-/* --------------------------------------------------------------------------
-   Keeping the two areas level.
-
-   A column, so the link can be pushed to the bottom of it. The two titles do
-   not always take the same number of lines -- "Home food, a long way from
-   home" wraps to two around 820px where "Lunch stops being a decision" is
-   still on one -- and without this the second column's body and link both sit
-   a line lower than the first's. One line of drift between two things
-   presented as a pair reads as a fault rather than as a difference in the
-   copy, which is the same reason the plan notes were made one height and the
-   hero's gateway cards were made to fill their row.
-
-   The height comes from the grid: the row stretches both articles to match,
-   and `100%` is what lets a child of that stretched box actually use it. A
-   block element left to itself would size to its own content and the stretch
-   would do nothing, which is exactly the bug it fixes.
-   -------------------------------------------------------------------------- */
-.mission-area {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-}
-
-/* --------------------------------------------------------------------------
-   The link out of each area.
-
-   An underline rather than a button, because the band already has two large
-   photographs and a display statement, and a third weight of emphasis in it
-   would flatten all three. The rule starts at the muted line colour and comes
-   up to the ink on hover, so the link is quietly underlined at rest and firmly
-   underlined when pointed at -- the arrow moves at the same moment, which is
-   the same acknowledgement the hero's gateway cards give.
-   -------------------------------------------------------------------------- */
-.mission-link {
-  /* Bottom of the column, so the two links sit on one line however the titles
-     above them wrap. `inline-flex` would stretch to the column's full width
-     under `align-items: stretch`, taking the underline with it across empty
-     space, so the box is sized to its own label and then aligned left. */
-  margin-top: auto;
-  align-self: flex-start;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-family: var(--font-cabinet), system-ui, sans-serif;
-  font-size: 0.9375rem;
-  font-weight: 500;
-  color: var(--ck-mission-ink);
-  text-decoration: underline;
-  text-decoration-color: var(--ck-mission-line);
-  text-decoration-thickness: 1px;
-  text-underline-offset: 0.4em;
-  transition: text-decoration-color 200ms var(--ck-ease);
-}
-
-.mission-link:hover {
-  text-decoration-color: currentColor;
-}
-
-.mission-arrow {
-  transition: transform 300ms var(--ck-ease);
-}
-
-.mission-link:hover .mission-arrow {
-  transform: translateX(0.25rem);
-}
-
-/* --------------------------------------------------------------------------
-   The photographs.
-
-   Real dishes, read from the catalogue and offset past the two the hero has
-   already spent, so the page never shows the same plate twice. The frame is
-   what clips them; the image inside it is what moves.
-
-   A ground colour on the frame rather than nothing, because these load over the
-   network and an empty frame on a dark band flashes as a hole in the surface.
-   Ink at low alpha keeps it a shade of the band rather than a grey rectangle
-   sitting on top of it.
-   -------------------------------------------------------------------------- */
-.mission-shot {
-  overflow: hidden;
-  border-radius: var(--ck-radius);
-  background-color: rgb(13 23 20 / 0.35);
-  aspect-ratio: 4 / 3;
-  margin-bottom: 1.75rem;
-}
-
-.mission-shot-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-/* --------------------------------------------------------------------------
-   Arrival.
-
-   Two motions with one job each, and they are related rather than stacked: the
-   block rises into place, and the photograph inside it settles out of a slight
-   overscale as it does -- the way a picture comes to rest in a frame rather
-   than appearing in one. The photograph takes longer than the block on purpose;
-   finishing together would read as one movement in two parts, and the point is
-   that the heavier thing keeps moving after the lighter one has stopped.
-
-   The stagger is 140ms and applies to both, so the second area is a beat behind
-   the first all the way through rather than catching up partway.
-
-   Nothing here is hidden by a base rule. `is-revealed` is added by `Reveal`
-   when the band reaches the viewport, so with no JavaScript -- an old engine, a
-   headless renderer, a screenshot service -- no keyframe ever runs and the
-   section is simply there, photographs and all. `--reveal-at` is the delay
-   `Reveal` publishes; the per-area offsets are added to it rather than
-   replacing it, so the whole band can still be pushed later from the page
-   without these two drifting out of order.
-   -------------------------------------------------------------------------- */
-.mission-areas.is-revealed > .mission-area {
-  animation: reveal-up 700ms var(--ck-ease) var(--reveal-at, 0ms) both;
-}
-
-.mission-areas.is-revealed > .mission-area:nth-child(2) {
-  animation-delay: calc(var(--reveal-at, 0ms) + 140ms);
-}
-
-.mission-areas.is-revealed .mission-shot-img {
-  animation: mission-settle 1200ms var(--ck-ease) var(--reveal-at, 0ms) both;
-}
-
-.mission-areas.is-revealed > .mission-area:nth-child(2) .mission-shot-img {
-  animation-delay: calc(var(--reveal-at, 0ms) + 140ms);
-}
-
-/* 1.05 and no further. The frame clips whatever the image does, so a larger
-   start would crop the dish at the moment it is least recognisable and then
-   grow the plate back into view -- which reads as a zoom effect rather than as
-   something settling. */
-@keyframes mission-settle {
-  from {
-    transform: scale(1.05);
-  }
-  to {
     transform: none;
   }
 }
@@ -2365,6 +2377,45 @@ h3 {
      tilt in every frame, and the tilt is per-drawing. */
   rotate: var(--tool-tilt, 0deg);
   opacity: 0;
+
+  /* The box each drawing is allowed to wander inside, as half-extents from
+     where it is placed -- so a mark with these defaults roams about 24px across
+     and 77px down over a loop, centred on where it is placed.
+
+     Three times what it was, and the earlier numbers were simply wrong for the
+     job. They were set to sit under the threshold where the eye tracks
+     something as moving, on the reasoning that marginalia should not compete
+     with the food -- but a drawing that never visibly moves is not restrained,
+     it is static with an animation attached to it, and paying the cost of the
+     motion without getting any of it is the worst of both. The clock stays slow
+     -- these are still 19-24 second loops -- so it reads as drift rather than
+     as animation, and there is now something to see.
+
+     It is a box rather than an orbit because the two axes have very different
+     room. These sit in the page gutters, and at the 90rem breakpoint that
+     gutter is only about 8px wider than the widest drawing in it: a horizontal
+     drift of any size walks a spatula into the text column. Vertically there
+     is nothing above or below them for hundreds of pixels. So the box is tall
+     and narrow, and the sense of movement that the horizontal axis cannot pay
+     for is bought by the sway instead -- a degree and a half of rotation on a
+     128px drawing costs under 2px of bounding box and reads as far more
+     motion than 2px of travel ever would.
+
+     Every value is overridden per drawing below. These are the fallbacks, and
+     they exist so a new mark added later drifts sensibly without anyone having
+     to think about it. */
+  --drift-x: 1.2rem;
+  --drift-y: 1.5rem;
+  /* The two half-extents with their direction applied. Both circuits read these
+     rather than `--drift-x` and `--drift-y` directly, so a mark reverses its
+     whole loop by setting `--drift-turn: -1` and changing nothing else. */
+  --dx: calc(var(--drift-x) * var(--drift-turn, 1));
+  --dy: var(--drift-y);
+  --drift-run: 18s;
+  --drift-at: 0s;
+  --sway: 3.4deg;
+  --sway-run: 11s;
+  --sway-at: 0s;
 }
 
 @supports (mask-image: url('/tools/spatula.png')) or
@@ -2387,40 +2438,15 @@ h3 {
       display: block;
       /* Two animations on one element, and they never collide: the entrance
          writes `opacity`, the breathing writes `scale` and `translate`. */
+      /* Four animations on one element and none of them collide, because each
+         writes a different property: the entrance owns `opacity`, the drift
+         owns `translate`, the sway owns `rotate` and the breath owns `scale`.
+         See the note over `@keyframes tool-drift` for why they are four
+         separate loops rather than one. */
       animation:
         tool-in 1100ms var(--ck-ease) var(--tool-at, 900ms) both,
-        tool-breathe var(--breathe-run, 8s) ease-in-out var(--breathe-at, 0s) infinite;
-    }
-  }
-
-  /* The one *inside* the mission band's column comes in lower than the rest,
-     because the space it uses is inside the content column rather than outside
-     it -- the statement is `max-w-4xl` in a `max-w-6xl` container, so there is
-     room to its right before the page margins are involved at all. */
-  @media (min-width: 80rem) {
-    .mission-mark {
-      display: block;
-    }
-
-    .mission-mark.is-revealed {
-      animation:
-        tool-in 1100ms var(--ck-ease) 240ms both,
-        tool-breathe var(--breathe-run, 8s) ease-in-out var(--breathe-at, 0s) infinite;
-    }
-  }
-
-  /* The band's gutter marks wait for the same 90rem the hero's do -- they are
-     in the same gutters. Unlike the hero's they arrive on a `Reveal` rather
-     than on a page-load delay: this section is well below the fold, and an
-     entrance that ran at load would be one nobody was there to see. */
-  @media (min-width: 90rem) {
-    .mission > .tool-mark {
-      display: block;
-    }
-
-    .mission > .tool-mark.is-revealed {
-      animation:
-        tool-in 1100ms var(--ck-ease) var(--tool-at, 0ms) both,
+        tool-drift var(--drift-run, 26s) ease-in-out var(--drift-at, 0s) infinite,
+        tool-sway var(--sway-run, 19s) ease-in-out var(--sway-at, 0s) infinite,
         tool-breathe var(--breathe-run, 8s) ease-in-out var(--breathe-at, 0s) infinite;
     }
   }
@@ -2446,31 +2472,152 @@ h3 {
    -- and they are drawings of objects rather than interface, which is the one
    thing on the page that gains from looking alive rather than placed.
 
-   Kept honest by three numbers. Three and a half per cent of scale and a
-   couple of pixels of lift is under the threshold where the eye tracks it as
-   movement; anything larger and seven utensils gently pumping becomes the most
-   distracting thing on the page. Eight seconds or so is slow enough to read as
-   breath rather than as a pulse. And every drawing gets its own period and its
-   own *negative* delay, which starts it partway through its cycle: give them a
-   shared timing and they inhale together, which is the tell that turns a room
-   of objects into a row of machines.
+   Kept honest by the clock rather than by the distance. Three or four degrees
+   of sway and forty to eighty pixels of wander, spread over sixteen to
+   twenty-two seconds, comes to a few pixels a second: slow enough that nothing
+   here ever pulls the eye off the food, large enough that a drawing you glance
+   back at is somewhere else.
 
-   Only `scale` and `translate` -- both compositor properties, neither of them
-   triggering layout or paint. `rotate` is left alone because it carries each
-   drawing's resting tilt.
+   Every pair of periods on a drawing is coprime -- 19 and 12, 16 and 11, 17 and
+   13 -- and that is not fussiness. Round numbers that divide into each other
+   turn a wander into a pendulum: give a mark 20s and 10s and it retraces the
+   same path exactly every twenty seconds, which the eye finds even at this
+   speed. Coprime periods put the repeat at their product, minutes away, and
+   nobody watches long enough to find it. The first pass had the distances a third of
+   this and was invisible -- which is not restraint, it is paying for motion and
+   getting none. Speed is what makes marginalia distracting; distance is what
+   makes it alive.
+
+   Every drawing gets its own period and its own *negative* delay, which starts
+   it partway through its cycle: give them a shared timing and they breathe
+   together, which is the tell that turns a room of objects into a row of
+   machines.
 
    The global `prefers-reduced-motion` block flattens duration and forces a
-   single iteration, so this stops entirely for anyone who has asked for that.
+   single iteration, so all of this stops entirely for anyone who has asked for
+   that. Each loop below closes on its resting value for exactly that reason --
+   collapsed to a single frame they land where the drawing is placed, not
+   wherever the animation happened to be halfway through.
    -------------------------------------------------------------------------- */
+
+/* --------------------------------------------------------------------------
+   The wander.
+
+   Three loops rather than one, and that is the whole trick.
+
+   The earlier version was a single keyframe moving `scale` and `translate`
+   together over eight seconds -- so both turned at the same instant, every
+   eight seconds, forever. However small you make it, a loop that short with
+   everything in step reads as a pulse: the eye finds the period almost
+   immediately, and once it has, the drawing is a mechanism rather than an
+   object.
+
+   `translate`, `rotate` and `scale` are independent properties, so three
+   animations can own one each and compose without touching each other. Give
+   them periods that do not divide into one another -- 27s, 19s, 9s on one
+   drawing -- and the combined motion does not repeat until their least common
+   multiple, which is a bit over an hour. Nobody watches long enough to find the
+   loop, which is what "alive" actually means here.
+
+   The path is five waypoints on an irregular closed circuit rather than an
+   out-and-back, for the same reason. Out-and-back retraces its own line, and a
+   retraced line is a period you can see. Each leg is `ease-in-out`, so the mark
+   slows into every turn and leaves it again -- at a leg every five seconds
+   that is not a pause, it is the difference between drifting and being dragged
+   around a polygon.
+
+   All three are compositor properties. Seven of these run simultaneously on
+   the home page and none of them costs a layout or a paint.
+   -------------------------------------------------------------------------- */
+@keyframes tool-drift {
+  0% {
+    translate: 0 0;
+  }
+  22% {
+    translate: calc(var(--dx, 1.2rem) * 1) calc(var(--dy, 1.5rem) * -0.35);
+  }
+  41% {
+    translate: calc(var(--dx, 1.2rem) * 0.55) calc(var(--dy, 1.5rem) * -0.7);
+  }
+  63% {
+    translate: calc(var(--dx, 1.2rem) * -0.5) calc(var(--dy, 1.5rem) * -0.25);
+  }
+  82% {
+    translate: calc(var(--dx, 1.2rem) * 0.25) calc(var(--dy, 1.5rem) * 0.5);
+  }
+  100% {
+    translate: 0 0;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   The second circuit.
+
+   Two drawings on one keyframe trace one shape, and no amount of different
+   timing hides it: the calendar and the chef sat either side of a heading, both
+   swinging out and coming back the same way, and however far apart their clocks
+   were they were visibly doing the same thing. A period is not a path.
+
+   So there are two paths now, and they differ in the way that matters rather
+   than in their numbers. Circuit A leaves to the right and rides high; this one
+   drops away to the left first and spends most of its loop below where it
+   started. Their vertical signs are opposed for nearly the whole cycle, so two
+   marks running them are travelling against each other whatever their phase.
+
+   `--drift-turn` is the cheap half of the same idea: -1 mirrors the horizontal
+   component, so a circuit runs the other way round. Two paths and two
+   directions give four distinct wanders, which is more than the five marks on
+   this page need to stop echoing each other.
+   -------------------------------------------------------------------------- */
+@keyframes tool-drift-b {
+  0% {
+    translate: 0 0;
+  }
+  26% {
+    translate: calc(var(--dx, 1.2rem) * -0.6) calc(var(--dy, 1.5rem) * 0.45);
+  }
+  47% {
+    translate: calc(var(--dx, 1.2rem) * 0.5) calc(var(--dy, 1.5rem) * 0.8);
+  }
+  70% {
+    translate: calc(var(--dx, 1.2rem) * 1) calc(var(--dy, 1.5rem) * 0.15);
+  }
+  88% {
+    translate: calc(var(--dx, 1.2rem) * 0.35) calc(var(--dy, 1.5rem) * -0.55);
+  }
+  100% {
+    translate: 0 0;
+  }
+}
+
+/* The sway carries each drawing's resting tilt through every frame, because an
+   animation on `rotate` replaces the base `rotate` outright rather than adding
+   to it -- omit the tilt here and every mark on the page snaps square the
+   moment this starts. The two extremes are at 33% and 68% rather than a third
+   and two thirds, so the return leg is not the mirror of the outbound one and
+   the sway does not read as a metronome. */
+@keyframes tool-sway {
+  0%,
+  100% {
+    rotate: var(--tool-tilt, 0deg);
+  }
+  33% {
+    rotate: calc(var(--tool-tilt, 0deg) + var(--sway, 1.2deg));
+  }
+  68% {
+    rotate: calc(var(--tool-tilt, 0deg) - var(--sway, 1.2deg));
+  }
+}
+
+/* Scale only now. The lift it used to carry moved into `tool-drift`, where it
+   can travel on its own clock instead of being welded to the breath. */
 @keyframes tool-breathe {
   0%,
   100% {
     scale: 1;
-    translate: 0 0;
   }
   50% {
     scale: 1.035;
-    translate: 0 -0.15rem;
   }
 }
 
@@ -2511,13 +2658,11 @@ h3 {
 /* Centred in the gutter, wherever the gutter is. Both surfaces that carry
    marginalia are full-bleed sections holding a 72rem column, so the same
    expression finds the middle of the empty space on either side of it. */
-.storefront-hero > .tool-mark,
-.mission > .tool-mark {
+.storefront-hero > .tool-mark {
   left: calc((100% - 72rem) / 4 - var(--tool-w) / 2);
 }
 
-.storefront-hero > .tool-mark-right,
-.mission > .tool-mark-right {
+.storefront-hero > .tool-mark-right {
   left: auto;
   right: calc((100% - 72rem) / 4 - var(--tool-w) / 2);
 }
@@ -2525,6 +2670,17 @@ h3 {
 .tool-spatula {
   --breathe-run: 7.5s;
   --breathe-at: -0.4s;
+
+  /* The widest drawing in the hero gutter, so the least room to move
+     sideways. */
+  --drift-x: 1.2rem;
+  --drift-y: 1.5rem;
+  --drift-turn: 1;
+  --drift-run: 19s;
+  --drift-at: -7s;
+  --sway: 3.4deg;
+  --sway-run: 12s;
+  --sway-at: -3s;
   top: 8rem;
   --tool-w: clamp(5.5rem, 7vw, 8rem);
   --tool-ratio: 499 / 476;
@@ -2549,6 +2705,17 @@ h3 {
 .tool-spoon-knife {
   --breathe-run: 9.1s;
   --breathe-at: -3.2s;
+
+  /* Narrow, so it can afford both a wider box and a stronger sway than its
+     neighbours. */
+  --drift-x: 1.15rem;
+  --drift-y: 1.35rem;
+  --drift-turn: -1;
+  --drift-run: 16s;
+  --drift-at: -14s;
+  --sway: 4.5deg;
+  --sway-run: 11s;
+  --sway-at: -9s;
   top: 30rem;
   --tool-w: clamp(3.75rem, 4.8vw, 5.25rem);
   --tool-ratio: 289 / 462;
@@ -2556,6 +2723,16 @@ h3 {
   --tool-at: 1260ms;
   mask-image: url('/tools/spoon-knife.png');
   -webkit-mask-image: url('/tools/spoon-knife.png');
+}
+
+/* The second circuit for the middle tool, so the three in this gutter are not
+   one shape at three speeds. Only the *names* are overridden -- every duration,
+   delay and iteration count still comes from the shorthand on
+   `.storefront-hero > .tool-mark`, which is the only reason this is one line
+   rather than a restatement of the whole animation. The order has to match that
+   shorthand exactly: entrance, drift, sway, breath. */
+.storefront-hero > .tool-spoon-knife {
+  animation-name: tool-in, tool-drift-b, tool-sway, tool-breathe;
 }
 
 /* Below where the panel ends, which is the only place on this side it can go:
@@ -2574,6 +2751,17 @@ h3 {
 .tool-grater {
   --breathe-run: 8.3s;
   --breathe-at: -5.6s;
+
+  /* Held in on the horizontal: it sits opposite the bowl panel, and the space
+     to its left is the only space it has. */
+  --drift-x: 1.2rem;
+  --drift-y: 1.45rem;
+  --drift-turn: -1;
+  --drift-run: 17s;
+  --drift-at: -19s;
+  --sway: 3.8deg;
+  --sway-run: 13s;
+  --sway-at: -5s;
   top: 48rem;
   --tool-w: clamp(4.5rem, 5.5vw, 6.5rem);
   --tool-ratio: 344 / 394;
@@ -2581,76 +2769,6 @@ h3 {
   --tool-at: 1400ms;
   mask-image: url('/tools/grater.png');
   -webkit-mask-image: url('/tools/grater.png');
-}
-
-/* The fifth, and the only one that is not in a page margin: it stands in the
-   gap to the right of the mission statement, which is empty because the
-   statement is deliberately set to a narrower measure than the band it sits
-   in. Anchored to the content container rather than to the section, so it
-   tracks the column rather than the window. */
-.mission-mark {
-  --breathe-run: 10.4s;
-  --breathe-at: -1.7s;
-  /* Clear of the band's top edge rather than tucked into it. At 1.5rem the
-     spoon's handle ran within a few pixels of where the green starts, which
-     reads as a drawing that has been cropped rather than one that has been
-     placed. */
-  top: 3.5rem;
-  right: 0;
-  --tool-w: clamp(8rem, 11vw, 13rem);
-  --tool-ratio: 384 / 552;
-  --tool-tilt: -8deg;
-  mask-image: url('/tools/spoon-spatula.png');
-  -webkit-mask-image: url('/tools/spoon-spatula.png');
-}
-
-/* The three out in the band's gutters, placed against each other rather than
-   each to taste. They are spread down the full height of the section -- one
-   level with the statement, two level with the two areas -- so the band is
-   framed along its edges instead of having its decoration bunched at the top.
-   No two lean the same way, and the pair on the left lean apart so that side
-   does not read as drifting.
- *
- * Sizes are set by area rather than by width. The pan is nearly four times as
- * wide as it is tall and the mitt is taller than it is wide; matching their
- * widths would have made one of them three times the other on the page. These
- * are the widths at which the three cover roughly the same amount of gutter,
- * which is what actually reads as a set.
- *
- * The delays stagger them down the page in the order the eye meets them. */
-.tool-pan {
-  --breathe-run: 8.9s;
-  --breathe-at: -4.3s;
-  top: 9rem;
-  --tool-w: clamp(7rem, 9.5vw, 10.5rem);
-  --tool-ratio: 897 / 236;
-  --tool-tilt: -8deg;
-  mask-image: url('/tools/pan.png');
-  -webkit-mask-image: url('/tools/pan.png');
-}
-
-.tool-ladle-side {
-  --breathe-run: 9.7s;
-  --breathe-at: -6.1s;
-  top: 34rem;
-  --tool-w: clamp(6rem, 8vw, 9rem);
-  --tool-ratio: 729 / 420;
-  --tool-tilt: 11deg;
-  --tool-at: 160ms;
-  mask-image: url('/tools/ladle-side.png');
-  -webkit-mask-image: url('/tools/ladle-side.png');
-}
-
-.tool-mitt {
-  --breathe-run: 7.9s;
-  --breathe-at: -2.5s;
-  top: 41rem;
-  --tool-w: clamp(4rem, 5.2vw, 5.75rem);
-  --tool-ratio: 291 / 402;
-  --tool-tilt: -6deg;
-  --tool-at: 320ms;
-  mask-image: url('/tools/mitt.png');
-  -webkit-mask-image: url('/tools/mitt.png');
 }
 
 /* --------------------------------------------------------------------------
@@ -2807,4 +2925,977 @@ h3 {
 
 .ck-flash {
   animation: ck-flash 1.2s ease-out 1;
+}
+
+/* --------------------------------------------------------------------------
+   The storefront header.
+
+   Two states, and the second one is the whole idea: at the top of the page the
+   header is part of the page, and once content starts passing underneath it it
+   becomes a layer above it.
+
+   The line and the shadow are what say which. They used to be permanent, and a
+   permanent border meant the header drew a hard rule across the top of the hero
+   photograph before the visitor had scrolled a pixel -- cutting the first thing
+   on the page in order to separate it from something that was not yet behind
+   it. `data-scrolled` is added by `site-header.tsx` past 4px.
+
+   It is a pseudo-element that fades rather than a `border-bottom` and a
+   `box-shadow` that transition, for the same reason as the sticky notes further
+   up this file: those two are paint properties and this one is composited. It
+   also solves a smaller problem the border had -- a border changes the header's
+   height, so animating one in would shift the whole page down by a pixel.
+   -------------------------------------------------------------------------- */
+.site-header {
+  /* What the pseudo-element below is positioned against. */
+  position: sticky;
+}
+
+.site-header::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-bottom: 1px solid var(--ck-border);
+  box-shadow: var(--ck-shadow-sm);
+  opacity: 0;
+  transition: opacity 220ms var(--ck-ease);
+}
+
+.site-header[data-scrolled]::after {
+  opacity: 1;
+}
+
+/* The header is focused by script when the back-to-top button is pressed, and a
+   `tabindex="-1"` element focused that way shows a focus ring in every browser.
+   It is the wrong ring: nothing was reached by keyboard, and a box around the
+   entire header is not what "you are at the top now" looks like. Anything
+   inside it still gets its own `:focus-visible`. */
+.site-header:focus {
+  outline: none;
+}
+
+/* --------------------------------------------------------------------------
+   Navigation links.
+
+   The active one is filled rather than merely coloured, and that is legibility
+   rather than decoration. Five links a shade darker than each other is a
+   difference you have to look for; a shape is one you see. It is keyed off
+   `aria-current` rather than off a class of its own, so the state a screen
+   reader announces and the state you can see are the same fact and cannot drift
+   apart -- where the pill is, `aria-current` is.
+
+   150ms and colour only. Nav links are the most-used control on the site and
+   sit in the "tens of times a day" tier, where the guidance is to reduce motion
+   rather than add it: no lift, no scale, nothing that has to finish before the
+   link responds.
+   -------------------------------------------------------------------------- */
+.nav-link {
+  display: block;
+  border-radius: 9999px;
+  padding: 0.5rem 0.875rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--ck-text-muted);
+  transition:
+    color 150ms var(--ck-ease),
+    background-color 150ms var(--ck-ease);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .nav-link:hover {
+    background-color: var(--ck-surface-sunken);
+    color: var(--ck-text);
+  }
+}
+
+/* Both kinds of current: `page` when the visitor is on that route, `location`
+   when they are on the home page with that section under their eye. The two are
+   different claims and are announced differently -- see `currentState` in
+   `site-header.tsx` -- but they draw the same pill, because to the eye they mean
+   the same thing: this is the one you are on. */
+.nav-link[aria-current] {
+  background-color: var(--ck-brand-soft);
+  color: var(--ck-brand);
+  font-weight: 600;
+}
+
+/* --------------------------------------------------------------------------
+   The menu toggle, and the mark inside it.
+
+   Square rather than the pill `buttonClasses` hands every other button: this is
+   an icon with no label, so the padding that makes room for words would only
+   make the target lopsided. 2.5rem matches the `md` height it already has.
+   -------------------------------------------------------------------------- */
+.nav-toggle {
+  width: 2.5rem;
+  padding: 0;
+}
+
+/* Two strokes that cross rather than two drawings that swap -- see `MenuGlyph`
+   in `icons.tsx` for why. Each line travels to the middle and turns as it
+   arrives.
+
+   `translate` and `rotate` as separate properties rather than one `transform`,
+   because they are deliberately not simultaneous: the lines close up first and
+   the turn starts 40ms later, which is what makes it read as one gesture rather
+   than two things happening at once. Written as a single `transform` there
+   would be nothing to stagger.
+
+   `transform-box: view-box` is the part that is easy to get wrong. Left alone,
+   each path rotates about its own bounding box -- and a horizontal line's box
+   is its own centre, so the two would turn independently and the cross would
+   come out in two pieces at different heights. Pinning both to the SVG's own
+   box gives them one shared pivot. */
+.nav-glyph-top,
+.nav-glyph-bottom {
+  transform-box: view-box;
+  transform-origin: center;
+  transition:
+    translate 180ms var(--ck-ease),
+    rotate 180ms var(--ck-ease) 40ms;
+}
+
+.nav-toggle[aria-expanded='true'] .nav-glyph-top {
+  translate: 0 3px;
+  rotate: 45deg;
+}
+
+.nav-toggle[aria-expanded='true'] .nav-glyph-bottom {
+  translate: 0 -3px;
+  rotate: -45deg;
+}
+
+/* --------------------------------------------------------------------------
+   The mobile navigation sheet.
+
+   A real `<dialog>` in the top layer, which is what buys the focus trap, the
+   Escape key and an inert page behind it without a line of JavaScript for any
+   of the three. Most of what follows is undoing the user-agent default -- a
+   centred box with a border and a fixed maximum size -- and putting a panel
+   under the header in its place.
+
+   It scales out of the top right because that is where the button that opened
+   it is. A panel growing from its own centre has no relationship to the thing
+   that summoned it; one growing out of the trigger reads as the trigger
+   opening. `0.97`, never `0`: nothing in the world appears from nothing, and a
+   panel starting at no size at all pops rather than opens.
+
+   `allow-discrete` is what gives it an exit. `display` and `overlay` are
+   discrete properties -- they flip rather than tween -- so without it the
+   element leaves the top layer on the first frame of the close and takes the
+   animation with it. With it the browser holds both until the transition has
+   run, and Escape gets the same 180ms the button does.
+   -------------------------------------------------------------------------- */
+.nav-sheet {
+  position: fixed;
+  /* Clear of the bar rather than under it: the header is 4rem tall. */
+  top: 4.5rem;
+  right: 0.75rem;
+  left: 0.75rem;
+  width: auto;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 0.5rem;
+  border: 1px solid var(--ck-border);
+  border-radius: var(--ck-radius-lg);
+  background-color: var(--ck-surface);
+  box-shadow: var(--ck-shadow-lg);
+  transform-origin: top right;
+
+  opacity: 0;
+  scale: 0.97;
+  translate: 0 -0.5rem;
+  transition:
+    opacity 180ms var(--ck-ease),
+    scale 180ms var(--ck-ease),
+    translate 180ms var(--ck-ease),
+    display 180ms allow-discrete,
+    overlay 180ms allow-discrete;
+}
+
+.nav-sheet[open] {
+  opacity: 1;
+  scale: 1;
+  translate: 0 0;
+}
+
+/* The opening frame, and it has to be its own rule. The browser needs a value
+   to transition *from* on an element that was not being rendered a moment ago,
+   and the closed state above cannot supply it: by the time `[open]` matches,
+   the element has no previous style to interpolate against. */
+@starting-style {
+  .nav-sheet[open] {
+    opacity: 0;
+    scale: 0.97;
+    translate: 0 -0.5rem;
+  }
+}
+
+.nav-sheet::backdrop {
+  background-color: rgb(13 23 20 / 0.32);
+  opacity: 0;
+  transition:
+    opacity 180ms var(--ck-ease),
+    display 180ms allow-discrete,
+    overlay 180ms allow-discrete;
+}
+
+.nav-sheet[open]::backdrop {
+  opacity: 1;
+}
+
+@starting-style {
+  .nav-sheet[open]::backdrop {
+    opacity: 0;
+  }
+}
+
+/* The rows, arriving behind the panel rather than with it.
+
+   Keyframes rather than a transition, which is the one place around here that
+   choice goes the other way: these are not two states a visitor can interrupt,
+   they play once as the sheet opens. `backwards` holds them at the opening
+   frame through their delay and hands `opacity` back at the end. */
+.nav-row {
+  display: block;
+  border-radius: var(--ck-radius);
+  padding: 0.75rem 0.875rem;
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--ck-text);
+  transition: background-color 150ms var(--ck-ease);
+}
+
+.nav-row.is-current {
+  background-color: var(--ck-brand-soft);
+  color: var(--ck-brand);
+  font-weight: 600;
+}
+
+/* Ungated: a press is real on every device, and this panel only exists on the
+   ones without a pointer. */
+.nav-row:active {
+  background-color: var(--ck-surface-sunken);
+}
+
+.nav-sheet[open] .nav-row {
+  animation: nav-row-in 220ms var(--ck-ease) var(--row-at, 0ms) backwards;
+}
+
+@keyframes nav-row-in {
+  from {
+    opacity: 0;
+    translate: 0 -0.375rem;
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Back to top.
+
+   Hidden by `visibility` as well as by `opacity`, which is the part that
+   matters and the part usually left out: an element at `opacity: 0` is still
+   focusable, still clickable and still announced, so a button hidden that way
+   is an invisible control in the corner of every page. `visibility` is also
+   transitionable, and it flips at the end of the fade out and at the start of
+   the fade in -- which is the behaviour wanted at both ends rather than a
+   coincidence.
+
+   The transition names five properties because this class is unlayered CSS and
+   would otherwise replace the one `buttonClasses` puts on every button. `scale`
+   and `background-color` are that button's press and hover; `opacity`,
+   `translate` and `visibility` are this one's arrival. Dropping the first two
+   would leave the only button on the site that does not give under a press.
+   -------------------------------------------------------------------------- */
+.to-top {
+  position: fixed;
+  right: 1rem;
+  /* Clear of a phone's home indicator and of browser chrome sitting over the
+     bottom of the viewport, which is why this is `env()` plus a gap rather than
+     a flat inset. It falls back to the gap alone where there is no safe area. */
+  bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
+  z-index: 30;
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0;
+  box-shadow: var(--ck-shadow-lg);
+
+  opacity: 0;
+  visibility: hidden;
+  translate: 0 0.5rem;
+  transition:
+    opacity 200ms var(--ck-ease),
+    translate 200ms var(--ck-ease),
+    visibility 200ms var(--ck-ease),
+    scale 150ms var(--ck-ease),
+    background-color 150ms var(--ck-ease);
+}
+
+.to-top[data-shown] {
+  opacity: 1;
+  visibility: visible;
+  translate: 0 0;
+}
+
+/* Further in from the corner on a larger screen, where the corner is further
+   from the thumb and the button can afford the room. */
+@media (min-width: 40rem) {
+  .to-top {
+    right: 1.75rem;
+    bottom: calc(1.75rem + env(safe-area-inset-bottom, 0px));
+    width: 3rem;
+    height: 3rem;
+  }
+}
+
+/* The page does not scroll behind an open sheet.
+
+   `showModal()` makes the rest of the document inert but it does not stop it
+   scrolling, so on a phone a drag anywhere outside the panel still moved the
+   page underneath it -- and the panel is anchored to a sticky header, so the
+   two slid against each other.
+
+   `:has()` rather than a class toggled from JavaScript: the condition is
+   already in the DOM, and expressing it in the stylesheet means the lock cannot
+   get out of step with the thing it is locking for. There is no way to close
+   the sheet that does not also clear this.
+   -------------------------------------------------------------------------- */
+html:has(.nav-sheet[open]) {
+  overflow: hidden;
+}
+
+/* --------------------------------------------------------------------------
+   Anchor scrolling.
+
+   The header's links are anchors into the home page rather than routes, so the
+   scroll they cause is the navigation. Two rules make that read as a movement
+   through one document instead of a jump between two places.
+
+   `scroll-behavior` is on the root and not on a handler. The browser's own
+   smooth scroll runs off the main thread, survives the page still loading
+   images, and is interrupted correctly the moment the visitor touches the
+   wheel -- three things a `requestAnimationFrame` easing loop has to reimplement
+   and usually gets wrong on the third. It also applies to every route change
+   that lands on a hash, including the browser's back button, which no click
+   handler can reach.
+
+   It is inside a `no-preference` query rather than being undone in the
+   reduced-motion block at the top of this file. That block flattens durations;
+   it cannot switch a scroll from smooth to instant, because `scroll-behavior`
+   is not a duration. Declaring it only where motion is welcome is the version
+   that actually honours the setting -- everyone else gets the default jump,
+   which is what they asked for.
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+/* Where a section comes to rest when it is scrolled to.
+
+   Without this the target's top edge is aligned with the top of the viewport --
+   which is underneath the sticky header, so every jump hides the first 4rem of
+   the section it just took you to, heading included.
+
+   5.5rem is the header's 4rem plus a gap. The gap is not politeness: a heading
+   sitting flush against the bar under it reads as part of the bar. */
+.section-anchor {
+  scroll-margin-top: 5.5rem;
+}
+
+/* The hero is the exception, and it wants no offset at all. It is the top of
+   the document -- the wordmark scrolls here -- and an offset would stop the
+   page reaching 0, leaving the header's own line drawn over a page that claims
+   to be at the top of itself. */
+#top {
+  scroll-margin-top: 0;
+}
+
+/* --------------------------------------------------------------------------
+   The offer strip.
+
+   Deliberately thin, and thin is the whole specification. It is the first thing
+   on the page and it is not what the page is about, so it gets one line of type
+   and the least height that line can sit in. The moment it grows tall enough to
+   read as a section it starts competing with the hero photograph underneath it,
+   which is the one thing on this site that has to land first.
+
+   Brand rather than a warning colour. The references paint this yellow or red
+   because they are shouting; a discount on a subscription is good news and does
+   not need to look like an alert. White on `--ck-brand` is the same pairing the
+   primary button uses, so the strip reads as part of the system instead of as a
+   banner stuck on top of it.
+   -------------------------------------------------------------------------- */
+.offer-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.25rem;
+  padding: 0.4rem 1rem;
+  background-color: var(--ck-brand);
+  color: #fff;
+  text-align: center;
+  /* The strip is a link, and a link that fills the viewport width has no
+     business showing a text cursor across the whole of it. */
+  cursor: pointer;
+  transition: background-color 150ms var(--ck-ease);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .offer-bar:hover {
+    background-color: var(--ck-brand-hover);
+  }
+}
+
+.offer-bar:active {
+  background-color: var(--ck-text);
+}
+
+.offer-bar-text {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  /* The line has to survive a narrow phone without wrapping into two, which
+     would double the strip's height and undo the point of it. `text-wrap:
+     balance` is wrong here -- there is nothing to balance on one line -- so the
+     copy is kept short instead and this only stops a stray break. */
+  text-wrap: pretty;
+}
+
+/* The code is the part that gets copied out, so it is the part set apart: a
+   monospace face, because a discount code is a string to be transcribed
+   character by character rather than a word to be read, and the digits and
+   letters in one need to be told apart. */
+.offer-bar-code {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+/* The dash between the two halves, held back so it separates without being read
+   as punctuation in the sentence. */
+.offer-bar-sep {
+  opacity: 0.6;
+}
+
+/* --------------------------------------------------------------------------
+   The header bar's three tracks.
+
+   A grid, not a flex row, and that is what actually centres the wordmark. In a
+   flex row the mark sits wherever the things either side leave it -- and the
+   right-hand side changes width the moment somebody signs in, swapping two
+   buttons for a name, a dashboard link and a sign-out. The mark would slide
+   sideways on login. Equal outer tracks put it on the page's centre line and
+   hold it there whatever the sides are doing.
+
+   `1fr auto 1fr` rather than three equal columns: the middle is only as wide as
+   the mark, and the two `1fr` tracks split what is left evenly. Three `1fr`s
+   would give the mark a third of the bar to sit in the middle of, which is the
+   same centre line by a longer route and leaves the sides squeezed on a phone.
+
+   `min-width: 0` on the sides is the flex/grid escape hatch that has to be
+   there: a grid track's default minimum is the content's intrinsic width, so a
+   long account name would push its track wider than its share and take the mark
+   off centre -- the exact failure the grid was chosen to prevent.
+   -------------------------------------------------------------------------- */
+.site-bar {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 1rem;
+}
+
+.site-bar-side {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.site-bar-mark {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+
+/* --------------------------------------------------------------------------
+   The hero's links.
+
+   Three words above the headline, and the styling is almost entirely a list of
+   things they are not. Not buttons, not pills, not bold, not brand-coloured.
+   There is one action in this column -- "start a plan today" -- and the only
+   reason these can sit above the headline without stealing from it is that they
+   carry no weight at all.
+
+   The underline is the affordance and it is drawn as a bottom border on a
+   transparent colour rather than as `text-decoration`, so it can be a hairline
+   under the whole word at a fixed distance instead of a decoration that hugs
+   the descenders. It appears on hover and on focus, which is the point: at rest
+   these read as a line of small caps, and the interface only offers when asked.
+   -------------------------------------------------------------------------- */
+/* How far the row climbs above where the copy column begins.
+
+   The copy is pushed down by `--copy-lead` so the headline lands level with the
+   top of the photograph beside it. That lead is empty space, and this row is the
+   right thing to put in it: three quiet words in the gap above the sentence,
+   where they are read first and displace nothing.
+
+   The lift is paid back in `margin-bottom`, and that is the whole trick. A bare
+   negative `margin-top` pulls everything after it up too, so the row would move
+   and take the headline with it -- which is the one thing that must not move,
+   because its position is set against the photograph. Lifting by X and adding X
+   back underneath leaves the row's net contribution to the flow at exactly what
+   it was: the row rises, the headline stays.
+
+   `--copy-lead` is only declared from `lg`, where the split and its padding
+   exist. Below that the fallback is 0 and the row simply sits where it falls --
+   there is no lead to climb out of on a single-column layout. */
+.hero-nav {
+  --hero-nav-lift: calc(var(--copy-lead, 0px) + 1.25rem);
+
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  /* Fluid, and it has to be: the row and the space between its words are the
+     two halves of the same measurement, so sizing one against the viewport and
+     fixing the other just moves where it breaks. */
+  gap: 0.35rem clamp(0.75rem, 1.5vw, 2.25rem);
+  margin-top: calc(-1 * var(--hero-nav-lift));
+  margin-bottom: calc(2rem + var(--hero-nav-lift));
+}
+
+/* One line, from the width at which one line is possible.
+
+   Four uppercase words came to about 550px at the size they were set, and the
+   copy column is roughly 520px until the viewport passes 1150px -- so the row
+   wrapped, and "About" sat alone on a second line under three words that
+   already read as a set. Two things fix it together and neither would alone:
+   the row is told not to wrap, and the type is sized against the viewport so
+   that at every width there is something to not wrap *into*. Forbidding the
+   wrap without shrinking the type would have traded a second line for an
+   overflow, which is the same problem with the evidence hidden.
+
+   It is only forbidden from 30rem up. Below that there is genuinely no size at
+   which thirty-two tracked capitals fit across a phone and stay legible, and a
+   row that wraps is better than one that is clipped or set at nine pixels. The
+   floor of the clamp is what the narrowest of those widths gets. */
+@media (min-width: 30rem) {
+  .hero-nav {
+    flex-wrap: nowrap;
+  }
+
+  .hero-nav-link {
+    white-space: nowrap;
+  }
+}
+
+@media (min-width: 64rem) {
+  /* Left, with the rest of the copy, once the hero is two columns. */
+  .hero-nav {
+    justify-content: flex-start;
+  }
+}
+
+/* Tops out at 1.125rem -- 0.75 at half again -- and scales down from there
+   rather than holding that size into a column too narrow for it. The maximum is
+   the number that was asked for; the rest of the curve is what stops the row
+   wrapping before it gets there.
+
+   At that size the tracking has to come down too: 0.08em is what 12px uppercase
+   needs to stop the letters touching, and the same ratio at 18px reads as a gap
+   between every character. Tracking is a correction for small type, so it
+   shrinks as the type grows -- 0.05em is the equivalent openness here. */
+.hero-nav-link {
+  font-size: clamp(0.6875rem, 1.05vw, 1.125rem);
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--ck-text-muted);
+  border-bottom: 1px solid transparent;
+  padding-bottom: 0.22rem;
+  transition:
+    color 150ms var(--ck-ease),
+    border-color 150ms var(--ck-ease);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .hero-nav-link:hover {
+    color: var(--ck-text);
+    border-bottom-color: var(--ck-brand);
+  }
+}
+
+.hero-nav-link:focus-visible {
+  color: var(--ck-text);
+}
+
+/* --------------------------------------------------------------------------
+   The closing band: words on the left, food across the rest.
+
+   A capped left track for the copy and everything else to the pictures. The cap
+   is the point -- an even split would grow the prose with the window, and a
+   paragraph is the one thing on a page that must not get wider than about
+   seventy characters however much room there is. So the words take what they
+   can be read in and the pictures take the rest, which means the band gets more
+   photographic the wider the screen rather than more difficult. The track
+   sizing itself is in the `64rem` block below.
+
+   `align-items: center` rather than `start`: the copy is shorter than the
+   pictures beside it, and hung from the top it would leave a column of empty
+   ground under the button that reads as something failing to load.
+
+   One column below `lg`, pictures underneath. A readable measure and a row of
+   pictures beside it do not both fit in a tablet's width, and shrinking the
+   copy to make them is how a measure ends up at 30 characters.
+   -------------------------------------------------------------------------- */
+.about-split {
+  display: grid;
+  gap: 3rem;
+}
+
+@media (min-width: 64rem) {
+  /* `min(38rem, 42%)` rather than a fixed track, and the two halves of that do
+     different jobs.
+
+     The per cent is what makes the column belong to the page: at 1024 it is
+     ~376px and at 1440 ~551px, so the copy grows with the window instead of
+     sitting at one width and letting the slack pile up beside it. A fixed
+     22rem here was the defect -- on a wide screen the prose wrapped every six
+     words while four hundred pixels of empty ground sat between it and the
+     photographs. Text that breaks early next to visible space reads as a
+     column that could not be bothered to use it.
+
+     The `rem` is the ceiling, and it is set by reading rather than by layout.
+     Prose stops being comfortable somewhere around seventy characters, which
+     for this face at 16px is about 38rem; past that the eye loses the start of
+     the next line on the way back. So the column takes most of what the page
+     offers and then stops, which is the difference between using the space and
+     filling it.
+
+     What is left over lands between the copy and the pictures rather than at
+     either edge, because `.about-art` caps itself and pushes right. Slack in
+     the middle reads as separation; the same slack at the margin reads as a
+     band that failed to reach it. */
+  .about-split {
+    grid-template-columns: minmax(0, min(38rem, 42%)) minmax(0, 1fr);
+    align-items: center;
+    gap: 4rem;
+  }
+}
+
+@media (min-width: 90rem) {
+  /* Past this width the copy is at its ceiling and only the gap can grow, so
+     everything a wider window gives goes to the pictures. */
+  .about-split {
+    gap: 6rem;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   The three.
+
+   Flex rather than a grid, and that is the whole difference between this
+   arrangement and the one before it. A grid gives every picture the same track
+   and the same top edge; three equal frames on one baseline are a contact
+   sheet, and no amount of rounding the corners changes that. Here each frame
+   has its own width, its own proportion and its own drop -- 0, 4.5rem, 1.75rem
+   -- so the set reads as things laid out by a hand rather than by a table.
+
+   The offsets are in `rem` and not per cent, which matters more than it looks:
+   a percentage margin on a flex item resolves against the *container's width*,
+   not its own height, so `margin-top: 20%` here would be a fifth of eight
+   hundred pixels and throw the second frame off the bottom of the band.
+
+   Flex also makes the count free. `flex: 1 1 0` with different `flex-grow`
+   values distributes whatever space there is between however many frames
+   arrive, so three photographs, two or one all compose without a second
+   layout -- which is what lets the markup simply render what the kitchen has
+   published.
+
+   Portrait, which is the less obvious half of it. The copy beside them is a
+   tall narrow column; wide pictures next to it make an L and the eye has
+   nowhere to go. Tall ones make a row of vertical elements of similar
+   proportion and different heights, which is a rhythm.
+   -------------------------------------------------------------------------- */
+.about-art {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+@media (min-width: 64rem) {
+  /* Capped, and pushed to the far end of its track rather than filling it.
+
+     Breaking the band out of the 72rem column handed the pictures three or four
+     hundred pixels they did not need: at 1920 the right-hand track is over
+     1300px, and three frames stretched across that stop being photographs of
+     food and become panels. 52rem holds each one near 265px, which is the size
+     at which a dish is still a dish.
+
+     The slack goes between the words and the pictures rather than at the page's
+     right edge. Air on the outside would read as the band failing to reach the
+     margin the section above it reaches; air in the middle reads as the gap
+     that separates two things, and it makes the copy's left edge -- the whole
+     point of the layout -- land harder. */
+  .about-art {
+    max-width: 52rem;
+    margin-inline-start: auto;
+  }
+}
+
+@media (min-width: 40rem) {
+  .about-art {
+    gap: 1.5rem;
+  }
+}
+
+.about-shot:nth-child(1) {
+  flex: 1 1 0;
+}
+
+.about-shot:nth-child(2) {
+  flex: 1.18 1 0;
+  aspect-ratio: 3 / 4;
+  margin-top: 4.5rem;
+}
+
+.about-shot:nth-child(3) {
+  flex: 0.86 1 0;
+  margin-top: 1.75rem;
+}
+
+.about-shot {
+  position: relative;
+  overflow: hidden;
+  flex: 1 1 0;
+  aspect-ratio: 4 / 5;
+  border-radius: var(--ck-radius-lg);
+  /* Seen while the photograph loads. Ink at low alpha rather than a grey, so an
+     empty frame is a shade of the band it sits in instead of a hole in it. */
+  background-color: rgb(13 23 20 / 0.06);
+}
+
+.about-shot-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Each picture settles out of a slight overscale as the band arrives, the
+   second one behind the first. `--shot-at` is the per-picture offset, added to
+   whatever delay the `Reveal` around them is already carrying rather than
+   replacing it -- so the whole band can be pushed later from the markup without
+   the two drifting out of step with each other.
+
+   1.04 and no further: the frame clips whatever the image does, so a larger
+   start crops the dish at the moment it is least recognisable and then grows
+   the plate back into view, which reads as a zoom rather than as something
+   coming to rest. */
+.about-art.is-revealed .about-shot-img {
+  animation: about-shot-settle 1100ms var(--ck-ease)
+    calc(var(--reveal-at, 0ms) + var(--shot-at, 0ms)) backwards;
+}
+
+@keyframes about-shot-settle {
+  from {
+    scale: 1.04;
+  }
+  to {
+    scale: 1;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   The bar's borrowed navigation.
+
+   The four links the hero owns, appearing here once the hero's copy of them has
+   gone off the top of the screen and leaving again when it comes back. The
+   markup is always present; only this decides whether it is there. See the
+   hand-off note in `site-header.tsx`.
+
+   `visibility` alongside `opacity`, for the reason it always is: an element at
+   `opacity: 0` is still focusable and still read out, so fading alone would
+   leave four invisible tab stops in the corner of every page. It is
+   transitionable, and it flips at the end of the fade out and the start of the
+   fade in -- the behaviour wanted at both ends rather than a coincidence.
+
+   The links slide in from slightly left, which is the direction they arrive
+   from: the hero's row sits at the left of the copy column and this is the same
+   row reappearing in the same corner. Half a rem, because the point is to say
+   the set moved rather than to move it.
+
+   200ms and `--ck-ease`. The visitor is mid-scroll when this fires, and the
+   whole event is peripheral -- anything slower reads as the header still
+   settling after the page has stopped.
+   -------------------------------------------------------------------------- */
+.bar-nav {
+  align-items: center;
+  gap: 0.25rem;
+  opacity: 0;
+  visibility: hidden;
+  translate: -0.5rem 0;
+  transition:
+    opacity 200ms var(--ck-ease),
+    translate 200ms var(--ck-ease),
+    visibility 200ms var(--ck-ease);
+}
+
+.bar-nav[data-shown] {
+  opacity: 1;
+  visibility: visible;
+  translate: 0 0;
+}
+
+/* --------------------------------------------------------------------------
+   The same voice as the hero's row, because it is the same row.
+
+   These links are literally the hero's, handed over when its copy scrolls off
+   the top -- so a set of words that changes case and weight on the way up the
+   page would read as a second navigation appearing rather than as the same one
+   following you. Capitals, tracked, at 600: the treatment is `.hero-nav-link`'s.
+
+   Two things differ and both follow from where it now sits. The size is
+   smaller and fluid, because a bar the height of a wordmark cannot give four
+   tracked capitals the width a hero column can -- the `clamp` is what keeps
+   them off the logo at the breakpoint where they first appear, and it is the
+   same device the hero row uses for the same reason. And the tracking is
+   0.075em against the hero's 0.05: tracking is a correction for small type, so
+   it grows as the type shrinks. Same rule, other end of it.
+
+   The pill stays rather than becoming the hero's underline. It is this bar's
+   own way of saying "the one you are on", and it is doing more work here than
+   the hero's row ever could: the hero sits above the fold where nothing is
+   current yet, while this is on screen for the whole scroll and is the only
+   thing telling the visitor where they have got to.
+   -------------------------------------------------------------------------- */
+.bar-nav .nav-link {
+  font-size: clamp(0.6875rem, 0.9vw, 0.8125rem);
+  font-weight: 600;
+  letter-spacing: 0.075em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  padding: 0.45rem 0.6rem;
+}
+
+/* The tightest the bar ever is. Between the breakpoint where these links appear
+   and the one where the window is genuinely wide, four tracked words, a
+   wordmark and two capitalised actions are all competing for the same row --
+   and the actions cannot give, because they are the only things here anyone
+   came to press. So the links give: the padding either side comes off, the gap
+   between them closes, and the tracking drops to the minimum that still keeps
+   capitals apart. Roughly forty pixels, taken from the part of the bar that has
+   it to spare. */
+@media (max-width: 63.9375rem) {
+  .bar-nav {
+    gap: 0;
+  }
+
+  .bar-nav .nav-link {
+    letter-spacing: 0.06em;
+    padding-inline: 0.4rem;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   The bar's two actions, in the same voice as its links.
+
+   A class rather than a change to `buttonClasses`, and the distinction is the
+   whole point: this is a header treatment, not a button treatment. The same
+   `ButtonLink` appears on the checkout, on the kitchen screen and inside the
+   plan cards, where sentence case is right and capitals would read as shouting
+   at somebody who is halfway through a task. What is being said here is "these
+   two words belong to the bar", so the rule lives with the bar.
+
+   It is unlayered, which is what lets four declarations beat the `text-sm` and
+   `font-medium` that `buttonClasses` puts on the same element: Tailwind's
+   utilities are inside `@layer utilities` and every layer loses to unlayered
+   CSS regardless of specificity. The same mechanism `.btn-plain` runs on -- see
+   the note over it.
+
+   0.75rem, a step under the links beside them. They are set in a filled or
+   tinted pill and the links are not, and a pill already carries more weight
+   than bare words at the same size; matching the numbers would have made the
+   actions the loudest thing in a bar whose job is to stay out of the way.
+   -------------------------------------------------------------------------- */
+.btn-caps {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* --------------------------------------------------------------------------
+   A ground for a band that has none.
+
+   Four short paragraphs across a wide empty field read as a caption stranded
+   in the middle of the page: there is no edge, no fill and no border, so
+   nothing says where the section starts or that the four columns belong
+   together. A fill would say it, and a fill is also how a one-page site turns
+   into a stack of coloured stripes. A texture says it and stays quiet.
+
+   Dots rather than lines, at 8.5% ink. A grid of hairlines is a graph, and a
+   graph is a thing with meaning -- the eye starts looking for what is plotted
+   on it. A dot field has no direction to read into, which is what makes it
+   ground rather than content, and at this weight it is closer to paper than to
+   pattern: visible when looked at, invisible when read past.
+
+   The mask is the part that matters most. A texture that stops at the section
+   boundary draws two hard horizontal lines across the page and puts back
+   exactly the boxed-in look it was meant to avoid, so it fades in over the top
+   fifth and out over the bottom fifth. The band ends without ever ending.
+
+   `z-index: -1` under `isolation: isolate` puts it behind the copy but inside
+   the section's own stacking context, so it cannot slide under a neighbour's
+   background or over anything else on the page.
+   -------------------------------------------------------------------------- */
+.texture-dots {
+  position: relative;
+  isolation: isolate;
+}
+
+.texture-dots::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image: radial-gradient(circle at center, rgb(13 23 20 / 0.085) 1px, transparent 1px);
+  background-size: 1.5rem 1.5rem;
+  mask-image: linear-gradient(180deg, transparent 0%, #000 20%, #000 80%, transparent 100%);
+}
+
+/* --------------------------------------------------------------------------
+   Corners off.
+
+   Shape only, no colour, so it composes with any variant -- which is the
+   difference between this and `.btn-plain`, the class that squares the hero's
+   call to action while also emptying it out. That one is a whole treatment;
+   this is one declaration, and the pair of them is what lets a filled
+   rectangle and a hairline rectangle be obviously the same object in two
+   different weights.
+
+   It squares every action in the bar rather than only the filled one. A pill
+   and a rectangle side by side is not a hierarchy, it is a disagreement: the
+   eye reads the difference in shape as a difference in kind and then finds
+   there is not one -- both are buttons, in the same corner, doing the same
+   sort of thing. Whichever shape wins, it has to win for all of them.
+
+   Rectangles are what won, and the reason is three lines up the page: the
+   hero's "start a plan today" is already square, and the bar's "start a plan"
+   is the same action. Two shapes for one action was the actual inconsistency,
+   and it only became visible once the two were on screen together -- which is
+   exactly what the hand-off above made happen.
+
+   Unlayered, so a single class defeats `rounded-full` without `!important`.
+   See the note over `.btn-plain` for the mechanism.
+   -------------------------------------------------------------------------- */
+.btn-square {
+  border-radius: 0;
 }

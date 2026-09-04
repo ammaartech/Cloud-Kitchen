@@ -1,32 +1,43 @@
 name: Scheduled jobs
 
-# The operational cadence for the deployed app.
+# The operational cadence for the deployed app -- currently MANUAL ONLY.
 #
-# Vercel's Hobby plan allows two cron jobs per project, each firing at most
-# once a day. That is fine for reconciliation but useless for releasing
-# deliveries: a job whose whole purpose is to put food in front of the kitchen
-# inside a configurable lead time cannot run at 1am and be said to work. So the
-# real cadence lives here, and the daily Vercel crons in vercel.json stay on as
-# a floor in case this workflow is ever disabled.
+# These steps drive three endpoints on a live deployment: releasing due
+# subscription deliveries into the KOT, draining the notification queue, and
+# reconciling marketplaces. That is real work, but only once there is a
+# deployment to point at. Until then a cron trigger just curls a dead URL every
+# few minutes and fails, which is where the run of "Scheduled jobs workflow run
+# failed for main branch" notifications came from.
 #
-# Running both is safe. `release_due_deliveries` locks rows with SKIP LOCKED
-# and is idempotent, the notification dispatcher drains a queue, and
-# reconciliation only records findings -- so an overlapping or duplicated run
-# is a no-op rather than a double delivery.
+# TO RE-ENABLE THE SCHEDULE, once the app is deployed and both repository
+# secrets below are set (Settings -> Secrets and variables -> Actions):
 #
-# Required repository secrets (Settings -> Secrets and variables -> Actions):
-#   SITE_URL     e.g. https://cloud-kitchen-02.vercel.app  (no trailing slash)
-#   CRON_SECRET  the same value as the CRON_SECRET env var on Vercel
+#   SITE_URL     e.g. https://your-project.vercel.app  (no trailing slash)
+#   CRON_SECRET  the same value as the CRON_SECRET env var on the deployment
+#
+# add this back under `on:` and restore the `if:` guards noted on each job:
+#
+#   schedule:
+#     - cron: '*/5 * * * *'   # frequent: release + notifications
+#     - cron: '17 * * * *'    # hourly:   reconciliation
+#
+# Running these alongside the daily Vercel crons in vercel.json is safe.
+# `release_due_deliveries` locks rows with SKIP LOCKED and is idempotent, the
+# notification dispatcher drains a queue, and reconciliation only records
+# findings -- so an overlapping or duplicated run is a no-op rather than a
+# double delivery.
 
 on:
-  schedule:
-    # GitHub's minimum interval is 5 minutes, and it is best-effort: runs can
-    # be delayed under load. The release job tolerates that -- it releases
-    # whatever is due whenever it next runs, rather than assuming it was
-    # punctual.
-    - cron: '*/5 * * * *'
-    - cron: '17 * * * *'
   workflow_dispatch:
+    inputs:
+      job:
+        description: 'Which jobs to run'
+        type: choice
+        default: frequent
+        options:
+          - frequent
+          - hourly
+          - both
 
 concurrency:
   # Never let a delayed run pile up on top of the next one.
@@ -36,9 +47,26 @@ concurrency:
 jobs:
   frequent:
     name: Release deliveries and drain notifications
-    if: github.event.schedule == '*/5 * * * *' || github.event_name == 'workflow_dispatch'
+    # With the schedule restored, guard this with:
+    #   github.event.schedule == '*/5 * * * *' || <the dispatch check below>
+    if: inputs.job == 'frequent' || inputs.job == 'both'
     runs-on: ubuntu-latest
     steps:
+      - name: Check the required secrets are set
+        # Without this, an unset SITE_URL leaves curl with a bare path and the
+        # failure reads as a bad hostname rather than a missing secret.
+        env:
+          SITE_URL: ${{ secrets.SITE_URL }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          missing=
+          [ -n "$SITE_URL" ] || missing="$missing SITE_URL"
+          [ -n "$CRON_SECRET" ] || missing="$missing CRON_SECRET"
+          if [ -n "$missing" ]; then
+            echo "::error::Missing repository secret(s):$missing. Set them under Settings -> Secrets and variables -> Actions."
+            exit 1
+          fi
+
       - name: Release due deliveries into the KOT
         env:
           SITE_URL: ${{ secrets.SITE_URL }}
@@ -62,9 +90,24 @@ jobs:
 
   hourly:
     name: Reconcile marketplaces
-    if: github.event.schedule == '17 * * * *'
+    # With the schedule restored, guard this with:
+    #   github.event.schedule == '17 * * * *' || <the dispatch check below>
+    if: inputs.job == 'hourly' || inputs.job == 'both'
     runs-on: ubuntu-latest
     steps:
+      - name: Check the required secrets are set
+        env:
+          SITE_URL: ${{ secrets.SITE_URL }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          missing=
+          [ -n "$SITE_URL" ] || missing="$missing SITE_URL"
+          [ -n "$CRON_SECRET" ] || missing="$missing CRON_SECRET"
+          if [ -n "$missing" ]; then
+            echo "::error::Missing repository secret(s):$missing. Set them under Settings -> Secrets and variables -> Actions."
+            exit 1
+          fi
+
       - name: Two-way marketplace reconciliation
         env:
           SITE_URL: ${{ secrets.SITE_URL }}

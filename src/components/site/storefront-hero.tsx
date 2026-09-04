@@ -2,9 +2,10 @@ import Image from 'next/image';
 import Link from 'next/link';
 import type { Route } from 'next';
 import { Fragment, type CSSProperties, type ReactNode } from 'react';
-import type { DeliveryWindow, PlanSummary, ProductCard, PublicOffer } from '@/lib/data/catalog';
-import { clockTime, money, pluralise } from '@/lib/format';
+import type { DeliveryWindow, PlanSummary, ProductCard } from '@/lib/data/catalog';
+import { clockTime, money } from '@/lib/format';
 import { buttonClasses, cx } from '@/components/ui/button-styles';
+import { HERO_NAV } from './nav';
 import { withPhotos, type Photo } from './photos';
 import { ArrowRightIcon } from './icons';
 import {
@@ -63,9 +64,26 @@ const ROW_FADE = 'linear-gradient(270deg, #000 38%, transparent 92%)';
  * though they no longer sit last on the page: they are the answer to the
  * headline, and an answer that lands before the question has been asked reads
  * as a menu rather than as a reply. The whole thing is over inside a
- * second and a half, under a headline that keeps rolling until ~3.15s -- see
- * the note above `.hero-enter` in `globals.css` for why the two are not
+ * second and a quarter, under a headline that keeps rolling until ~3.15s --
+ * see the note above `.hero-enter` in `globals.css` for why the two are not
  * chained together.
+ *
+ * The gaps are 80ms and were 120. That is the difference between four things
+ * arriving and one thing arriving in four parts, and 120 only became the wrong
+ * number when the cards moved up into this column: as a separate band below
+ * the split they were a second group and wanted a beat of separation, but in a
+ * single vertical run down one column a 120ms gap reads as four elements each
+ * waiting for the one above it to finish. 80ms is the top of the range a
+ * stagger still holds together in -- past it the cascade stops being one
+ * gesture, and it was costing the last card a third of a second on the surface
+ * whose whole point is that the actions are already there when you arrive.
+ *
+ * The nav row is first and by the smallest margin -- 50ms ahead of the
+ * subtitle rather than a beat of its own. It sits above the headline, so it has
+ * to be there before the eye starts down the column; but it is three quiet
+ * words, and giving them their own moment in the choreography would announce
+ * them as the most important thing on the page, which is the opposite of what
+ * they are.
  *
  * The delivery windows used to be the last entry here and are not any more.
  * They are no longer part of the page's arrival at all: they are handed over by
@@ -73,10 +91,11 @@ const ROW_FADE = 'linear-gradient(270deg, #000 38%, transparent 92%)';
  * `passAt` and the note over `.delivery-window` in `globals.css`.
  */
 const ENTER = {
-  subtitle: 140,
-  cta: 260,
-  primaryCard: 380,
-  secondaryCard: 480,
+  nav: 40,
+  subtitle: 90,
+  cta: 170,
+  primaryCard: 250,
+  secondaryCard: 320,
 } as const;
 
 /**
@@ -176,33 +195,13 @@ function passAt(index: number, count: number): CSSProperties {
   return { '--pass-at': PASS_FROM + (PASS_TO - PASS_FROM) * spread } as CSSProperties;
 }
 
-/** The offer worth leading with: the deepest percentage, else the first one. */
-function headlineOffer(offers: PublicOffer[]): PublicOffer | null {
-  const percent = offers
-    .filter((offer) => offer.discountType === 'percent')
-    .sort((a, b) => Number(b.discountValue) - Number(a.discountValue));
-
-  return percent[0] ?? offers[0] ?? null;
-}
-
-function offerLabel(offer: PublicOffer): string | null {
-  const value = Number(offer.discountValue);
-  if (!Number.isFinite(value) || value <= 0) return null;
-
-  return offer.discountType === 'percent'
-    ? `Up to ${Math.round(value)}% off`
-    : `${money(value)} off`;
-}
-
 export function StorefrontHero({
   plans,
   menu,
-  offers,
   windows,
 }: {
   plans: PlanSummary[];
   menu: ProductCard[];
-  offers: PublicOffer[];
   windows: DeliveryWindow[];
 }) {
   const photos = withPhotos(menu);
@@ -214,11 +213,8 @@ export function StorefrontHero({
     null,
   );
 
-  const offer = headlineOffer(offers);
-  const offerPill = offer ? offerLabel(offer) : null;
-
   return (
-    <HeroStage className="storefront-hero border-b border-line bg-sunken">
+    <HeroStage id="top" className="storefront-hero border-b border-line bg-sunken">
       {/* The kitchen's tools, drawn in the margins either side of the column.
           Direct children of the section and deliberately outside every
           `HeroLayer`: a layer transforms, and a transformed ancestor becomes
@@ -244,14 +240,17 @@ export function StorefrontHero({
           leaving the gap exactly where it was. Less padding is the windows
           sitting lower in the scene.
 
-          It is trimmed to just clear the rooftops rather than to look
-          comfortable. The houses are the tallest thing in the lane and they
+          Trimmed twice now. It is set to just clear the rooftops rather than
+          to look comfortable, and then taken in by another 2rem to close the
+          gap that was left between the windows and the road -- the courier
+          hands the timings over as he passes, and a hand-off across two hundred
+          pixels of empty ground does not read as one. The houses are the tallest thing in the lane and they
           reach its very top, so this cannot go below the lane's own height
           without the third window landing on a roof -- the row is centred and
           the houses are hard right, and at around 1280px those two overlap.
           It steps at the breakpoints the scene does, because what it is
           clearing is the houses' height. */}
-      <div className="mx-auto max-w-6xl px-4 pt-14 pb-32 sm:pt-20 sm:pb-40 lg:pt-24 lg:pb-52">
+      <div className="mx-auto max-w-6xl px-4 pt-14 pb-28 sm:pt-20 sm:pb-36 lg:pt-24 lg:pb-44">
         {/* The three scroll planes, in depth order. The copy is nearest, so it
             leaves fastest and gives up the most opacity; the cards sit behind
             it and hold on longer, because they are still the actions and a
@@ -272,6 +271,45 @@ export function StorefrontHero({
             columns of nothing. */}
         <div className="hero-split">
           <HeroLayer depth={1.15} fade={0.55} className="hero-copy">
+            {/* The rest of the site, above the sentence that explains it.
+                These three were in the header until the wordmark took the
+                middle of the bar -- see `HERO_NAV` in `nav.ts` -- and this is
+                the better place for them anyway. A visitor reads down from the
+                top of a page: in the header they were a bar of options to scan
+                and dismiss before reaching the headline, and here they are the
+                first line of the page, read in the same pass as everything
+                under them.
+
+                Deliberately small and deliberately not buttons. There is one
+                action in this column and it is "start a plan today" further
+                down; three links styled with any weight at all would compete
+                with it, and the whole reason they can sit this high is that
+                they do not. */}
+            <nav
+              // The header watches this element and grows the same four links
+              // when it leaves the top of the screen -- see
+              // `useScrolledPastElement`. Without that, using one of these
+              // links scrolls the row that contains them off the page and
+              // leaves the visitor with no navigation at all.
+              id="hero-nav"
+              style={enterAt(ENTER.nav)}
+              aria-label="Sections"
+              className="hero-enter hero-nav"
+            >
+              {/* Keyed by label, not by section, because the section is not
+                  unique: "Meal Plans" and "Subscriptions" both point at
+                  `#plans`, so keying on the destination gave two siblings the
+                  same key and React warned that it could duplicate or drop
+                  one. The label is what distinguishes these rows to a reader
+                  and it is what distinguishes them to React. `site-header.tsx`
+                  renders the same list and already keys it this way. */}
+              {HERO_NAV.map((item) => (
+                <Link key={item.label} href={`/#${item.section}`} className="hero-nav-link">
+                  {item.label}
+                </Link>
+              ))}
+            </nav>
+
             <HeroHeadline />
 
             <p
@@ -301,6 +339,16 @@ export function StorefrontHero({
               )}
             >
               start a plan today
+              {/* The wipe's second copy of the button: same words, already
+                  white, on a ground that is already green, clipped to nothing
+                  until a pointer arrives. `aria-hidden`, so the accessible name
+                  is the one label rather than the same sentence twice, and the
+                  duplicate never becomes a second thing to read. See
+                  `.hero-cta-fill` for what the clip does and why it is not a
+                  colour transition. */}
+              <span className="hero-cta-fill" aria-hidden>
+                start a plan today
+              </span>
             </Link>
 
             {/* The two gateways, and they are here rather than in a band of
@@ -342,7 +390,6 @@ export function StorefrontHero({
                 href="/subscriptions"
                 title="Meal subscriptions"
                 subtitle="Cooked to your schedule"
-                pill={offerPill ?? (plans.length ? pluralise(plans.length, 'plan') : null)}
                 footnote={
                   cheapest
                     ? `From ${money(cheapest.price)} for ${cheapest.billingPeriodDays} days`
@@ -356,11 +403,6 @@ export function StorefrontHero({
                 href="/menu"
                 title="Today&rsquo;s menu"
                 subtitle="What the kitchen is cooking"
-                pill={
-                  available.length
-                    ? `${pluralise(available.length, 'dish', 'dishes')} today`
-                    : null
-                }
                 footnote={vegetarian.length ? `${vegetarian.length} of them vegetarian` : null}
                 photo={photos[2] ?? photos[0]}
                 enterAfter={ENTER.secondaryCard}
@@ -628,7 +670,7 @@ const HEADLINE = ['One kitchen.', 'One menu a day.', 'For you.'] as const;
  */
 function HeroHeadline() {
   return (
-    <h1 className="hero-headline mx-auto max-w-3xl text-center text-4xl leading-[1.08] font-semibold text-balance text-ink sm:text-5xl lg:mx-0 lg:max-w-none lg:text-left lg:text-6xl">
+    <h1 className="hero-headline mx-auto max-w-3xl text-center text-[2.8125rem] leading-[1.06] font-semibold text-balance text-ink sm:text-6xl lg:mx-0 lg:max-w-none lg:text-left lg:text-[4.6875rem]">
       <span className="hero-roll" aria-hidden>
         <span className="hero-roll-window">
           <span className="hero-roll-track">
@@ -694,61 +736,83 @@ function GatewayCard({
   href,
   title,
   subtitle,
-  pill,
   footnote,
   photo,
   enterAfter,
-  priority = false,
 }: {
   href: Route;
   title: ReactNode;
   subtitle: string;
-  pill?: ReactNode;
   footnote?: ReactNode;
   photo?: Photo;
   enterAfter: number;
-  priority?: boolean;
 }) {
   return (
     <Link
       href={href}
       style={enterAt(enterAfter)}
-      className="hero-enter-lift group block rounded-ck-lg"
+      className="hero-enter-lift group relative block rounded-ck-lg"
     >
+      {/* The hover shadow, as an element that fades rather than as a shadow
+          that transitions.
+
+          `transition: box-shadow` is a paint animation: the browser re-renders
+          a large blurred region on every frame of it, for the whole 300ms, on
+          the surface that is also decoding two photographs and running a
+          parallax. Opacity is composited -- the shadow is rasterised once and
+          the GPU changes how much of it shows. Same picture, none of the work.
+
+          It sits on the anchor rather than inside the card because the card
+          clips its own overflow, and a shadow is drawn outside the box it
+          belongs to. That has a second effect worth keeping: the shadow stays
+          flat on the page while the card leans over it, which is what a card
+          lifting off a surface actually does. */}
+      <span
+        aria-hidden
+        className={cx(
+          'pointer-events-none absolute inset-0 rounded-ck-lg opacity-0 shadow-ck',
+          'transition-opacity duration-200 ease-ck',
+          'group-hover:opacity-100 group-focus-visible:opacity-100 group-active:opacity-0',
+        )}
+      />
+
       <TiltCard
         className={cx(
           'relative isolate flex items-center gap-4 overflow-hidden rounded-ck-lg border border-line',
-          'bg-surface py-4 pr-24 pl-5 shadow-ck-sm transition-shadow duration-300 ease-ck',
-          'group-hover:shadow-ck group-focus-visible:shadow-ck',
-          // The fourth state. Hover says the card can be pressed and focus says
-          // it can be reached, but until this rule there was nothing between
-          // deciding to click and arriving on the next page -- the one moment
-          // the visitor is actually asking the card whether it heard them. It
-          // drops back below its resting shadow, so the card presses into the
-          // page rather than off it. Ordered after the hover rule on purpose:
-          // a pressed card is also a hovered one, and the later of two equally
-          // specific rules is the one that wins.
-          'group-active:shadow-ck-sm',
+          // The resting shadow only. Everything the card does on hover, focus
+          // and press now happens on the span above and on the spring in
+          // `TiltCard` -- opacity and transform, both composited. This class
+          // used to carry four shadow states and a `transition-shadow`.
+          'bg-surface py-4 pr-24 pl-5 shadow-ck-sm',
           'sm:py-5 sm:pr-36 sm:pl-6',
         )}
       >
         <div className="min-w-0 flex-1">
-          {/* The title and its number on one line, because they are one fact:
-              "meal subscriptions, four plans" is what the visitor came to find
-              out, and stacking the count under the heading turned a single
-              glance into two. It wraps rather than truncates -- a count that
-              disappears at a narrow width is worse than a heading on two
-              lines. */}
-          <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1.5">
-            <h2 className="text-sm leading-tight font-semibold tracking-caps text-ink uppercase sm:text-base">
-              {title}
-            </h2>
-            {pill ? (
-              <span className="rounded-full bg-brand-soft px-2 py-0.5 text-[0.6875rem] leading-4 font-bold tracking-wide text-brand uppercase">
-                {pill}
-              </span>
-            ) : null}
-          </div>
+          {/* The heading, and nothing beside it.
+
+              There was a brand-tinted pill here -- "up to 5% off" on one card,
+              "9 dishes today" on the other. Both were true and both were in
+              the way. A pill is the loudest object its size in this system: a
+              filled shape in the brand colour, set in bold capitals, sitting
+              immediately to the right of the heading it is supposed to be
+              subordinate to. Two of them, on the only two cards in the hero,
+              meant the first thing the eye found in this column was a number
+              nobody had asked for yet.
+
+              The facts themselves did not need defending. The discount already
+              has a whole strip across the top of the page whose only job is to
+              carry it -- see `offer-bar.tsx` -- so the pill was the same claim
+              made twice, sixty pixels apart, in the noisier of the two places.
+              The dish count is genuinely interesting and genuinely not the
+              headline: the card says "today's menu", and how many things are
+              on it is what the menu itself is for.
+
+              What is left is a heading, a line of description and a footnote:
+              three registers, decreasing in weight, on a card whose job is to
+              be a door rather than a summary. */}
+          <h2 className="text-sm leading-tight font-semibold tracking-caps text-ink uppercase sm:text-base">
+            {title}
+          </h2>
 
           {/* Sentence case, and the one line on this card that changed shape
               rather than size. It was a second line of capitals under the
@@ -776,7 +840,11 @@ function GatewayCard({
           )}
         >
           <DriftingArrow>
-            <ArrowRightIcon className="transition-transform duration-300 ease-ck group-hover:translate-x-0.5" />
+            {/* 200ms, not 300. A hover response should be finished while the
+                visitor is still deciding whether to click; at the 300ms
+                ceiling a 2px nudge is still arriving after the pointer has
+                moved on. */}
+            <ArrowRightIcon className="transition-transform duration-200 ease-ck group-hover:translate-x-0.5" />
           </DriftingArrow>
         </span>
 
@@ -790,7 +858,12 @@ function GatewayCard({
               width={384}
               height={384}
               sizes="(max-width: 640px) 96px, 144px"
-              priority={priority}
+              // No `priority`, deliberately. These two are above the fold and
+              // the instinct is to preload them -- but the bowl beside them is
+              // the LCP candidate and already has it, and a second and third
+              // preload on the same connection is how a page ends up racing
+              // its own largest image. At 96 and 144 CSS pixels these are a
+              // few kilobytes that arrive well inside the first screen anyway.
               // Hung past the row top and bottom rather than fitted to it, and
               // that overhang is load-bearing: the photograph drifts up to 10px
               // against the card's lean, and a picture flush with a 90px row has

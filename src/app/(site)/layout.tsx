@@ -1,5 +1,7 @@
 import Link from 'next/link';
+import { OfferBar } from '@/components/site/offer-bar';
 import { SiteHeader } from '@/components/site/site-header';
+import { ScrollTopButton } from '@/components/site/scroll-top';
 import { SITE_NAV } from '@/components/site/nav';
 
 /**
@@ -23,6 +25,14 @@ import { SITE_NAV } from '@/components/site/nav';
 export default function SiteLayout({ children }: LayoutProps<'/'>) {
   return (
     <>
+      {/* Above the header and outside it: it scrolls away, the header does not.
+          It is an async server component doing its own read rather than
+          something this layout awaits -- see the note above about why this
+          function stays synchronous. `listPublicOffers` is cached, so the
+          strip costs the route nothing and renders no markup at all when the
+          kitchen has no offer running. */}
+      <OfferBar />
+
       <SiteHeader />
 
       <main className="flex-1">{children}</main>
@@ -53,6 +63,13 @@ export default function SiteLayout({ children }: LayoutProps<'/'>) {
           </p>
         </div>
       </footer>
+
+      {/* Last in the shell, and outside `<main>` on purpose: it is a control
+          for the page rather than part of its content, so it belongs after the
+          landmark in the reading order the same way it sits over the corner in
+          the visual one. It renders on every storefront route because every one
+          of them is long enough to need it. */}
+      <ScrollTopButton />
     </>
   );
 }

@@ -169,48 +169,14 @@ export async function listMenuByCategory(): Promise<CategoryGroup[]> {
     .filter((group) => group.products.length > 0);
 }
 
-export interface CollectionSummary {
-  slug: string;
-  name: string;
-  description: string;
-  products: ProductCard[];
-}
-
-export async function listCollections(): Promise<CollectionSummary[]> {
-  "use cache";
-  cacheLife("catalog");
-  // Collections are a shape over products, so a product edit has to drop these
-  // too -- `revalidateCatalog()` clears every tag at once, but tagging by what
-  // the query actually reads keeps that a convenience rather than a crutch.
-  cacheTag(CATALOG_TAGS.menu);
-
-  const supabase = publicClient();
-
-  const { data } = await supabase
-    .from("collections")
-    .select(
-      `slug, name, description, sort_order,
-       collection_products ( sort_order, products ( ${PRODUCT_SELECT} ) )`,
-    )
-    .order("sort_order");
-
-  type Row = {
-    slug: string;
-    name: string;
-    description: string;
-    collection_products: Array<{ products: RawProduct | null }>;
-  };
-
-  return ((data ?? []) as unknown as Row[]).map((row) => ({
-    slug: row.slug,
-    name: row.name,
-    description: row.description,
-    products: row.collection_products
-      .map((link) => link.products)
-      .filter((product): product is RawProduct => Boolean(product))
-      .map((product) => toCard(product)),
-  }));
-}
+/* Collections had one reader, `/meal-plans`, and that page is gone -- its
+   delivery windows duplicated the hero's and its dish grid duplicated the
+   menu's. `listCollections` and its `CollectionSummary` went with it rather
+   than staying behind as a cached query nothing calls: a join across three
+   tables that no route can reach is not a spare part, it is something the next
+   person has to read and rule out. The admin still edits collections, and if
+   the storefront ever surfaces them again this comes back from git with the
+   page that needs it. */
 
 /* ========================================================================== */
 /* Plans                                                                      */
@@ -303,6 +269,35 @@ function toPlan(row: RawPlan): PlanSummary {
         endsAt: window.ends_at,
       })),
   };
+}
+
+/**
+ * Plans cheapest first.
+ *
+ * `listPlans` returns them in `sort_order`, which is the kitchen's own
+ * arrangement and stays the default -- it is how they choose to lead. But a row
+ * of plans with a price on each is not a list, it is a comparison, and a
+ * comparison the reader has to re-sort in their head before they can make it is
+ * a comparison that has not been offered. Four notes reading 4,499 / 3,999 /
+ * 5,299 / 4,699 make someone check every one of them twice to find out which is
+ * the cheapest; in ascending order that answer is the leftmost card and costs
+ * nothing to read.
+ *
+ * So this is applied where plans are *rendered priced and side by side*, and
+ * nowhere else. `sort_order` still decides everything the reader is not being
+ * asked to compare on price.
+ *
+ * It copies before sorting, and that is not defensive style. `listPlans` is a
+ * `"use cache"` function, so every caller is handed the *same* array instance
+ * out of the cache -- an in-place `sort()` would reorder it for every other
+ * route in the process, permanently, and the bug would show up as a page
+ * mysteriously changing order depending on which page was rendered first.
+ *
+ * Equal prices keep their `sort_order`: `Array.prototype.sort` is stable, so a
+ * tie falls through to the order the kitchen set rather than to chance.
+ */
+export function byPriceAscending(plans: PlanSummary[]): PlanSummary[] {
+  return [...plans].sort((a, b) => Number(a.price) - Number(b.price));
 }
 
 export async function listPlans(): Promise<PlanSummary[]> {

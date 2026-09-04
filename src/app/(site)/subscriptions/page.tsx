@@ -1,4 +1,4 @@
-import { listPlans, listPublicOffers } from '@/lib/data/catalog';
+import { byPriceAscending, listPlans, listPublicOffers } from '@/lib/data/catalog';
 import { money, clockTime, PLAN_TYPE_LABELS } from '@/lib/format';
 import { Badge, ButtonLink, Card, EmptyState } from '@/components/ui/primitives';
 
@@ -50,7 +50,12 @@ export default async function SubscriptionsPage() {
         </div>
       ) : (
         <div className="mt-10 grid gap-6 lg:grid-cols-2">
-          {plans.map((plan) => {
+          {/* Cheapest first, the same order the home page's four notes are
+              in. This is the page someone lands on to choose between them, so
+              if either surface has to be sorted for comparison it is this one
+              -- and two surfaces showing the same plans in two different
+              orders is worse than either order on its own. */}
+          {byPriceAscending(plans).map((plan) => {
             const entitlement =
               plan.planType === 'meal_credits'
                 ? `${plan.creditsPerCycle} credits`
