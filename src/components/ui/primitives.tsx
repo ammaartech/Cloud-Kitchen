@@ -121,6 +121,20 @@ export function Badge({
 }
 
 /**
+ * Card background tint that identifies where a ticket came from at a glance
+ * (PRD 4). Subscription deliveries take precedence over the marketplace source
+ * -- the fulfilment path is what matters on the board, not the storefront the
+ * plan was bought on. Colour is a hint here, not a signal: the SourceTag and
+ * `#SUB-…` label carry the actual identity.
+ */
+export function sourceCardTone(source: string, isSubscription: boolean): string {
+  if (isSubscription) return 'bg-info-soft!';
+  if (source === 'SW') return 'bg-sw-soft!';
+  if (source === 'ZM') return 'bg-zm-soft!';
+  return '';
+}
+
+/**
  * Source marker for a KOT ticket.
  *
  * Always renders the literal prefix alongside the colour, because colour must

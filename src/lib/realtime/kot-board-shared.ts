@@ -7,7 +7,8 @@
  * become a function and `new Set(...)` would throw at request time.
  */
 
-/** Statuses that keep a ticket on the live board. */
+/** Statuses that keep a ticket on the live board. DELIVERED is terminal --
+ * it belongs on the Completed tab (see `/api/kot/history`), not the live one. */
 export const ACTIVE_STATUSES = [
   'NEW',
   'ACCEPTED',
@@ -15,7 +16,6 @@ export const ACTIVE_STATUSES = [
   'READY_FOR_PICKUP',
   'PICKED_UP',
   'OUT_FOR_DELIVERY',
-  'DELIVERED',
 ] as const;
 
 /** What the kitchen display shows: accepted work onward, never unaccepted. */

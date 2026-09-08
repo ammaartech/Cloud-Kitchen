@@ -67,5 +67,13 @@ export async function POST(request: Request) {
     );
   }
 
-  return NextResponse.json(data);
+  // Return the fresh view row so the acting client can update immediately
+  // without waiting for the Realtime broadcast + follow-up refetch.
+  const { data: ticket } = await supabase
+    .from('v_kot_tickets')
+    .select('*')
+    .eq('id', parsed.data.ticketId)
+    .maybeSingle();
+
+  return NextResponse.json({ ...(data as object | null), ticket });
 }

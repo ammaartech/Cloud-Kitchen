@@ -87,6 +87,57 @@ export function useKotBoard(initial: BoardTicket[]) {
     setLastSyncedAt(new Date());
   }, []);
 
+  /**
+   * Apply an authoritative ticket row (e.g. the fresh row returned by the
+   * mutation API). `null` means the ticket is no longer visible to this
+   * caller and should leave the board. Kept separate from `refetchOne` so
+   * the acting client does not need a second round-trip.
+   */
+  const apply = useCallback((id: string, ticket: BoardTicket | null) => {
+    setTickets((current) => {
+      const next = new Map(current);
+      if (!ticket || !(ACTIVE_STATUSES as readonly string[]).includes(ticket.status)) {
+        next.delete(id);
+        return next;
+      }
+      next.set(id, { ...ticket, _changedAt: Date.now() });
+      return next;
+    });
+    setLastSyncedAt(new Date());
+  }, []);
+
+  /**
+   * Optimistically patch a ticket (typically its status) before the server
+   * confirms. Returns a rollback function the caller invokes if the mutation
+   * fails, so the board snaps back to what the DB actually holds.
+   *
+   * A Realtime event arriving mid-flight is harmless: it triggers
+   * `refetchOne`, which reads the row the RPC just committed -- the same
+   * value the optimistic patch predicted -- so no flicker occurs.
+   */
+  const optimistic = useCallback(
+    (id: string, patch: Partial<BoardTicket>) => {
+      let snapshot: BoardTicket | undefined;
+      setTickets((current) => {
+        snapshot = current.get(id);
+        if (!snapshot) return current;
+        const next = new Map(current);
+        next.set(id, { ...snapshot, ...patch, _changedAt: Date.now() });
+        return next;
+      });
+      return () => {
+        if (!snapshot) return;
+        const restore = snapshot;
+        setTickets((current) => {
+          const next = new Map(current);
+          next.set(id, { ...restore, _changedAt: Date.now() });
+          return next;
+        });
+      };
+    },
+    [],
+  );
+
   useEffect(() => {
     const supabase = browserClient();
 
@@ -166,5 +217,5 @@ export function useKotBoard(initial: BoardTicket[]) {
     return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
   });
 
-  return { tickets: list, connection, lastSyncedAt, resync };
+  return { tickets: list, connection, lastSyncedAt, resync, apply, optimistic };
 }

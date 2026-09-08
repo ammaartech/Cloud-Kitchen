@@ -30,5 +30,11 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: error.message }, { status: 403 });
   }
 
-  return NextResponse.json(data);
+  const { data: ticket } = await supabase
+    .from('v_kot_tickets')
+    .select('*')
+    .eq('id', parsed.data.ticketId)
+    .maybeSingle();
+
+  return NextResponse.json({ ...(data as object | null), ticket });
 }

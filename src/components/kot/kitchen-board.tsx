@@ -5,7 +5,15 @@ import { useTicketActions } from './ticket-actions';
 import { ConnectionBadge } from './connection-badge';
 import { TicketItems } from './ticket-items';
 import { SignOutButton } from '@/components/auth/sign-out-button';
-import { Alert, Button, Card, EmptyState, SourceTag, cx } from '@/components/ui/primitives';
+import {
+  Alert,
+  Button,
+  Card,
+  EmptyState,
+  SourceTag,
+  cx,
+  sourceCardTone,
+} from '@/components/ui/primitives';
 import { elapsedSince, untilDeadline, timeOnly, SOURCE_LABELS } from '@/lib/format';
 
 /**
@@ -40,8 +48,9 @@ export function KitchenBoard({
   /** All three kitchen accounts share this display, so it says which one. */
   user: { name: string; role: string };
 }) {
-  const { tickets, connection, lastSyncedAt } = useKotBoard(initialTickets);
-  const actions = useTicketActions();
+  const { tickets, connection, lastSyncedAt, apply, optimistic } =
+    useKotBoard(initialTickets);
+  const actions = useTicketActions({ apply, optimistic });
 
   return (
     <div data-surface="ops" className="min-h-dvh bg-bg text-ink">
@@ -103,6 +112,7 @@ export function KitchenBoard({
                       key={ticket.id}
                       className={cx(
                         'p-4',
+                        sourceCardTone(ticket.source, Boolean(ticket.subscription_number)),
                         ticket._changedAt !== undefined &&
                           Date.now() - ticket._changedAt < 2000 &&
                           'ck-flash',

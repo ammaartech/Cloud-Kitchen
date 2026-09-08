@@ -15,6 +15,7 @@ import {
   SourceTag,
   Spinner,
   cx,
+  sourceCardTone,
 } from '@/components/ui/primitives';
 import {
   elapsedSince,
@@ -30,11 +31,13 @@ const GROUPS: Array<{ key: string; title: string; statuses: string[] }> = [
   { key: 'kitchen', title: 'In the kitchen', statuses: ['ACCEPTED', 'PREPARING'] },
   { key: 'ready', title: 'Ready and handoff', statuses: ['READY_FOR_PICKUP'] },
   // Post-handoff. Manager clicked "Handed off" to enter PICKED_UP; OUT_FOR_DELIVERY
-  // and DELIVERED land here only for SW/ZM tickets via the rider webhook.
+  // lands here for SW/ZM tickets via the rider webhook. DELIVERED is terminal
+  // and leaves the live board entirely (see ACTIVE_STATUSES) -- it appears on
+  // the Completed tab instead.
   {
     key: 'out',
     title: 'In transit',
-    statuses: ['PICKED_UP', 'OUT_FOR_DELIVERY', 'DELIVERED'],
+    statuses: ['PICKED_UP', 'OUT_FOR_DELIVERY'],
   },
 ];
 
@@ -52,8 +55,9 @@ export function LiveBoard({
   initialTickets: BoardTicket[];
   canAct: boolean;
 }) {
-  const { tickets, connection, lastSyncedAt } = useKotBoard(initialTickets);
-  const actions = useTicketActions();
+  const { tickets, connection, lastSyncedAt, apply, optimistic } =
+    useKotBoard(initialTickets);
+  const actions = useTicketActions({ apply, optimistic });
   const [rejecting, setRejecting] = useState<string | null>(null);
   const [rejectReason, setRejectReason] = useState('');
   const [etaFor, setEtaFor] = useState<string | null>(null);
@@ -79,273 +83,277 @@ export function LiveBoard({
         </Alert>
       ) : null}
 
-      <div className="space-y-8">
-        {tickets.length === 0 ? (
-          <EmptyState
-            title="Nothing on the board"
-            description="New marketplace orders and released subscription deliveries appear here the moment they arrive."
-          />
-        ) : null}
+      {tickets.length === 0 ? (
+        <EmptyState
+          title="Nothing on the board"
+          description="New marketplace orders and released subscription deliveries appear here the moment they arrive."
+        />
+      ) : (
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+          {GROUPS.map((group) => {
+            const groupTickets = tickets.filter((ticket) =>
+              group.statuses.includes(ticket.status),
+            );
 
-        {GROUPS.map((group) => {
-          const groupTickets = tickets.filter((ticket) =>
-            group.statuses.includes(ticket.status),
-          );
-          if (groupTickets.length === 0) return null;
+            return (
+              <section key={group.key} className="flex flex-col">
+                <h2 className="mb-3 flex items-center gap-2 text-sm font-semibold tracking-wide text-muted uppercase">
+                  {group.title}
+                  <span className="rounded-full bg-sunken px-2 py-0.5 text-xs tabular">
+                    {groupTickets.length}
+                  </span>
+                </h2>
 
-          return (
-            <section key={group.key}>
-              <h2 className="mb-3 flex items-center gap-2 text-sm font-semibold tracking-wide text-muted uppercase">
-                {group.title}
-                <span className="rounded-full bg-sunken px-2 py-0.5 text-xs tabular">
-                  {groupTickets.length}
-                </span>
-              </h2>
+                <div className="flex-1 space-y-3">
+                  {groupTickets.length === 0 ? (
+                    <EmptyState title="Nothing here" />
+                  ) : null}
 
-              <div className="grid gap-3 lg:grid-cols-2 xl:grid-cols-3">
-                {groupTickets.map((ticket) => {
-                  const deadline = untilDeadline(ticket.sla_due_at);
-                  const busy = actions.pendingId === ticket.id;
+                  {groupTickets.map((ticket) => {
+                    const deadline = untilDeadline(ticket.sla_due_at);
+                    const busy = actions.pendingId === ticket.id;
 
-                  return (
-                    <Card
-                      key={ticket.id}
-                      className={cx(
-                        'flex flex-col p-4',
-                        ticket._changedAt !== undefined &&
-                          Date.now() - ticket._changedAt < 2000 &&
-                          'ck-flash',
-                        deadline?.overdue && 'border-danger',
-                      )}
-                    >
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="flex items-center gap-2">
-                          <SourceTag source={ticket.source} ticketCode={ticket.ticket_code} />
-                          <span className="text-xs text-subtle">
-                            {SOURCE_LABELS[ticket.source] ?? ticket.source}
-                          </span>
+                    return (
+                      <Card
+                        key={ticket.id}
+                        className={cx(
+                          'flex flex-col p-4',
+                          sourceCardTone(ticket.source, Boolean(ticket.subscription_number)),
+                          ticket._changedAt !== undefined &&
+                            Date.now() - ticket._changedAt < 2000 &&
+                            'ck-flash',
+                          deadline?.overdue && 'border-danger',
+                        )}
+                      >
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="flex items-center gap-2">
+                            <SourceTag source={ticket.source} ticketCode={ticket.ticket_code} />
+                            <span className="text-xs text-subtle">
+                              {SOURCE_LABELS[ticket.source] ?? ticket.source}
+                            </span>
+                          </div>
+
+                          {deadline ? (
+                            <Badge tone={deadline.overdue ? 'danger' : 'neutral'}>
+                              {deadline.label}
+                            </Badge>
+                          ) : null}
                         </div>
 
-                        {deadline ? (
-                          <Badge tone={deadline.overdue ? 'danger' : 'neutral'}>
-                            {deadline.label}
-                          </Badge>
-                        ) : null}
-                      </div>
+                        <div className="mt-3 flex items-baseline justify-between gap-3">
+                          <p className="font-medium">
+                            {ticket.customer_name ?? 'Marketplace customer'}
+                          </p>
+                          {ticket.order_total ? (
+                            <p className="text-sm tabular text-muted">
+                              {money(ticket.order_total)}
+                            </p>
+                          ) : null}
+                        </div>
 
-                      <div className="mt-3 flex items-baseline justify-between gap-3">
-                        <p className="font-medium">
-                          {ticket.customer_name ?? 'Marketplace customer'}
+                        <p className="mt-0.5 text-xs text-subtle">
+                          #{ticket.order_number}
+                          {ticket.subscription_number ? ` · ${ticket.subscription_number}` : ''}
+                          {ticket.delivery_window_label
+                            ? ` · ${ticket.delivery_window_label}`
+                            : ''}
+                          {ticket.scheduled_for ? ` · due ${timeOnly(ticket.scheduled_for)}` : ''}
                         </p>
-                        {ticket.order_total ? (
-                          <p className="text-sm tabular text-muted">
-                            {money(ticket.order_total)}
+
+                        <TicketItems ticketId={ticket.id} orderId={ticket.order_id} />
+
+                        {ticket.special_instructions ? (
+                          <p className="mt-2 rounded-ck bg-warning-soft px-2 py-1 text-xs text-warning">
+                            {ticket.special_instructions}
                           </p>
                         ) : null}
-                      </div>
 
-                      <p className="mt-0.5 text-xs text-subtle">
-                        #{ticket.order_number}
-                        {ticket.subscription_number ? ` · ${ticket.subscription_number}` : ''}
-                        {ticket.delivery_window_label
-                          ? ` · ${ticket.delivery_window_label}`
-                          : ''}
-                        {ticket.scheduled_for ? ` · due ${timeOnly(ticket.scheduled_for)}` : ''}
-                      </p>
+                        <dl className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-subtle">
+                          <div className="flex gap-1">
+                            <dt>Waiting</dt>
+                            <dd className="tabular text-muted">
+                              {elapsedSince(ticket.created_at)}
+                            </dd>
+                          </div>
+                          <div className="flex gap-1">
+                            <dt>ETA</dt>
+                            <dd className="tabular text-muted">
+                              {ticket.prep_eta_minutes ?? '—'} min
+                              {ticket.eta_overridden_at ? ' (overridden)' : ''}
+                            </dd>
+                          </div>
+                          <div className="flex gap-1">
+                            <dt>Status</dt>
+                            <dd className="text-muted">
+                              {KOT_STATUS_LABELS[ticket.status] ?? ticket.status}
+                            </dd>
+                          </div>
+                        </dl>
 
-                      <TicketItems ticketId={ticket.id} orderId={ticket.order_id} />
-
-                      {ticket.special_instructions ? (
-                        <p className="mt-2 rounded-ck bg-warning-soft px-2 py-1 text-xs text-warning">
-                          {ticket.special_instructions}
-                        </p>
-                      ) : null}
-
-                      <dl className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-subtle">
-                        <div className="flex gap-1">
-                          <dt>Waiting</dt>
-                          <dd className="tabular text-muted">
-                            {elapsedSince(ticket.created_at)}
-                          </dd>
-                        </div>
-                        <div className="flex gap-1">
-                          <dt>ETA</dt>
-                          <dd className="tabular text-muted">
-                            {ticket.prep_eta_minutes ?? '—'} min
-                            {ticket.eta_overridden_at ? ' (overridden)' : ''}
-                          </dd>
-                        </div>
-                        <div className="flex gap-1">
-                          <dt>Status</dt>
-                          <dd className="text-muted">
-                            {KOT_STATUS_LABELS[ticket.status] ?? ticket.status}
-                          </dd>
-                        </div>
-                      </dl>
-
-                      {canAct ? (
-                        <div className="mt-4 border-t border-line pt-3">
-                          {rejecting === ticket.id ? (
-                            <div className="space-y-2">
-                              <Input
-                                autoFocus
-                                value={rejectReason}
-                                placeholder="Why are you rejecting this?"
-                                onChange={(event) => setRejectReason(event.target.value)}
-                              />
-                              <div className="flex gap-2">
-                                <Button
-                                  variant="danger"
-                                  size="sm"
-                                  disabled={!rejectReason.trim() || busy}
-                                  onClick={async () => {
-                                    const ok = await actions.transition(
-                                      ticket.id,
-                                      'REJECTED',
-                                      rejectReason.trim(),
-                                    );
-                                    if (ok) {
-                                      setRejecting(null);
-                                      setRejectReason('');
-                                    }
-                                  }}
-                                >
-                                  Confirm rejection
-                                </Button>
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() => {
-                                    setRejecting(null);
-                                    setRejectReason('');
-                                  }}
-                                >
-                                  Keep it
-                                </Button>
-                              </div>
-                            </div>
-                          ) : etaFor === ticket.id ? (
-                            <div className="flex gap-2">
-                              <Input
-                                autoFocus
-                                type="number"
-                                min={1}
-                                max={240}
-                                value={etaValue}
-                                placeholder="Minutes"
-                                onChange={(event) => setEtaValue(event.target.value)}
-                              />
-                              <Button
-                                size="sm"
-                                disabled={!etaValue || busy}
-                                onClick={async () => {
-                                  const ok = await actions.overrideEta(
-                                    ticket.id,
-                                    Number(etaValue),
-                                  );
-                                  if (ok) {
-                                    setEtaFor(null);
-                                    setEtaValue('');
-                                  }
-                                }}
-                              >
-                                Set
-                              </Button>
-                              <Button variant="ghost" size="sm" onClick={() => setEtaFor(null)}>
-                                Cancel
-                              </Button>
-                            </div>
-                          ) : (
-                            <div className="flex flex-wrap gap-2">
-                              {busy ? <Spinner className="mt-2" /> : null}
-
-                              {ticket.status === 'NEW' ? (
-                                <>
-                                  <Button
-                                    size="sm"
-                                    disabled={busy}
-                                    onClick={() => actions.transition(ticket.id, 'ACCEPTED')}
-                                  >
-                                    Accept
-                                  </Button>
+                        {canAct ? (
+                          <div className="mt-4 border-t border-line pt-3">
+                            {rejecting === ticket.id ? (
+                              <div className="space-y-2">
+                                <Input
+                                  autoFocus
+                                  value={rejectReason}
+                                  placeholder="Why are you rejecting this?"
+                                  onChange={(event) => setRejectReason(event.target.value)}
+                                />
+                                <div className="flex gap-2">
                                   <Button
                                     variant="danger"
                                     size="sm"
-                                    disabled={busy}
-                                    onClick={() => setRejecting(ticket.id)}
+                                    disabled={!rejectReason.trim() || busy}
+                                    onClick={async () => {
+                                      const ok = await actions.transition(
+                                        ticket.id,
+                                        'REJECTED',
+                                        rejectReason.trim(),
+                                      );
+                                      if (ok) {
+                                        setRejecting(null);
+                                        setRejectReason('');
+                                      }
+                                    }}
                                   >
-                                    Reject
+                                    Confirm rejection
                                   </Button>
-                                </>
-                              ) : null}
-
-                              {ticket.status === 'PREPARING' ? (
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => {
+                                      setRejecting(null);
+                                      setRejectReason('');
+                                    }}
+                                  >
+                                    Keep it
+                                  </Button>
+                                </div>
+                              </div>
+                            ) : etaFor === ticket.id ? (
+                              <div className="flex gap-2">
+                                <Input
+                                  autoFocus
+                                  type="number"
+                                  min={1}
+                                  max={240}
+                                  value={etaValue}
+                                  placeholder="Minutes"
+                                  onChange={(event) => setEtaValue(event.target.value)}
+                                />
                                 <Button
-                                  variant="success"
                                   size="sm"
-                                  disabled={busy}
-                                  onClick={() =>
-                                    actions.transition(ticket.id, 'READY_FOR_PICKUP')
-                                  }
+                                  disabled={!etaValue || busy}
+                                  onClick={async () => {
+                                    const ok = await actions.overrideEta(
+                                      ticket.id,
+                                      Number(etaValue),
+                                    );
+                                    if (ok) {
+                                      setEtaFor(null);
+                                      setEtaValue('');
+                                    }
+                                  }}
                                 >
-                                  Ready for pickup
+                                  Set
                                 </Button>
-                              ) : null}
-
-                              {ticket.status === 'READY_FOR_PICKUP' ? (
-                                <Button
-                                  size="sm"
-                                  disabled={busy}
-                                  onClick={() => actions.transition(ticket.id, 'PICKED_UP')}
-                                >
-                                  Handed off
+                                <Button variant="ghost" size="sm" onClick={() => setEtaFor(null)}>
+                                  Cancel
                                 </Button>
-                              ) : null}
+                              </div>
+                            ) : (
+                              <div className="flex flex-wrap gap-2">
+                                {busy ? <Spinner className="mt-2" /> : null}
 
-                              {['PICKED_UP', 'OUT_FOR_DELIVERY'].includes(ticket.status) ? (
-                                <>
-                                  {ticket.source !== 'SX' ? (
-                                    <span className="text-xs text-subtle">
-                                      Awaiting {SOURCE_LABELS[ticket.source] ?? ticket.source} update
-                                    </span>
-                                  ) : null}
+                                {ticket.status === 'NEW' ? (
+                                  <>
+                                    <Button
+                                      size="sm"
+                                      disabled={busy}
+                                      onClick={() => actions.transition(ticket.id, 'ACCEPTED')}
+                                    >
+                                      Accept
+                                    </Button>
+                                    <Button
+                                      variant="danger"
+                                      size="sm"
+                                      disabled={busy}
+                                      onClick={() => setRejecting(ticket.id)}
+                                    >
+                                      Reject
+                                    </Button>
+                                  </>
+                                ) : null}
+
+                                {ticket.status === 'PREPARING' ? (
+                                  <Button
+                                    variant="success"
+                                    size="sm"
+                                    disabled={busy}
+                                    onClick={() =>
+                                      actions.transition(ticket.id, 'READY_FOR_PICKUP')
+                                    }
+                                  >
+                                    Ready for pickup
+                                  </Button>
+                                ) : null}
+
+                                {ticket.status === 'READY_FOR_PICKUP' ? (
+                                  <Button
+                                    size="sm"
+                                    disabled={busy}
+                                    onClick={() => actions.transition(ticket.id, 'PICKED_UP')}
+                                  >
+                                    Handed off
+                                  </Button>
+                                ) : null}
+
+                                {['PICKED_UP', 'OUT_FOR_DELIVERY'].includes(ticket.status) ? (
+                                  <>
+                                    {ticket.source !== 'SX' ? (
+                                      <span className="text-xs text-subtle">
+                                        Awaiting {SOURCE_LABELS[ticket.source] ?? ticket.source} update
+                                      </span>
+                                    ) : null}
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      disabled={busy}
+                                      onClick={() => actions.transition(ticket.id, 'DELIVERED')}
+                                      title="Only use if the delivery partner didn't update automatically"
+                                    >
+                                      Mark delivered
+                                    </Button>
+                                  </>
+                                ) : null}
+
+                                {['NEW', 'ACCEPTED', 'PREPARING'].includes(ticket.status) ? (
                                   <Button
                                     variant="ghost"
                                     size="sm"
                                     disabled={busy}
-                                    onClick={() => actions.transition(ticket.id, 'DELIVERED')}
-                                    title="Only use if the delivery partner didn't update automatically"
+                                    onClick={() => {
+                                      setEtaFor(ticket.id);
+                                      setEtaValue(String(ticket.prep_eta_minutes ?? 25));
+                                    }}
                                   >
-                                    Mark delivered
+                                    Change ETA
                                   </Button>
-                                </>
-                              ) : null}
-
-                              {['NEW', 'ACCEPTED', 'PREPARING'].includes(ticket.status) ? (
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  disabled={busy}
-                                  onClick={() => {
-                                    setEtaFor(ticket.id);
-                                    setEtaValue(String(ticket.prep_eta_minutes ?? 25));
-                                  }}
-                                >
-                                  Change ETA
-                                </Button>
-                              ) : null}
-                            </div>
-                          )}
-                        </div>
-                      ) : null}
-                    </Card>
-                  );
-                })}
-              </div>
-            </section>
-          );
-        })}
-      </div>
+                                ) : null}
+                              </div>
+                            )}
+                          </div>
+                        ) : null}
+                      </Card>
+                    );
+                  })}
+                </div>
+              </section>
+            );
+          })}
+        </div>
+      )}
     </>
   );
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import { Badge, Card, SourceTag } from '@/components/ui/primitives';
+import { Badge, Card, SourceTag, cx, sourceCardTone } from '@/components/ui/primitives';
 import { TicketItems } from './ticket-items';
 import type { HistoryTicket } from '@/hooks/use-kot-history';
 import {
@@ -19,7 +19,12 @@ export function TicketCardReadonly({ ticket }: { ticket: HistoryTicket }) {
   const terminal = terminalLabel(ticket);
 
   return (
-    <Card className="flex flex-col p-4">
+    <Card
+      className={cx(
+        'flex flex-col p-4',
+        sourceCardTone(ticket.source, Boolean(ticket.subscription_number)),
+      )}
+    >
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-2">
           <SourceTag source={ticket.source} ticketCode={ticket.ticket_code} />
