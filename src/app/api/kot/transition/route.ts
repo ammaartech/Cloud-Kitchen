@@ -5,14 +5,17 @@ import { serverClient } from '@/lib/supabase/server';
 
 const bodySchema = z.object({
   ticketId: z.string().uuid(),
+  // OUT_FOR_DELIVERY is the only post-handoff state the manager cannot enter
+  // manually -- it exists to reflect a rider being tracked, which requires an
+  // actual webhook. DELIVERED is allowed as a manual fallback (surfaced as
+  // "Mark delivered" in the UI) so a manager can close a ticket when the
+  // aggregator update never arrives.
   toStatus: z.enum([
     'ACCEPTED',
     'PREPARING',
     'READY_FOR_PICKUP',
     'PICKED_UP',
-    'OUT_FOR_DELIVERY',
     'DELIVERED',
-    'COMPLETED',
     'REJECTED',
     'CANCELLED',
   ]),
@@ -48,6 +51,7 @@ export async function POST(request: Request) {
     p_to_status: parsed.data.toStatus,
     p_reason: parsed.data.reason ?? null,
     p_notes: parsed.data.notes ?? null,
+    p_origin: 'manual',
   });
 
   if (error) {

@@ -26,7 +26,6 @@ const ALL_STATUS_FILTERS = [
   'PICKED_UP',
   'OUT_FOR_DELIVERY',
   'DELIVERED',
-  'COMPLETED',
   'REJECTED',
   'CANCELLED',
 ] as const;

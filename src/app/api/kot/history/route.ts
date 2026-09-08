@@ -49,11 +49,13 @@ export async function GET(request: Request) {
   let query = supabase.from('v_kot_tickets').select('*').limit(MAX_ROWS);
 
   if (scope === 'completed') {
+    // DELIVERED is the terminal ticket state in the simplified lifecycle;
+    // COMPLETED is unreachable.
     query = query
-      .eq('status', 'COMPLETED')
-      .gte('completed_at', startUtc)
-      .lt('completed_at', endUtc)
-      .order('completed_at', { ascending: false });
+      .eq('status', 'DELIVERED')
+      .gte('delivered_at', startUtc)
+      .lt('delivered_at', endUtc)
+      .order('delivered_at', { ascending: false });
   } else {
     // Every ticket for the picked business day, all statuses. `business_date`
     // is the IST calendar day the ticket was placed for and is stable.

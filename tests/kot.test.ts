@@ -35,7 +35,25 @@ async function transition(
   reason: string | null = null,
 ) {
   return actingAs(db, { role: 'authenticated', profileId }, (tx) =>
-    tx.query('select transition_kot_ticket($1, $2, $3) as result', [ticketId, to, reason]),
+    tx.query('select transition_kot_ticket($1, $2, $3, null, $4) as result', [
+      ticketId,
+      to,
+      reason,
+      'manual',
+    ]),
+  );
+}
+
+/** Simulate a marketplace webhook status push. */
+async function marketplaceStatus(
+  provider: 'swiggy' | 'zomato',
+  externalOrderId: string,
+  status: string,
+) {
+  return asService(
+    db,
+    `select sync_marketplace_order_status($1::integration_provider, $2, $3) as result`,
+    [provider, externalOrderId, status],
   );
 }
 
@@ -48,7 +66,7 @@ afterAll(async () => {
 });
 
 describe('the KOT state machine is enforced by the database', () => {
-  it('walks the full happy path with the right role at each step', async () => {
+  it('walks the manager happy path and stops at handoff', async () => {
     const { ticket_id } = await newTicket('SM-HAPPY-1');
 
     await transition(MANAGER, ticket_id, 'ACCEPTED');
@@ -58,14 +76,51 @@ describe('the KOT state machine is enforced by the database', () => {
     await transition(KITCHEN, ticket_id, 'PREPARING');
     expect(await ticketStatus(ticket_id)).toBe('PREPARING');
 
-    // The kitchen tells the Manager verbally; the Manager marks it ready.
+    // Kitchen tells the Manager verbally; Manager marks ready and hands off.
     await transition(MANAGER, ticket_id, 'READY_FOR_PICKUP');
     await transition(MANAGER, ticket_id, 'PICKED_UP');
-    await transition(MANAGER, ticket_id, 'OUT_FOR_DELIVERY');
-    await transition(MANAGER, ticket_id, 'DELIVERED');
-    await transition(MANAGER, ticket_id, 'COMPLETED');
 
-    expect(await ticketStatus(ticket_id)).toBe('COMPLETED');
+    // PICKED_UP is the manager's terminal click. Post-handoff states arrive
+    // via the aggregator webhook, not another button.
+    expect(await ticketStatus(ticket_id)).toBe('PICKED_UP');
+  });
+
+  it('refuses manual OUT_FOR_DELIVERY but allows manual DELIVERED as a fallback', async () => {
+    const { ticket_id } = await newTicket('SM-HANDOFF-1');
+    await transition(MANAGER, ticket_id, 'ACCEPTED');
+    await transition(KITCHEN, ticket_id, 'PREPARING');
+    await transition(MANAGER, ticket_id, 'READY_FOR_PICKUP');
+    await transition(MANAGER, ticket_id, 'PICKED_UP');
+
+    // Intermediate rider-tracking state stays webhook-only.
+    const message = await expectFailure(() =>
+      transition(MANAGER, ticket_id, 'OUT_FOR_DELIVERY'),
+    );
+    expect(message).toMatch(/driven by the marketplace webhook/i);
+    expect(await ticketStatus(ticket_id)).toBe('PICKED_UP');
+
+    // Manager escape hatch: close the ticket even if the aggregator never
+    // sends its delivered event.
+    await transition(MANAGER, ticket_id, 'DELIVERED');
+    expect(await ticketStatus(ticket_id)).toBe('DELIVERED');
+  });
+
+  it('advances an aggregator ticket to delivered via the webhook', async () => {
+    const { ticket_id } = await newTicket('SM-RIDER-1');
+    await transition(MANAGER, ticket_id, 'ACCEPTED');
+    await transition(KITCHEN, ticket_id, 'PREPARING');
+    await transition(MANAGER, ticket_id, 'READY_FOR_PICKUP');
+    await transition(MANAGER, ticket_id, 'PICKED_UP');
+
+    // rider-assigned is informational only.
+    await marketplaceStatus('swiggy', 'SM-RIDER-1', 'rider-assigned');
+    expect(await ticketStatus(ticket_id)).toBe('PICKED_UP');
+
+    await marketplaceStatus('swiggy', 'SM-RIDER-1', 'pickedup');
+    expect(await ticketStatus(ticket_id)).toBe('OUT_FOR_DELIVERY');
+
+    await marketplaceStatus('swiggy', 'SM-RIDER-1', 'delivered');
+    expect(await ticketStatus(ticket_id)).toBe('DELIVERED');
   });
 
   it('rejects a transition that skips a step', async () => {

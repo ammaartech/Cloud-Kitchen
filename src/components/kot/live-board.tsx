@@ -29,9 +29,11 @@ const GROUPS: Array<{ key: string; title: string; statuses: string[] }> = [
   { key: 'incoming', title: 'Waiting on you', statuses: ['NEW'] },
   { key: 'kitchen', title: 'In the kitchen', statuses: ['ACCEPTED', 'PREPARING'] },
   { key: 'ready', title: 'Ready and handoff', statuses: ['READY_FOR_PICKUP'] },
+  // Post-handoff. Manager clicked "Handed off" to enter PICKED_UP; OUT_FOR_DELIVERY
+  // and DELIVERED land here only for SW/ZM tickets via the rider webhook.
   {
     key: 'out',
-    title: 'Out for delivery',
+    title: 'In transit',
     statuses: ['PICKED_UP', 'OUT_FOR_DELIVERY', 'DELIVERED'],
   },
 ];
@@ -296,41 +298,27 @@ export function LiveBoard({
                                   disabled={busy}
                                   onClick={() => actions.transition(ticket.id, 'PICKED_UP')}
                                 >
-                                  Picked up
+                                  Handed off
                                 </Button>
                               ) : null}
 
-                              {ticket.status === 'PICKED_UP' ? (
-                                <Button
-                                  size="sm"
-                                  disabled={busy}
-                                  onClick={() =>
-                                    actions.transition(ticket.id, 'OUT_FOR_DELIVERY')
-                                  }
-                                >
-                                  Out for delivery
-                                </Button>
-                              ) : null}
-
-                              {ticket.status === 'OUT_FOR_DELIVERY' ? (
-                                <Button
-                                  size="sm"
-                                  disabled={busy}
-                                  onClick={() => actions.transition(ticket.id, 'DELIVERED')}
-                                >
-                                  Delivered
-                                </Button>
-                              ) : null}
-
-                              {ticket.status === 'DELIVERED' ? (
-                                <Button
-                                  variant="success"
-                                  size="sm"
-                                  disabled={busy}
-                                  onClick={() => actions.transition(ticket.id, 'COMPLETED')}
-                                >
-                                  Complete
-                                </Button>
+                              {['PICKED_UP', 'OUT_FOR_DELIVERY'].includes(ticket.status) ? (
+                                <>
+                                  {ticket.source !== 'SX' ? (
+                                    <span className="text-xs text-subtle">
+                                      Awaiting {SOURCE_LABELS[ticket.source] ?? ticket.source} update
+                                    </span>
+                                  ) : null}
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    disabled={busy}
+                                    onClick={() => actions.transition(ticket.id, 'DELIVERED')}
+                                    title="Only use if the delivery partner didn't update automatically"
+                                  >
+                                    Mark delivered
+                                  </Button>
+                                </>
                               ) : null}
 
                               {['NEW', 'ACCEPTED', 'PREPARING'].includes(ticket.status) ? (

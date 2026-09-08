@@ -8,6 +8,7 @@ import { Alert } from '@/components/ui/primitives';
 import { LiveBoard } from './live-board';
 import { KotTabs, type KotTabKey } from './tabs';
 import { HistoryPane } from './history-pane';
+import { DevGenerateOrderButton } from './dev-generate-order-button';
 
 /**
  * KOT Manager: the operational controller's screen (PRD 5.3, PRD 9).
@@ -22,12 +23,14 @@ export function ManagerBoard({
   user,
   initialTab,
   initialDate,
+  showDevTools,
 }: {
   initialTickets: BoardTicket[];
   canAct: boolean;
   user: { name: string; role: string };
   initialTab: KotTabKey;
   initialDate: string;
+  showDevTools?: boolean;
 }) {
   const router = useRouter();
   const params = useSearchParams();
@@ -66,6 +69,7 @@ export function ManagerBoard({
             <p className="text-xs text-muted">{tabSubtitle(tab)}</p>
           </div>
           <div className="flex flex-wrap items-center gap-3">
+            {showDevTools ? <DevGenerateOrderButton /> : null}
             <span className="text-xs text-subtle">
               {user.name} · {user.role.replace('_', ' ')}
             </span>

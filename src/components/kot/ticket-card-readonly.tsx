@@ -92,7 +92,6 @@ function statusTone(
   status: string,
 ): 'neutral' | 'success' | 'warning' | 'danger' | 'info' {
   switch (status) {
-    case 'COMPLETED':
     case 'DELIVERED':
       return 'success';
     case 'REJECTED':
@@ -111,8 +110,8 @@ function statusTone(
 function terminalLabel(
   ticket: HistoryTicket,
 ): { label: string; at: string; reason?: string | null } | null {
-  if (ticket.status === 'COMPLETED' && ticket.completed_at) {
-    return { label: 'Completed', at: ticket.completed_at };
+  if (ticket.status === 'DELIVERED' && ticket.delivered_at) {
+    return { label: 'Delivered', at: ticket.delivered_at };
   }
   if (ticket.status === 'REJECTED' && ticket.rejected_at) {
     return { label: 'Rejected', at: ticket.rejected_at, reason: ticket.rejection_reason };

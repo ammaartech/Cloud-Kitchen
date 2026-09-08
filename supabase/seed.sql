@@ -476,12 +476,14 @@ begin
       perform public.transition_kot_ticket(v_ticket, 'PREPARING');
       perform public.transition_kot_ticket(v_ticket, 'READY_FOR_PICKUP');
       perform public.transition_kot_ticket(v_ticket, 'PICKED_UP');
-      perform public.transition_kot_ticket(v_ticket, 'OUT_FOR_DELIVERY');
-      perform public.transition_kot_ticket(v_ticket, 'DELIVERED');
-      perform public.transition_kot_ticket(v_ticket, 'COMPLETED');
+      -- Post-handoff transitions are aggregator-driven in the live system; seed
+      -- history threads them through the webhook origin so metrics reflect a
+      -- realistic full lifecycle.
+      perform public.transition_kot_ticket(v_ticket, 'OUT_FOR_DELIVERY', null, null, 'webhook');
+      perform public.transition_kot_ticket(v_ticket, 'DELIVERED', null, null, 'webhook');
 
-      -- Backdate the lifecycle so prep time, pickup wait and delivery time are
-      -- realistic spreads rather than the milliseconds the seed actually took.
+      -- Backdate the lifecycle so prep time and delivery time are realistic
+      -- spreads rather than the milliseconds the seed actually took.
       v_accept_delay  := 1 + (v_n % 3);
       v_prep_minutes  := 14 + ((v_day * 7 + v_n * 5) % 16);
       v_pickup_wait   := 2 + ((v_day + v_n) % 7);
@@ -494,7 +496,6 @@ begin
              picked_up_at        = v_at + make_interval(mins => v_accept_delay + v_prep_minutes + v_pickup_wait),
              out_for_delivery_at = v_at + make_interval(mins => v_accept_delay + v_prep_minutes + v_pickup_wait + 1),
              delivered_at        = v_at + make_interval(mins => v_accept_delay + v_prep_minutes + v_pickup_wait + v_delivery_mins),
-             completed_at        = v_at + make_interval(mins => v_accept_delay + v_prep_minutes + v_pickup_wait + v_delivery_mins + 1),
              created_at          = v_at
        where id = v_ticket;
 
@@ -502,7 +503,7 @@ begin
          set created_at   = v_at,
              confirmed_at = v_at,
              completed_at = v_at + make_interval(
-               mins => v_accept_delay + v_prep_minutes + v_pickup_wait + v_delivery_mins + 1)
+               mins => v_accept_delay + v_prep_minutes + v_pickup_wait + v_delivery_mins)
        where id = (v_res ->> 'order_id')::uuid;
     end loop;
   end loop;

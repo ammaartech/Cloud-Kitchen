@@ -1,6 +1,7 @@
 import { requirePermission } from '@/lib/auth/session';
 import { PERMISSIONS } from '@/lib/auth/permissions';
 import { serverClient } from '@/lib/supabase/server';
+import { serverEnv } from '@/lib/env';
 import { ManagerBoard } from '@/components/kot/manager-board';
 import { ACTIVE_STATUSES, type BoardTicket } from '@/lib/realtime/kot-board-shared';
 import type { KotTabKey } from '@/components/kot/tabs';
@@ -42,6 +43,7 @@ export default async function ManagerPage({
       user={{ name: session.fullName || session.email || 'Signed in', role: session.role }}
       initialTab={initialTab}
       initialDate={initialDate}
+      showDevTools={serverEnv().SHOW_DEV_TOOLS === 'true'}
     />
   );
 }

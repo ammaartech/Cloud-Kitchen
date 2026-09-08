@@ -150,10 +150,9 @@ export const KOT_STATUS_LABELS: Record<string, string> = {
   ACCEPTED: 'Accepted',
   PREPARING: 'Preparing',
   READY_FOR_PICKUP: 'Ready for pickup',
-  PICKED_UP: 'Picked up',
+  PICKED_UP: 'Handed off',
   OUT_FOR_DELIVERY: 'Out for delivery',
   DELIVERED: 'Delivered',
-  COMPLETED: 'Completed',
   REJECTED: 'Rejected',
   CANCELLED: 'Cancelled',
 };

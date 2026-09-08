@@ -23,6 +23,13 @@ export async function POST(request: Request) {
   const from = new Date(to.getTime() - 24 * 60 * 60 * 1000);
   const results: Record<string, unknown> = {};
 
+  // Website tickets have no aggregator to push a delivered event, so any that
+  // are stuck at "handed off" past the grace window are auto-closed here.
+  const { data: swept, error: sweepError } = await adminClient().rpc('sweep_stale_picked_up', {
+    p_now: to.toISOString(),
+  });
+  results.sweep_stale_picked_up = sweepError ? { error: sweepError.message } : swept;
+
   for (const provider of ['swiggy', 'zomato'] as const) {
     try {
       const adapter = marketplaceAdapter(provider);

@@ -80,6 +80,12 @@ const serverSchema = z.object({
   SHOW_DEMO_ACCOUNTS: z.enum(['true', 'false']).default('false'),
   DEMO_ACCOUNT_PASSWORD: blankAsUndefined(z.string()),
 
+  // Same posture as SHOW_DEMO_ACCOUNTS: an explicit switch so it works on
+  // deployed previews (where NODE_ENV is always 'production'). Enables the
+  // "Generate test order" button on the KOT manager screen and the endpoint
+  // it calls -- both refuse to exist when this is unset.
+  SHOW_DEV_TOOLS: z.enum(['true', 'false']).default('false'),
+
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
   NEXT_PUBLIC_SITE_URL: z.string().url().default('http://localhost:3000'),
 });
