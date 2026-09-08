@@ -24,6 +24,7 @@ export const instant = false;
  */
 const SECTIONS = [
   { href: '/admin', label: 'Overview', permission: PERMISSIONS.analyticsView },
+  { href: '/admin/analytics', label: 'Analytics', permission: PERMISSIONS.analyticsView },
   { href: '/admin/catalog', label: 'Catalog', permission: PERMISSIONS.catalogManage },
   { href: '/admin/plans', label: 'Plans', permission: PERMISSIONS.plansManage },
   { href: '/admin/coupons', label: 'Offers', permission: PERMISSIONS.couponsManage },
