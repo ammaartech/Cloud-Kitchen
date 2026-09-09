@@ -14,7 +14,7 @@ export interface RecentTransaction {
 /**
  * Latest 10 transactions in the selected window, newest first. Method is
  * pulled from the associated payment; marketplace orders often lack a local
- * payment record and display "—".
+ * payment record and display "-".
  */
 export function RecentTransactionsTable({ rows }: { rows: RecentTransaction[] }) {
   if (rows.length === 0) {
@@ -40,7 +40,7 @@ export function RecentTransactionsTable({ rows }: { rows: RecentTransaction[] })
           {rows.map((row) => (
             <tr key={row.orderId} className="border-b border-line last:border-0">
               <td className="px-4 py-3 font-mono text-xs text-muted">#{row.orderNumber}</td>
-              <td className="px-4 py-3 text-ink">{row.customerName ?? '—'}</td>
+              <td className="px-4 py-3 text-ink">{row.customerName ?? '-'}</td>
               <td className="px-4 py-3 text-muted">{dateTime(row.placedAt)}</td>
               <td className="px-4 py-3">
                 <Badge
@@ -49,7 +49,7 @@ export function RecentTransactionsTable({ rows }: { rows: RecentTransaction[] })
                   {SOURCE_LABELS[row.source] ?? row.source}
                 </Badge>
               </td>
-              <td className="px-4 py-3 text-muted capitalize">{row.method ?? '—'}</td>
+              <td className="px-4 py-3 text-muted capitalize">{row.method ?? '-'}</td>
               <td className="px-4 py-3 text-right tabular">{money(row.total)}</td>
             </tr>
           ))}

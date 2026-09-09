@@ -156,7 +156,7 @@ export default async function RefundsPage({ searchParams }: PageProps<'/admin/re
       <div className="mb-6">
         <Alert tone="info" title="This is a case workflow, not a refund button">
           Refund and cancellation policy is still an open item (PRD 22). Recording a decision here
-          moves no money — it documents what was agreed so a real refund can be raised against it
+          moves no money. It documents what was agreed so a real refund can be raised against it
           once the policy is signed off.
         </Alert>
       </div>
@@ -265,7 +265,7 @@ export default async function RefundsPage({ searchParams }: PageProps<'/admin/re
 
                   <label className="min-w-0 flex-1 text-xs">
                     <span className="mb-1 block text-subtle">
-                      Note — required for anything but “under review”
+                      Note (required for anything but “under review”)
                     </span>
                     <Input name="resolutionNote" defaultValue={row.resolution_note ?? ''} />
                   </label>

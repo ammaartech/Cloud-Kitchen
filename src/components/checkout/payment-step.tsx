@@ -139,8 +139,8 @@ export function PaymentStep({
         // The money may well have moved; what we lost is the answer. Saying
         // "failed" here would be a guess, and an expensive one (PRD 8).
         setError(
-          'The connection dropped before we could confirm the outcome. Do not pay again — ' +
-            'check your account in a minute; if the plan is not active, reconciliation will ' +
+          'The connection dropped before we could confirm the outcome. Do not pay again. ' +
+            'Check your account in a minute; if the plan is not active, reconciliation will ' +
             'either activate it or ensure nothing was charged.',
         );
       } finally {
@@ -153,7 +153,7 @@ export function PaymentStep({
   /**
    * Cashfree's UPI and net-banking journeys leave the site entirely and come
    * back to `/checkout?cf_order_id=…`. Picking that up on mount is what makes
-   * the redirect flow finish the same way the in-page modal does — the guard
+   * the redirect flow finish the same way the in-page modal does -- the guard
    * keeps a re-render from confirming twice.
    */
   const resumeAttempted = useRef(false);
@@ -171,7 +171,7 @@ export function PaymentStep({
     // Refused up front rather than left to time out: an offline browser must
     // never look like it is mid-payment (PRD 11).
     if (typeof navigator !== 'undefined' && !navigator.onLine) {
-      setError('You are offline. Nothing was started — reconnect and try again.');
+      setError('You are offline. Nothing was started. Reconnect and try again.');
       return;
     }
 
@@ -198,7 +198,7 @@ export function PaymentStep({
       begun = data;
     } catch {
       // Before any money moves, a dropped connection is safely retryable.
-      setError('We could not reach the server. Nothing was charged — try again.');
+      setError('We could not reach the server. Nothing was charged. Try again.');
       setBusy(null);
       return;
     }
@@ -226,7 +226,7 @@ export function PaymentStep({
     } catch (gatewayError) {
       setError(
         gatewayError instanceof Error
-          ? `${gatewayError.message} Nothing was charged — try again.`
+          ? `${gatewayError.message} Nothing was charged. Try again.`
           : 'The payment gateway could not be opened. Nothing was charged.',
       );
       setBusy(null);
@@ -281,8 +281,8 @@ export function PaymentStep({
       // than guessing either way (PRD 8): the payment may or may not have
       // registered, and reconciliation will settle it.
       setError(
-        'The connection dropped before we could confirm the outcome. Do not pay again — ' +
-          'check your account in a minute; if the plan is not active, reconciliation will ' +
+        'The connection dropped before we could confirm the outcome. Do not pay again. ' +
+          'Check your account in a minute; if the plan is not active, reconciliation will ' +
           'either activate it or ensure nothing was charged.',
       );
     } finally {
@@ -303,7 +303,7 @@ export function PaymentStep({
           {outcome.deliveriesGenerated} deliveries scheduled.
         </p>
         <p className="mt-3 text-sm text-muted">
-          Your meals enter the kitchen queue shortly before each delivery window — you can
+          Your meals enter the kitchen queue shortly before each delivery window. You can
           watch that from your account.
         </p>
 
@@ -351,7 +351,7 @@ export function PaymentStep({
           </Button>
         </div>
         <p className="mt-3 text-xs text-subtle">
-          Retrying is safe — it reuses the same checkout rather than creating a second
+          Retrying is safe. It reuses the same checkout rather than creating a second
           subscription.
         </p>
       </Card>

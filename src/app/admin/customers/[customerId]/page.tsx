@@ -424,7 +424,7 @@ export default async function CustomerDetailPage({
                   <Input name="email" type="email" defaultValue={customer.email ?? ''} />
                 </Field>
 
-                <Field label="Notes" hint="Internal — never shown to the customer.">
+                <Field label="Notes" hint="Internal. Never shown to the customer.">
                   <Input name="notes" defaultValue={customer.notes ?? ''} />
                 </Field>
 

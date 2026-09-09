@@ -48,7 +48,7 @@ const ROLE_NOTES: Record<AppRole, string> = {
 };
 
 export interface DemoAccountList {
-  /** One account per role — what the sign-in table shows by default. */
+  /** One account per role -- what the sign-in table shows by default. */
   onePerRole: DemoAccount[];
   /** Every active account, for the cases where the alternates matter. */
   all: DemoAccount[];
@@ -83,7 +83,7 @@ export async function listDemoAccounts(): Promise<DemoAccountList | null> {
   if (!demoAccountsEnabled()) {
     return explainAbsence(
       "SHOW_DEMO_ACCOUNTS is not 'true'. Set it in the hosting environment, " +
-        'not just .env.local, and redeploy — env vars are bound at build time.',
+        'not just .env.local, and redeploy. Env vars are bound at build time.',
     );
   }
 
@@ -95,7 +95,7 @@ export async function listDemoAccounts(): Promise<DemoAccountList | null> {
   // A panel that cannot load is simply absent. It is a convenience, and it
   // must never be the reason nobody can reach the sign-in form.
   if (error || !data) {
-    return explainAbsence(`could not read auth_profiles — ${error?.message ?? 'no rows returned'}`);
+    return explainAbsence(`could not read auth_profiles: ${error?.message ?? 'no rows returned'}`);
   }
 
   const all = (data as Array<{ email: string | null; full_name: string; role: string }>)

@@ -25,14 +25,14 @@ const currencyWhole = new Intl.NumberFormat('en-IN', {
  * those through Number() at the call site is where rounding bugs start.
  */
 export function money(value: number | string | null | undefined): string {
-  if (value === null || value === undefined) return '—';
+  if (value === null || value === undefined) return '-';
   const n = typeof value === 'string' ? Number(value) : value;
-  if (Number.isNaN(n)) return '—';
+  if (Number.isNaN(n)) return '-';
   return Number.isInteger(n) ? currencyWhole.format(n) : currency.format(n);
 }
 
 export function dateTime(value: string | Date | null | undefined): string {
-  if (!value) return '—';
+  if (!value) return '-';
   return new Intl.DateTimeFormat('en-IN', {
     timeZone: BUSINESS_TIMEZONE,
     day: 'numeric',
@@ -44,7 +44,7 @@ export function dateTime(value: string | Date | null | undefined): string {
 }
 
 export function dateOnly(value: string | Date | null | undefined): string {
-  if (!value) return '—';
+  if (!value) return '-';
   return new Intl.DateTimeFormat('en-IN', {
     timeZone: BUSINESS_TIMEZONE,
     weekday: 'short',
@@ -54,7 +54,7 @@ export function dateOnly(value: string | Date | null | undefined): string {
 }
 
 export function timeOnly(value: string | Date | null | undefined): string {
-  if (!value) return '—';
+  if (!value) return '-';
   return new Intl.DateTimeFormat('en-IN', {
     timeZone: BUSINESS_TIMEZONE,
     hour: 'numeric',
@@ -65,7 +65,7 @@ export function timeOnly(value: string | Date | null | undefined): string {
 
 /** "07:30:00" from a Postgres `time` column -> "7:30 am". */
 export function clockTime(value: string | null | undefined): string {
-  if (!value) return '—';
+  if (!value) return '-';
   const [h, m] = value.split(':').map(Number);
   const suffix = h < 12 ? 'am' : 'pm';
   const hour = h % 12 === 0 ? 12 : h % 12;
@@ -74,9 +74,9 @@ export function clockTime(value: string | null | undefined): string {
 
 /** Durations from the analytics views, which report whole seconds. */
 export function duration(seconds: number | string | null | undefined): string {
-  if (seconds === null || seconds === undefined) return '—';
+  if (seconds === null || seconds === undefined) return '-';
   const total = Math.round(typeof seconds === 'string' ? Number(seconds) : seconds);
-  if (Number.isNaN(total)) return '—';
+  if (Number.isNaN(total)) return '-';
   if (total < 60) return `${total}s`;
 
   const minutes = Math.floor(total / 60);
@@ -91,7 +91,7 @@ export function duration(seconds: number | string | null | undefined): string {
  * waiting is more useful mid-rush than the clock time it arrived.
  */
 export function elapsedSince(value: string | Date | null | undefined, now = Date.now()): string {
-  if (!value) return '—';
+  if (!value) return '-';
   const then = new Date(value).getTime();
   const seconds = Math.max(0, Math.round((now - then) / 1000));
 

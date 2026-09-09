@@ -199,7 +199,7 @@ export async function confirmCheckout(input: {
       status: verification.uncertain ? 'needs_reconciliation' : 'failed',
       message: verification.uncertain
         ? 'We could not confirm your payment. If money left your account, our team will ' +
-          'reconcile it and contact you — no subscription has been created yet.'
+          'reconcile it and contact you. No subscription has been created yet.'
         : 'Your payment was not completed, so no subscription was created and no ' +
           'deliveries were scheduled.',
     };

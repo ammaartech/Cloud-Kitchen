@@ -108,7 +108,7 @@ export default async function SettingsPage({ searchParams }: PageProps<'/admin/s
     if (valueType === 'integer' || valueType === 'number') {
       value = Number(raw);
       if (Number.isNaN(value)) {
-        fail(PATH, `"${label}" needs a number — "${raw}" is not one. Nothing was changed.`);
+        fail(PATH, `"${label}" needs a number. "${raw}" is not one. Nothing was changed.`);
       }
     } else if (valueType === 'boolean') {
       value = raw === 'true';
@@ -138,7 +138,7 @@ export default async function SettingsPage({ searchParams }: PageProps<'/admin/s
     <div className="mx-auto max-w-5xl px-4 py-8">
       <SectionHeading
         title="Business settings"
-        description="Everything here is data. Changing a value takes effect immediately — no deployment involved."
+        description="Everything here is data. Changing a value takes effect immediately. No deployment involved."
       />
 
       <ActionFeedback

@@ -178,7 +178,7 @@ export function LiveBoard({
                           <div className="flex gap-1">
                             <dt>ETA</dt>
                             <dd className="tabular text-muted">
-                              {ticket.prep_eta_minutes ?? '—'} min
+                              {ticket.prep_eta_minutes ?? '-'} min
                               {ticket.eta_overridden_at ? ' (overridden)' : ''}
                             </dd>
                           </div>

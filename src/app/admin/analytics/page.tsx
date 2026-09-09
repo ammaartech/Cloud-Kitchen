@@ -511,7 +511,7 @@ export default async function AnalyticsPage({
               {marketplaceGuestOrders > 0 ? (
                 <p className="mt-3 text-xs text-subtle">
                   {marketplaceGuestOrders} marketplace order
-                  {marketplaceGuestOrders === 1 ? '' : 's'} excluded — no customer identity.
+                  {marketplaceGuestOrders === 1 ? '' : 's'} excluded. No customer identity.
                 </p>
               ) : null}
             </>

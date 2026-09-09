@@ -91,7 +91,10 @@ comes to believe a setting changed when it did not.
 - Radii: `rounded-ck` (0.625rem), `rounded-ck-lg` (1rem), pills for badges.
 - Shadows: `shadow-ck-sm | ck | ck-lg` — warm-tinted, subtle in light, deeper on ops.
 - Motion: 150–250ms color/opacity transitions; `ck-flash` one-shot pulse when a ticket changes (realtime visibility); global `prefers-reduced-motion` kill-switch, which flattens delays as well as durations.
-- **No page-load choreography, with one exception**: the storefront hero headline (`.hero-roll` / `.hero-part` in globals.css). Three phrases roll through a slot and settle as one sentence — the home page is the only surface where a visitor is being introduced rather than working. The rule holds everywhere else.
+- **No page-load choreography, with two exceptions.** The rule exists because animating a screen somebody is *working* on puts a delay between them and the thing they came to do, so the test for an exception is whether there is a task on the surface at all.
+  - The storefront hero headline (`.hero-roll` / `.hero-part` in globals.css). Three phrases roll through a slot and settle as one sentence. The home page is the only surface where a visitor is being introduced rather than working.
+  - The 404 (`not-found.css`). A dead end is a full stop, not a task: there is one line to read and three ways out, so there is nothing for the motion to sit in front of. One curve, one distance, one interval, so six elements arrive as a single wave rather than six animations.
+- The rule holds everywhere else.
 - Failure modes decide base rules for any reveal. Content that must survive is never hidden by a base rule, only inside keyframes, so a renderer that never animates still shows it; decoration does the reverse, starting transparent so it can only ever appear by animating. Never gate real content on a class-triggered transition.
 
 ## Illustration

@@ -1,0 +1,207 @@
+/* ==========================================================================
+   404.
+
+   The second surface in the product with page-load choreography, and the only
+   one besides the storefront hero (DESIGN.md "Radii, Shadow, Motion"). The
+   exemption is the same one, for the same reason: the rule exists because
+   animating a screen somebody is *working* on puts a delay between them and
+   the thing they came to do. Nobody is working here. A 404 is a full stop, and
+   the visitor has nothing to do on it but read one line and choose a way out,
+   so there is no task for the motion to sit in front of.
+
+   Everything below is one wave passing down the page. A single curve
+   (`--ck-ease`, the system's confident deceleration), a single distance, and
+   a single interval between elements; only the delay changes, which is what
+   makes six separate animations read as one movement rather than six. The
+   plate is the exception that proves it: it draws rather than rises, but it
+   draws on the same curve over the same interval, so it lands with the digits
+   either side of it instead of after them.
+
+   Reduced motion needs nothing here. The global kill-switch in `globals.css`
+   already collapses duration, delay and iteration count, and every rule below
+   is written so that a renderer which never animates shows the finished page:
+   content is visible at rest and only hidden *inside* keyframes, held there
+   by `backwards`. The steam does the reverse, because it is decoration.
+   ========================================================================== */
+
+.nf {
+  /* The interval the whole page is spaced on. One number moves the entire
+     choreography, which is the only way a stagger stays a stagger after it has
+     been edited a few times. */
+  --nf-step: 80ms;
+  --nf-run: 700ms;
+}
+
+/* --------------------------------------------------------------------------
+   The wave.
+   -------------------------------------------------------------------------- */
+
+/* No opacity or transform in the base rule -- this is content, and content is
+   never hidden by anything a broken stylesheet or an ancient renderer can
+   fail to undo. `backwards` holds the opening frame through the delay and
+   hands the properties back at the end, which is safe precisely because the
+   closing frame is the element's resting state. */
+.nf-rise {
+  animation: nf-rise var(--nf-run) var(--ck-ease) var(--nf-at, 0ms) backwards;
+}
+
+@keyframes nf-rise {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 0.9rem, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   The mark.
+   -------------------------------------------------------------------------- */
+
+.nf-mark {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  /* Baseline alignment is what lets the plate sit in the line of type rather
+     than beside it: an inline replaced element aligns its bottom edge to the
+     baseline, and the SVG's viewBox is built so the plate's foot lands there.
+     `gap` rather than letter-spacing, because one of the three is not a
+     letter. */
+  gap: 0.06em;
+  font-size: clamp(4.5rem, 19vw, 9.5rem);
+  font-weight: 600;
+  line-height: 1;
+  /* The heading ramp tightens as it grows and this is the far end of it, past
+     anything `h1` is set for. */
+  letter-spacing: -0.045em;
+}
+
+.nf-digit {
+  color: var(--ck-text);
+  font-variant-numeric: lining-nums;
+}
+
+/* The zero, as a plate seen from above: a rim and a well, which is a circle
+   inside a circle, which is a nought. The whole illustration is sized in `em`
+   and nothing else, so the one `font-size` on `.nf-mark` scales the plate, the
+   steam and the digits together and they cannot drift apart at a breakpoint. */
+.nf-plate {
+  width: 0.72em;
+  height: 1.08em;
+  overflow: visible;
+  color: var(--ck-brand);
+}
+
+.nf-ring {
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  /* Drawn from twelve o'clock rather than three. The default start point puts
+     the join on the right-hand edge, where it reads as a nick out of the rim. */
+  transform: rotate(-90deg);
+  transform-origin: 50px 100px;
+}
+
+/* `stroke-dashoffset: 0` in the base rule: the plate is part of the glyph, so
+   it is whole when nothing animates. The dash lengths are the circumferences
+   (2 pi r, r = 46 and 30), and they have to be literals -- there is no way to
+   compute a path length in CSS. */
+.nf-ring-outer {
+  stroke-width: 7;
+  stroke-dasharray: 289.03;
+  stroke-dashoffset: 0;
+  animation: nf-draw-outer var(--nf-run) var(--ck-ease) var(--nf-at, 0ms) backwards;
+}
+
+.nf-ring-inner {
+  stroke-width: 5;
+  stroke-dasharray: 188.5;
+  stroke-dashoffset: 0;
+  opacity: 0.45;
+  /* Half a step behind the rim, so the plate resolves outside-in instead of
+     both rings appearing at once. */
+  animation: nf-draw-inner var(--nf-run) var(--ck-ease)
+    calc(var(--nf-at, 0ms) + (var(--nf-step) / 2)) backwards;
+}
+
+@keyframes nf-draw-outer {
+  from {
+    stroke-dashoffset: 289.03;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes nf-draw-inner {
+  from {
+    stroke-dashoffset: 188.5;
+    opacity: 0;
+  }
+  to {
+    stroke-dashoffset: 0;
+    opacity: 0.45;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Steam.
+
+   The one thing on the page that keeps moving, and the only reason the plate
+   is worth drawing at all: a plate on its own is an empty dish, and a plate
+   with something rising off it is a kitchen still cooking. It is the note the
+   copy underneath is trying to strike, so it is worth three paths.
+
+   Decoration, so it obeys the other half of the reveal rule and starts at
+   `opacity: 0` -- it can only ever appear by animating, which means a renderer
+   that ignores the keyframes shows a clean plate rather than three stray
+   marks floating above the type. Under reduced motion the global switch caps
+   the loop at one pass, and the pass ends transparent, so it simply is not
+   there.
+   -------------------------------------------------------------------------- */
+
+.nf-steam {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 5;
+  stroke-linecap: round;
+  opacity: 0;
+  /* Waits for the wave to finish. Steam starting while the page is still
+     assembling is two motions competing; starting after it is the page
+     settling and then breathing. */
+  animation: nf-steam 3.2s ease-in-out var(--wisp-at, 0ms) infinite;
+}
+
+/* Phase offsets, not different animations. Three wisps on one keyframe at
+   three points in its cycle read as one column of steam turning over; three
+   keyframes would read as three separate squiggles. */
+.nf-steam-1 {
+  --wisp-at: 1100ms;
+}
+.nf-steam-2 {
+  --wisp-at: 1600ms;
+}
+.nf-steam-3 {
+  --wisp-at: 2100ms;
+}
+
+@keyframes nf-steam {
+  0% {
+    opacity: 0;
+    transform: translateY(6px) scaleY(0.82);
+  }
+  /* Fades up, holds briefly at full strength, then thins out as it climbs --
+     which is what stops it reading as a shape sliding upward. */
+  30% {
+    opacity: 0.5;
+  }
+  60% {
+    opacity: 0.32;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-9px) scaleY(1.15);
+  }
+}

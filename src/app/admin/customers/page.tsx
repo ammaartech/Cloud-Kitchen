@@ -170,7 +170,7 @@ export default async function CustomersPage({ searchParams }: PageProps<'/admin/
         <Card className="mb-8 p-5">
           <h2 className="font-semibold">Create a customer</h2>
           <p className="mt-1 mb-4 text-sm text-muted">
-            For the edge cases — a phone order, a record moved over from before. They will have no
+            For the edge cases: a phone order, a record moved over from before. They will have no
             login until they create one with this mobile number.
           </p>
 

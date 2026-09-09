@@ -653,7 +653,7 @@ export default async function ProductEditorPage({
 
           <Card className="p-5">
             {images.length === 0 ? (
-              <p className="text-sm text-muted">No photo yet — the menu card shows a placeholder.</p>
+              <p className="text-sm text-muted">No photo yet. The menu card shows a placeholder.</p>
             ) : (
               <div className="grid gap-4 sm:grid-cols-3">
                 {images.map((image) => (

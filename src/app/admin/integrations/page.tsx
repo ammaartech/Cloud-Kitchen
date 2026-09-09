@@ -235,7 +235,7 @@ export default async function IntegrationsPage() {
                       {run.missing_external?.length
                         ? `${run.missing_external.length} unknown to them`
                         : ''}
-                      {!run.missing_internal?.length && !run.missing_external?.length ? '—' : ''}
+                      {!run.missing_internal?.length && !run.missing_external?.length ? '-' : ''}
                     </td>
                   </tr>
                 ))}

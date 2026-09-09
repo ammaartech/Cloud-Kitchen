@@ -39,7 +39,7 @@ export function useTicketActions(board: BoardHandle, onDone?: () => void) {
   ) {
     if (typeof navigator !== 'undefined' && !navigator.onLine) {
       rollback();
-      setError('You are offline. This change was not saved — reconnect and try again.');
+      setError('You are offline. This change was not saved. Reconnect and try again.');
       return false;
     }
 

@@ -288,7 +288,7 @@ export default async function EmployeesPage({ searchParams }: PageProps<'/admin/
     <div className="mx-auto max-w-5xl px-4 py-8">
       <SectionHeading
         title="Employees"
-        description="Staff accounts and the role each one holds. What a role may do is configured separately — this screen never grants a permission directly."
+        description="Staff accounts and the role each one holds. What a role may do is configured separately. This screen never grants a permission directly."
       />
 
       <ActionFeedback error={params.error as string} ok={params.ok as string} />

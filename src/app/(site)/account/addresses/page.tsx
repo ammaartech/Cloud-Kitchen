@@ -238,7 +238,7 @@ export default async function AddressesPage({ searchParams }: PageProps<'/accoun
                   </form>
                 ) : (
                   <span className="ml-auto text-xs text-subtle">
-                    Used by a live plan — change the plan first
+                    Used by a live plan: change the plan first
                   </span>
                 )}
               </div>

@@ -292,7 +292,7 @@ export default async function CouponsPage({ searchParams }: PageProps<'/admin/co
     <div className="mx-auto max-w-6xl px-4 py-8">
       <SectionHeading
         title="Offers"
-        description="Discounts, their limits and who qualifies. Eligibility is re-checked on the server at checkout — nothing here is trusted from the browser."
+        description="Discounts, their limits and who qualifies. Eligibility is re-checked on the server at checkout. Nothing here is trusted from the browser."
       />
 
       <ActionFeedback error={params.error as string} ok={params.ok as string} />
@@ -549,7 +549,7 @@ export default async function CouponsPage({ searchParams }: PageProps<'/admin/co
 
                   {couponRules.length === 0 ? (
                     <p className="text-sm text-muted">
-                      No extra rules — anyone within the limits above qualifies.
+                      No extra rules. Anyone within the limits above qualifies.
                     </p>
                   ) : (
                     <ul className="mb-3 space-y-1">

@@ -136,7 +136,7 @@ export default async function AdminOverviewPage() {
               <Alert tone="warning" title="Profit figures are estimates">
                 Commission, payment fees, packaging and food cost are still the placeholder
                 assumptions seeded with the system. Revenue and timings are real; profit is
-                only as good as those inputs. Replace them in Settings — no code change is
+                only as good as those inputs. Replace them in Settings. No code change is
                 needed.
               </Alert>
             </div>

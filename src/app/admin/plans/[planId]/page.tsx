@@ -371,7 +371,7 @@ export default async function PlanEditorPage({
         <div className="mb-6">
           <Alert tone="info">
             {liveSubscribers} live subscription(s) are on this plan. Editing it changes what future
-            buyers get — existing subscriptions keep the terms they bought.
+            buyers get. Existing subscriptions keep the terms they bought.
           </Alert>
         </div>
       ) : null}
@@ -526,8 +526,8 @@ export default async function PlanEditorPage({
                   }
                 >
                   <option value="">Inherit global setting</option>
-                  <option value="true">Yes — return it</option>
-                  <option value="false">No — the skip forfeits it</option>
+                  <option value="true">Yes, return it</option>
+                  <option value="false">No, the skip forfeits it</option>
                 </Select>
               </Field>
 

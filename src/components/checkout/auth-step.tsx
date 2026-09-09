@@ -95,7 +95,7 @@ export function CheckoutAuthStep() {
       </div>
 
       <p className="mt-1 text-sm text-muted">
-        Your plan selection is already saved — this is the last thing standing between you
+        Your plan selection is already saved. This is the last thing standing between you
         and food.
       </p>
 

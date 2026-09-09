@@ -71,7 +71,7 @@ export function SignInPanel({
           </Card>
 
           <p className="mt-6 text-center text-xs text-subtle">
-            Buying a plan? You do not need an account first — we create one during checkout.
+            Buying a plan? You do not need an account first. We create one during checkout.
           </p>
         </div>
 

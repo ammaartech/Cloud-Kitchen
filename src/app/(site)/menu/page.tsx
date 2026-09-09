@@ -46,7 +46,7 @@ export default function MenuPage({ searchParams }: PageProps<'/menu'>) {
         <h1 className="text-3xl font-semibold tracking-tight">Menu</h1>
         <p className="mt-2 text-muted text-pretty">
           This is what our kitchen cooks. It is here so you know what you are signing up
-          for — meals are ordered through a subscription rather than one at a time.
+          for. Meals are ordered through a subscription rather than one at a time.
         </p>
       </header>
 
@@ -154,7 +154,7 @@ async function MenuResults({
           {query ? (
             <EmptyState
               title={`Nothing on the menu matches “${query}”`}
-              description="We cook a small menu, so it is a short list. Try a broader word — a category like tiffin, or an ingredient like ghee."
+              description="We cook a small menu, so it is a short list. Try a broader word: a category like tiffin, or an ingredient like ghee."
               action={
                 <ButtonLink href="/menu" variant="secondary">
                   Show the whole menu

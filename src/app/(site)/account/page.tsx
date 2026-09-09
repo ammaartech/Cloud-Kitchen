@@ -160,7 +160,7 @@ export default async function AccountPage({ searchParams }: PageProps<'/account'
     });
     if (error) fail('/account', readable(error));
     revalidatePath('/account');
-    done('/account', 'Delivery skipped — the entitlement is back in your balance.');
+    done('/account', 'Delivery skipped. The entitlement is back in your balance.');
   }
 
   async function pauseSubscription(formData: FormData) {
@@ -248,7 +248,7 @@ export default async function AccountPage({ searchParams }: PageProps<'/account'
                 label="Cycle ends"
                 value={
                   <span className="text-lg">
-                    {active.current_period_end ? dateOnly(active.current_period_end) : '—'}
+                    {active.current_period_end ? dateOnly(active.current_period_end) : '-'}
                   </span>
                 }
               />
@@ -261,7 +261,7 @@ export default async function AccountPage({ searchParams }: PageProps<'/account'
               <dd className="mt-0.5 font-medium">
                 {active.delivery_windows
                   ? `${active.delivery_windows.label} · ${clockTime(active.delivery_windows.starts_at)}`
-                  : '—'}
+                  : '-'}
               </dd>
             </div>
             <div>
@@ -415,7 +415,7 @@ export default async function AccountPage({ searchParams }: PageProps<'/account'
 
         {addresses.length === 0 ? (
           <p className="mt-3 text-sm text-muted">
-            None saved yet — add one so your next plan has somewhere to go.
+            None saved yet. Add one so your next plan has somewhere to go.
           </p>
         ) : null}
 

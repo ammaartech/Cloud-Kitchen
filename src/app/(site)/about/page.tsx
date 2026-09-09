@@ -16,7 +16,7 @@ export default function AboutPage() {
         <p>
           That constraint is deliberate. A small menu means we buy fresh for the day, cook
           in batches that finish, and know exactly how many portions are going out. It is
-          also why we sell subscriptions rather than one-off orders — knowing what the day
+          also why we sell subscriptions rather than one-off orders. Knowing what the day
           looks like before it starts is what keeps the food good.
         </p>
 

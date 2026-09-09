@@ -143,7 +143,7 @@ export default async function AccountReviewsPage({ searchParams }: PageProps<'/a
     if (error) fail(PATH, readable(error));
 
     revalidatePath(PATH);
-    done(PATH, 'Thank you — your review will appear once it has been checked.');
+    done(PATH, 'Thank you. Your review will appear once it has been checked.');
   }
 
   async function updateReview(formData: FormData) {
@@ -217,11 +217,11 @@ export default async function AccountReviewsPage({ searchParams }: PageProps<'/a
 
           <Field label="Rating" required>
             <Select name="rating" defaultValue="5">
-              <option value="5">5 — excellent</option>
-              <option value="4">4 — good</option>
-              <option value="3">3 — fine</option>
-              <option value="2">2 — disappointing</option>
-              <option value="1">1 — bad</option>
+              <option value="5">5 · excellent</option>
+              <option value="4">4 · good</option>
+              <option value="3">3 · fine</option>
+              <option value="2">2 · disappointing</option>
+              <option value="1">1 · bad</option>
             </Select>
           </Field>
 
@@ -297,11 +297,11 @@ export default async function AccountReviewsPage({ searchParams }: PageProps<'/a
 
                     <Field label="Rating" required>
                       <Select name="rating" defaultValue={String(review.rating)}>
-                        <option value="5">5 — excellent</option>
-                        <option value="4">4 — good</option>
-                        <option value="3">3 — fine</option>
-                        <option value="2">2 — disappointing</option>
-                        <option value="1">1 — bad</option>
+                        <option value="5">5 · excellent</option>
+                        <option value="4">4 · good</option>
+                        <option value="3">3 · fine</option>
+                        <option value="2">2 · disappointing</option>
+                        <option value="1">1 · bad</option>
                       </Select>
                     </Field>
 
@@ -337,7 +337,7 @@ export default async function AccountReviewsPage({ searchParams }: PageProps<'/a
 
       <div className="mt-8">
         <Alert tone="info">
-          Editing a published review sends it back to be checked before it reappears — that keeps
+          Editing a published review sends it back to be checked before it reappears. That keeps
           the menu honest for everyone reading it.
         </Alert>
       </div>

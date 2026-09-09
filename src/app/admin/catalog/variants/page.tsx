@@ -368,7 +368,7 @@ export default async function VariantsPage({
 
                 {group.variants.length === 0 ? (
                   <p className="text-sm text-muted">
-                    No options yet — a group with none is not offerable.
+                    No options yet. A group with none is not offerable.
                   </p>
                 ) : (
                   <ul className="space-y-2">

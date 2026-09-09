@@ -149,7 +149,7 @@ export default async function AuditPage({ searchParams }: PageProps<'/admin/audi
                       ? row.changed_keys.join(', ')
                       : Object.keys(row.context ?? {}).length
                         ? JSON.stringify(row.context).slice(0, 120)
-                        : '—'}
+                        : '-'}
                   </td>
                 </tr>
               ))}

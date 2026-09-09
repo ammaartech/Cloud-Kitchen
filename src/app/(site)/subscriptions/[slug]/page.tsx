@@ -40,8 +40,8 @@ async function ConfigurationError({
   return (
     <div className="mt-4">
       <Alert tone="danger" title="That configuration could not be saved">
-        Something about the selection did not check out on our side. Nothing was charged
-        — re-check your choices below and continue again.
+        Something about the selection did not check out on our side. Nothing was charged.
+        Re-check your choices below and continue again.
       </Alert>
     </div>
   );

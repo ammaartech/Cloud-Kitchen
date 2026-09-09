@@ -21,7 +21,7 @@ export default async function OffersPage() {
         <h1 className="text-3xl font-semibold tracking-tight">Offers</h1>
         <p className="mt-2 text-muted text-pretty">
           What is running right now. Eligibility is checked when you order, so an offer shown
-          here may still not apply to your account — we will say why at checkout rather than
+          here may still not apply to your account. We will say why at checkout rather than
           failing quietly.
         </p>
       </header>
@@ -87,7 +87,7 @@ export default async function OffersPage() {
       )}
 
       <SignedOutNotice>
-        Create one at checkout — we only ask for details once you have chosen a plan.
+        Create one at checkout. We only ask for details once you have chosen a plan.
       </SignedOutNotice>
 
       <div className="mt-10 text-center">

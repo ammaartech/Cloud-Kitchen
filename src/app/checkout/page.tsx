@@ -238,7 +238,7 @@ export default async function CheckoutPage({ searchParams }: PageProps<'/checkou
               <div className="flex justify-between gap-3">
                 <dt className="text-muted">Window</dt>
                 <dd className="text-right font-medium">
-                  {window ? `${window.label} · ${clockTime(window.startsAt)}` : '—'}
+                  {window ? `${window.label} · ${clockTime(window.startsAt)}` : '-'}
                 </dd>
               </div>
               <div className="flex justify-between gap-3">

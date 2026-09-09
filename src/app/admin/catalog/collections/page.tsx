@@ -50,7 +50,7 @@ interface CollectionRow {
 /**
  * Collections (PRD 13).
  *
- * Merchandising groupings — "High Protein", "Chef's Picks". A dish can be in
+ * Merchandising groupings -- "High Protein", "Chef's Picks". A dish can be in
  * many of these, unlike its single category. Which dishes belong to a
  * collection is set from the dish itself, so this screen is about the
  * collection's own identity and whether it is live.

@@ -35,7 +35,7 @@ export default async function SubscriptionsPage() {
           <p className="text-sm text-ink">
             <span className="font-medium">{firstOffer.name}.</span>{' '}
             <span className="text-muted">
-              Applied at checkout if your account qualifies — we check on our side.
+              Applied at checkout if your account qualifies. We check on our side.
             </span>
           </p>
         </div>

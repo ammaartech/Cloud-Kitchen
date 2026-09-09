@@ -333,7 +333,7 @@ export default async function CatalogPage({ searchParams }: PageProps<'/admin/ca
                       defaultValue={product.estimated_cost ?? ''}
                       className="w-28"
                       inputMode="decimal"
-                      placeholder="—"
+                      placeholder="-"
                     />
                   </label>
 

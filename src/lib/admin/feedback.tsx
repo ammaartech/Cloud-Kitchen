@@ -28,7 +28,7 @@ export function done(path: string, message: string): never {
 export function readable(error: { message: string; code?: string } | null): string {
   if (!error) return 'Something went wrong.';
 
-  if (error.code === '23505') return 'That already exists — pick a different code or slug.';
+  if (error.code === '23505') return 'That already exists. Pick a different code or slug.';
   if (error.code === '23503') {
     return 'Something else still references this record, so it cannot be removed. Hide it instead.';
   }

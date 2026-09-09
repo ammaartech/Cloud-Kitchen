@@ -45,7 +45,7 @@ const STATUS_TONES: Record<string, 'success' | 'warning' | 'neutral' | 'danger' 
 const STATUS_NOTE: Record<string, string> = {
   open: 'Received. Someone will look at it.',
   under_review: 'Being looked at now.',
-  approved: 'Approved — the refund will follow.',
+  approved: 'Approved. The refund will follow.',
   completed: 'Settled.',
   rejected: 'Not approved.',
   withdrawn: 'You took this one back.',
@@ -122,7 +122,7 @@ export default async function AccountRefundsPage({ searchParams }: PageProps<'/a
 
     const reason = str(formData, 'reason');
     if (reason.length < 10) {
-      fail(PATH, 'Tell us a bit more about what went wrong — a sentence or two is plenty.');
+      fail(PATH, 'Tell us a bit more about what went wrong. A sentence or two is plenty.');
     }
 
     const db = await serverClient();
@@ -166,7 +166,7 @@ export default async function AccountRefundsPage({ searchParams }: PageProps<'/a
 
       <div className="mb-6">
         <Alert tone="info">
-          Raising a request opens a case — it does not cancel your plan or issue a refund by
+          Raising a request opens a case. It does not cancel your plan or issue a refund by
           itself. Refund terms are still being finalised, so we will come back to you with what we
           can do.
         </Alert>

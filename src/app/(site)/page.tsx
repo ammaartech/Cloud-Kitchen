@@ -66,7 +66,7 @@ const SUBSCRIPTION_STEPS = [
   },
   {
     title: 'We cook to that plan',
-    body: 'Cooked just before your window — never days early.',
+    body: 'Cooked just before your window, never days early.',
     icon: 'pot',
   },
   {

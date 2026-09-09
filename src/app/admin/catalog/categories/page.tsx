@@ -46,7 +46,7 @@ interface CategoryRow {
 /**
  * Categories (PRD 13).
  *
- * The single taxonomy a dish belongs to — Mains, Breads, Sides. It is what the
+ * The single taxonomy a dish belongs to -- Mains, Breads, Sides. It is what the
  * menu groups by, so the order set here is the order customers read.
  */
 export default async function CategoriesPage({

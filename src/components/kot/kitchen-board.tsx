@@ -30,11 +30,11 @@ import { elapsedSince, untilDeadline, timeOnly, SOURCE_LABELS } from '@/lib/form
  */
 
 const COLUMNS: Array<{ key: string; title: string; statuses: string[]; tone: string }> = [
-  { key: 'queue', title: 'Accepted — start these', statuses: ['ACCEPTED'], tone: 'text-info' },
+  { key: 'queue', title: 'Accepted: start these', statuses: ['ACCEPTED'], tone: 'text-info' },
   { key: 'cooking', title: 'Cooking now', statuses: ['PREPARING'], tone: 'text-accent' },
   {
     key: 'done',
-    title: 'Ready — manager to hand off',
+    title: 'Ready: manager to hand off',
     statuses: ['READY_FOR_PICKUP'],
     tone: 'text-success',
   },
