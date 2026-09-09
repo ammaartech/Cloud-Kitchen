@@ -46,7 +46,7 @@ export function SignInPanel({
         <div>
           <Link
             href="/"
-            className="mb-8 flex items-center gap-2.5 font-brand font-semibold"
+            className="mb-8 flex items-center gap-2.5"
           >
             <Image
               src="/brand/mark-green.png"
@@ -56,7 +56,7 @@ export function SignInPanel({
               sizes="63px"
               className="h-7 w-auto"
             />
-            Infinity Kitchens
+            <span className="wordmark">INFINITY KITCHENS</span>
           </Link>
 
           <Card className="p-6">

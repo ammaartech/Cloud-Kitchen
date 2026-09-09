@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import { listMenuByCategory } from '@/lib/data/catalog';
-import { Badge } from '@/components/ui/primitives';
 import { MenuItem } from './menu-item';
 import { HeroReel } from './hero-reel';
 import { WHATSAPP_DISPLAY, WhatsAppButton } from './chat';
@@ -99,54 +98,47 @@ export default async function OrderPage() {
        are not reachable, and without this the footer ends underneath it. */
     <div className="pb-[calc(6rem+env(safe-area-inset-bottom))] sm:pb-0">
       {/* ------------------------------------------------------------------ */}
-      {/* The button at the top                                              */}
+      {/* The name at the top                                                */}
       {/* ------------------------------------------------------------------ */}
-      {/* Sticky from `sm` up only, and that split is deliberate.
+      {/* No button in here any more, on any size. The bar at the foot of a
+          phone and the block at the end of the page both carry the same
+          action, and a third copy of it up here was what squeezed the
+          kitchen's name into an ellipsis to make room. What is left is the
+          mark and the name, centred, because with the button gone there is no
+          right-hand element for them to be pushed away from.
 
-          On a desktop this bar carries the CTA, so it has to follow: on a page
-          this long a button at the top is only "at the top" for one screen. On
-          a phone it carries no button at all (the fixed bar at the foot has
-          that job), so sticking it would spend 57px of a 667px viewport on a
-          logo the reader has already seen, on top of the bar at the bottom and
-          the category heading below. Letting it scroll away also means the
-          menu's category headings can stick to `top-0` instead of to a
-          hardcoded offset that has to be kept in step with this element's
-          height, where being one pixel out shows as content sliding through
-          the seam. */}
-      <header className="z-30 border-b border-line bg-surface/85 backdrop-blur-md sm:sticky sm:top-0">
-        <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-2.5 sm:py-3">
-          <div className="flex min-w-0 items-center gap-2.5">
-            {/* `alt=""` because the name is right beside it in text: a logo
-                that repeats the word next to it is the same word twice to a
-                screen reader. */}
-            <Image
-              src="/brand/mark-green.png"
-              alt=""
-              width={933}
-              height={416}
-              sizes="(max-width: 639px) 54px, 63px"
-              priority
-              className="h-6 w-auto sm:h-7"
-            />
-            <div className="min-w-0">
-              <p className="truncate font-brand leading-tight font-semibold">
-                Infinity Kitchens
-              </p>
-              <p className="truncate text-xs text-subtle">
-                Home-style meals, cooked daily
-              </p>
-            </div>
-          </div>
+          Not sticky, for the same reason. A bar that follows the reader is
+          worth its 49px while it carries something to press; carrying only a
+          logo they have already seen, it is a strip of the screen spent on
+          nothing. Letting it scroll away also means the menu's category
+          headings can stick to `top-0` rather than to a hardcoded offset that
+          has to be kept in step with this element's height, where being one
+          pixel out shows as content sliding through the seam. */}
+      <header className="border-b border-line bg-surface">
+        <div className="mx-auto flex max-w-6xl items-center justify-center gap-2.5 px-4 py-3 sm:py-3.5">
+          {/* `alt=""` because the name is right beside it in text: a logo
+              that repeats the word next to it is the same word twice to a
+              screen reader. */}
+          <Image
+            src="/brand/mark-green.png"
+            alt=""
+            width={933}
+            height={416}
+            sizes="(max-width: 639px) 54px, 63px"
+            priority
+            className="h-6 w-auto sm:h-7"
+          />
+          {/* `.wordmark` is the shared setting -- see the note over it in
+              `globals.css` for the capitals and the tracking. It is a class
+              rather than utilities here because the storefront bar, the footer
+              and the sign-in panel set the same name and have to set it the
+              same way.
 
-          {/* Desktop only, and that is the fix rather than an omission. On a
-              phone the fixed bar at the foot of the screen is already showing
-              this exact button, so a second one up here put two identical
-              calls to action on screen at once and squeezed the kitchen's name
-              into an ellipsis to do it. Below `sm` the bar has the job; from
-              `sm` up there is no bar, so the header takes it back. */}
-          <WhatsAppButton size="md" className="hidden shrink-0 sm:inline-flex">
-            Order on WhatsApp
-          </WhatsAppButton>
+              The strapline that used to sit under this is gone. It read
+              "Home-style meals, cooked daily" directly above a headline that
+              says "Home-style meals, cooked fresh every single day", which is
+              the same sentence twice inside 100px. */}
+          <p className="wordmark">INFINITY KITCHENS</p>
         </div>
       </header>
 
@@ -166,22 +158,34 @@ export default async function OrderPage() {
               to get there. */}
           <div className="grid gap-8 md:grid-cols-[minmax(0,1fr)_22rem] md:items-start md:gap-12 lg:gap-16">
             <div className="max-w-2xl">
-              <Badge tone="brand">Ordering is on WhatsApp for now</Badge>
+              {/* Broken by hand rather than left to `text-balance`, because
+                  the break is part of the sentence: "Home-style meals," is
+                  the promise and the rest is the proof of it, and a headline
+                  that wraps wherever the column runs out puts the comma in a
+                  different place at every width. Two blocks rather than a
+                  `<br>` -- the line box is what is being set here, so the
+                  second half can still wrap on a narrow phone without the
+                  first half ever joining it.
 
-              {/* Three steps rather than two. At 36px the headline ran to five
-                lines on a 360px handset, which is most of the first screen
-                spent on one sentence; 30px holds it to four and leaves the
-                button above the fold. */}
-              <h1 className="mt-4 text-3xl font-semibold tracking-tight text-balance sm:text-4xl md:text-5xl">
-                Home-style meals, cooked fresh every single day.
+                  `text-pretty` rather than `text-balance` for the same reason:
+                  balancing would fight the break that is already chosen and
+                  only has the second line left to work on. */}
+              <h1 className="text-3xl font-semibold tracking-tight text-pretty sm:text-4xl md:text-5xl">
+                <span className="block">Home-style meals,</span>
+                <span className="block">cooked fresh every single day.</span>
               </h1>
 
-              <p className="mt-4 text-base text-muted text-pretty sm:mt-5 sm:text-lg">
-                One kitchen cooking one honest menu: South Indian tiffin in the
-                morning, a banana leaf thali at midday. Our website is still
-                being built, so for now everything is ordered over a WhatsApp
-                message. Send us one and we will set you up on a meal plan.
-              </p>
+              {/* Two lines, one fact each: what the kitchen cooks, and how to
+                  get it. The paragraph this replaces ran to four sentences and
+                  said the same two things -- and the "ordering is on WhatsApp"
+                  badge above the headline said the second of them a third
+                  time, which is why it is gone. The badge's fact is not lost,
+                  it is in the second line here where it is read rather than
+                  skipped as decoration. */}
+              <div className="mt-4 space-y-1.5 text-base text-muted text-pretty sm:mt-5 sm:space-y-2 sm:text-lg">
+                <p>South Indian tiffin in the morning, banana leaf thali at midday.</p>
+                <p>Ordering is over WhatsApp for now. Message us and we will set up your plan.</p>
+              </div>
 
               {/* Full width on a phone. A centred pill two thirds of the way
                 across is a smaller target than the thumb reaching for it, and
@@ -209,17 +213,25 @@ export default async function OrderPage() {
                 to your part of the city at the size you want to order is the
                 question that decides whether there is a conversation at all,
                 and it should be answered before anybody taps. */}
-            {/* Stacked on a phone rather than two columns. Side by side, "North
-                Bangalore only" wraps inside a 150px column and the constraint
-                that matters lands on its own orphaned line, which is exactly
-                the word a reader must not skip. */}
-            <dl className="mt-8 grid gap-4 border-t border-line pt-6 sm:mt-10 sm:flex sm:flex-wrap sm:gap-x-12 sm:gap-y-5">
+            {/* Two columns at every width, including a phone. It was stacked
+                below `sm` on the grounds that "North Bangalore only" wraps
+                inside a 150px column and the word that carries the constraint
+                lands on its own line -- true, and it costs a whole row of the
+                first screen to avoid. Side by side the pair reads as the
+                comparison it is (this size goes there, that size goes here),
+                which is the thing a reader is actually checking; the area
+                dropping to a smaller size keeps it on one line down to about
+                340px, and wrapping to two below that is a wrap inside a label,
+                not a lost word. */}
+            <dl className="mt-8 grid grid-cols-2 gap-x-6 border-t border-line pt-6 sm:mt-10 sm:flex sm:flex-wrap sm:gap-x-12 sm:gap-y-5">
               {COVERAGE.map((row) => (
                 <div key={row.label}>
                   <dt className="text-xs tracking-caps text-subtle uppercase">
                     {row.label}
                   </dt>
-                  <dd className="mt-1 font-semibold">{row.area}</dd>
+                  <dd className="mt-1 text-sm font-semibold text-pretty sm:text-base">
+                    {row.area}
+                  </dd>
                 </div>
               ))}
             </dl>

@@ -3713,6 +3713,50 @@ html:has(.nav-sheet[open]) {
   min-width: 0;
 }
 
+/* --------------------------------------------------------------------------
+   The kitchen's name, set as the drawn logo sets it.
+
+   One class because the name appears in four places -- the storefront bar, the
+   footer, the sign-in panel and the poster page -- and a wordmark that is
+   14px-tracked-wide in one of them and 16px-tight in another is not a wordmark,
+   it is four typesettings of the same string. Anything that puts the name
+   beside `/brand/mark-*.png` uses this.
+
+   Capitals are the logo's, and the markup writes them out rather than reaching
+   for `text-transform`: what a screen reader announces should be what the page
+   says, and "Infinity Kitchens" transformed to look like INFINITY KITCHENS is
+   two different strings for the two readers.
+
+   The tracking is what makes it the logo rather than a bold noun. Capitals set
+   at the letter-spacing lower case wants run into each other -- there are no
+   ascenders or descenders to hold them apart -- which is why the drawn mark
+   spaces them out, and 0.16em is that drawing measured. It also has to beat
+   `.site-bar-mark`'s -0.01em, which it does by sitting on the element itself
+   rather than being inherited from the link.
+
+   The negative end margin is the other half of tracking. Letter-spacing is
+   added after every letter including the last, so a tracked word carries a
+   trailing 0.16em of air that belongs to no glyph; in a centred row -- which is
+   exactly where this sits on the poster page -- that air pushes the whole group
+   a couple of pixels left of the centre it is supposed to be on. Taking it back
+   off the end is the standard correction and costs nothing anywhere else.
+   -------------------------------------------------------------------------- */
+.wordmark {
+  font-family: var(--font-brand);
+  font-weight: 600;
+  font-size: 0.875rem;
+  line-height: 1;
+  letter-spacing: 0.16em;
+  margin-inline-end: -0.16em;
+  white-space: nowrap;
+}
+
+@media (min-width: 40rem) {
+  .wordmark {
+    font-size: 1rem;
+  }
+}
+
 .site-bar-mark {
   display: flex;
   align-items: center;

@@ -297,7 +297,7 @@ export function SiteHeader() {
             priority
             className="h-7 w-auto"
           />
-          <span className="hidden font-brand sm:inline">Infinity Kitchens</span>
+          <span className="wordmark hidden sm:inline">INFINITY KITCHENS</span>
         </Link>
 
         <div className="site-bar-side justify-end">
