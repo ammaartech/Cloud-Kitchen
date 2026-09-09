@@ -25,6 +25,7 @@ import {
   Card,
   EmptyState,
   Field,
+  FieldAction,
   Input,
   SectionHeading,
   Select,
@@ -234,9 +235,9 @@ export default async function PlansPage({ searchParams }: PageProps<'/admin/plan
             <Input name="creditsPerCycle" inputMode="numeric" placeholder="20" />
           </Field>
 
-          <div className="flex items-end">
+          <FieldAction>
             <Button type="submit">Create plan</Button>
-          </div>
+          </FieldAction>
         </form>
       </Card>
 

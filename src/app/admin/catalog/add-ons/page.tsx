@@ -25,6 +25,7 @@ import {
   ConfirmButton,
   EmptyState,
   Field,
+  FieldAction,
   Input,
   SectionHeading,
 } from '@/components/ui/primitives';
@@ -195,9 +196,9 @@ export default async function AddOnsPage({ searchParams }: PageProps<'/admin/cat
             </Field>
           </div>
 
-          <div className="flex items-end">
+          <FieldAction>
             <Button type="submit">Create add-on</Button>
-          </div>
+          </FieldAction>
         </form>
       </Card>
 
@@ -292,11 +293,11 @@ export default async function AddOnsPage({ searchParams }: PageProps<'/admin/cat
                   </label>
                 </div>
 
-                <div className="flex items-end">
+                <FieldAction>
                   <Button type="submit" size="sm" variant="secondary">
                     Save add-on
                   </Button>
-                </div>
+                </FieldAction>
               </form>
 
               <form action={deleteAddOn} className="mt-2">

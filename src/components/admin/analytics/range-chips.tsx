@@ -38,7 +38,7 @@ export function RangeChips() {
             href={href}
             aria-current={isActive ? 'page' : undefined}
             className={cx(
-              'inline-flex h-8 items-center rounded-full border px-3.5 text-sm font-medium',
+              'inline-flex h-8 items-center rounded-ck-sm border px-3.5 text-sm font-medium',
               'transition-colors duration-150 ease-ck',
               isActive
                 ? 'border-transparent bg-brand text-white'

@@ -109,7 +109,7 @@ export function Badge({
   return (
     <span
       className={cx(
-        'inline-flex items-center gap-1 rounded-full border px-2 py-0.5',
+        'inline-flex items-center gap-1 rounded-ck-sm border px-2 py-0.5',
         'text-xs font-medium whitespace-nowrap',
         BADGE_TONES[tone],
         className,
@@ -288,8 +288,52 @@ export function Field({
   );
 }
 
+/**
+ * A cell in a grid of `Field`s holding something that is not a field -- a
+ * submit button, almost always -- which has to line up with the *controls*
+ * rather than with the row.
+ *
+ * A grid row is as tall as its tallest cell, and a `Field` carrying a `hint` is
+ * a line taller than one without. So `items-end` on a button's cell aligned it
+ * to the bottom of somebody else's hint and dropped it clear of the inputs it
+ * belongs to -- "Create dish" sitting a line below the four boxes it submits.
+ * `items-start` would have been wrong in the same way, raising it by the height
+ * of a label. Neither edge of the row is the one that matters: the control is.
+ *
+ * So the cell reproduces a `Field`'s own shape -- a label-sized spacer, then
+ * the thing -- and is built from the same classes the real label uses rather
+ * than from the 26px they happen to add up to, so the two cannot drift apart if
+ * that type ever changes. The spacer is empty and `aria-hidden`: a button says
+ * what it does itself, and an invisible label read out is noise.
+ *
+ * `self-start` so the cell sizes to its contents instead of stretching to the
+ * row, which is what would put the spacer back at the mercy of the tallest
+ * cell.
+ */
+export function FieldAction({
+  className,
+  children,
+}: {
+  className?: string;
+  children: ReactNode;
+}) {
+  return (
+    <div className={cx('self-start', className)}>
+      <span aria-hidden className="mb-1.5 block text-sm font-medium">
+        &nbsp;
+      </span>
+      {/* 2.375rem is what a regular control comes to: a 20px line, 16px of
+          padding, 2px of border. Centring against that height rather than
+          simply stacking means a `sm` button and a `md` one both line up with
+          the field beside them, instead of only whichever one happens to be
+          38px tall. */}
+      <div className="flex min-h-[2.375rem] items-center gap-2">{children}</div>
+    </div>
+  );
+}
+
 const CONTROL =
-  'w-full rounded-ck border border-line-strong bg-surface px-3.5 py-2 text-sm text-ink ' +
+  'w-full rounded-ck-sm border border-line-strong bg-surface px-3.5 text-sm text-ink ' +
   // Quieter than any other text in the system, and the point of it: a
   // placeholder here is an example of what to type, and it has to be obviously
   // provisional rather than look like a value the field already holds. Every
@@ -305,20 +349,75 @@ const CONTROL =
   'hover:border-brand/50 focus:border-brand ' +
   'disabled:cursor-not-allowed disabled:bg-sunken disabled:text-subtle';
 
-export function Input({ className, ...rest }: ComponentPropsWithoutRef<'input'>) {
-  return <input className={cx(CONTROL, className)} {...rest} />;
+/**
+ * How tall a control is, deliberately kept *out* of `CONTROL` and behind a prop
+ * rather than left to the caller's `className`.
+ *
+ * `cx` is a plain join, not a Tailwind-aware merge, so two utilities from the
+ * same family both survive into the attribute and the winner is decided by the
+ * order they appear in the generated stylesheet -- not by the order they were
+ * written. `.py-2` is emitted after `.py-0`, so a caller asking for
+ * `className="h-8 py-0"` got `h-8` *and* `py-2`: a 32px box, less 2px of
+ * border, less 16px of padding, leaving a 14px content box to draw a 20px
+ * line in. That is why the analytics category filter was rendering with the
+ * descenders sliced off its label. The override was not losing to specificity,
+ * it was never applying at all, which is the kind of failure that looks like a
+ * font bug and gets chased in the wrong file.
+ *
+ * So the base string no longer carries vertical padding and there is exactly
+ * one `py` on any control. A future compact control asks for it by name.
+ */
+const CONTROL_HEIGHTS = {
+  regular: 'py-2',
+  // Pinned to 32px so it lines up with the chip-shaped range filters it sits
+  // beside on the analytics bar, which set their own `h-8`.
+  compact: 'h-8 py-0',
+} as const;
+
+type ControlProps = { compact?: boolean };
+
+export function Input({
+  className,
+  compact,
+  ...rest
+}: ComponentPropsWithoutRef<'input'> & ControlProps) {
+  return (
+    <input
+      className={cx(CONTROL, CONTROL_HEIGHTS[compact ? 'compact' : 'regular'], className)}
+      {...rest}
+    />
+  );
 }
 
-export function Select({ className, children, ...rest }: ComponentPropsWithoutRef<'select'>) {
+export function Select({
+  className,
+  children,
+  compact,
+  ...rest
+}: ComponentPropsWithoutRef<'select'> & ControlProps) {
   return (
-    <select className={cx(CONTROL, 'pr-8', className)} {...rest}>
+    <select
+      /* `ck-select` rather than a `pr-8` utility, and it carries the drop-down
+         styling too -- see the note over it in `globals.css`. The end padding
+         has to change depending on whether the browser is drawing the arrow or
+         we are, and a utility cannot answer a `@supports` query. */
+      className={cx(CONTROL, CONTROL_HEIGHTS[compact ? 'compact' : 'regular'], 'ck-select', className)}
+      {...rest}
+    >
       {children}
     </select>
   );
 }
 
+/* No `compact` here on purpose: a textarea is sized by how much someone has to
+   write in it, and every caller already says that with `min-h-*`. */
 export function Textarea({ className, ...rest }: ComponentPropsWithoutRef<'textarea'>) {
-  return <textarea className={cx(CONTROL, 'min-h-20 resize-y', className)} {...rest} />;
+  return (
+    <textarea
+      className={cx(CONTROL, CONTROL_HEIGHTS.regular, 'min-h-20 resize-y', className)}
+      {...rest}
+    />
+  );
 }
 
 /* ========================================================================== */

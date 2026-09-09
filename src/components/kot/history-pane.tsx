@@ -144,7 +144,7 @@ function FilterChip({
       type="button"
       onClick={onClick}
       className={cx(
-        'rounded-full border px-3 py-1 text-xs font-medium transition-colors duration-150 ease-ck',
+        'rounded-ck-sm border px-3 py-1 text-xs font-medium transition-colors duration-150 ease-ck',
         active
           ? 'border-transparent bg-brand-soft text-brand'
           : 'border-line bg-surface text-muted hover:text-ink',

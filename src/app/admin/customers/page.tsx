@@ -24,6 +24,7 @@ import {
   Card,
   EmptyState,
   Field,
+  FieldAction,
   Input,
   SectionHeading,
   Textarea,
@@ -201,9 +202,9 @@ export default async function CustomersPage({ searchParams }: PageProps<'/admin/
               They agreed to marketing
             </label>
 
-            <div className="flex items-end">
+            <FieldAction>
               <Button type="submit">Create customer</Button>
-            </div>
+            </FieldAction>
           </form>
         </Card>
       ) : null}

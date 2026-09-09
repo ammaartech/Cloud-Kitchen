@@ -19,7 +19,7 @@ export function CategorySelect({ options }: { options: Array<{ slug: string; nam
     <label className="inline-flex items-center gap-2 text-sm text-muted">
       <span className="sr-only">Category</span>
       <Select
-        className="h-8 py-0"
+        compact
         value={current}
         onChange={(event) => {
           const next = event.target.value;

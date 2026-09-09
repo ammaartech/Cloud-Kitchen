@@ -83,8 +83,8 @@ export default async function AuditPage({ searchParams }: PageProps<'/admin/audi
           href="/admin/audit"
           className={
             entityFilter
-              ? 'rounded-full border border-line px-3 py-1 text-sm text-muted hover:bg-sunken'
-              : 'rounded-full bg-brand px-3 py-1 text-sm font-medium text-white'
+              ? 'rounded-ck-sm border border-line px-3 py-1 text-sm text-muted hover:bg-sunken'
+              : 'rounded-ck-sm bg-brand px-3 py-1 text-sm font-medium text-white'
           }
         >
           Everything
@@ -95,8 +95,8 @@ export default async function AuditPage({ searchParams }: PageProps<'/admin/audi
             href={`/admin/audit?entity=${type}`}
             className={
               entityFilter === type
-                ? 'rounded-full bg-brand px-3 py-1 text-sm font-medium text-white'
-                : 'rounded-full border border-line px-3 py-1 text-sm text-muted hover:bg-sunken'
+                ? 'rounded-ck-sm bg-brand px-3 py-1 text-sm font-medium text-white'
+                : 'rounded-ck-sm border border-line px-3 py-1 text-sm text-muted hover:bg-sunken'
             }
           >
             {type}

@@ -25,6 +25,7 @@ import {
   ConfirmButton,
   EmptyState,
   Field,
+  FieldAction,
   Input,
   SectionHeading,
   Select,
@@ -258,9 +259,9 @@ export default async function VariantsPage({
             Required
           </label>
 
-          <div className="flex items-end">
+          <FieldAction>
             <Button type="submit">Create group</Button>
-          </div>
+          </FieldAction>
         </form>
       </Card>
 

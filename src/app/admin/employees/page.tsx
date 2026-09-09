@@ -25,6 +25,7 @@ import {
   ConfirmButton,
   EmptyState,
   Field,
+  FieldAction,
   Input,
   SectionHeading,
   Select,
@@ -348,9 +349,9 @@ export default async function EmployeesPage({ searchParams }: PageProps<'/admin/
               <Input name="notes" placeholder="Evening shift, Tuesday off" />
             </Field>
 
-            <div className="flex items-end">
+            <FieldAction>
               <Button type="submit">Create account</Button>
-            </div>
+            </FieldAction>
           </form>
 
           {!canGrantDeveloper ? (

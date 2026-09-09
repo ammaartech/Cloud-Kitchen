@@ -70,7 +70,20 @@ export function buttonClasses(
   className?: string,
 ): string {
   return cx(
-    'inline-flex items-center justify-center gap-2 rounded-full border font-medium',
+    'inline-flex items-center justify-center gap-2 rounded-ck-sm border font-medium',
+    // `whitespace-nowrap`, and it is not a nicety -- it is what makes the fixed
+    // heights below safe. Every size here pins a height, so a label allowed to
+    // wrap does not make the button taller, it makes the second line fall out
+    // of the bottom of it: "Mark unavailable" in the catalog rows was drawing
+    // "unavailable" below the red pill it belonged to.
+    //
+    // It also fixes the cause rather than the symptom. A flex item may shrink
+    // to its min-content width, and for wrapping text that is the longest
+    // *word*; holding the label on one line makes min-content the width of the
+    // whole label instead, so a cramped row now pushes the button onto the next
+    // line -- which is what the `flex-wrap` on those rows was already there to
+    // do -- rather than crushing it.
+    'whitespace-nowrap',
     // The properties are named rather than left to `transition-colors`, which
     // would not carry the press, and rather than `all`, which would carry
     // everything including layout properties nothing here should be animating.

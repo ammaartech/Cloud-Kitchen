@@ -26,6 +26,7 @@ import {
   Card,
   EmptyState,
   Field,
+  FieldAction,
   Input,
   SectionHeading,
   Select,
@@ -203,9 +204,9 @@ export default async function CatalogPage({ searchParams }: PageProps<'/admin/ca
               <Input name="creditCost" inputMode="numeric" defaultValue="1" />
             </Field>
 
-            <div className="flex items-end">
+            <FieldAction>
               <Button type="submit">Create dish</Button>
-            </div>
+            </FieldAction>
 
             <div className="sm:col-span-2 lg:col-span-5">
               <Field label="Short description">
@@ -258,11 +259,19 @@ export default async function CatalogPage({ searchParams }: PageProps<'/admin/ca
                   ) : null}
                 </div>
 
-                <div className="flex items-end gap-2">
+                {/* Centred, not bottom-aligned. The three controls in this row are
+                    three different heights -- a 32px button, a 38px field, a
+                    32px button -- and `items-end` lined up the one edge that
+                    makes that obvious, leaving the two buttons hanging below
+                    the field with a ragged top. Nothing here is a labelled
+                    field, so there is no baseline to hold to; the pricing row
+                    below still uses `items-end` because its inputs do carry
+                    labels and their bottoms are what should agree. */}
+                <div className="flex items-center gap-2">
                   <ButtonLink href={`/admin/catalog/products/${product.id}`} variant="secondary" size="sm">Edit</ButtonLink>
 
                   {!product.archived_at ? (
-                    <form action={toggleAvailability} className="flex items-end gap-2">
+                    <form action={toggleAvailability} className="flex items-center gap-2">
                       <input type="hidden" name="productId" value={product.id} />
                       <input
                         type="hidden"

@@ -24,6 +24,7 @@ import {
   ConfirmButton,
   EmptyState,
   Field,
+  FieldAction,
   Input,
   SectionHeading,
 } from '@/components/ui/primitives';
@@ -168,9 +169,9 @@ export default async function CategoriesPage({
             </Field>
           </div>
 
-          <div className="flex items-end">
+          <FieldAction>
             <Button type="submit">Create category</Button>
-          </div>
+          </FieldAction>
         </form>
       </Card>
 

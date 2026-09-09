@@ -24,6 +24,7 @@ import {
   ConfirmButton,
   EmptyState,
   Field,
+  FieldAction,
   Input,
   SectionHeading,
   Select,
@@ -365,9 +366,9 @@ export default async function CouponsPage({ searchParams }: PageProps<'/admin/co
             Show as already unlocked
           </label>
 
-          <div className="flex items-end">
+          <FieldAction>
             <Button type="submit">Create offer</Button>
-          </div>
+          </FieldAction>
         </form>
       </Card>
 
@@ -533,11 +534,11 @@ export default async function CouponsPage({ searchParams }: PageProps<'/admin/co
                     Show as already unlocked
                   </label>
 
-                  <div className="flex items-end">
+                  <FieldAction>
                     <Button type="submit" variant="secondary" size="sm">
                       Save offer
                     </Button>
-                  </div>
+                  </FieldAction>
                 </form>
 
                 {/* ---------------------------------------------------- */}

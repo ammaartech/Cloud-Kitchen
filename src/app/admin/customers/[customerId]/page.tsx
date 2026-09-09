@@ -30,6 +30,7 @@ import {
   Card,
   ConfirmButton,
   Field,
+  FieldAction,
   Input,
   SectionHeading,
   Textarea,
@@ -636,11 +637,11 @@ export default async function CustomerDetailPage({
                       Default address
                     </label>
 
-                    <div className="flex items-end">
+                    <FieldAction>
                       <Button type="submit" size="sm">
                         Add address
                       </Button>
-                    </div>
+                    </FieldAction>
                   </form>
                 </details>
               </Card>

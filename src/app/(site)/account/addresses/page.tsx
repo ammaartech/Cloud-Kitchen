@@ -22,6 +22,7 @@ import {
   ConfirmButton,
   EmptyState,
   Field,
+  FieldAction,
   Input,
   SectionHeading,
   Textarea,
@@ -304,11 +305,11 @@ export default async function AddressesPage({ searchParams }: PageProps<'/accoun
                     Default address
                   </label>
 
-                  <div className="flex items-end">
+                  <FieldAction>
                     <Button type="submit" size="sm" variant="secondary">
                       Save changes
                     </Button>
-                  </div>
+                  </FieldAction>
                 </form>
               </details>
             </Card>
@@ -384,9 +385,9 @@ export default async function AddressesPage({ searchParams }: PageProps<'/accoun
             Make this my default
           </label>
 
-          <div className="flex items-end">
+          <FieldAction>
             <Button type="submit">Save address</Button>
-          </div>
+          </FieldAction>
         </form>
       </Card>
 
