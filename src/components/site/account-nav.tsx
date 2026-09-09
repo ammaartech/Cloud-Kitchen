@@ -22,14 +22,14 @@ export function AccountNav() {
   const { account } = useAccount();
 
   return (
-    <div className="ml-auto flex h-9 items-center gap-2">
+    <div className="account-actions ml-auto flex items-center gap-2">
       {account ? (
         <>
           {/* The one thing in this bar that is not set in capitals. It is a
               person's name, and a name in all caps is a different word about a
               different kind of thing -- the label beside it is a control, this
               is who you are. */}
-          <span className="hidden text-sm text-subtle sm:inline">{account.name}</span>
+          <span className="account-name hidden text-sm text-subtle xl:inline">{account.name}</span>
           <ButtonLink href={account.href} variant="secondary" size="sm" className="btn-caps btn-square">
             {account.label}
           </ButtonLink>
@@ -41,7 +41,7 @@ export function AccountNav() {
             href="/sign-in"
             variant="ghost"
             size="sm"
-            className="btn-caps btn-square hidden sm:inline-flex"
+            className="account-sign-in btn-caps btn-square"
           >
             Sign in
           </ButtonLink>
@@ -51,7 +51,8 @@ export function AccountNav() {
               two labels for one destination is the reader having to work out
               whether they are the same thing. */}
           <ButtonLink href="/subscriptions" size="sm" className="btn-caps btn-square">
-            Start a plan today
+            <span className="account-cta-long">Start a plan today</span>
+            <span className="account-cta-short">Start a plan</span>
           </ButtonLink>
         </>
       )}

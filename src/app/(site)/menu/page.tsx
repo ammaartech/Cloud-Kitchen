@@ -12,10 +12,10 @@ export const metadata = {
 };
 
 /**
- * Every term has to appear somewhere in the dish, so "paneer curry" narrows
+ * Every term has to appear somewhere in the dish, so "ghee dosa" narrows
  * rather than widening the way an OR would. Category and description are part
- * of the haystack: someone searching "breakfast" or "coconut" is describing
- * the dish, not naming it.
+ * of the haystack: someone searching "tiffin" or "coconut" is describing the
+ * dish, not naming it.
  */
 function matches(product: ProductCard, terms: string[]): boolean {
   const haystack = [
@@ -154,7 +154,7 @@ async function MenuResults({
           {query ? (
             <EmptyState
               title={`Nothing on the menu matches “${query}”`}
-              description="We cook a small menu, so it is a short list. Try a broader word — a category like breakfast, or an ingredient like paneer."
+              description="We cook a small menu, so it is a short list. Try a broader word — a category like tiffin, or an ingredient like ghee."
               action={
                 <ButtonLink href="/menu" variant="secondary">
                   Show the whole menu

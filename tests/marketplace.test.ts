@@ -3,8 +3,8 @@ import { createTestDb, asService, type Db } from './harness/db';
 
 let db: Db;
 
-const ITEMS = `'[{"name":"Paneer Tikka Bowl","quantity":2,"unit_price":289}]'::jsonb`;
-const TOTALS = `'{"subtotal":578,"tax_total":28.9,"grand_total":606.9}'::jsonb`;
+const ITEMS = `'[{"name":"Masala Dosa","quantity":2,"unit_price":109}]'::jsonb`;
+const TOTALS = `'{"subtotal":218,"tax_total":10.9,"grand_total":228.9}'::jsonb`;
 
 async function ingest(
   provider: 'swiggy' | 'zomato',

@@ -248,8 +248,22 @@ export function StepFlow({ steps }: { steps: readonly Step[] }) {
                 column, which is the distance to the badge before it at every
                 breakpoint. */}
             <span className="step-hop block">
-              <span className="mx-auto grid h-9 w-9 place-items-center rounded-full bg-brand-soft text-brand">
-                <Icon className="size-[1.125rem]" />
+              {/* 48px on a 24px glyph, where it was 36 on 18. The ratio is
+                  unchanged -- the mark still fills half the circle, which is
+                  where an icon in a badge wants to sit -- so this is the same
+                  object at a size that survives the row it is in. Four badges
+                  spread across a full-width grid are further apart than they
+                  are big, and at 36px each one was reading as a bullet on the
+                  title beneath it rather than as the thing the eye follows
+                  along the row. The relay only works if the travelling object
+                  is the most substantial thing in the column.
+
+                  24px is also the glyph's own grid: `BASE` in `icons.tsx`
+                  draws on `0 0 24 24` at `strokeWidth: 2`, so at this size one
+                  SVG unit is one CSS pixel and the 2px stroke is a 2px stroke
+                  rather than the 1.5 it was being scaled down to. */}
+              <span className="mx-auto grid h-12 w-12 place-items-center rounded-full bg-brand-soft text-brand">
+                <Icon className="size-6" />
               </span>
             </span>
             <h3 className="step-copy mt-4 text-lg font-semibold text-pretty">{step.title}</h3>

@@ -163,7 +163,7 @@ export function SiteHeader() {
    * Close the sheet if the viewport grows past the breakpoint it belongs to,
    * and this is a lockup rather than a tidiness fix.
    *
-   * The sheet is `md:hidden`, so at desktop widths it stops being rendered --
+   * The sheet is `xl:hidden`, so at wide desktop sizes it stops being rendered --
    * but `display: none` does not take an element out of the top layer. A modal
    * dialog left open there keeps the focus trap and keeps the rest of the page
    * inert, so a phone rotated to landscape, or a desktop window dragged wider
@@ -173,10 +173,10 @@ export function SiteHeader() {
    *
    * `matchMedia` rather than a resize listener: this fires twice in the life of
    * a page instead of on every frame of a drag, and the query is the same
-   * number the two `md:` utilities compile to.
+   * number the two `xl:` utilities compile to. Tablets retain the roomy sheet.
    */
   useEffect(() => {
-    const wide = window.matchMedia('(min-width: 48rem)');
+    const wide = window.matchMedia('(min-width: 80rem)');
 
     function closeIfWide(event: MediaQueryListEvent | MediaQueryList) {
       if (event.matches) setOpenAt(null);
@@ -234,7 +234,7 @@ export function SiteHeader() {
             aria-expanded={menuOpen}
             aria-controls="site-menu"
             aria-label={menuOpen ? 'Close menu' : 'Open menu'}
-            className={buttonClasses('ghost', 'md', 'nav-toggle md:hidden')}
+            className={buttonClasses('ghost', 'md', 'nav-toggle xl:hidden')}
           >
             <MenuGlyph />
           </button>
@@ -249,7 +249,7 @@ export function SiteHeader() {
               `md:` and up only: below that the sheet is the navigation, and two
               ways into the same five links on a 375px bar is one too many. */}
           <nav
-            className="bar-nav hidden md:flex"
+            className="bar-nav hidden xl:flex"
             data-shown={showNav ? '' : undefined}
             aria-hidden={showNav ? undefined : true}
             aria-label="Sections"
@@ -273,6 +273,7 @@ export function SiteHeader() {
         {/* The middle track, and the only thing in it. */}
         <Link
           href="/#top"
+          aria-label="Cloud Kitchen home"
           aria-current={pathname === '/' && activeSection === 'top' ? 'page' : undefined}
           className="site-bar-mark"
         >
@@ -309,7 +310,7 @@ export function SiteHeader() {
       <dialog
         ref={sheet}
         id="site-menu"
-        className="nav-sheet md:hidden"
+        className="nav-sheet xl:hidden"
         aria-label="Main"
         onClose={() => setOpenAt(null)}
         onClick={(event) => {
@@ -322,6 +323,7 @@ export function SiteHeader() {
               <li key={item.href}>
                 <Link
                   href={item.section ? `/#${item.section}` : item.href}
+                  onClick={() => setOpenAt(null)}
                   aria-current={currentState(item)}
                   // The stagger is the sheet's, not the link's: the panel opens
                   // and the rows arrive behind it, 40ms apart. Short, because

@@ -26,7 +26,7 @@ export function ProductTile({ product }: { product: Product }) {
             src={product.imageUrl}
             alt={product.imageAlt}
             fill
-            sizes="(max-width: 768px) 100vw, 33vw"
+            sizes="(max-width: 639px) calc(100vw - 40px), (max-width: 1023px) calc(50vw - 34px), (max-width: 1152px) 33vw, 360px"
             className="object-cover"
           />
         ) : (

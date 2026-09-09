@@ -8,9 +8,10 @@ import {
   CUSTOMER_SANA,
   ADDRESS_SANA_HOME,
   PLAN_BUILD_YOUR_OWN,
-  PRODUCT_BIRYANI,
-  PRODUCT_KHICHDI,
-  PRODUCT_FISH_THALI,
+  PRODUCT_GHEE_PUDI_DOSA,
+  PRODUCT_PANEER_DOSA,
+  PRODUCT_VEG_PULAO,
+  PRODUCT_VANGI_BATH,
 } from './harness/ids';
 
 let db: Db;
@@ -58,7 +59,8 @@ describe('the credit ledger', () => {
   });
 
   it('charges a premium meal more credits than a standard one', async () => {
-    // Rahul's seeded booking is one biryani (2 credits) + one khichdi (1).
+    // Rahul's seeded booking is one paneer butter masala dosa (2 credits)
+    // plus one veg pulao (1).
     const [row] = await asService<{ credits: number }>(
       db,
       `select -credits as credits from subscription_credit_ledger
@@ -82,7 +84,7 @@ describe('the credit ledger', () => {
 
     const items = JSON.stringify(
       Array.from({ length: available + 5 }, () => ({
-        product_id: PRODUCT_KHICHDI,
+        product_id: PRODUCT_VEG_PULAO,
         quantity: 1,
       })),
     );
@@ -109,7 +111,7 @@ describe('the credit ledger', () => {
           `select schedule_credit_delivery($1, app.business_date() + 2,
              (select id from delivery_windows where code = 'DINNER'),
              $2::jsonb)`,
-          [subscription.id, JSON.stringify([{ product_id: PRODUCT_FISH_THALI, quantity: 1 }])],
+          [subscription.id, JSON.stringify([{ product_id: PRODUCT_VANGI_BATH, quantity: 1 }])],
         ),
       ),
     );
@@ -348,8 +350,8 @@ describe('customer-selected plans', () => {
           CUSTOMER_SANA,
           PLAN_BUILD_YOUR_OWN,
           ADDRESS_SANA_HOME,
-          // Butter naan is not in the lunch pool.
-          JSON.stringify([{ product_id: '40000001-0000-4000-8000-000000000008', quantity: 1 }]),
+          // The ghee pudi dosa is tiffin, and not in the lunch pool.
+          JSON.stringify([{ product_id: PRODUCT_GHEE_PUDI_DOSA, quantity: 1 }]),
         ],
       ),
     );
@@ -373,8 +375,8 @@ describe('customer-selected plans', () => {
         PLAN_BUILD_YOUR_OWN,
         ADDRESS_SANA_HOME,
         JSON.stringify([
-          { product_id: PRODUCT_BIRYANI, quantity: 1 },
-          { product_id: PRODUCT_KHICHDI, quantity: 1 },
+          { product_id: PRODUCT_PANEER_DOSA, quantity: 1 },
+          { product_id: PRODUCT_VEG_PULAO, quantity: 1 },
         ]),
       ],
     );

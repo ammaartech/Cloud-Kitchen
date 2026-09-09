@@ -82,7 +82,7 @@ export const SITE_NAV: readonly NavItem[] = [
 export const HERO_NAV: readonly { label: string; section: string }[] = [
   { label: 'Menu', section: 'menu' },
   { label: 'Meal Plans', section: 'plans' },
-  { label: 'Subscriptions', section: 'plans' },
+  { label: 'How it works', section: 'how-it-works' },
   { label: 'About', section: 'about' },
 ];
 

@@ -152,10 +152,11 @@ export function HeroLayer({
   const source = progress ?? still;
 
   const y = useTransform(source, [0, 1], [0, -110 * depth]);
+  const transform = useMotionTemplate`translate3d(0, ${y}px, 0)`;
   const opacity = useTransform(source, [0, 0.85], [1, 1 - fade]);
 
   return (
-    <MotionDiv style={{ y, opacity }} className={className}>
+    <MotionDiv style={{ transform, opacity }} className={className}>
       {children}
     </MotionDiv>
   );
@@ -281,6 +282,7 @@ export function TiltCard({
     [lift, press],
     ([lifted, pressed]) => 1 + lifted * 0.012 - pressed * (1 - PRESS_SCALE),
   );
+  const transform = useMotionTemplate`perspective(1400px) translate3d(0, ${y}px, 0) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(${scale})`;
 
   // The sheen, in per-cent of the card, tracking the pointer.
   const sheenX = useTransform(sx, [-0.5, 0.5], [8, 92]);
@@ -355,16 +357,12 @@ export function TiltCard({
       onFocus={engage}
       onBlur={release}
       style={{
-        rotateX,
-        rotateY,
-        y,
-        scale,
+        transform,
         // Declared on the card rather than as a `perspective` on its parent: a
         // perspective set on an ancestor is a single shared vanishing point for
         // every child that transforms, and these two cards share a grid row --
         // which would lean them towards each other instead of towards the
         // pointer that is actually over one of them.
-        transformPerspective: 1400,
       }}
       className={className}
     >
@@ -397,15 +395,14 @@ export function DriftingPhoto({ children }: { children: ReactNode }) {
   // Outside a `TiltCard` there is no drift to cover, so the photograph sits at
   // its natural size rather than at `PHOTO_REST_SCALE`.
   const rest = useMotionValue(1);
+  const transform = useMotionTemplate`translate3d(${drift?.x ?? still}px, ${drift?.y ?? still}px, 0) scale(${drift?.scale ?? rest})`;
 
   return (
     <MotionDiv
       style={{
-        x: drift?.x ?? still,
-        y: drift?.y ?? still,
-        scale: drift?.scale ?? rest,
+        transform,
       }}
-      className="pointer-events-none absolute inset-0 -z-10"
+      className="gateway-photo pointer-events-none absolute inset-0 -z-10"
     >
       {children}
     </MotionDiv>
@@ -424,9 +421,10 @@ export function DriftingArrow({ children }: { children: ReactNode }) {
   const drift = useContext(PhotoDriftContext);
   const still = useMotionValue(0);
   const x = useTransform(drift?.x ?? still, (value) => value * -0.34);
+  const transform = useMotionTemplate`translate3d(${x}px, 0, 0)`;
 
   return (
-    <MotionSpan style={{ x }} className="inline-flex">
+    <MotionSpan style={{ transform }} className="inline-flex">
       {children}
     </MotionSpan>
   );
@@ -497,6 +495,11 @@ export function DeliveryRun({ windows, scene }: { windows: ReactNode; scene: Rea
   // practice: this strip is at the very bottom of the hero, under the fold on
   // any normal viewport, so by the time it is scrolled to hydration is long
   // done.
+  //
+  // A blanket `mask-image: none` on `.delivery-window` reaches the same safety
+  // by giving up the hand-over entirely, which is the one thing this strip is
+  // for. Arming is what buys both: the reveal when scripting is there, the
+  // plain times when it is not.
   //
   // `useSyncExternalStore` rather than the usual mounted flag in an effect.
   // It is the same idea -- server says no, client says yes -- but it is a

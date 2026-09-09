@@ -8,8 +8,8 @@ import {
   SANA,
   CUSTOMER_MEERA,
   CUSTOMER_SANA,
-  PRODUCT_KHICHDI,
-  PRODUCT_PANEER,
+  PRODUCT_VEG_PULAO,
+  PRODUCT_THALI,
 } from './harness/ids';
 
 /**
@@ -43,7 +43,7 @@ describe('the verified-purchase badge is derived, not claimed', () => {
            (customer_id, product_id, rating, title, body, is_verified_purchase)
          values ($1, $2, 5, 'Great', 'Claiming a badge I have not earned', true)
          returning is_verified_purchase`,
-        [CUSTOMER_SANA, PRODUCT_PANEER],
+        [CUSTOMER_SANA, PRODUCT_THALI],
       );
       return result.rows;
     });
@@ -71,7 +71,7 @@ describe('the verified-purchase badge is derived, not claimed', () => {
       db,
       `insert into public.subscription_delivery_items (delivery_id, product_id, quantity)
        values ($1, $2, 1)`,
-      [delivery.id, PRODUCT_KHICHDI],
+      [delivery.id, PRODUCT_VEG_PULAO],
     );
 
     const [review] = await actingAs(db, { role: 'authenticated', profileId: SANA }, async (tx) => {
@@ -79,7 +79,7 @@ describe('the verified-purchase badge is derived, not claimed', () => {
         `insert into public.reviews (customer_id, product_id, rating, title, body)
          values ($1, $2, 4, 'Solid', 'This one I actually ate')
          returning is_verified_purchase`,
-        [CUSTOMER_SANA, PRODUCT_KHICHDI],
+        [CUSTOMER_SANA, PRODUCT_VEG_PULAO],
       );
       return result.rows;
     });
@@ -106,14 +106,14 @@ describe('the verified-purchase badge is derived, not claimed', () => {
 /* ========================================================================== */
 
 describe('review moderation', () => {
-  /** The pending khichdi review the seed leaves in the queue. */
+  /** The pending veg pulao review the seed leaves in the queue. */
   async function pendingReviewId(): Promise<string> {
     const [row] = await asService<{ id: string }>(
       db,
       `select id from public.reviews
         where status = 'pending' and product_id = $1
         order by created_at limit 1`,
-      [PRODUCT_KHICHDI],
+      [PRODUCT_VEG_PULAO],
     );
     return row.id;
   }
@@ -232,8 +232,8 @@ describe('the public rating summary', () => {
       average_rating: string;
     }>(db, `select * from public.v_product_ratings`);
 
-    const khichdi = rows.find((row) => row.product_id === PRODUCT_KHICHDI);
-    expect(khichdi?.review_count).toBe(1);
+    const pulao = rows.find((row) => row.product_id === PRODUCT_VEG_PULAO);
+    expect(pulao?.review_count).toBe(1);
 
     // The seed's hidden two-star review must not drag any average down.
     const [hidden] = await asService<{ product_id: string }>(

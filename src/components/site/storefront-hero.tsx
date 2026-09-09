@@ -208,6 +208,19 @@ export function StorefrontHero({
   const available = menu.filter((product) => product.isAvailable);
   const vegetarian = available.filter((product) => product.isVegetarian);
 
+  /* What the count is worth saying depends on what it is. A kitchen where some
+     of the dishes are vegetarian is telling you how many; a kitchen where all
+     of them are is telling you what kind of kitchen it is, and "26 of them
+     vegetarian" out of 26 is a number that has not noticed itself. Both cases
+     are read off the same rows, so a menu that stops being wholly vegetarian
+     goes back to counting on its own. */
+  const vegetarianNote =
+    vegetarian.length === 0
+      ? null
+      : vegetarian.length === available.length
+        ? 'Every dish vegetarian'
+        : `${vegetarian.length} of them vegetarian`;
+
   const cheapest = plans.reduce<PlanSummary | null>(
     (best, plan) => (!best || Number(plan.price) < Number(best.price) ? plan : best),
     null,
@@ -250,7 +263,7 @@ export function StorefrontHero({
           the houses are hard right, and at around 1280px those two overlap.
           It steps at the breakpoints the scene does, because what it is
           clearing is the houses' height. */}
-      <div className="mx-auto max-w-6xl px-4 pt-14 pb-28 sm:pt-20 sm:pb-36 lg:pt-24 lg:pb-44">
+      <div className="hero-container mx-auto max-w-6xl px-4 pt-14 pb-28 sm:pt-20 sm:pb-36 lg:pt-24 lg:pb-44">
         {/* The three scroll planes, in depth order. The copy is nearest, so it
             leaves fastest and gives up the most opacity; the cards sit behind
             it and hold on longer, because they are still the actions and a
@@ -270,7 +283,7 @@ export function StorefrontHero({
             the copy rather than beside it. A 50/50 split on a phone is two
             columns of nothing. */}
         <div className="hero-split">
-          <HeroLayer depth={1.15} fade={0.55} className="hero-copy">
+          <HeroLayer depth={0} fade={0} className="hero-copy">
             {/* The rest of the site, above the sentence that explains it.
                 These three were in the header until the wordmark took the
                 middle of the bar -- see `HERO_NAV` in `nav.ts` -- and this is
@@ -403,7 +416,7 @@ export function StorefrontHero({
                 href="/menu"
                 title="Today&rsquo;s menu"
                 subtitle="What the kitchen is cooking"
-                footnote={vegetarian.length ? `${vegetarian.length} of them vegetarian` : null}
+                footnote={vegetarianNote}
                 photo={photos[2] ?? photos[0]}
                 enterAfter={ENTER.secondaryCard}
               />
@@ -446,7 +459,7 @@ export function StorefrontHero({
                  One column until 40rem. Three columns of this type on a phone
                  is about 120px each, and "12:00 pm - 2:30 pm" does not go in
                  120px at any size worth calling large. */
-              <dl className="mx-auto mt-12 grid max-w-3xl grid-cols-1 gap-y-9 border-t border-line pt-10 sm:grid-cols-3 sm:gap-x-8">
+              <dl className="delivery-windows mx-auto mt-12 grid max-w-3xl gap-y-9 border-t border-line pt-10">
                 {windows.map((window, index) => (
                   <div
                     key={window.id}
@@ -778,7 +791,7 @@ function GatewayCard({
 
       <TiltCard
         className={cx(
-          'relative isolate flex items-center gap-4 overflow-hidden rounded-ck-lg border border-line',
+          'gateway-card relative isolate flex items-center gap-4 overflow-hidden rounded-ck-lg border border-line',
           // The resting shadow only. Everything the card does on hover, focus
           // and press now happens on the span above and on the spring in
           // `TiltCard` -- opacity and transform, both composited. This class
@@ -826,9 +839,9 @@ function GatewayCard({
               on a row a third line is a third of the card's height for a
               clause. `truncate` is the guard for the narrowest phones, where
               the price is the half that survives being cut. */}
-          <p className="mt-1.5 truncate text-xs text-muted sm:text-[0.8125rem]">
+          <p className="gateway-detail mt-1.5 text-xs text-muted sm:text-[0.8125rem]">
             {subtitle}
-            {footnote ? <> &middot; {footnote}</> : null}
+            {footnote ? <span className="gateway-footnote">{footnote}</span> : null}
           </p>
         </div>
 

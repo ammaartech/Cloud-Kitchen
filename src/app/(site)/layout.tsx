@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import '@/components/site/landing.css';
 import { OfferBar } from '@/components/site/offer-bar';
 import { SiteHeader } from '@/components/site/site-header';
 import { ScrollTopButton } from '@/components/site/scroll-top';
@@ -37,8 +38,8 @@ export default function SiteLayout({ children }: LayoutProps<'/'>) {
 
       <main className="flex-1">{children}</main>
 
-      <footer className="border-t border-line bg-surface">
-        <div className="mx-auto max-w-6xl px-4 py-10">
+      <footer className="site-footer border-t border-line bg-surface">
+        <div className="landing-container mx-auto max-w-6xl px-4 py-10">
           <div className="flex flex-wrap items-start justify-between gap-8">
             <div className="max-w-xs">
               <p className="font-semibold">Cloud Kitchen</p>

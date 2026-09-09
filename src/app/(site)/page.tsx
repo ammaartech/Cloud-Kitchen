@@ -13,6 +13,7 @@ import { withPhotos } from '@/components/site/photos';
 import { StorefrontHero } from '@/components/site/storefront-hero';
 import { Reveal } from '@/components/site/reveal';
 import { StepFlow, Typewriter } from '@/components/site/step-flow';
+import { HangingPhotos } from '@/components/site/hanging-photos';
 
 export const metadata = {
   title: 'Home-style meals, on subscription',
@@ -118,7 +119,7 @@ export default async function HomePage() {
            of seam that reads as a rendering fault rather than as a divider. */
         className="section-anchor paper-grid overflow-hidden border-b border-line bg-surface"
       >
-        <div className="relative mx-auto max-w-6xl px-4 py-20 sm:py-24">
+        <div className="landing-container landing-spacing relative mx-auto max-w-6xl px-4 py-20 sm:py-24">
           {/* Both are decoration, and `aria-hidden` accordingly -- the heading
               between them already says these are subscription plans. The
               artwork is shown exactly as drawn, tilt and red day included; the
@@ -207,7 +208,7 @@ export default async function HomePage() {
                unevenness has to come from how the notes are *placed*, not from
                how much text each happens to carry. So they are one size, and
                `--note-lift` scatters them instead. */
-            <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="plan-grid mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
               {/* Sorted before it is sliced, not after, and the difference
                   matters more than it looks. Sorting the first four by price
                   would put a tidy ascending row on the page that is not the
@@ -274,20 +275,20 @@ export default async function HomePage() {
       {/* ---------------------------------------------------------------- */}
       {/* How it works                                                      */}
       {/* ---------------------------------------------------------------- */}
-      <section id="how-it-works" className="section-anchor texture-dots py-20 sm:py-24">
+      <section id="how-it-works" className="landing-spacing section-anchor texture-dots py-20 sm:py-24">
         {/* A wider container than the steps below it, which is the whole
             break-out: on a large screen the heading starts a good way left of
             the grid everything else sits on, and as the viewport narrows the
             two containers converge on the same padding and the offset closes
             itself. See the note over `.section-display` in `globals.css` for
             why this is not a negative margin. */}
-        <div className="mx-auto max-w-[96rem] px-4 sm:px-8">
+        <div className="landing-container mx-auto max-w-6xl px-4">
           <h2 className="section-display max-w-4xl font-semibold text-balance">
             <Typewriter text="How a subscription works" />
           </h2>
         </div>
 
-        <div className="mx-auto max-w-6xl px-4">
+        <div className="landing-container mx-auto max-w-6xl px-4">
           <StepFlow steps={SUBSCRIPTION_STEPS} />
         </div>
       </section>
@@ -304,8 +305,8 @@ export default async function HomePage() {
           `available` rather than every published dish: a preview leading with
           something the kitchen is not cooking today is a worse preview than a
           shorter one. */}
-      <section id="menu" className="section-anchor border-b border-line py-20 sm:py-24">
-        <div className="mx-auto max-w-6xl px-4">
+      <section id="menu" className="landing-spacing section-anchor texture-hatch border-b border-line py-20 sm:py-24">
+        <div className="landing-container mx-auto max-w-6xl px-4">
           <Reveal className="reveal-up">
             <h2 className="section-display font-semibold text-balance">what we cook</h2>
             <p className="mt-4 max-w-xl text-muted text-pretty">
@@ -319,11 +320,11 @@ export default async function HomePage() {
               Nothing is published for today yet. Check back shortly.
             </p>
           ) : (
-            <Reveal className="reveal-up mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3" delay={140}>
+            <div className="menu-grid mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
               {available.slice(0, 6).map((product) => (
                 <ProductTile key={product.id} product={product} />
               ))}
-            </Reveal>
+            </div>
           )}
 
           <Reveal className="reveal-up mt-10" delay={220}>
@@ -341,7 +342,15 @@ export default async function HomePage() {
           are the argument rather than the policy. How we handle your food and
           how we handle your data are both on that page, and neither is a
           closing note for a front page. */}
-      <section id="about" className="section-anchor bg-sunken py-20 sm:py-28">
+      {/* `overflow-clip` for one reason, and it is the cut. A photograph
+          whose string has been severed falls, and a transformed element that
+          travels past its section still counts toward the page's scrollable
+          area -- so without this the document would grow by a few hundred
+          pixels every time somebody swung at a rope, and the scrollbar would
+          twitch. `clip` rather than `hidden` because this must not become a
+          scroll container. Nothing legitimate overflows: the strings are pinned
+          a few pixels inside the top edge for exactly this reason. */}
+      <section id="about" className="landing-spacing section-anchor overflow-clip bg-sunken py-20 sm:py-28">
         {/* No `max-w-6xl`, and that is the point rather than an omission.
 
             Every other band on this page is built inside the same 72rem column,
@@ -356,7 +365,7 @@ export default async function HomePage() {
             The padding is the page's own margin rather than the column's: 4rem
             at the top end, which is enough that the type never touches the
             window and little enough that it still reads as the edge. */}
-        <div className="px-6 sm:px-10 lg:px-16">
+        <div className="landing-container mx-auto max-w-[96rem] px-6 sm:px-10 lg:px-16">
           {/* Copy hard left, pictures across the middle and the right.
 
               It was a `max-w-3xl` block centred in the page, which is the safe
@@ -399,36 +408,22 @@ export default async function HomePage() {
             {/* Real dishes from the catalogue rather than stock photography or
                 a placeholder, which is what makes the space worth reserving:
                 the section claims the kitchen cooks a small menu fresh, and the
-                two pictures beside that claim are two things it is cooking.
+                three pictures beside that claim are three things it is cooking.
 
-                A beat behind the copy, and the second picture a beat behind the
-                first -- so the pair arrives as a pair rather than as one wide
-                object. `--shot-at` is the offset each one reads its delay from.
+                They hang from strings and drop in when the band is scrolled to,
+                which is why this is a component rather than a `Reveal` and a
+                map. The entrance is a physical simulation -- a verlet rope per
+                picture, solved positionally so the strings cannot stretch --
+                and it needs to measure the layout to know where its anchors
+                are. `hanging-photos.tsx` is where all of that is argued out,
+                including why none of the physics engines that do this were
+                worth their weight on a marketing band.
 
-                `aria-hidden`: the sentence to the left is the content and these
-                illustrate it. A screen reader announcing two dish names in the
-                middle of an argument about how the kitchen works is reading out
-                the furniture. */}
-            {aboutPhotos.length > 0 ? (
-              <Reveal className="reveal-up about-art" delay={140} aria-hidden>
-                {aboutPhotos.map((photo, index) => (
-                  <div
-                    key={photo.id}
-                    className="about-shot"
-                    style={{ '--shot-at': `${index * 90}ms` } as CSSProperties}
-                  >
-                    <Image
-                      src={photo.imageUrl}
-                      alt=""
-                      width={800}
-                      height={1000}
-                      sizes="(max-width: 64rem) 50vw, 20rem"
-                      className="about-shot-img"
-                    />
-                  </div>
-                ))}
-              </Reveal>
-            ) : null}
+                `aria-hidden` lives inside the component now. The sentence to
+                the left is the content and these illustrate it; a screen reader
+                announcing three dish names in the middle of an argument about
+                how the kitchen works is reading out the furniture. */}
+            {aboutPhotos.length > 0 ? <HangingPhotos photos={aboutPhotos} /> : null}
           </div>
         </div>
       </section>

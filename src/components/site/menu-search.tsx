@@ -46,7 +46,7 @@ export function MenuSearch({
         type="search"
         defaultValue={defaultValue}
         autoComplete="off"
-        placeholder="Try paneer, dal, or high protein"
+        placeholder="Try dosa, ghee, or rice bath"
         className={cx(
           'ml-2 min-w-0 flex-1 bg-transparent py-1.5 text-sm text-ink placeholder:text-placeholder sm:ml-0',
           // The form draws the ring for the whole field, so the input must not

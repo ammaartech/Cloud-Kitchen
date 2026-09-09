@@ -376,7 +376,7 @@ h3 {
    than on the headline because two separate runs now read it, and they have to
    agree about when the introduction is over. */
 .storefront-hero {
-  --roll-run: 3.15s;
+  --roll-run: 1.9s;
   position: relative;
   /* Absorbs the scrollbar's width, which is all the bowl panel's full-bleed
      overshoots by. `clip` rather than `hidden`: `hidden` would make this
@@ -1310,7 +1310,7 @@ h3 {
 
    `-100%` is what does the measuring, and it is measured on `.step-hop` rather
    than on the badge -- which is the reason that wrapper exists at all. The
-   badge is 36px wide, so a percentage on the badge would move it 36px and land
+   badge is 48px wide, so a percentage on the badge would move it 48px and land
    it nowhere in particular. `.step-hop` is a block, so it is exactly one column
    wide, and one column plus one gutter is precisely the distance to the badge
    before it whatever the grid is doing. */
@@ -3628,6 +3628,14 @@ html:has(.nav-sheet[open]) {
   display: flex;
   align-items: flex-start;
   gap: 1rem;
+  /* Both of these exist for the rope layer and neither changes the row. It is
+     the offset parent the pictures are measured against, and `isolation` opens
+     the stacking context that keeps a `z-index: -1` rope behind the pictures
+     rather than behind the whole band -- the same pairing the page textures
+     use, and the note over `.texture-dots` is where the mechanism is written
+     out. */
+  position: relative;
+  isolation: isolate;
 }
 
 @media (min-width: 64rem) {
@@ -3710,6 +3718,183 @@ html:has(.nav-sheet[open]) {
   to {
     scale: 1;
   }
+}
+
+/* --------------------------------------------------------------------------
+   The three, on strings.
+
+   `.is-hanging` is set by the component that runs the simulation, and every
+   rule under it is a rule that is only correct while something is driving the
+   transforms. The stylesheet's job here is small and worth keeping small: the
+   physics writes `transform` and `opacity` on these elements sixty times a
+   second, so anything this file declares on those two properties is a fight it
+   would win at the wrong moments.
+
+   `transform-origin` is the one that matters. A picture on a string turns about
+   the point the string is tied to, which is the top edge, not the middle -- the
+   default origin swings the whole frame about its own centre and reads as a
+   card being spun rather than as a thing hanging. Everything else about the
+   motion is decided in `rope-physics.ts`.
+
+   The shadow is the other half of hanging. These frames sat flat on the band
+   before, which was right when they were laid out on it; something suspended in
+   front of a surface has to be lit as though it is. `--ck-shadow-lg` is the
+   page's own furthest-from-the-page shadow, so this borrows the system's
+   answer rather than inventing a deeper one.
+   -------------------------------------------------------------------------- */
+.about-art.is-hanging .about-shot {
+  transform-origin: top center;
+  box-shadow: var(--ck-shadow-lg);
+}
+
+/* Only while the loop is running, and that is deliberate rather than tidy.
+   `will-change` promotes each frame to its own compositor layer, which is what
+   keeps a rotating 300px photograph off the main thread -- and which costs
+   memory for as long as it is set. The wind means the loop no longer stops on
+   its own, so what turns this off is the band leaving the screen: the observer
+   drops `is-live`, and three compositor layers go with it rather than being
+   held for the rest of the visit. */
+.about-art.is-live .about-shot {
+  will-change: transform;
+}
+
+/* --------------------------------------------------------------------------
+   Two gestures, two cursors.
+
+   The band answers a press in one of two ways depending on where it lands: on
+   a photograph it is a grip, anywhere else it is a blade. That is settled by
+   geometry rather than by a mode -- the string hangs above the picture it
+   holds, so the two targets never overlap -- and the cursors are how a visitor
+   finds that out without being told. A caption explaining an interaction is an
+   interaction that failed.
+
+   `grab` on the frames is the one people already know, and it promises exactly
+   what it delivers: the picture comes with the cursor, as far as its string
+   allows. `crosshair` everywhere else in the band means aim, which is the
+   nearest thing a cursor can say to *swing at something*.
+
+   The crosshair only reaches the gutters, and that gap is worth naming rather
+   than papering over. Most of every rope hangs *above* `.about-art`, in a layer
+   that deliberately takes no pointer events, so there is nothing up there to
+   hang a cursor on -- a hit target for it would be an invisible element sitting
+   over the section for the sake of a hover state. The blade trail is the real
+   feedback: it appears the moment anyone drags anywhere in the band, including
+   the swing that misses.
+
+   `grabbing` is set on the container rather than on the picture being held, and
+   that is not laziness. The frame under the cursor is being swung by a
+   simulation and goes where the string allows rather than where the pointer is,
+   so for a few dozen milliseconds at a time the cursor is not over it. Scoping
+   the held cursor to the element would flicker for the whole drag.
+
+   `user-select` because dragging across a photograph should not start selecting
+   the paragraph beside it, and the images carry `draggable={false}` for the
+   same reason -- the browser's own image-drag would otherwise take over the
+   gesture and hand the visitor a ghost of the plate. */
+.about-art.is-hanging {
+  cursor: crosshair;
+}
+
+.about-art.is-hanging .about-shot {
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.about-art.is-held,
+.about-art.is-held .about-shot {
+  cursor: grabbing;
+}
+
+/* Nothing to aim at and nothing to pick up where nothing moves. Both gestures
+   are pointer enhancements on decoration, so they go with the motion, and the
+   affordances have to go with them -- a `grab` cursor over something that will
+   not move is a worse state than no cursor at all. Touch is gated in the
+   component rather than here, because it is the *event* that must not be taken,
+   not the look of it. */
+@media (prefers-reduced-motion: reduce) {
+  .about-art.is-hanging,
+  .about-art.is-hanging .about-shot,
+  .about-art.is-held,
+  .about-art.is-held .about-shot {
+    cursor: auto;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   The blade.
+
+   Drawn from the last handful of pointer positions and gone about a fifth of a
+   second after the hand stops. It exists for the swing that *misses*: a slash
+   through empty air with no rope in it has to leave some evidence it happened,
+   or the interaction reads as an interface that did not respond rather than as
+   an aim that was off.
+
+   Lighter and thinner than the strings it cuts. It is a gesture, not an object
+   -- if it were as solid as the rope the eye would start reading it as
+   something drawn on the page rather than something being done to it.
+
+   No transition on the opacity. The component writes it every frame from the
+   age of the newest point, which is a smoother falloff than any curve declared
+   here could be, and a transition on top would only fight it. */
+.hang-blade {
+  fill: none;
+  stroke: color-mix(in srgb, var(--color-dark-slate-grey-700) 55%, transparent);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+  opacity: 0;
+}
+
+/* --------------------------------------------------------------------------
+   The rope layer.
+
+   `top` and `height` are set from script rather than declared, because the
+   strings start at the top edge of the *section* and this element is inside the
+   band -- the distance between those two is a measurement, not a constant, and
+   it changes with the viewport. The `viewBox` is written from the same
+   measurement with a negative `min-y`, which is what lets the simulation work
+   in the band's own coordinates and draw above it without a single offset in
+   the path maths.
+
+   `overflow: visible` for the same reason, and `pointer-events: none` because
+   this is scenery: nothing here should ever eat a click meant for a
+   photograph.
+   -------------------------------------------------------------------------- */
+.hang-ropes {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  z-index: -1;
+  overflow: visible;
+  pointer-events: none;
+}
+
+/* Twine, not hairline. The band's ground is `--ck-surface-sunken`, and against
+   it 68% of the ramp's 800 lands near #62786f -- dark enough to read as a
+   physical string at a glance and far short of the ink the type is set in,
+   which is the line this must not cross. It is holding the picture up; it is
+   not competing with it.
+
+   `non-scaling-stroke` guards the one case the measurement cannot: the SVG is
+   sized to its viewBox so the mapping is 1:1, but a stale layout between a
+   resize and the next frame would otherwise scale the stroke with it and the
+   string would visibly fatten for a frame. */
+.hang-rope {
+  fill: none;
+  stroke: color-mix(in srgb, var(--color-dark-slate-grey-800) 68%, transparent);
+  stroke-width: 1.25;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+}
+
+/* What the string is tied to. Small and solid -- the eye needs somewhere for
+   the rope to end, and without it three strings simply stop in mid-air at the
+   top of the band. Darker than the rope, because a fixing is a denser object
+   than the thing it fixes. */
+.hang-pin {
+  fill: color-mix(in srgb, var(--color-dark-slate-grey-900) 82%, transparent);
 }
 
 /* --------------------------------------------------------------------------
@@ -3832,43 +4017,192 @@ html:has(.nav-sheet[open]) {
 }
 
 /* --------------------------------------------------------------------------
-   A ground for a band that has none.
+   Paper stocks.
 
-   Four short paragraphs across a wide empty field read as a caption stranded
-   in the middle of the page: there is no edge, no fill and no border, so
-   nothing says where the section starts or that the four columns belong
+   The front page is a stack of full-width bands on one continuous ground, and a
+   band with no edge, no fill and no border reads as a caption stranded in the
+   middle of the page: nothing says where it starts or that its columns belong
    together. A fill would say it, and a fill is also how a one-page site turns
    into a stack of coloured stripes. A texture says it and stays quiet.
 
-   Dots rather than lines, at 8.5% ink. A grid of hairlines is a graph, and a
-   graph is a thing with meaning -- the eye starts looking for what is plotted
-   on it. A dot field has no direction to read into, which is what makes it
-   ground rather than content, and at this weight it is closer to paper than to
-   pattern: visible when looked at, invisible when read past.
+   So the page is not textured, it is *stocked* -- each band is printed on a
+   different paper, and the sequence is the argument:
+
+   1. **Hero** -- `.paper-grid`, squared notepaper. It is the surface you plan
+      on, and the plans are literally pinned to it. See the note over that class
+      and the one under it.
+   2. **How it works** -- `.texture-dots`, a plain dotted stock. A dot field has
+      no direction to read into, which is what makes it ground rather than
+      content; the four steps supply all the direction this band needs.
+   3. **Menu** -- `.texture-hatch`, deli paper. The stock food is wrapped in.
+   4. **About** -- no texture at all. `bg-sunken`, flat. The closing statement is
+      the one band that should feel like it has stopped moving.
+
+   ## Why the third one is diagonal
+
+   The first two stocks are both orthogonal -- rules on the axis, dots on a
+   square lattice -- and a third orthogonal pattern would have read as one more
+   of those whatever its pitch. 45 degrees is off both axes, so the menu is
+   distinguishable from its neighbours at a glance without being any louder than
+   they are. That is the whole reason for the angle; the deli-paper reading is
+   what the angle happens to be *for*, not what argues for it.
+
+   The direction is ascending, which is `135deg` and not `45deg`. CSS measures
+   the gradient line, not the bands, and the bands run across it: `45deg` points
+   the line up-right and therefore lays the stripes down-right, and a page of
+   descending diagonals is a page falling over.
+
+   ## The shared half
+
+   Everything about how a stock enters and leaves the page is common, and it is
+   written once here for exactly that reason. Two textures that fade in over
+   different distances are two effects; two that fade identically are one
+   material used twice, which is what these are meant to be. Position, stacking
+   and the mask are shared. Only the ink differs.
 
    The mask is the part that matters most. A texture that stops at the section
    boundary draws two hard horizontal lines across the page and puts back
-   exactly the boxed-in look it was meant to avoid, so it fades in over the top
-   fifth and out over the bottom fifth. The band ends without ever ending.
+   exactly the boxed-in look it was meant to avoid, so it fades in at the top and
+   out at the bottom. The band ends without ever ending.
 
-   `z-index: -1` under `isolation: isolate` puts it behind the copy but inside
-   the section's own stacking context, so it cannot slide under a neighbour's
-   background or over anything else on the page.
+   The ramps are lengths, not percentages, and that is a fix rather than a
+   tidy-up. A percentage is measured against the section, and these sections are
+   tall -- and they are not even the same height as each other, so a percentage
+   would give each one a different fade. 5rem is the `py-20` both of them carry:
+   the ramp finishes exactly where the heading begins, and the heading sits on
+   the full field rather than inside the fade. The bottom is 7rem, so the fade is
+   under way before the last line of copy.
+
+   `z-index: -1` under `isolation: isolate` puts the stock behind the copy but
+   inside the section's own stacking context, so it cannot slide under a
+   neighbour's background or over anything else on the page.
    -------------------------------------------------------------------------- */
-.texture-dots {
+.texture-dots,
+.texture-hatch {
   position: relative;
   isolation: isolate;
 }
 
-.texture-dots::before {
+.texture-dots::before,
+.texture-hatch::before {
   content: '';
   position: absolute;
   inset: 0;
   z-index: -1;
   pointer-events: none;
-  background-image: radial-gradient(circle at center, rgb(13 23 20 / 0.085) 1px, transparent 1px);
-  background-size: 1.5rem 1.5rem;
-  mask-image: linear-gradient(180deg, transparent 0%, #000 20%, #000 80%, transparent 100%);
+  /* Paired with the prefixed form the way every other mask in this file is --
+     see `.roll-reveal` and the tool cut-outs. Safari carried `mask-image` behind
+     the prefix for long enough that dropping it would have made these the one
+     masked elements that render as hard-edged blocks. */
+  mask-image: linear-gradient(
+    180deg,
+    transparent 0,
+    #000 5rem,
+    #000 calc(100% - 7rem),
+    transparent 100%
+  );
+  -webkit-mask-image: linear-gradient(
+    180deg,
+    transparent 0,
+    #000 5rem,
+    #000 calc(100% - 7rem),
+    transparent 100%
+  );
+}
+
+/* --------------------------------------------------------------------------
+   Dotted stock. Three numbers, and why they are the numbers they are.
+
+   The first version of this was invisible, and it was invisible three times
+   over -- each choice defensible on its own, all three multiplying into a
+   texture that only existed in the stylesheet.
+
+   `background-size` is 1rem, where it was 1.5rem. This is the number that was
+   really doing the damage: dot count falls with the square of the spacing, so a
+   24px grid against a 16px one is not a third fewer dots, it is less than half
+   as many. 16px is what the common implementations land on -- ibelick's
+   grid-and-dot write-up and Magic UI's `DotPattern` both default to it, and
+   Aceternity's runs denser still at 10px. There was no reason to be the sparsest
+   of the four while also being the palest.
+
+   Ink is 13%, where it was 8.5%. Against this band's ground a dot now resolves
+   to about #d5d9d8; ibelick paints #e5e7eb, Aceternity roughly #c8c8c8 once its
+   0x50 alpha is composited. So this sits between the two references and nearer
+   the quiet one, which is the right end of that range for a band meant to read
+   as paper.
+
+   The dot has a soft outer stop -- solid to 1.1px, gone by 1.2px -- rather than a
+   hard cut at exactly 1px. A hard stop at a whole pixel is at the mercy of the
+   device pixel ratio: at fractional DPRs the rasteriser has a 2px circle
+   straddling a grid it does not line up with, and what it does about that is
+   thin the dot. Two tenths of a pixel of falloff costs nothing visually and
+   gives the antialiaser something to work with instead.
+   -------------------------------------------------------------------------- */
+.texture-dots::before {
+  background-image: radial-gradient(
+    circle at center,
+    rgb(13 23 20 / 0.13) 1.1px,
+    transparent 1.2px
+  );
+  background-size: 1rem 1rem;
+}
+
+/* --------------------------------------------------------------------------
+   Deli paper. A single diagonal hairline, and the stock the dishes sit on.
+
+   One knob each, the way `.paper-grid` has one: the token supplies the hue so
+   the ruling can never drift off-palette, and the percentage is the only thing
+   anyone should reach for. It is the same ramp step `.paper-grid` uses, which is
+   not a coincidence -- these are two rulings of the same material, and the hero
+   having a visibly different colour of line from the menu would have been the
+   sort of difference nobody can name and everybody notices.
+
+   45% lands the composited line on about #ddebe7, which is `--ck-border` to
+   within a value or two. That is the calibration and it is worth stating
+   plainly: **the texture is exactly as heavy as the section's own hairlines.** A
+   ruling louder than the rules drawn on top of it is a background that has
+   started arguing, and a ruling lighter than them is the mistake this file
+   already made once with the dots.
+
+   The pitch is 1.25rem measured across the bands, not along the page -- a
+   gradient's stops are distances along its line, which runs perpendicular to the
+   stripes. So the horizontal spacing a reader actually sees is that times root
+   two, near enough 28px. A continuous line holds vastly more ink than a dot
+   field at any comparable pitch, and the eye integrates along a line besides, so
+   this is deliberately sparser than the dots next door rather than matched to
+   them. Sparse and legible beats dense and invisible; that is the lesson from
+   the dots applied, rather than repeated.
+
+   The line is solid to 1px and gone by 1.75px. On a diagonal that falloff is not
+   a nicety -- a hard stop on an angled edge is the classic staircase, and
+   CSS-Tricks' stripes piece names the fix as leaving a gap between the sharp
+   transitions rather than butting them together. Three quarters of a pixel is
+   enough to hand the rasteriser the edge, and on a hairline this faint the
+   softening reads as print bleeding into stock, which is what deli paper does
+   anyway.
+
+   No cross-hatch. Two directions is a scrim or a mesh -- a woven thing, with a
+   surface of its own that sits in front of the page. One direction is a sheet
+   with a ruling on it, which is what the dishes need to be lying on.
+
+   The dishes are the other half of this, and they are why the ruling can be a
+   ruling rather than a wash: `ProductTile` is opaque, `bg-surface` over a
+   hairline and a shadow. So the hatch runs in the gutters and stops dead at six
+   tile edges, which is the same relationship the hero's notes have with its grid
+   paper -- and the note over `.plan-note` is right that the lines stopping at
+   the edge is most of what sells it.
+   -------------------------------------------------------------------------- */
+.texture-hatch {
+  --hatch-pitch: 1.25rem;
+  --hatch-ink: color-mix(in srgb, var(--color-dark-slate-grey-200) 45%, transparent);
+}
+
+.texture-hatch::before {
+  background-image: repeating-linear-gradient(
+    135deg,
+    var(--hatch-ink) 0 1px,
+    transparent 1.75px var(--hatch-pitch)
+  );
 }
 
 /* --------------------------------------------------------------------------
@@ -3898,4 +4232,261 @@ html:has(.nav-sheet[open]) {
    -------------------------------------------------------------------------- */
 .btn-square {
   border-radius: 0;
+}
+
+/* Landing layout: constrain the tracks themselves, so intrinsic text widths
+   cannot grow a grid past a phone's viewport. */
+.hero-split {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.hero-copy,
+.hero-bowl-layer,
+.about-copy,
+.about-art,
+.gateway-card > div {
+  min-width: 0;
+}
+
+.hero-container,
+.landing-container {
+  padding-inline: clamp(1.25rem, 3vw, 2rem);
+}
+
+.hero-headline {
+  font-size: clamp(2rem, 8.9vw, 3.75rem);
+}
+
+.hero-part {
+  max-width: 100%;
+}
+
+.hero-nav {
+  gap: 0.25rem 1rem;
+  margin-top: 0;
+  margin-bottom: 1.75rem;
+}
+
+.hero-nav-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  font-size: 0.6875rem;
+  letter-spacing: 0.035em;
+}
+
+.hero-container {
+  padding-top: 1.5rem;
+}
+
+.hero-cta {
+  min-height: 3rem;
+  height: auto;
+  padding-block: 0.875rem;
+  font-size: 1rem;
+}
+
+.gateway-card {
+  padding: 1rem 5.5rem 1rem 1rem;
+  gap: 0.75rem;
+}
+
+.gateway-detail {
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.gateway-footnote {
+  display: block;
+  margin-top: 0.25rem;
+}
+
+.delivery-windows {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr));
+  gap: 1.5rem;
+}
+
+/* Information remains visible independently of the scooter's entrance. */
+.delivery-run .delivery-window {
+  mask-image: none;
+  -webkit-mask-image: none;
+  animation: none;
+}
+
+.landing-spacing {
+  padding-block: clamp(3.5rem, 7vw, 6rem);
+}
+
+.plan-grid,
+.menu-grid {
+  margin-top: 2.5rem;
+}
+
+.plan-grid > *,
+.menu-grid > * {
+  min-width: 0;
+}
+
+.section-anchor .btn-plain,
+.site-header .account-actions a,
+.site-header .account-actions button,
+.site-header .nav-toggle {
+  min-height: 2.75rem;
+}
+
+.site-header .nav-toggle {
+  width: 2.75rem;
+}
+
+.site-bar {
+  gap: 0.75rem;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+}
+
+.site-bar-mark {
+  justify-self: start;
+}
+
+.account-actions {
+  white-space: nowrap;
+}
+
+.account-name {
+  max-width: 9rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.account-cta-long {
+  display: none;
+}
+
+.account-actions .account-sign-in { display: inline-flex; }
+
+.account-cta-short {
+  display: inline;
+}
+
+.nav-sheet {
+  max-height: calc(100dvh - 5.5rem);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.about-split {
+  gap: 2.5rem;
+}
+
+.about-copy {
+  max-width: 40rem;
+}
+
+.about-art {
+  width: 100%;
+  max-width: 48rem;
+  margin-inline: auto;
+  padding: clamp(3rem, 7vw, 6rem) 0.5rem 1.5rem;
+  gap: clamp(0.75rem, 2vw, 1.5rem);
+  touch-action: pan-y pinch-zoom;
+}
+
+.about-shot {
+  min-width: 0;
+  border-radius: clamp(0.5rem, 1vw, 1rem);
+}
+
+.about-shot:nth-child(2) {
+  margin-top: clamp(1.75rem, 5vw, 4.5rem);
+}
+
+.about-shot:nth-child(3) {
+  margin-top: clamp(0.75rem, 2vw, 1.75rem);
+}
+
+.site-footer nav { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 2rem; gap: 0 2rem; }
+.site-footer nav a { display: flex; align-items: center; min-height: 2.75rem; }
+
+/* The icons introduce the sequence; instructions stay readable throughout. */
+.step-flow.is-revealed .step-hop {
+  animation: step-icon-in 360ms var(--ck-ease) calc(var(--step-index) * 70ms) backwards;
+}
+
+.step-flow.is-revealed .step-copy { animation: none; }
+
+@keyframes step-icon-in {
+  from { opacity: 0; transform: translate3d(0, 0.5rem, 0); }
+  to { opacity: 1; transform: none; }
+}
+
+.hang-ropes {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+@media (max-width: 39.999rem) {
+  .delivery-windows { display: flex; flex-direction: column; gap: 1.25rem; margin-top: 2rem; padding-top: 1.75rem; }
+  .delivery-window { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; text-align: left; }
+  .delivery-window-label { font-size: 1.25rem; }
+  .delivery-window-time { margin: 0; font-size: 0.9375rem; }
+  .hero-bowl { aspect-ratio: 16 / 10; }
+  .hero-bowl-img { animation: none; }
+  .hero-nav { column-gap: 0.75rem; }
+  .hero-nav-link { font-size: 0.625rem; letter-spacing: 0.02em; }
+  .hero-copy > p { font-size: 0.9375rem; }
+  .hero-copy > div { margin-top: 1.75rem; }
+  .hero-split { gap: 1.75rem; }
+  .gateway-card { padding-right: 3.75rem; }
+  .gateway-card > span { width: 2rem; height: 2rem; }
+  .gateway-card h2 { font-size: 0.8125rem; }
+  .sticky-note { transform: none; }
+  .plan-grid { gap: 1.25rem; }
+  .step-flow { gap: 1.75rem; margin-top: 2rem; }
+  .step-flow > li { display: grid; grid-template-columns: 3rem minmax(0, 1fr); column-gap: 1rem; text-align: left; }
+  .step-hop { grid-row: span 2; }
+  .step-flow .step-copy { margin: 0; max-width: none; }
+  .step-flow p.step-copy { margin-top: 0.375rem; }
+  .step-flow.is-revealed .step-hop { animation-name: step-copy-in; }
+  .site-bar { gap: 0.5rem; }
+  .site-bar-mark > span:last-child { display: none; }
+  .site-header .btn-caps { font-size: 0.625rem; letter-spacing: 0.025em; padding-inline: 0.625rem; }
+  .site-header .account-actions { gap: 0.25rem; }
+}
+
+@media (min-width: 40rem) {
+  .hero-container { padding-top: 2.5rem; }
+  .hero-nav-link { font-size: 0.8125rem; }
+  .account-actions .account-sign-in { display: inline-flex; }
+  .account-cta-short { display: none; }
+  .account-cta-long { display: inline; }
+}
+
+@media (min-width: 64rem) {
+  .hero-split { grid-template-columns: minmax(0, 1fr) minmax(0, 1.06fr); gap: 2.5rem; }
+  .hero-container { padding-top: 4.5rem; }
+  .hero-headline { font-size: clamp(3rem, 4.7vw, 3.875rem); }
+  .hero-part { display: block; }
+  .hero-nav { flex-wrap: wrap; gap: 0.25rem 1rem; }
+  .hero-nav-link { font-size: 0.6875rem; }
+  .hero-bowl { margin-top: -4.5rem; }
+  .about-split { grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); gap: 3rem; }
+  .about-art { margin-inline: 0; }
+}
+
+@media (min-width: 80rem) {
+  .site-bar { grid-template-columns: 1fr auto 1fr; }
+  .site-bar-mark { justify-self: center; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-roll { display: none; }
+  .hero-part,
+  .hero-enter,
+  .hero-enter-lift,
+  .reveal-up.is-revealed,
+  .step-flow.is-revealed .step-hop,
+  .step-flow.is-revealed .step-copy,
+  .typewriter.is-typing .type-char { animation: none; }
+  .type-caret { display: none; }
+  .sticky-note { transition: none; }
 }

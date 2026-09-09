@@ -81,88 +81,189 @@ insert into public.employees (profile_id, employee_code, display_name, role, hir
 -- -----------------------------------------------------------------------------
 -- Catalog
 -- -----------------------------------------------------------------------------
+-- The kitchen cooks one cuisine: South Indian tiffin in the morning, a banana
+-- leaf thali at midday. Every dish below is a row, so one added, renamed,
+-- repriced or taken off the board never needs a deploy (PRD 13).
 insert into public.categories (id, slug, name, description, sort_order) values
-  ('c0000001-0000-4000-8000-000000000001', 'mains',     'Mains',     'Rice bowls, curries and thalis', 10),
-  ('c0000001-0000-4000-8000-000000000002', 'breads',    'Breads',    'Rotis, parathas and naan',       20),
-  ('c0000001-0000-4000-8000-000000000003', 'sides',     'Sides',     'Salads, raita and pickles',      30),
-  ('c0000001-0000-4000-8000-000000000004', 'beverages', 'Beverages', 'Coolers and hot drinks',         40);
+  ('c0000001-0000-4000-8000-000000000001', 'tiffin',      'Tiffin',      'Idlis, dosas and the morning griddle',    10),
+  ('c0000001-0000-4000-8000-000000000002', 'rice-baths',  'Rice Baths',  'The bath and rice family, made to order', 20),
+  ('c0000001-0000-4000-8000-000000000003', 'lunch-thali', 'Lunch Thali', 'The midday meal, on a banana leaf',       30);
 
 insert into public.collections (id, slug, name, description, sort_order) values
-  ('c0110001-0000-4000-8000-000000000001', 'high-protein', 'High Protein', 'Built around 30g+ of protein per meal', 10),
-  ('c0110001-0000-4000-8000-000000000002', 'chefs-picks',  'Chef''s Picks', 'What the kitchen is proudest of this month', 20),
-  ('c0110001-0000-4000-8000-000000000003', 'light',        'Light & Fresh', 'Under 450 calories', 30);
+  ('c0110001-0000-4000-8000-000000000001', 'ghee-specials', 'Ghee Specials', 'Everything the kitchen finishes with a spoon of ghee', 10),
+  ('c0110001-0000-4000-8000-000000000002', 'chefs-picks',   'Chef''s Picks', 'What the kitchen is proudest of this month', 20),
+  ('c0110001-0000-4000-8000-000000000003', 'light',         'Light & Fresh', 'Under 450 calories', 30);
 
+-- Every dish here is vegetarian, and `is_vegetarian` stays a column rather than
+-- becoming an assumption: the day that stops being true is a row change, not a
+-- migration.
+--
+-- `credit_cost` is zero for the accompaniments -- bombay curry, chapati,
+-- parotta. They ride along with a plan meal without spending entitlement,
+-- which is exactly the case PRD 7 warns against assuming away.
 insert into public.products
   (id, slug, name, short_description, description, category_id, base_price, calories,
    protein_grams, is_vegetarian, credit_cost, estimated_cost, is_available, unavailable_reason, sort_order)
 values
-  ('40000001-0000-4000-8000-000000000001', 'paneer-tikka-bowl', 'Paneer Tikka Bowl',
-   'Char-grilled paneer over jeera rice', 'Cubes of paneer marinated overnight in hung curd and kasuri methi, grilled hard, and served over jeera rice with a burnt-garlic tomato gravy.',
-   'c0000001-0000-4000-8000-000000000001', 289.00, 620, 32.0, true, 1, 96.00, true, null, 10),
+  ('40000001-0000-4000-8000-000000000001', 'idli', 'Idli',
+   'Steamed soft, three to a plate', 'Rice and urad batter ground on stone and left to ferment overnight. Three idlis, served with sambar, a vada and both chutneys.',
+   'c0000001-0000-4000-8000-000000000001', 79.00, 310, 9.0, true, 1, 24.00, true, null, 10),
 
-  ('40000001-0000-4000-8000-000000000002', 'dal-khichdi-bowl', 'Dal Khichdi Bowl',
-   'Comfort khichdi with ghee and papad', 'Moong dal and rice cooked soft with turmeric and hing, finished with a spoon of ghee. Served with papad and a wedge of lime.',
-   'c0000001-0000-4000-8000-000000000001', 219.00, 480, 18.0, true, 1, 62.00, true, null, 20),
+  ('40000001-0000-4000-8000-000000000002', 'ghee-pudi-idli', 'Ghee Pudi Idli',
+   'Idli tossed in podi and ghee', 'Idlis quartered and tossed hot through molagapodi and a spoon of ghee until the cut edges catch. Served with sambar and chutney.',
+   'c0000001-0000-4000-8000-000000000001', 99.00, 390, 10.0, true, 1, 31.00, true, null, 20),
 
-  ('40000001-0000-4000-8000-000000000003', 'chicken-biryani', 'Chicken Biryani',
-   'Dum-cooked, long-grain, properly spiced', 'Chicken thigh layered with aged basmati and browned onion, sealed and finished on dum. Served with burani raita.',
-   'c0000001-0000-4000-8000-000000000001', 349.00, 780, 38.0, false, 2, 142.00, true, null, 30),
+  ('40000001-0000-4000-8000-000000000003', 'plain-dosa', 'Plain Dosa',
+   'Thin, crisp, nothing hidden', 'One dosa off the griddle with no filling, which is the honest test of a batter. Served with sambar and chutney.',
+   'c0000001-0000-4000-8000-000000000001', 79.00, 340, 8.0, true, 1, 24.00, true, null, 30),
 
-  ('40000001-0000-4000-8000-000000000004', 'rajma-chawal', 'Rajma Chawal',
-   'Slow-cooked kidney beans over rice', 'Kashmiri rajma simmered for four hours until the gravy thickens on its own. Served over steamed rice.',
-   'c0000001-0000-4000-8000-000000000001', 239.00, 560, 22.0, true, 1, 71.00, true, null, 40),
+  ('40000001-0000-4000-8000-000000000004', 'masala-dosa', 'Masala Dosa',
+   'Crisp dosa folded over potato palya', 'Roasted until the edge lifts off the tawa on its own, then folded over potato palya. Served with sambar and chutney.',
+   'c0000001-0000-4000-8000-000000000001', 109.00, 480, 10.0, true, 1, 34.00, true, null, 40),
 
-  ('40000001-0000-4000-8000-000000000005', 'grilled-fish-thali', 'Grilled Fish Thali',
-   'Coastal thali with grilled surmai', 'Surmai grilled with a red masala rub, served with solkadhi, rice, and a vegetable of the day.',
-   'c0000001-0000-4000-8000-000000000001', 429.00, 690, 41.0, false, 2, 189.00, false,
-   'Fresh catch unavailable today', 50),
+  ('40000001-0000-4000-8000-000000000005', 'ghee-masala-dosa', 'Ghee Masala Dosa',
+   'The masala dosa, roasted in ghee', 'Same batter and same palya, roasted in ghee rather than oil -- darker, heavier, and the reason most regulars stop ordering the other one.',
+   'c0000001-0000-4000-8000-000000000001', 129.00, 560, 10.0, true, 1, 42.00, true, null, 50),
 
-  ('40000001-0000-4000-8000-000000000006', 'quinoa-salad-bowl', 'Quinoa Salad Bowl',
-   'Cold bowl, big crunch', 'Quinoa, chickpea, cucumber, pomegranate and feta with a lemon-tahini dressing.',
-   'c0000001-0000-4000-8000-000000000001', 269.00, 410, 19.0, true, 1, 88.00, true, null, 60),
+  ('40000001-0000-4000-8000-000000000006', 'set-dosa', 'Set Dosa',
+   'Three soft ones, not crisp', 'A set of three thick, spongy dosas cooked slowly under a lid. Served with sagu and chutney.',
+   'c0000001-0000-4000-8000-000000000001', 99.00, 420, 10.0, true, 1, 30.00, true, null, 60),
 
-  ('40000001-0000-4000-8000-000000000007', 'tandoori-roti', 'Tandoori Roti',
-   'Whole wheat, from the tandoor', 'Two pieces.', 'c0000001-0000-4000-8000-000000000002',
-   39.00, 180, 6.0, true, 0, 9.00, true, null, 70),
+  ('40000001-0000-4000-8000-000000000007', 'ghee-set-dosa', 'Ghee Set Dosa',
+   'The set, finished in ghee', 'Three soft dosas with ghee worked in as they cook. Served with sagu and chutney.',
+   'c0000001-0000-4000-8000-000000000001', 119.00, 500, 10.0, true, 1, 38.00, true, null, 70),
 
-  ('40000001-0000-4000-8000-000000000008', 'butter-naan', 'Butter Naan',
-   'Soft, blistered, buttered', 'Two pieces.', 'c0000001-0000-4000-8000-000000000002',
-   59.00, 260, 7.0, true, 0, 14.00, true, null, 80),
+  ('40000001-0000-4000-8000-000000000008', 'ghee-pudi-dosa', 'Ghee Pudi Dosa',
+   'Podi and ghee, corner to corner', 'A dosa spread with molagapodi and ghee before it is folded, so the heat runs its whole length. Served with sambar and chutney.',
+   'c0000001-0000-4000-8000-000000000001', 119.00, 470, 9.0, true, 1, 36.00, true, null, 80),
 
-  ('40000001-0000-4000-8000-000000000009', 'boondi-raita', 'Boondi Raita',
-   'Chilled curd with crisp boondi', '', 'c0000001-0000-4000-8000-000000000003',
-   69.00, 150, 5.0, true, 0, 18.00, true, null, 90),
+  ('40000001-0000-4000-8000-000000000009', 'paneer-butter-masala-dosa', 'Paneer Butter Masala Dosa',
+   'A dosa built around paneer butter masala', 'Paneer simmered in a tomato and butter gravy, spooned into a dosa roasted long enough to hold it. The one thing on the tiffin counter that eats like a full meal.',
+   'c0000001-0000-4000-8000-000000000001', 179.00, 690, 22.0, true, 2, 68.00, true, null, 90),
 
-  ('40000001-0000-4000-8000-00000000000a', 'masala-chaas', 'Masala Chaas',
-   'Spiced buttermilk, served cold', '', 'c0000001-0000-4000-8000-000000000004',
-   49.00, 90, 3.0, true, 0, 11.00, true, null, 100);
+  ('40000001-0000-4000-8000-00000000000a', 'puri', 'Puri',
+   'Two puris, puffed to order', 'Fried as the order comes in, because a puri that has been sitting is a different dish. Served with vegetable curry and chutney.',
+   'c0000001-0000-4000-8000-000000000001', 99.00, 520, 11.0, true, 1, 32.00, true, null, 100),
 
+  ('40000001-0000-4000-8000-00000000000b', 'bombay-curry', 'Bombay Curry',
+   'The western-style curry, thin and tangy', 'Potato and onion in a thin, sharp gravy rather than a thick sagu -- the Bombay way of serving it. Ordered alongside puri or chapati, or on its own.',
+   'c0000001-0000-4000-8000-000000000001', 69.00, 240, 6.0, true, 0, 22.00, true, null, 110),
+
+  ('40000001-0000-4000-8000-00000000000c', 'chole-bhature', 'Chole Bhature',
+   'Dark chole, two bhature', 'Also written chana bhature. Chickpeas cooked down until the gravy darkens on its own, with two fried bhature and sliced onion.',
+   'c0000001-0000-4000-8000-000000000001', 149.00, 720, 19.0, true, 1, 52.00, true, null, 120),
+
+  ('40000001-0000-4000-8000-00000000000d', 'khara-bath', 'Khara Bath',
+   'Savoury upma, the Bangalore way', 'Coarse rava roasted dry, then cooked with vegetables, curry leaf and a little vangi bath powder. Served with chutney.',
+   'c0000001-0000-4000-8000-000000000001', 89.00, 380, 8.0, true, 1, 27.00, true, null, 130),
+
+  ('40000001-0000-4000-8000-00000000000e', 'kesari-bath', 'Kesari Bath',
+   'Sweet rava, saffron and ghee', 'Fine rava cooked in ghee with sugar, saffron, cashew and raisin, and turned out while it is still soft.',
+   'c0000001-0000-4000-8000-000000000001', 79.00, 420, 5.0, true, 1, 25.00, true, null, 140),
+
+  ('40000001-0000-4000-8000-00000000000f', 'chow-chow-bath', 'Chow Chow Bath',
+   'Khara bath and kesari bath, one plate', 'The Bangalore breakfast argument settled by having both: a scoop of the savoury beside a scoop of the sweet.',
+   'c0000001-0000-4000-8000-000000000001', 119.00, 620, 9.0, true, 1, 38.00, true, null, 150),
+
+  ('40000001-0000-4000-8000-000000000010', 'iyengar-puliyogare', 'Iyengar Puliyogare',
+   'Temple-style tamarind rice', 'The dark kind: tamarind, jaggery and roasted spice cooked down into a gojju before it ever meets the rice. Served with chutney.',
+   'c0000001-0000-4000-8000-000000000002', 109.00, 450, 8.0, true, 1, 33.00, true, null, 160),
+
+  ('40000001-0000-4000-8000-000000000011', 'vangi-bath', 'Vangi Bath',
+   'Brinjal rice, roasted masala', 'Small brinjal cooked into rice with a masala roasted for it that morning. Served with chutney.',
+   'c0000001-0000-4000-8000-000000000002', 119.00, 470, 9.0, true, 1, 36.00, false,
+   'The brinjal at market was not worth cooking today', 170),
+
+  ('40000001-0000-4000-8000-000000000012', 'tamarind-rice', 'Tamarind Rice',
+   'The everyday puliyogare', 'Lighter than the Iyengar version -- tamarind, peanut and curry leaf folded through hot rice rather than cooked down into it.',
+   'c0000001-0000-4000-8000-000000000002', 99.00, 430, 7.0, true, 1, 29.00, true, null, 180),
+
+  ('40000001-0000-4000-8000-000000000013', 'lemon-rice', 'Lemon Rice',
+   'Chitranna, sharp and yellow', 'Rice turned through a tempering of mustard, chana dal and turmeric, with the lemon going in off the heat so it stays sharp.',
+   'c0000001-0000-4000-8000-000000000002', 99.00, 410, 7.0, true, 1, 28.00, true, null, 190),
+
+  ('40000001-0000-4000-8000-000000000014', 'pudina-rice', 'Pudina Rice',
+   'Mint rice', 'Mint ground fresh with green chilli and coconut, then cooked through the rice rather than stirred in at the end. Served with chutney.',
+   'c0000001-0000-4000-8000-000000000002', 109.00, 420, 8.0, true, 1, 32.00, true, null, 200),
+
+  ('40000001-0000-4000-8000-000000000015', 'tomato-rice-bath', 'Tomato Rice Bath',
+   'Thakkali sadam', 'Tomato cooked down to a paste before the rice goes in, which is what keeps it from turning into a pulao with tomato in it.',
+   'c0000001-0000-4000-8000-000000000002', 109.00, 440, 8.0, true, 1, 32.00, true, null, 210),
+
+  ('40000001-0000-4000-8000-000000000016', 'mixed-vegetable-rice-bath', 'Mixed Vegetable Rice Bath',
+   'Veg pulao', 'Whatever the market was good for that morning, cooked into basmati with whole spice. The vegetables change; the method does not.',
+   'c0000001-0000-4000-8000-000000000002', 129.00, 490, 11.0, true, 1, 41.00, true, null, 220),
+
+  ('40000001-0000-4000-8000-000000000017', 'ghee-rice', 'Ghee Rice',
+   'With vegetable curry or paneer butter masala', 'Basmati cooked in ghee with cashew, whole spice and browned onion. Comes with the vegetable curry or the paneer butter masala, whichever you say.',
+   'c0000001-0000-4000-8000-000000000002', 139.00, 610, 13.0, true, 1, 46.00, true, null, 230),
+
+  ('40000001-0000-4000-8000-000000000018', 'peas-pulao', 'Peas Pulao',
+   'Matar pulao -- basmati and green peas', 'The classic pilaf: aged basmati, green peas and whole spice, cooked so the grains stay separate.',
+   'c0000001-0000-4000-8000-000000000002', 129.00, 520, 12.0, true, 1, 40.00, true, null, 240),
+
+  ('40000001-0000-4000-8000-000000000019', 'banana-leaf-thali', 'Banana Leaf Thali',
+   'The full midday meal, on a leaf', 'Rice, sambar, rasam, a vegetable poriyal finished with grated coconut, pickle, papad, ghee, payasam or kesari, chapati or puri, and a sweet. Served on a banana leaf.',
+   'c0000001-0000-4000-8000-000000000003', 199.00, 780, 18.0, true, 1, 68.00, true, null, 250),
+
+  ('40000001-0000-4000-8000-00000000001a', 'chapati', 'Chapati',
+   'Two, with vegetable curry', 'Rolled thin and cooked on the tawa to order, with the day''s vegetable curry.',
+   'c0000001-0000-4000-8000-000000000003', 79.00, 340, 9.0, true, 0, 26.00, true, null, 260),
+
+  ('40000001-0000-4000-8000-00000000001b', 'parotta', 'Parotta',
+   'Two, with vegetable curry', 'Layered, slapped out and folded, with the day''s vegetable curry.',
+   'c0000001-0000-4000-8000-000000000003', 89.00, 420, 8.0, true, 0, 30.00, true, null, 270);
+
+-- One photograph per dish in `public/menu`, named for the slug -- which is why
+-- the join below is the slug and the URL is built rather than listed. They are
+-- stand-ins: the kitchen's own pictures replace them a row at a time from the
+-- admin catalogue screen, and `public/menu/CREDITS.md` records where each came
+-- from and under what licence until they do.
 insert into public.product_images (product_id, url, alt_text, is_primary, sort_order)
-select p.id,
-       'https://images.unsplash.com/photo-' || img.code || '?auto=format&fit=crop&w=800&q=70',
-       p.name, true, 0
+select p.id, '/menu/' || p.slug || '.jpg', img.alt, true, 0
 from public.products p
 join (values
-  ('40000001-0000-4000-8000-000000000001', '1631452180519-c014fe946bc7'),
-  ('40000001-0000-4000-8000-000000000002', '1596797038530-2c107229654b'),
-  ('40000001-0000-4000-8000-000000000003', '1563379091339-03b21ab4a4f8'),
-  ('40000001-0000-4000-8000-000000000004', '1585937421612-70a008356fbe'),
-  ('40000001-0000-4000-8000-000000000005', '1519708227418-c8fd9a32b7a2'),
-  ('40000001-0000-4000-8000-000000000006', '1512621776951-a57141f2eefd'),
-  ('40000001-0000-4000-8000-000000000007', '1565557623262-b51c2513a641'),
-  ('40000001-0000-4000-8000-000000000008', '1601050690597-df0568f70950'),
-  ('40000001-0000-4000-8000-000000000009', '1626074353765-517a681e40be'),
-  ('40000001-0000-4000-8000-00000000000a', '1553909489-cd47e0907980')
-) as img(pid, code) on img.pid::uuid = p.id;
+  ('idli',                      'Three idlis with sambar, a vada and coconut chutney'),
+  ('ghee-pudi-idli',            'Idli pieces tossed in molagapodi and ghee, on a banana leaf'),
+  ('plain-dosa',                'A plain dosa served with chutney'),
+  ('masala-dosa',               'A folded masala dosa with sambar and two chutneys'),
+  ('ghee-masala-dosa',          'A ghee-roasted masala dosa on a banana leaf'),
+  ('set-dosa',                  'A set of soft dosas spread with podi'),
+  ('ghee-set-dosa',             'Stacked soft ghee dosas with chutney'),
+  ('ghee-pudi-dosa',            'A dosa folded over molagapodi and ghee'),
+  ('paneer-butter-masala-dosa', 'A large dosa served with paneer butter masala'),
+  ('puri',                      'Puffed puris with vegetable curry'),
+  ('bombay-curry',              'A thin potato and onion curry'),
+  ('chole-bhature',             'Chole with two bhature and sliced onion'),
+  ('khara-bath',                'Savoury khara bath topped with tomato'),
+  ('kesari-bath',               'Saffron kesari bath with cashew and raisin'),
+  ('chow-chow-bath',            'Khara bath and kesari bath served side by side'),
+  ('iyengar-puliyogare',        'Tamarind rice served with curd and papad'),
+  ('vangi-bath',                'Brinjal rice bath'),
+  ('tamarind-rice',             'Tamarind rice with peanuts and curry leaf'),
+  ('lemon-rice',                'Lemon rice with curry leaf and a slice of lime'),
+  ('pudina-rice',               'Mint rice with fried onion and cashew'),
+  ('tomato-rice-bath',          'Tomato rice garnished with coriander'),
+  ('mixed-vegetable-rice-bath', 'Vegetable pulao'),
+  ('ghee-rice',                 'Ghee rice with whole spices'),
+  ('peas-pulao',                'Basmati pulao with green peas'),
+  ('banana-leaf-thali',         'A South Indian thali laid out on a banana leaf'),
+  ('chapati',                   'Chapatis with potato curry'),
+  ('parotta',                   'Layered parottas in a basket')
+) as img(slug, alt) on img.slug = p.slug;
 
 insert into public.collection_products (collection_id, product_id, sort_order) values
-  ('c0110001-0000-4000-8000-000000000001', '40000001-0000-4000-8000-000000000001', 10),
-  ('c0110001-0000-4000-8000-000000000001', '40000001-0000-4000-8000-000000000003', 20),
-  ('c0110001-0000-4000-8000-000000000001', '40000001-0000-4000-8000-000000000005', 30),
-  ('c0110001-0000-4000-8000-000000000002', '40000001-0000-4000-8000-000000000003', 10),
-  ('c0110001-0000-4000-8000-000000000002', '40000001-0000-4000-8000-000000000004', 20),
-  ('c0110001-0000-4000-8000-000000000003', '40000001-0000-4000-8000-000000000006', 10),
-  ('c0110001-0000-4000-8000-000000000003', '40000001-0000-4000-8000-00000000000a', 20);
+  ('c0110001-0000-4000-8000-000000000001', '40000001-0000-4000-8000-000000000002', 10),
+  ('c0110001-0000-4000-8000-000000000001', '40000001-0000-4000-8000-000000000005', 20),
+  ('c0110001-0000-4000-8000-000000000001', '40000001-0000-4000-8000-000000000007', 30),
+  ('c0110001-0000-4000-8000-000000000001', '40000001-0000-4000-8000-000000000008', 40),
+  ('c0110001-0000-4000-8000-000000000001', '40000001-0000-4000-8000-000000000017', 50),
+  ('c0110001-0000-4000-8000-000000000002', '40000001-0000-4000-8000-000000000005', 10),
+  ('c0110001-0000-4000-8000-000000000002', '40000001-0000-4000-8000-000000000010', 20),
+  ('c0110001-0000-4000-8000-000000000002', '40000001-0000-4000-8000-000000000019', 30),
+  ('c0110001-0000-4000-8000-000000000003', '40000001-0000-4000-8000-000000000013', 10),
+  ('c0110001-0000-4000-8000-000000000003', '40000001-0000-4000-8000-000000000012', 20),
+  ('c0110001-0000-4000-8000-000000000003', '40000001-0000-4000-8000-00000000000d', 30);
 
 -- Variant groups are defined once and shared across products.
 insert into public.variant_groups (id, code, name, selection_type, is_required, min_selections, max_selections, sort_order) values
@@ -171,26 +272,35 @@ insert into public.variant_groups (id, code, name, selection_type, is_required, 
 
 insert into public.variants (variant_group_id, code, name, price_delta, credit_delta, calorie_delta, is_default, sort_order) values
   ('50000001-0000-4000-8000-000000000001', 'REGULAR', 'Regular', 0.00,  0,   0, true,  10),
-  ('50000001-0000-4000-8000-000000000001', 'LARGE',   'Large',  60.00,  1, 220, false, 20),
+  ('50000001-0000-4000-8000-000000000001', 'LARGE',   'Large',  50.00,  1, 180, false, 20),
   ('50000001-0000-4000-8000-000000000002', 'MILD',    'Mild',    0.00,  0,   0, true,  10),
   ('50000001-0000-4000-8000-000000000002', 'MEDIUM',  'Medium',  0.00,  0,   0, false, 20),
   ('50000001-0000-4000-8000-000000000002', 'HOT',     'Hot',     0.00,  0,   0, false, 30);
 
+-- Only where the choice is real. A rice bath is served by the scoop and a thali
+-- by the leaf, so both scale and both take heat. A dosa is one dosa: offering a
+-- portion size on it would be a control that cannot change anything.
 insert into public.product_variant_groups (product_id, variant_group_id, sort_order)
 select p.id, g.id, 10
   from public.products p
  cross join public.variant_groups g
- where p.slug in ('paneer-tikka-bowl','dal-khichdi-bowl','chicken-biryani','rajma-chawal','grilled-fish-thali');
+ where p.category_id in ('c0000001-0000-4000-8000-000000000002',
+                         'c0000001-0000-4000-8000-000000000003')
+   and p.credit_cost > 0;
 
 insert into public.add_ons (id, code, name, description, price, credit_cost, calories, estimated_cost, sort_order) values
-  ('60000001-0000-4000-8000-000000000001', 'EXTRA_ROTI',   'Extra roti',    'Two more, hot off the tandoor', 39.00, 0, 180, 9.00,  10),
-  ('60000001-0000-4000-8000-000000000002', 'EXTRA_RAITA',  'Extra raita',   '',                              69.00, 0, 150, 18.00, 20),
-  ('60000001-0000-4000-8000-000000000003', 'GULAB_JAMUN',  'Gulab jamun',   'Two pieces, warm',              89.00, 0, 320, 26.00, 30);
+  ('60000001-0000-4000-8000-000000000001', 'EXTRA_CHAPATI', 'Extra chapati', 'One more, off the tawa',       35.00, 0, 170, 11.00, 10),
+  ('60000001-0000-4000-8000-000000000002', 'VADA',          'Medu vada',     'One, fried when you order it', 45.00, 0, 190, 14.00, 20),
+  ('60000001-0000-4000-8000-000000000003', 'PAYASAM',       'Payasam',       'Semiya payasam, served warm',  69.00, 0, 280, 21.00, 30);
 
+-- Offered on the meals and not on the accompaniments: an extra chapati sold
+-- alongside a plate of chapatis is a menu that has stopped reading itself.
+-- `credit_cost > 0` is what separates the two, and it is the same line the
+-- variant groups above are drawn on.
 insert into public.product_add_ons (product_id, add_on_id, max_quantity, sort_order)
 select p.id, a.id, 3, 10
   from public.products p cross join public.add_ons a
- where p.category_id = 'c0000001-0000-4000-8000-000000000001';
+ where p.credit_cost > 0;
 
 -- -----------------------------------------------------------------------------
 -- Commercial plans -- one of each shape the PRD requires (PRD 7)
@@ -232,14 +342,15 @@ select p.id, w.id
 -- Fixed and scheduled plans define their own meals.
 insert into public.subscription_plan_meals (plan_id, product_id, day_of_week, quantity, is_selectable, sort_order)
 values
-  ('70000001-0000-4000-8000-000000000001', '40000001-0000-4000-8000-000000000001', null, 1, false, 10),
-  ('70000001-0000-4000-8000-000000000003', '40000001-0000-4000-8000-000000000003', null, 1, false, 10);
+  ('70000001-0000-4000-8000-000000000001', '40000001-0000-4000-8000-000000000019', null, 1, false, 10),
+  ('70000001-0000-4000-8000-000000000003', '40000001-0000-4000-8000-000000000009', null, 1, false, 10);
 
 -- The customer-selected plan defines a pool instead.
 insert into public.subscription_plan_meals (plan_id, product_id, quantity, is_selectable, sort_order)
 select '70000001-0000-4000-8000-000000000004', p.id, 1, true, p.sort_order
   from public.products p
- where p.slug in ('paneer-tikka-bowl','dal-khichdi-bowl','rajma-chawal','quinoa-salad-bowl','chicken-biryani');
+ where p.slug in ('banana-leaf-thali','mixed-vegetable-rice-bath','iyengar-puliyogare',
+                   'ghee-rice','paneer-butter-masala-dosa');
 
 -- -----------------------------------------------------------------------------
 -- Offers. FIRST5 is the 5% first-subscription offer the storefront shows as
@@ -347,14 +458,14 @@ begin
   perform public.confirm_subscription_payment(
     (v_checkout ->> 'payment_id')::uuid, 'pay_seed_rahul_0001', true, 'callback');
 
-  -- A premium meal (chicken biryani) costs two credits, a standard one costs
-  -- one -- proving credit cost really does vary by product.
+  -- A premium meal (the paneer butter masala dosa) costs two credits, a
+  -- standard one costs one -- proving credit cost really does vary by product.
   perform public.schedule_credit_delivery(
     p_subscription_id    => v_sub_rahul,
     p_date               => v_today,
     p_delivery_window_id => v_dinner,
-    p_items              => '[{"product_id":"40000001-0000-4000-8000-000000000003","quantity":1},
-                              {"product_id":"40000001-0000-4000-8000-000000000002","quantity":1}]'::jsonb);
+    p_items              => '[{"product_id":"40000001-0000-4000-8000-000000000009","quantity":1},
+                              {"product_id":"40000001-0000-4000-8000-000000000016","quantity":1}]'::jsonb);
 
   -- ---------------------------------------------------------------------------
   -- Sana's payment fails. This must leave NO active subscription and NO KOT
@@ -514,17 +625,17 @@ $mkt$;
 -- Reviews, including one still awaiting moderation and one hidden.
 -- -----------------------------------------------------------------------------
 insert into public.reviews (customer_id, product_id, rating, title, body, status, is_verified_purchase) values
-  ('b0000001-0000-4000-8000-000000000001', '40000001-0000-4000-8000-000000000001', 5,
-   'The paneer is actually grilled', 'Most places pan-fry it and call it tikka. This one has char on it. Portion is honest too.',
+  ('b0000001-0000-4000-8000-000000000001', '40000001-0000-4000-8000-000000000019', 5,
+   'A thali that is actually a meal', 'Two vegetables, rasam that tastes of pepper rather than of water, and the payasam is not an afterthought. The leaf turns up flat, which I did not expect from a delivery.',
    'published', true),
-  ('b0000001-0000-4000-8000-000000000002', '40000001-0000-4000-8000-000000000003', 4,
-   'Good biryani, slightly heavy on oil', 'Flavour is there and the chicken is thigh, not breast, which I appreciate. A touch oily by the bottom of the box.',
+  ('b0000001-0000-4000-8000-000000000002', '40000001-0000-4000-8000-000000000009', 4,
+   'Good dosa, heavy by the end', 'Crisp to the edge and the paneer is generous. A touch rich by the last quarter, which is a complaint about the second half of a very good dosa.',
    'published', true),
-  ('b0000001-0000-4000-8000-000000000003', '40000001-0000-4000-8000-000000000002', 5,
-   'Khichdi tastes like home', 'Ordered it on a bad day and it did the job.',
+  ('b0000001-0000-4000-8000-000000000003', '40000001-0000-4000-8000-000000000016', 5,
+   'Tastes like a Sunday at home', 'Ordered it on a bad day and it did the job.',
    'pending', false),
-  ('b0000001-0000-4000-8000-000000000002', '40000001-0000-4000-8000-000000000006', 2,
-   'Salad was warm', 'Arrived at room temperature. Not what I wanted from a cold bowl.',
+  ('b0000001-0000-4000-8000-000000000002', '40000001-0000-4000-8000-000000000013', 2,
+   'Came lukewarm', 'Arrived at room temperature. Chitranna wants to be hot, or it is just rice with peanuts in it.',
    'hidden', true);
 
 -- -----------------------------------------------------------------------------

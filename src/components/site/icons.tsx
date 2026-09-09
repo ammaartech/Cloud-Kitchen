@@ -57,12 +57,21 @@ export function ArrowUpIcon({ className }: { className?: string }) {
    right, and the markup is an <ol>, so a screen reader still announces "3 of
    4" whatever is printed in the circle.
 
-   Legibility at 18px is what shapes them. Each is two or three elements, no
-   detail smaller than about a fifth of the grid, and nothing that depends on a
-   thin line surviving. The pot is the one that had to be simplified hardest:
-   handles and a lid knob are what make a pot obviously a pot at 48px, and at
-   18px they close up into a smudge. A rim, a body and two ticks of steam is
-   what is left when everything that cannot be seen is taken out.
+   Legibility at 24px is what shapes them -- 18px when they were first drawn,
+   and the badge they sit in has since grown to 48. Each is two or three
+   elements, no detail smaller than about a fifth of the grid, and nothing that
+   depends on a thin line surviving. The pot is the one that had to be
+   simplified hardest: handles and a lid knob are what make a pot obviously a
+   pot at 48px, and at this size they close up into a smudge. A rim, a body and
+   two ticks of steam is what is left when everything that cannot be seen is
+   taken out.
+
+   The size change did not send any of them back to the drawing board, and that
+   is the grid doing its job rather than luck. 24px is `viewBox` scale 1:1, so
+   every mark here is now drawn at exactly the proportions it was designed on;
+   a set that reads at 18 has nothing to lose at 24. It is the other direction
+   that costs -- the pot is still the shape that survives 18px, because the
+   search field and the arrows still ask for these marks at that size.
    -------------------------------------------------------------------------- */
 
 /** Pick a plan: a choice, made. */
