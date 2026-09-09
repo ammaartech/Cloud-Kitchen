@@ -56,7 +56,7 @@ export async function GET(request: NextRequest) {
     : orders;
 
   const wb = new ExcelJS.Workbook();
-  wb.creator = 'Cloud Kitchen Admin';
+  wb.creator = 'Infinity Kitchens Admin';
   wb.created = new Date();
 
   writeSummary(wb, filters, scopedOrders, scopedItems);

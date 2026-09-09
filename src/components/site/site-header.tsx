@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
@@ -273,17 +274,30 @@ export function SiteHeader() {
         {/* The middle track, and the only thing in it. */}
         <Link
           href="/#top"
-          aria-label="Cloud Kitchen home"
+          aria-label="Infinity Kitchens home"
           aria-current={pathname === '/' && activeSection === 'top' ? 'page' : undefined}
           className="site-bar-mark"
         >
-          <span
-            className="grid h-8 w-8 place-items-center rounded-ck bg-brand text-sm font-bold text-white"
-            aria-hidden
-          >
-            CK
-          </span>
-          <span className="hidden sm:inline">Cloud Kitchen</span>
+          {/* `alt=""` on purpose: the link already carries the accessible
+              name, and a described image inside a labelled link is the name
+              read out twice. The intrinsic size is the file's own, so Next can
+              reserve the box; `h-7 w-auto` is what actually sizes it, and the
+              mark keeps its 2.24:1 proportions at every breakpoint rather than
+              being squared off into the tile this replaces. */}
+          {/* `sizes` is not optional on a mark this small. Without it Next
+              falls back to the device-width ladder and offers a 1080px and a
+              1920px copy of a logo that is displayed 63px wide, so every
+              visitor downloads roughly twenty times the image they can see. */}
+          <Image
+            src="/brand/mark-green.png"
+            alt=""
+            width={933}
+            height={416}
+            sizes="63px"
+            priority
+            className="h-7 w-auto"
+          />
+          <span className="hidden font-brand sm:inline">Infinity Kitchens</span>
         </Link>
 
         <div className="site-bar-side justify-end">

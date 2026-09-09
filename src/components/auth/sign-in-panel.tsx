@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import type { DemoAccount, DemoAccountList } from '@/lib/auth/demo-accounts';
 import { SignInForm } from './sign-in-form';
@@ -43,14 +44,19 @@ export function SignInPanel({
         )}
       >
         <div>
-          <Link href="/" className="mb-8 flex items-center gap-2 font-semibold">
-            <span
-              className="grid h-8 w-8 place-items-center rounded-ck bg-brand text-sm font-bold text-white"
-              aria-hidden
-            >
-              CK
-            </span>
-            Cloud Kitchen
+          <Link
+            href="/"
+            className="mb-8 flex items-center gap-2.5 font-brand font-semibold"
+          >
+            <Image
+              src="/brand/mark-green.png"
+              alt=""
+              width={933}
+              height={416}
+              sizes="63px"
+              className="h-7 w-auto"
+            />
+            Infinity Kitchens
           </Link>
 
           <Card className="p-6">

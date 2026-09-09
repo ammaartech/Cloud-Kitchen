@@ -42,7 +42,7 @@ export default function SiteLayout({ children }: LayoutProps<'/'>) {
         <div className="landing-container mx-auto max-w-6xl px-4 py-10">
           <div className="flex flex-wrap items-start justify-between gap-8">
             <div className="max-w-xs">
-              <p className="font-semibold">Cloud Kitchen</p>
+              <p className="font-brand font-semibold">Infinity Kitchens</p>
               <p className="mt-2 text-sm text-muted">
                 One kitchen, cooking a fixed menu each day. No dark-store sprawl, no
                 thousand-item catalogue.

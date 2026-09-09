@@ -1,6 +1,10 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import type { Route } from 'next';
+import idliVada from '@/images/hero/idli-vada.jpg';
+import pooriChole from '@/images/hero/poori-chole.jpg';
+import masalaDosa from '@/images/hero/masala-dosa.jpg';
+import riceBath from '@/images/hero/rice-bath.jpg';
 import { Fragment, type CSSProperties, type ReactNode } from 'react';
 import type { DeliveryWindow, PlanSummary, ProductCard } from '@/lib/data/catalog';
 import { clockTime, money } from '@/lib/format';
@@ -428,7 +432,7 @@ export function StorefrontHero({
               the difference between the depths is what makes the photograph sit
               behind the words rather than next to them. */}
           <HeroLayer depth={0.72} fade={0.16} className="hero-bowl-layer">
-            <HeroBowl photo={photos[0]} />
+            <HeroBowl />
           </HeroLayer>
         </div>
 
@@ -515,21 +519,46 @@ export function StorefrontHero({
  * above the fold and therefore the LCP element -- it is the one image on the
  * page worth pre-empting the network for.
  */
-function HeroBowl({ photo }: { photo?: Photo }) {
-  if (!photo) return null;
+/**
+ * The dishes the panel cycles, and the order it cycles them in.
+ *
+ * Photographs of the kitchen's own food rather than the first row of
+ * `withPhotos(menu)`. The panel used to take whatever product happened to sort
+ * first in the catalogue, which meant the largest thing on the home page was
+ * chosen by a `sort_order` column: publish a dish, and the face of the site
+ * changes. These four are a decision.
+ *
+ * Ordered so no two neighbours share a palette. The transition is a dissolve,
+ * and a dissolve between two photographs of the same colour reads as the image
+ * going soft for a moment rather than as a change of dish.
+ *
+ * Imported rather than pathed out of `public` so the URL is content-hashed and
+ * the intrinsic size travels with the file. See the note over `SHOTS` in
+ * `app/whatsapp/hero-reel.tsx`, which shares these four photographs.
+ */
+const BOWL_SHOTS = [idliVada, pooriChole, masalaDosa, riceBath];
 
+function HeroBowl() {
   return (
     <div className="hero-bowl">
-      <Image
-        src={photo.imageUrl}
-        alt=""
-        width={1400}
-        height={1400}
-        sizes="(max-width: 64rem) 100vw, 56vw"
-        priority
+      <div
+        className="hero-bowl-reel"
         style={{ '--bowl-scale': BOWL_OVERSCALE } as CSSProperties}
-        className="hero-bowl-img"
-      />
+      >
+        {BOWL_SHOTS.map((shot, index) => (
+          <Image
+            key={shot.src}
+            src={shot}
+            alt=""
+            sizes="(max-width: 64rem) 100vw, 56vw"
+            /* Only the first pre-empts the network. It is the LCP element at
+               `lg`; the other three have a second, two and three of runway. */
+            priority={index === 0}
+            style={{ '--i': index } as CSSProperties}
+            className="hero-bowl-img"
+          />
+        ))}
+      </div>
 
       {/* What the photograph fades into at the curve, so the panel resolves
           into the brand rather than stopping on a hard edge.

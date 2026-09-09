@@ -119,7 +119,7 @@ insert into public.kot_transitions
 insert into public.business_settings
   (key, value, value_type, group_name, label, description, is_sensitive, is_provisional) values
 
-  ('business.name', '"Cloud Kitchen"'::jsonb, 'string', 'business',
+  ('business.name', '"Infinity Kitchens"'::jsonb, 'string', 'business',
    'Business name', 'Shown on the storefront and on invoices.', false, true),
 
   ('business.timezone', '"Asia/Kolkata"'::jsonb, 'string', 'business',

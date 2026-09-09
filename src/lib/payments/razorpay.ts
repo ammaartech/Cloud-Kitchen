@@ -14,7 +14,7 @@ import {
 const API_BASE = 'https://api.razorpay.com/v1';
 
 /** Shown as the heading of Razorpay's own modal, so it must read as us. */
-const MERCHANT_NAME = 'Cloud Kitchen';
+const MERCHANT_NAME = 'Infinity Kitchens';
 
 /** Constant-time compare that tolerates differing lengths without leaking them. */
 function signaturesMatch(expected: string, received: string): boolean {

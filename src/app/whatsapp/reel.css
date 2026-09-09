@@ -1,0 +1,232 @@
+/* ==========================================================================
+   The hero reel.
+
+   Four dishes, 0.75s each, looping forever. The effect is a *reveal over a
+   stack*, not a crossfade, and that is the decision the whole thing rests on:
+   a crossfade puts two half-transparent photographs on top of each other, so
+   for a third of every second the hero is mush. A reveal shows two complete
+   photographs at all times with a hard edge between them, which stays crisp at
+   any speed -- and at 0.75s a slide, speed is the whole problem.
+
+   Three parts, and each is doing a job:
+
+     the wipe     an angled `clip-path` edge sweeping left to right, so the
+                  incoming dish arrives along a diagonal rather than a
+                  rectangle sliding in.
+     the drift    the photograph inside the wipe starts 4% left and slightly
+                  larger, and catches up as the edge passes. Mask and content
+                  moving at different rates is what reads as depth; without it
+                  a wipe looks like a window opening onto a still.
+     the seam     a thin light line riding the leading edge. It is not
+                  decoration -- a hard clip boundary with nothing on it reads
+                  as a rendering fault, and a highlight on it reads as an edge.
+
+   CSS keyframes rather than JS, and that is not a preference. This page loads
+   twenty-seven menu thumbnails directly below the hero, and a reel driven by
+   `requestAnimationFrame` drops frames exactly while those decode -- which is
+   the same second the reel is on screen and being looked at. CSS animation
+   runs off the main thread and does not care.
+
+   Nothing here is hidden by a base rule. The slides are visible by default and
+   only the keyframes hide them, held by `backwards` through the delay, so a
+   renderer that never animates shows one photograph rather than an empty box.
+   ========================================================================== */
+
+.hero-reel {
+  /* One slot, one loop. Every delay and percentage below is derived from these
+     two, so changing the pace is changing one number. */
+  --slot: 0.75s;
+  --loop: 3s;
+
+  position: relative;
+  overflow: hidden;
+  /* Not a rectangle and not a blob. The corners are unequal by a few percent,
+     which at this size reads as something cut by hand rather than a stock
+     card, and stops short of the 2020 blob that would date the page. */
+  border-radius: 1.75rem 2.5rem 1.75rem 2.5rem;
+  background: var(--ck-surface-sunken);
+  box-shadow: var(--ck-shadow-lg);
+}
+
+/* A ring drawn on top rather than a border, so it sits over the photographs
+   and follows the same unequal radius without the images bleeding past it. */
+.hero-reel::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  border-radius: inherit;
+  box-shadow: inset 0 0 0 1px rgb(13 23 20 / 0.08);
+  pointer-events: none;
+}
+
+.hero-slide {
+  position: absolute;
+  inset: 0;
+  animation: hero-wipe var(--loop) var(--ck-ease) calc(var(--i) * var(--slot))
+    infinite backwards;
+}
+
+.hero-shot {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+  animation: hero-drift var(--loop) var(--ck-ease) calc(var(--i) * var(--slot))
+    infinite backwards;
+}
+
+/**
+ * The wipe, and the z-index rotation that makes a four-card stack loop.
+ *
+ * The polygon keeps four vertices in the same order in both states so the
+ * shape interpolates instead of jumping. Its left edge is parked off-canvas at
+ * -50% and the two right vertices carry the sweep; the 15% difference between
+ * them is the lean of the edge.
+ *
+ * `z-index` steps at 24 / 49 / 74% rather than on the quarters. On the quarter
+ * exactly, the slide starting its turn and the slide ending one would both
+ * hold the top value for an instant and the tie would fall through to DOM
+ * order, which is wrong three times out of four. A hair early is never tied.
+ *
+ * The reset to a zero-width polygon happens in the last 0.1%, while this slide
+ * is at the bottom of the stack with three others painted over it, so the
+ * shape snapping back is not visible from the front.
+ */
+@keyframes hero-wipe {
+  0% {
+    z-index: 4;
+    clip-path: polygon(-50% 0%, -35% 0%, -50% 100%, -50% 100%);
+  }
+  11.5% {
+    z-index: 4;
+    clip-path: polygon(-50% 0%, 135% 0%, 120% 100%, -50% 100%);
+  }
+  24% {
+    z-index: 4;
+    clip-path: polygon(-50% 0%, 135% 0%, 120% 100%, -50% 100%);
+  }
+  24.01% {
+    z-index: 3;
+    clip-path: polygon(-50% 0%, 135% 0%, 120% 100%, -50% 100%);
+  }
+  49% {
+    z-index: 3;
+    clip-path: polygon(-50% 0%, 135% 0%, 120% 100%, -50% 100%);
+  }
+  49.01% {
+    z-index: 2;
+    clip-path: polygon(-50% 0%, 135% 0%, 120% 100%, -50% 100%);
+  }
+  74% {
+    z-index: 2;
+    clip-path: polygon(-50% 0%, 135% 0%, 120% 100%, -50% 100%);
+  }
+  74.01% {
+    z-index: 1;
+    clip-path: polygon(-50% 0%, 135% 0%, 120% 100%, -50% 100%);
+  }
+  99.9% {
+    z-index: 1;
+    clip-path: polygon(-50% 0%, 135% 0%, 120% 100%, -50% 100%);
+  }
+  100% {
+    z-index: 1;
+    clip-path: polygon(-50% 0%, -35% 0%, -50% 100%, -50% 100%);
+  }
+}
+
+/**
+ * The parallax. Four per cent and six, which is small on purpose: the point is
+ * that the photograph is not nailed to the mask, not that it moves.
+ *
+ * It settles on the same 11.5% the wipe finishes on and then holds dead still
+ * for the rest of the loop, so the held frame is a photograph rather than a
+ * slow zoom. At 400ms of stillness a Ken Burns has no room to read as
+ * anything but drift.
+ */
+@keyframes hero-drift {
+  0% {
+    transform: translate3d(-4%, 0, 0) scale(1.06);
+  }
+  11.5% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+/**
+ * The seam.
+ *
+ * Full-frame width with the highlight drawn down its middle, which is what
+ * makes the travel expressible in percentages: `translateX` resolves against
+ * the element's own width, so -55% parks the line off the left edge and 55%
+ * carries it off the right.
+ *
+ * It runs on its own 0.75s period rather than the 3s loop, so one element
+ * serves all four transitions. 46% of 750ms is 345ms, which is 11.5% of 3s --
+ * the same 345ms the wipe takes. The two are glued together by that identity
+ * and by sharing `--ck-ease`; change one and the line comes off the edge.
+ */
+.hero-seam {
+  position: absolute;
+  inset: -12% 0;
+  z-index: 5;
+  width: 100%;
+  pointer-events: none;
+  transform: skewX(-11deg);
+  background: linear-gradient(
+    90deg,
+    transparent calc(50% - 2px),
+    rgb(255 255 255 / 0.75) calc(50% - 2px),
+    rgb(255 255 255 / 0.75) calc(50% + 2px),
+    transparent calc(50% + 2px)
+  );
+  animation: hero-seam var(--slot) var(--ck-ease) infinite;
+}
+
+@keyframes hero-seam {
+  0% {
+    opacity: 1;
+    transform: translate3d(-55%, 0, 0) skewX(-11deg);
+  }
+  46% {
+    opacity: 1;
+    transform: translate3d(55%, 0, 0) skewX(-11deg);
+  }
+  /* Gone the instant it leaves, and parked back at the start while invisible
+     so the return trip is never seen. */
+  46.01%,
+  100% {
+    opacity: 0;
+    transform: translate3d(-55%, 0, 0) skewX(-11deg);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Reduced motion.
+
+   The global switch in `globals.css` would already flatten this, but what it
+   flattens to is whichever slide wins a DOM-order tie, which is not a choice
+   anybody made. An auto-playing loop is also the exact thing this setting is
+   usually turned on to stop, so it is worth being explicit: one dish, chosen,
+   and no cycle at all.
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .hero-slide,
+  .hero-shot,
+  .hero-seam {
+    animation: none;
+  }
+  .hero-slide {
+    clip-path: none;
+  }
+  .hero-shot {
+    transform: none;
+  }
+  .hero-slide:not(:first-child),
+  .hero-seam {
+    display: none;
+  }
+}

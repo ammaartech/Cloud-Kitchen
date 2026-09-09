@@ -1,9 +1,11 @@
 import type { Metadata } from 'next';
-import { listDeliveryWindows, listMenuByCategory } from '@/lib/data/catalog';
-import { clockTime } from '@/lib/format';
+import Image from 'next/image';
+import { listMenuByCategory } from '@/lib/data/catalog';
 import { Badge } from '@/components/ui/primitives';
-import { ProductTile } from '@/components/product-card';
+import { MenuItem } from './menu-item';
+import { HeroReel } from './hero-reel';
 import { WHATSAPP_DISPLAY, WhatsAppButton } from './chat';
+import './reel.css';
 
 /**
  * The poster page.
@@ -46,6 +48,25 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
+/**
+ * Where the kitchen delivers, and what it will cook for each area.
+ *
+ * The two rows are not the same fact stated twice, and getting them the wrong
+ * way round is the most expensive mistake this page could make: bulk travels
+ * anywhere in the city, single and small orders do not leave North Bangalore.
+ * Somebody in South Bangalore reading a bare "we deliver across Bangalore" and
+ * messaging about one meal has been told the wrong thing by this page, so
+ * "only" is load-bearing and stays in.
+ *
+ * Stated as two areas rather than one sentence with an exception in it,
+ * because a reader looks for their own part of the city and stops reading, and
+ * an exception buried in a clause is the part they skip.
+ */
+const COVERAGE = [
+  { label: 'Bulk orders', area: 'All over Bangalore' },
+  { label: 'Small orders', area: 'North Bangalore only' },
+] as const;
+
 const STEPS = [
   {
     title: 'Message us',
@@ -62,38 +83,68 @@ const STEPS = [
 ] as const;
 
 export default async function OrderPage() {
-  const [groups, windows] = await Promise.all([
-    listMenuByCategory(),
-    listDeliveryWindows(),
-  ]);
+  const groups = await listMenuByCategory();
 
-  const dishCount = groups.reduce((total, group) => total + group.products.length, 0);
+  const dishes = groups.flatMap((group) => group.products);
+  const dishCount = dishes.length;
+  /* Only mention the grey ones when there are grey ones. Saying "anything
+     greyed out is off today" over a menu where nothing is sends the reader
+     hunting for something that is not there. */
+  const anyUnavailable = dishes.some((dish) => !dish.isAvailable);
 
   return (
-    /* The page has to clear the fixed bar at the foot of small screens, which
-       is outside the normal flow and so cannot push anything down itself. */
-    <div className="pb-24 sm:pb-0">
+    /* Clears the fixed bar at the foot of small screens, which is outside the
+       normal flow and so cannot push anything down itself. `env()` is the rest
+       of it: on a phone with a home indicator the last 34px of the viewport
+       are not reachable, and without this the footer ends underneath it. */
+    <div className="pb-[calc(6rem+env(safe-area-inset-bottom))] sm:pb-0">
       {/* ------------------------------------------------------------------ */}
       {/* The button at the top                                              */}
       {/* ------------------------------------------------------------------ */}
-      {/* Sticky rather than merely first: on a page this long, a CTA at the
-          top is only "at the top" for one screen unless it follows. */}
-      <header className="sticky top-0 z-30 border-b border-line bg-surface/85 backdrop-blur-md">
-        <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3">
-          <div className="min-w-0">
-            <p className="truncate font-semibold tracking-tight">Cloud Kitchen</p>
-            <p className="truncate text-xs text-subtle">Home-style meals, cooked daily</p>
+      {/* Sticky from `sm` up only, and that split is deliberate.
+
+          On a desktop this bar carries the CTA, so it has to follow: on a page
+          this long a button at the top is only "at the top" for one screen. On
+          a phone it carries no button at all (the fixed bar at the foot has
+          that job), so sticking it would spend 57px of a 667px viewport on a
+          logo the reader has already seen, on top of the bar at the bottom and
+          the category heading below. Letting it scroll away also means the
+          menu's category headings can stick to `top-0` instead of to a
+          hardcoded offset that has to be kept in step with this element's
+          height, where being one pixel out shows as content sliding through
+          the seam. */}
+      <header className="z-30 border-b border-line bg-surface/85 backdrop-blur-md sm:sticky sm:top-0">
+        <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-2.5 sm:py-3">
+          <div className="flex min-w-0 items-center gap-2.5">
+            {/* `alt=""` because the name is right beside it in text: a logo
+                that repeats the word next to it is the same word twice to a
+                screen reader. */}
+            <Image
+              src="/brand/mark-green.png"
+              alt=""
+              width={933}
+              height={416}
+              sizes="(max-width: 639px) 54px, 63px"
+              priority
+              className="h-6 w-auto sm:h-7"
+            />
+            <div className="min-w-0">
+              <p className="truncate font-brand leading-tight font-semibold">
+                Infinity Kitchens
+              </p>
+              <p className="truncate text-xs text-subtle">
+                Home-style meals, cooked daily
+              </p>
+            </div>
           </div>
 
-          {/* One button, two labels. "Order on WhatsApp" is the label that
-              says what happens, and it is the one shown wherever it fits; on a
-              narrow handset it would push the brand name into an ellipsis, and
-              a header that truncates the kitchen's own name to fit a button is
-              the wrong trade. The glyph carries the rest. */}
-          <WhatsAppButton size="sm" className="sm:hidden">
-            Order
-          </WhatsAppButton>
-          <WhatsAppButton size="md" className="hidden sm:inline-flex">
+          {/* Desktop only, and that is the fix rather than an omission. On a
+              phone the fixed bar at the foot of the screen is already showing
+              this exact button, so a second one up here put two identical
+              calls to action on screen at once and squeezed the kitchen's name
+              into an ellipsis to do it. Below `sm` the bar has the job; from
+              `sm` up there is no bar, so the header takes it back. */}
+          <WhatsAppButton size="md" className="hidden shrink-0 sm:inline-flex">
             Order on WhatsApp
           </WhatsAppButton>
         </div>
@@ -103,45 +154,75 @@ export default async function OrderPage() {
       {/* Hero                                                               */}
       {/* ------------------------------------------------------------------ */}
       <section className="border-b border-line bg-sunken">
-        <div className="mx-auto max-w-6xl px-4 py-14 sm:py-20">
-          <div className="max-w-2xl">
-            <Badge tone="brand">Ordering is on WhatsApp for now</Badge>
+        <div className="mx-auto max-w-6xl px-4 py-12 sm:py-20">
+          {/* Three children, and the order they fall into is the whole reason
+              this is a grid rather than two columns of markup.
 
-            <h1 className="mt-4 text-4xl font-semibold tracking-tight text-balance sm:text-5xl">
-              Home-style meals, cooked fresh every single day.
-            </h1>
+              On a phone it runs copy, then the photographs, then the coverage
+              list, which keeps the button inside the first screen instead of
+              pushing it below a hero image. From `md` the reel spans both rows
+              of the second column, so the copy and the coverage stack down the
+              left of it and nothing had to be written twice or rendered twice
+              to get there. */}
+          <div className="grid gap-8 md:grid-cols-[minmax(0,1fr)_22rem] md:items-start md:gap-12 lg:gap-16">
+            <div className="max-w-2xl">
+              <Badge tone="brand">Ordering is on WhatsApp for now</Badge>
 
-            <p className="mt-5 text-lg text-muted text-pretty">
-              One kitchen cooking one honest menu: South Indian tiffin in the morning, a
-              banana leaf thali at midday. Our website is still being built, so for now
-              everything is ordered over a WhatsApp message. Send us one and we will set you
-              up on a meal plan.
-            </p>
+              {/* Three steps rather than two. At 36px the headline ran to five
+                lines on a 360px handset, which is most of the first screen
+                spent on one sentence; 30px holds it to four and leaves the
+                button above the fold. */}
+              <h1 className="mt-4 text-3xl font-semibold tracking-tight text-balance sm:text-4xl md:text-5xl">
+                Home-style meals, cooked fresh every single day.
+              </h1>
 
-            <div className="mt-8 flex flex-wrap items-center gap-x-5 gap-y-4">
-              <WhatsAppButton size="lg">Order on WhatsApp</WhatsAppButton>
-              <p className="text-sm text-muted">
-                or save{' '}
-                <span className="font-semibold whitespace-nowrap text-ink tabular">
-                  {WHATSAPP_DISPLAY}
-                </span>
+              <p className="mt-4 text-base text-muted text-pretty sm:mt-5 sm:text-lg">
+                One kitchen cooking one honest menu: South Indian tiffin in the
+                morning, a banana leaf thali at midday. Our website is still
+                being built, so for now everything is ordered over a WhatsApp
+                message. Send us one and we will set you up on a meal plan.
               </p>
+
+              {/* Full width on a phone. A centred pill two thirds of the way
+                across is a smaller target than the thumb reaching for it, and
+                the row it shared with the phone number was wrapping anyway. */}
+              <div className="mt-7 flex flex-col items-start gap-3 sm:mt-8 sm:flex-row sm:flex-wrap sm:items-center sm:gap-x-5 sm:gap-y-4">
+                <WhatsAppButton size="lg" className="w-full sm:w-auto">
+                  Order on WhatsApp
+                </WhatsAppButton>
+                <p className="text-sm text-muted">
+                  or save{' '}
+                  <span className="font-semibold whitespace-nowrap text-ink tabular">
+                    {WHATSAPP_DISPLAY}
+                  </span>
+                </p>
+              </div>
             </div>
 
-            {windows.length > 0 ? (
-              <dl className="mt-10 flex flex-wrap gap-x-10 gap-y-4 border-t border-line pt-6">
-                {windows.map((window) => (
-                  <div key={window.id}>
-                    <dt className="text-xs tracking-caps text-subtle uppercase">
-                      {window.label}
-                    </dt>
-                    <dd className="mt-1 font-semibold tabular">
-                      {clockTime(window.starts_at)} – {clockTime(window.ends_at)}
-                    </dd>
-                  </div>
-                ))}
-              </dl>
-            ) : null}
+            {/* `self-center` so the reel sits against the middle of the copy
+                beside it rather than hanging from the top of a taller column. */}
+            <HeroReel className="md:row-span-2 md:self-center" />
+
+            {/* Coverage sits where the delivery windows used to, and it is the
+                better use of the position. Windows are a detail that gets
+                settled in the conversation anyway; whether the kitchen comes
+                to your part of the city at the size you want to order is the
+                question that decides whether there is a conversation at all,
+                and it should be answered before anybody taps. */}
+            {/* Stacked on a phone rather than two columns. Side by side, "North
+                Bangalore only" wraps inside a 150px column and the constraint
+                that matters lands on its own orphaned line, which is exactly
+                the word a reader must not skip. */}
+            <dl className="mt-8 grid gap-4 border-t border-line pt-6 sm:mt-10 sm:flex sm:flex-wrap sm:gap-x-12 sm:gap-y-5">
+              {COVERAGE.map((row) => (
+                <div key={row.label}>
+                  <dt className="text-xs tracking-caps text-subtle uppercase">
+                    {row.label}
+                  </dt>
+                  <dd className="mt-1 font-semibold">{row.area}</dd>
+                </div>
+              ))}
+            </dl>
           </div>
         </div>
       </section>
@@ -160,19 +241,21 @@ export default async function OrderPage() {
           menu's own category rules are inset to the container, so keeping this
           one edge to edge is also what stops it being mistaken for one. */}
       <section className="border-b border-line">
-        <div className="mx-auto max-w-6xl px-4 py-14">
-          <ol className="grid gap-8 sm:grid-cols-3">
+        <div className="mx-auto max-w-6xl px-4 py-10 sm:py-14">
+          <ol className="grid gap-6 sm:grid-cols-3 sm:gap-8">
             {STEPS.map((step, index) => (
-              <li key={step.title} className="flex gap-4">
+              <li key={step.title} className="flex gap-3.5 sm:gap-4">
                 <span
                   aria-hidden
-                  className="grid size-8 shrink-0 place-items-center rounded-full bg-brand text-sm font-semibold text-white tabular"
+                  className="grid size-7 shrink-0 place-items-center rounded-full bg-brand text-sm font-semibold text-white tabular sm:size-8"
                 >
                   {index + 1}
                 </span>
                 <div>
                   <h2 className="font-semibold tracking-tight">{step.title}</h2>
-                  <p className="mt-1 text-sm text-muted text-pretty">{step.body}</p>
+                  <p className="mt-1 text-sm text-muted text-pretty">
+                    {step.body}
+                  </p>
                 </div>
               </li>
             ))}
@@ -183,32 +266,45 @@ export default async function OrderPage() {
       {/* ------------------------------------------------------------------ */}
       {/* The menu                                                           */}
       {/* ------------------------------------------------------------------ */}
-      <section className="mx-auto max-w-6xl px-4 py-16">
+      <section className="mx-auto max-w-6xl px-4 py-12 sm:py-16">
         <header className="max-w-2xl">
-          <h2 className="text-3xl font-semibold tracking-tight">The menu</h2>
+          <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">
+            The menu
+          </h2>
           <p className="mt-2 text-muted text-pretty">
-            {dishCount > 0
-              ? `Everything the kitchen cooks, all ${dishCount} of them. Anything greyed out is off the board today.`
-              : 'Our menu is being published. Message us and we will tell you what is cooking today.'}
+            {dishCount === 0
+              ? 'Our menu is being published. Message us and we will tell you what is cooking today.'
+              : anyUnavailable
+                ? `Everything the kitchen cooks, all ${dishCount} of them. Anything greyed out is off the board today.`
+                : `Everything the kitchen cooks, all ${dishCount} of them.`}
           </p>
         </header>
 
-        <div className="mt-12 space-y-16">
+        <div className="mt-8 space-y-10 sm:mt-12 sm:space-y-14">
           {groups.map((group) => (
             <div key={group.slug}>
               {/* The name sits on a rule that runs the full width. A menu is
                   read by hunting for the section you want, so section names
-                  have to stay findable while scrolling past at speed. */}
-              <div className="flex items-baseline gap-4 border-b border-line pb-3">
-                <h3 className="text-2xl font-semibold tracking-tight whitespace-nowrap">
+                  have to stay findable while scrolling past at speed. It is
+                  sticky on a phone: a category can run past a whole screen of
+                  thumb-scrolling, and losing track of which one you are in is
+                  what makes a long menu feel like one undifferentiated list.
+
+                  `top-0` rather than an offset, because the page header does
+                  not stick on a phone. Nothing to sit beneath means nothing to
+                  keep in step with. */}
+              <div className="sticky top-0 z-20 -mx-4 flex items-baseline gap-3 border-b border-line bg-bg/95 px-4 pt-2.5 pb-2.5 backdrop-blur-sm sm:static sm:mx-0 sm:gap-4 sm:bg-transparent sm:px-0 sm:pt-0 sm:pb-3 sm:backdrop-blur-none">
+                <h3 className="text-xl font-semibold tracking-tight whitespace-nowrap sm:text-2xl">
                   {group.name}
                 </h3>
-                <p className="text-sm text-subtle tabular">{group.products.length} dishes</p>
+                <p className="text-sm text-subtle tabular">
+                  {group.products.length} dishes
+                </p>
               </div>
 
-              <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              <div className="mt-4 grid gap-3 sm:mt-6 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
                 {group.products.map((product) => (
-                  <ProductTile key={product.id} product={product} />
+                  <MenuItem key={product.id} product={product} />
                 ))}
               </div>
             </div>
@@ -223,21 +319,34 @@ export default async function OrderPage() {
           same action as the top of the page, put where they finished reading
           so it does not have to be scrolled back to. */}
       <section className="border-t border-line bg-brand">
-        <div className="mx-auto max-w-3xl px-4 py-20 text-center">
-          <h2 className="text-3xl font-semibold tracking-tight text-balance text-white sm:text-4xl">
+        <div className="mx-auto max-w-3xl px-4 py-14 text-center sm:py-20">
+          {/* The cream cut of the mark, which is the one place on the site the
+              logo gets to sit on its own dark ground the way it was drawn. */}
+          <Image
+            src="/brand/mark-cream.png"
+            alt=""
+            width={933}
+            height={416}
+            sizes="(max-width: 639px) 81px, 99px"
+            className="mx-auto mb-6 h-9 w-auto sm:h-11"
+          />
+
+          <h2 className="text-2xl font-semibold tracking-tight text-balance text-white sm:text-4xl">
             Hungry? Let&rsquo;s talk.
           </h2>
 
-          <p className="mx-auto mt-4 max-w-lg text-brand-soft text-pretty">
-            Send us a message and we will walk you through the plans, the prices and the
-            delivery windows. No account, no app, just WhatsApp.
+          <p className="mx-auto mt-3 max-w-lg text-brand-soft text-pretty sm:mt-4">
+            Send us a message and we will walk you through the plans, the prices
+            and the delivery windows. No account, no app, just WhatsApp.
           </p>
 
-          <div className="mt-9 flex justify-center">
-            <WhatsAppButton size="lg">Order on WhatsApp</WhatsAppButton>
+          <div className="mt-7 flex justify-center sm:mt-9">
+            <WhatsAppButton size="lg" className="w-full sm:w-auto">
+              Order on WhatsApp
+            </WhatsAppButton>
           </div>
 
-          <p className="mt-6 text-sm text-brand-soft">
+          <p className="mt-5 text-sm text-brand-soft sm:mt-6">
             or save us as{' '}
             <span className="font-semibold whitespace-nowrap text-white tabular">
               {WHATSAPP_DISPLAY}
@@ -246,10 +355,10 @@ export default async function OrderPage() {
         </div>
       </section>
 
-      <footer className="bg-brand px-4 pb-14 text-center">
+      <footer className="bg-brand px-4 pb-12 text-center sm:pb-14">
         <p className="text-xs text-brand-soft">
-          Cloud Kitchen · Prices are per meal and include taxes. Delivery windows are set by
-          the kitchen and may change.
+          Infinity Kitchens · Prices are per meal and include taxes. Delivery
+          areas and timings are set by the kitchen and may change.
         </p>
       </footer>
 
@@ -261,7 +370,11 @@ export default async function OrderPage() {
           with no way to act on wanting one, and that gap is where the tap is
           lost. Small screens only -- on a desktop the sticky header never
           leaves, so a second bar would be the same button twice. */}
-      <div className="fixed inset-x-0 bottom-0 z-30 border-t border-line bg-surface/90 p-3 backdrop-blur-md sm:hidden">
+      {/* The bottom padding is the home indicator. On an iPhone the last ~34px
+          of the viewport belong to the system gesture bar, and a button that
+          ends flush with `bottom: 0` sits underneath it: half the target is
+          unreachable and a tap there swipes the app away instead. */}
+      <div className="fixed inset-x-0 bottom-0 z-30 border-t border-line bg-surface/90 px-3 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] backdrop-blur-md sm:hidden">
         <WhatsAppButton size="md" className="w-full">
           Order on WhatsApp
         </WhatsAppButton>

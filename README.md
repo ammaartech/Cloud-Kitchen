@@ -1,4 +1,4 @@
-# Cloud Kitchen — Phase 1
+# Infinity Kitchens — Phase 1
 
 A database-backed operating system for a single-brand, single-branch cloud kitchen:
 one customer website, one unified KOT across three order channels, subscription

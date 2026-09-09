@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Inter, JetBrains_Mono } from 'next/font/google';
+import { Inter, JetBrains_Mono, Poppins } from 'next/font/google';
 import localFont from 'next/font/local';
 import './globals.css';
 
@@ -25,6 +25,31 @@ const sans = Inter({
 const mono = JetBrains_Mono({
   variable: '--font-jetbrains-mono',
   subsets: ['latin', 'latin-ext'],
+  display: 'swap',
+});
+
+/**
+ * The wordmark, and only the wordmark.
+ *
+ * The logo sets "INFINITY KITCHENS" in a geometric sans, and Inter is a
+ * neo-grotesque -- its `t` has a slanted cut, its `y` a straight tail, and next
+ * to the drawn mark the name read as a caption underneath the logo rather than
+ * as part of it. Poppins is the nearest common geometric: single-storey `a`,
+ * near-circular `o`, flat terminals, which is what the logo is built from.
+ *
+ * Scoped to the brand name deliberately. The system is one family on purpose
+ * (see `sans` above), and Poppins is a poor interface face -- low x-height,
+ * wide, and tiring in a table -- so it gets the two or three words that are
+ * standing in for the logo and nothing else.
+ *
+ * Two weights, not the family. Every additional weight is another file on a
+ * page that already loads four faces, and the name is never set in anything
+ * but medium and semibold.
+ */
+const brand = Poppins({
+  variable: '--font-poppins',
+  subsets: ['latin'],
+  weight: ['500', '600'],
   display: 'swap',
 });
 
@@ -76,8 +101,8 @@ const noteText = localFont({
 
 export const metadata: Metadata = {
   title: {
-    default: 'Cloud Kitchen',
-    template: '%s · Cloud Kitchen',
+    default: 'Infinity Kitchens',
+    template: '%s · Infinity Kitchens',
   },
   description:
     'Home-style meals on subscription, cooked fresh each day in a single kitchen.',
@@ -87,7 +112,7 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
   return (
     <html
       lang="en"
-      className={`${sans.variable} ${mono.variable} ${noteDisplay.variable} ${noteText.variable} h-full antialiased`}
+      className={`${sans.variable} ${mono.variable} ${brand.variable} ${noteDisplay.variable} ${noteText.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col bg-bg text-ink">{children}</body>
     </html>

@@ -275,6 +275,9 @@
 
   --font-sans: var(--font-inter);
   --font-mono: var(--font-jetbrains-mono);
+  /* The wordmark only. See the note over `brand` in `app/layout.tsx` for why
+     this is not the heading face. */
+  --font-brand: var(--font-poppins);
 
   --radius-ck-sm: var(--ck-radius-sm);
   --radius-ck: var(--ck-radius);
@@ -2011,15 +2014,104 @@ h3 {
   }
 }
 
+/* The panel holds four dishes now rather than one, and the breathe moved here
+   with the overscale. Both describe the *panel*, not a picture: leaving them on
+   the images would have given each of the four its own 15s breath starting at
+   its own moment, so the panel would swell and settle four times a cycle
+   instead of once a quarter-minute. One slow breath under all of them keeps the
+   biggest thing on the page the calmest thing on it. */
+.hero-bowl-reel {
+  position: absolute;
+  inset: 0;
+  /* See `BOWL_OVERSCALE`. The drift below moves inside this margin. */
+  transform: scale(var(--bowl-scale, 1.06));
+  animation: bowl-breathe 15s ease-in-out infinite;
+}
+
 .hero-bowl-img {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  /* See `BOWL_OVERSCALE`. The drift below moves inside this margin. */
-  transform: scale(var(--bowl-scale, 1.06));
-  /* Slower than any of the drawings: the biggest thing on the surface should
-     be the calmest thing on it. See `@keyframes bowl-breathe`. */
-  animation: bowl-breathe 15s ease-in-out infinite;
+  /* Visible in the base rule, hidden only inside the keyframes. A renderer that
+     never animates shows a dish rather than an empty green panel. */
+  opacity: 1;
+  animation: bowl-cycle 4s var(--ck-ease) calc(var(--i) * 1s) infinite backwards;
+}
+
+/**
+ * Four dishes, one second each, dissolving.
+ *
+ * A dissolve rather than the hard wipe the WhatsApp page uses, because these
+ * two surfaces are not doing the same job: that page is a menu being scanned
+ * at speed, this is the first thing anybody sees of the kitchen and it should
+ * settle rather than cut.
+ *
+ * The incoming dish fades in *over* an outgoing one that stays fully opaque and
+ * is only cleared later, while covered. That is what keeps it a dissolve rather
+ * than a dip: fading one out as the other comes in leaves both part-transparent
+ * at the midpoint, and the green panel behind them shows through the gap as a
+ * flash of colour every second.
+ *
+ * `z-index` steps a hair before each quarter for the same reason as the reel on
+ * `/whatsapp`: on the quarter exactly, the dish starting and the dish ending
+ * tie for the top of the stack and the tie falls through to DOM order.
+ */
+@keyframes bowl-cycle {
+  0% {
+    opacity: 0;
+    z-index: 4;
+  }
+  12.5% {
+    opacity: 1;
+    z-index: 4;
+  }
+  24% {
+    opacity: 1;
+    z-index: 4;
+  }
+  24.01% {
+    opacity: 1;
+    z-index: 3;
+  }
+  49% {
+    opacity: 1;
+    z-index: 3;
+  }
+  49.01% {
+    opacity: 1;
+    z-index: 2;
+  }
+  74% {
+    opacity: 1;
+    z-index: 2;
+  }
+  74.01% {
+    opacity: 1;
+    z-index: 1;
+  }
+  /* Held opaque to the last moment and cleared underneath three other dishes,
+     so the reset for the next lap is never seen from the front. */
+  99.9% {
+    opacity: 1;
+    z-index: 1;
+  }
+  100% {
+    opacity: 0;
+    z-index: 1;
+  }
+}
+
+/* An auto-playing loop is the thing this setting is usually turned on to stop.
+   One dish, chosen rather than whichever wins a DOM-order tie, and no cycle. */
+@media (prefers-reduced-motion: reduce) {
+  .hero-bowl-img {
+    animation: none;
+  }
+  .hero-bowl-img:not(:first-of-type) {
+    display: none;
+  }
 }
 
 /* The photograph resolving into the brand rather than stopping at the curve.
