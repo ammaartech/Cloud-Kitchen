@@ -14,6 +14,7 @@ import { StorefrontHero } from '@/components/site/storefront-hero';
 import { Reveal } from '@/components/site/reveal';
 import { StepFlow, Typewriter } from '@/components/site/step-flow';
 import { HangingPhotos } from '@/components/site/hanging-photos';
+import { MarqueeBand } from '@/components/site/marquee-band';
 
 export const metadata = {
   title: 'Home-style meals, on subscription',
@@ -294,6 +295,24 @@ export default async function HomePage() {
       </section>
 
       {/* ---------------------------------------------------------------- */}
+      {/* The band between                                                  */}
+      {/* ---------------------------------------------------------------- */}
+      {/* Full bleed, and outside both containers. Every other band on this page
+          is built inside the same 72rem column, which is exactly what this one
+          must not do: a marquee that starts and stops at the column edges is a
+          strip of moving text sitting in the middle of the page, where the
+          whole effect depends on the phrases arriving from off screen and
+          leaving the same way.
+
+          `border-y` rather than the `border-b` its neighbours carry. This band
+          is a rule with something written on it -- the two hairlines are what
+          make it read as a seam between the sections rather than as a third
+          section of its own. */}
+      <div className="border-y border-line bg-surface py-5 sm:py-6">
+        <MarqueeBand />
+      </div>
+
+      {/* ---------------------------------------------------------------- */}
       {/* Menu                                                              */}
       {/* ---------------------------------------------------------------- */}
       {/* Six dishes, not the whole catalogue. The job of a section on a
@@ -327,8 +346,17 @@ export default async function HomePage() {
             </div>
           )}
 
-          <Reveal className="reveal-up mt-10" delay={220}>
-            <ButtonLink href="/menu" variant="outline" size="sm" className="btn-plain">
+          {/* The width of the grid above it rather than the width of its own
+              label -- see `.btn-wide` in `globals.css`. Six dishes end on "is
+              that all?", and the answer should not be set smaller than the
+              calorie counts in the tiles asking it. */}
+          <Reveal className="reveal-up mt-8" delay={220}>
+            <ButtonLink
+              href="/menu"
+              variant="outline"
+              size="lg"
+              className="btn-plain btn-wide"
+            >
               see the full menu
             </ButtonLink>
           </Reveal>
@@ -350,7 +378,7 @@ export default async function HomePage() {
           twitch. `clip` rather than `hidden` because this must not become a
           scroll container. Nothing legitimate overflows: the strings are pinned
           a few pixels inside the top edge for exactly this reason. */}
-      <section id="about" className="landing-spacing section-anchor overflow-clip bg-sunken py-20 sm:py-28">
+      <section id="about" className="landing-spacing section-anchor texture-brick overflow-clip bg-sunken py-20 sm:py-28">
         {/* No `max-w-6xl`, and that is the point rather than an omission.
 
             Every other band on this page is built inside the same 72rem column,
@@ -394,13 +422,23 @@ export default async function HomePage() {
                 <p>
                   That constraint is deliberate. A small menu means we buy fresh for the day,
                   cook in batches that finish, and know exactly how many portions are going
-                  out. It is also why we sell subscriptions rather than one-off orders
-                  &mdash; knowing what the day looks like before it starts is what keeps the
-                  food good.
+                  out. It is also why we sell subscriptions rather than one-off orders.
+                  Knowing what the day looks like before it starts is what keeps the food
+                  good.
                 </p>
               </div>
 
-              <ButtonLink href="/about" variant="outline" size="sm" className="btn-plain mt-8">
+              {/* The width of the column it closes, the way "see the full
+                  menu" is the width of the grid it closes -- see `.btn-wide`
+                  in `globals.css`. Two closing actions on one page set at two
+                  different weights is the reader being asked to work out which
+                  of them matters more, and neither does. */}
+              <ButtonLink
+                href="/about"
+                variant="outline"
+                size="lg"
+                className="btn-plain btn-wide mt-8"
+              >
                 more about us
               </ButtonLink>
             </Reveal>

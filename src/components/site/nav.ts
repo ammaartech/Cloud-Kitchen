@@ -7,12 +7,11 @@ type NavItem = {
   /**
    * The id of the matching section on the home page, where there is one.
    *
-   * Optional again, and Offers is why. Its section is gone -- the strip above
-   * the header already carries the running discount and the code, so a band
-   * further down repeating it in a card was the same offer twice on one page.
-   * The page behind it is still there, still linked from the strip and the
-   * footer, and it is now the only way to that content: an item with no
-   * `section` navigates rather than scrolls.
+   * Optional, though nothing in this list uses that any more -- Offers was the
+   * one item with no section and it has left the list entirely. It is kept
+   * optional because the shape is right: an item with no `section` navigates
+   * rather than scrolls, and the next page-without-a-section should not have to
+   * reintroduce the idea.
    */
   section?: string;
 };
@@ -24,8 +23,16 @@ type NavItem = {
  * `HEADER_NAV` and `HERO_NAV` below for why those are two smaller lists now
  * rather than this one rendered twice.
  *
- * `section` is the part of the home page that answers the same question, where
- * the home page has one. Offers does not any more -- see the type above.
+ * `section` is the part of the home page that answers the same question, and
+ * every item here now has one.
+ *
+ * Offers is not in it. It has no section, it has no place in a footer of four
+ * destinations, and the strip above the header says the same thing with the
+ * actual discount in it rather than the word "Offers" -- so the word was the
+ * weakest of the five links in every list it appeared in. `/offers` is still a
+ * route and the strip is still how visitors reach it; that strip only renders
+ * when there is an offer running, which is also the only time the page has
+ * anything on it.
  *
  * The pages did not go anywhere and that is deliberate. A single page is the
  * better *first* visit: everything the kitchen offers is one scroll away and
@@ -39,8 +46,24 @@ type NavItem = {
 export const SITE_NAV: readonly NavItem[] = [
   { href: '/menu', label: 'Menu', section: 'menu' },
   { href: '/subscriptions', label: 'Subscriptions', section: 'plans' },
-  { href: '/offers', label: 'Offers' },
   { href: '/about', label: 'About', section: 'about' },
+];
+
+/**
+ * The two pages nobody navigates to and every site has to have.
+ *
+ * A separate list from `SITE_NAV` rather than two more entries in it, because
+ * they are a different kind of destination: `SITE_NAV` is where the kitchen
+ * wants you to go, and this is where you go when you need to check something.
+ * Mixing them puts "Terms" at the same weight as "Menu" in every list that
+ * renders `SITE_NAV`, which is how a footer ends up with seven equal links and
+ * no order to them. The footer sets these smaller, in the bottom row, beside
+ * the line about taxes -- which is the company talking about itself, and so is
+ * this.
+ */
+export const LEGAL_NAV: readonly { href: Route; label: string }[] = [
+  { href: '/privacy', label: 'Privacy Policy' },
+  { href: '/terms', label: 'Terms & Conditions' },
 ];
 
 /**

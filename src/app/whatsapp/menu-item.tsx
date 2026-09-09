@@ -1,6 +1,5 @@
 import Image from 'next/image';
 import type { ProductCard } from '@/lib/data/catalog';
-import { money } from '@/lib/format';
 import { cx } from '@/components/ui/button-styles';
 
 /**
@@ -15,8 +14,15 @@ import { cx } from '@/components/ui/button-styles';
  *
  * As a row it is about 112px, which is a third of the height, and the text
  * gets the full width instead of sharing it with a picture. That is also the
- * order a menu is actually read in: the name and the price first, the
- * photograph only as confirmation.
+ * order a menu is actually read in: the name first, the photograph only as
+ * confirmation.
+ *
+ * There is no price on this row, and that is the same decision the page makes
+ * about plans one section up. A price on a page somebody found on a poster is a
+ * price they will hold the kitchen to, and the numbers are not settled -- so
+ * the menu says what is cooked and the conversation says what it costs. When
+ * the numbers are fixed, `product.basePrice` is still on the card this renders
+ * and putting it back is the block that used to sit beside the name.
  *
  * The other half of it is bytes. `ProductTile` asks for `calc(100vw - 40px)`
  * because its photo really is that wide; here the thumbnail is 96px, and
@@ -80,16 +86,15 @@ export function MenuItem({ product }: { product: ProductCard }) {
       </div>
 
       <div className="min-w-0 flex-1">
-        {/* `items-baseline` so the price sits on the same line as the name
-            however the name wraps, and `gap-3` so a long name never runs into
-            the number. */}
-        <div className="flex items-baseline justify-between gap-3">
-          <h4 className="flex min-w-0 items-baseline gap-1.5 leading-snug font-semibold">
-            <VegMark vegetarian={product.isVegetarian} />
-            <span className="min-w-0">{product.name}</span>
-          </h4>
-          <p className="shrink-0 font-semibold tabular">{money(product.basePrice)}</p>
-        </div>
+        {/* No row wrapping the heading any more. With the price gone there is
+            nothing for the name to share a line with, and a flex row with one
+            child in it is a container that only constrains -- the name now
+            takes the full width and wraps against the card edge rather than
+            against a number that is not there. */}
+        <h4 className="flex items-baseline gap-1.5 leading-snug font-semibold">
+          <VegMark vegetarian={product.isVegetarian} />
+          <span className="min-w-0">{product.name}</span>
+        </h4>
 
         {product.shortDescription ? (
           <p className="mt-1 line-clamp-2 text-sm text-muted">{product.shortDescription}</p>

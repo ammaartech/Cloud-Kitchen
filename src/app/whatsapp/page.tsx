@@ -368,9 +368,13 @@ export default async function OrderPage() {
       </section>
 
       <footer className="bg-brand px-4 pb-12 text-center sm:pb-14">
+        {/* The sentence about prices went with the prices. It said they were
+            per meal and included taxes, which is a claim about numbers this
+            page no longer shows -- and a footnote explaining a column that is
+            not there is how a page starts reading as half-finished. */}
         <p className="text-xs text-brand-soft">
-          Infinity Kitchens · Prices are per meal and include taxes. Delivery
-          areas and timings are set by the kitchen and may change.
+          Infinity Kitchens · Prices are confirmed over WhatsApp. Delivery areas
+          and timings are set by the kitchen and may change.
         </p>
       </footer>
 

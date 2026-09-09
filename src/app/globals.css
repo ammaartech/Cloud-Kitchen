@@ -3286,10 +3286,24 @@ h3 {
    sit in the "tens of times a day" tier, where the guidance is to reduce motion
    rather than add it: no lift, no scale, nothing that has to finish before the
    link responds.
+
+   ## Square, not a pill
+
+   The fill is a rectangle now, and it is the same argument `.btn-square` makes
+   three sections down: a pill and a rectangle side by side is not a hierarchy,
+   it is a disagreement -- the eye reads the difference in shape as a difference
+   in kind and then finds there is not one. In this bar the active link sits a
+   few inches from "Dashboard" and "Sign out", both of them squared, and the hero
+   below it opens on a squared "start a plan today". A single rounded pill among
+   them was the only survivor of the earlier shape.
+
+   Squared for every `.nav-link`, not only the one in the bar. The sheet on a
+   phone renders the same class, and a marker that is a rectangle on a desktop
+   and a pill on a handset is the same inconsistency moved rather than fixed.
    -------------------------------------------------------------------------- */
 .nav-link {
   display: block;
-  border-radius: 9999px;
+  border-radius: 0;
   padding: 0.5rem 0.875rem;
   font-size: 0.875rem;
   font-weight: 500;
@@ -3778,8 +3792,23 @@ html:has(.nav-sheet[open]) {
    The underline is the affordance and it is drawn as a bottom border on a
    transparent colour rather than as `text-decoration`, so it can be a hairline
    under the whole word at a fixed distance instead of a decoration that hugs
-   the descenders. It appears on hover and on focus, which is the point: at rest
-   these read as a line of small caps, and the interface only offers when asked.
+   the descenders. It appears on hover and on focus, which is the point: the
+   interface only offers when asked.
+
+   They are set in ink rather than in muted, which is a reversal of the first
+   version of this row and the reason is worth keeping. Quiet was the goal and
+   the row overshot it: muted capitals at eleven pixels beside a sixty-pixel
+   headline are not restrained, they are furniture -- the eye goes to the
+   headline and never comes back up. At this size, in ink, they read as the
+   first line of the page, which is what a row sitting above the headline is
+   for. What keeps them from competing is that they are still 20px against 60
+   and still capitals against a sentence; weight and colour were never the part
+   doing that work.
+
+   Hover moves to brand rather than to ink, which it could not do while ink was
+   the resting colour -- a hover that only draws a line under a word it does not
+   otherwise change is a weaker signal than this row needs now that the words
+   are worth pressing.
    -------------------------------------------------------------------------- */
 /* How far the row climbs above where the copy column begins.
 
@@ -3812,29 +3841,24 @@ html:has(.nav-sheet[open]) {
   margin-bottom: calc(2rem + var(--hero-nav-lift));
 }
 
-/* One line, from the width at which one line is possible.
+/* The row wraps, at every width, and that is a reversal worth explaining
+   because the rule it replaces argued the opposite case well.
 
-   Four uppercase words came to about 550px at the size they were set, and the
-   copy column is roughly 520px until the viewport passes 1150px -- so the row
-   wrapped, and "About" sat alone on a second line under three words that
-   already read as a set. Two things fix it together and neither would alone:
-   the row is told not to wrap, and the type is sized against the viewport so
-   that at every width there is something to not wrap *into*. Forbidding the
-   wrap without shrinking the type would have traded a second line for an
-   overflow, which is the same problem with the evidence hidden.
+   That rule forbade wrapping from 30rem up and sized the type against the
+   viewport so there was always something to not wrap into. It worked at
+   eleven to twenty pixels. It cannot work at forty: four tracked words come to
+   about 850px there and no column on this page is that wide, so `nowrap` would
+   no longer be holding a line together, it would be pushing the row out of the
+   layout -- the same overflow the old note was right to warn about, arrived at
+   from the other end.
 
-   It is only forbidden from 30rem up. Below that there is genuinely no size at
-   which thirty-two tracked capitals fit across a phone and stay legible, and a
-   row that wraps is better than one that is clipped or set at nine pixels. The
-   floor of the clamp is what the narrowest of those widths gets. */
-@media (min-width: 30rem) {
-  .hero-nav {
-    flex-wrap: nowrap;
-  }
-
-  .hero-nav-link {
-    white-space: nowrap;
-  }
+   So the row is two lines now, and two lines is a fine shape for it: the break
+   falls after "Meal Plans", which leaves two words over two words rather than
+   three and a stranded one. What each link must still keep is `nowrap` on
+   *itself* -- a break inside "How It Works" would read as three links, and
+   that is the wrap this row genuinely cannot have. */
+.hero-nav-link {
+  white-space: nowrap;
 }
 
 @media (min-width: 64rem) {
@@ -3844,9 +3868,15 @@ html:has(.nav-sheet[open]) {
   }
 }
 
-/* Tops out at 1.125rem -- 0.75 at half again -- and scales down from there
-   rather than holding that size into a column too narrow for it. The maximum is
-   the number that was asked for; the rest of the curve is what stops the row
+/* The clamp is the curve between the breakpoints; the flat sizes in the three
+   media blocks at the foot of this file are what each breakpoint actually gets,
+   and they override this from 30rem up. Both are here on purpose -- the clamp
+   covers the widths in between -- but if this row looks the wrong size, those
+   three lines are where it is set, not this one. That is worth writing down
+   because it is not obvious and it has already cost one search.
+
+   Tops out at 1.25rem and scales down from there rather than holding that size
+   into a column too narrow for it. The rest of the curve is what stops the row
    wrapping before it gets there.
 
    At that size the tracking has to come down too: 0.08em is what 12px uppercase
@@ -3854,11 +3884,11 @@ html:has(.nav-sheet[open]) {
    between every character. Tracking is a correction for small type, so it
    shrinks as the type grows -- 0.05em is the equivalent openness here. */
 .hero-nav-link {
-  font-size: clamp(0.6875rem, 1.05vw, 1.125rem);
+  font-size: clamp(1.5rem, 2.6vw, 2.5rem);
   font-weight: 600;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.02em;
   text-transform: uppercase;
-  color: var(--ck-text-muted);
+  color: var(--ck-text);
   border-bottom: 1px solid transparent;
   padding-bottom: 0.22rem;
   transition:
@@ -3868,13 +3898,13 @@ html:has(.nav-sheet[open]) {
 
 @media (hover: hover) and (pointer: fine) {
   .hero-nav-link:hover {
-    color: var(--ck-text);
+    color: var(--ck-brand);
     border-bottom-color: var(--ck-brand);
   }
 }
 
 .hero-nav-link:focus-visible {
-  color: var(--ck-text);
+  color: var(--ck-brand);
 }
 
 /* --------------------------------------------------------------------------
@@ -4291,7 +4321,18 @@ html:has(.nav-sheet[open]) {
    smaller and fluid, because a bar the height of a wordmark cannot give four
    tracked capitals the width a hero column can -- the `clamp` is what keeps
    them off the logo at the breakpoint where they first appear, and it is the
-   same device the hero row uses for the same reason. And the tracking is
+   same device the hero row uses for the same reason.
+
+   How much smaller is not a matter of taste, and it has been got wrong once.
+   `.site-bar` is `1fr auto 1fr` with `min-width: 0` on the sides, so this row
+   does not push the wordmark when it outgrows its track -- it runs underneath
+   it. The centre track is the mark plus `.wordmark`, which is around 310px at
+   the container's full width, leaving each side roughly 390px; four links at
+   their padding and gaps have to fit inside that. Raising the maximum to the
+   hero's 15px put the row at about 435px and drew "ABOUT" straight through the
+   logo. 13px is the ceiling this bar actually has, which is why the number
+   below is what it is and why it should not be raised without widening the
+   track or shortening what is in it. And the tracking is
    0.075em against the hero's 0.05: tracking is a correction for small type, so
    it grows as the type shrinks. Same rule, other end of it.
 
@@ -4307,7 +4348,7 @@ html:has(.nav-sheet[open]) {
   letter-spacing: 0.075em;
   text-transform: uppercase;
   white-space: nowrap;
-  padding: 0.45rem 0.6rem;
+  padding: 0.45rem 0.5rem;
 }
 
 /* The tightest the bar ever is. Between the breakpoint where these links appear
@@ -4358,6 +4399,156 @@ html:has(.nav-sheet[open]) {
 }
 
 /* --------------------------------------------------------------------------
+   The full-width action under a grid.
+
+   `see the full menu` sat under three tiles as a small hairline pill against
+   the left edge, which read as an afterthought rather than as the next step --
+   a grid of six dishes ends on a question ("is that all?") and the answer was
+   set smaller than the calorie counts above it. Widening it to the grid makes
+   the answer the same size as the question, and squares off the bottom of the
+   section the way the tiles square off the top of it.
+
+   `width: 100%` needs `display: flex` with it. `buttonClasses` ships
+   `inline-flex`, and an inline-level box takes its width from its line rather
+   than from its containing block, so the declaration alone would have done
+   nothing. `justify-content` is already `center` there, which is what centres
+   the label once there is width to centre it in.
+
+   `height: auto` with a `min-height` rather than the fixed `h-12` the `lg`
+   size pins. Every button size in this system fixes a height because a wrapped
+   label would otherwise fall out of the bottom of a control -- true of a pill
+   the width of its words, and not true of a box the width of a grid, where the
+   only thing a fixed height can do is stop this being as tall as it needs to
+   be. The minimum keeps the box in proportion to its width; the padding is
+   what it actually stands on.
+   -------------------------------------------------------------------------- */
+.btn-wide {
+  display: flex;
+  width: 100%;
+  height: auto;
+  min-height: 4.5rem;
+  padding-block: 1.25rem;
+  font-size: 1rem;
+}
+
+/* --------------------------------------------------------------------------
+   The marquee band.
+
+   ## The loop
+
+   The track holds the list twice and travels -50% of its own width. Because the
+   two runs are identical, the frame where the animation restarts is pixel-for-
+   pixel the frame it ended on, so the loop has no seam -- and because the
+   distance is a percentage of the track rather than a measured pixel count,
+   nothing has to be recalculated when the viewport changes or a font loads
+   late. That is the whole reason to do this in CSS: the JavaScript versions of
+   this effect exist to measure a width that a percentage already knows.
+
+   `width: max-content` is what makes the percentage mean anything. Left to lay
+   out normally the track would be the width of the band and the items would
+   wrap inside it; sized to its content it is as wide as both runs laid end to
+   end, which is the number -50% is half of.
+
+   The duration is long on purpose. 48 seconds for a full pass reads as drift
+   rather than as a ticker -- fast enough that the band is visibly alive when
+   you look at it, slow enough that a phrase stays put long enough to be read
+   by somebody who chose to. A marquee that hurries is asking to be read and
+   then not letting you.
+
+   ## Why it starts paused
+
+   `animation-play-state: paused` in the base rule and `running` under
+   `.is-running`, which the component adds when the band reaches the viewport.
+   Starting it at page load would have the loop turning for however long the
+   visitor spends on the four sections above this one -- work the compositor is
+   doing that nobody can see, on a laptop that may be on battery.
+
+   ## The mask
+
+   The same idea as the paper stocks' vertical fade, turned on its side: without
+   it, phrases appear and vanish at two hard vertical edges, and a word being
+   cut in half at the window's edge reads as a clipping bug rather than as
+   something passing by. The ramp is `4rem`, wide enough that a whole word fades
+   rather than a letter.
+   -------------------------------------------------------------------------- */
+.marquee {
+  overflow: hidden;
+  /* `user-select: none` because the second run is a duplicate: dragging across
+     the band and copying it would hand somebody every phrase twice. */
+  user-select: none;
+  mask-image: linear-gradient(
+    90deg,
+    transparent 0,
+    #000 4rem,
+    #000 calc(100% - 4rem),
+    transparent 100%
+  );
+  -webkit-mask-image: linear-gradient(
+    90deg,
+    transparent 0,
+    #000 4rem,
+    #000 calc(100% - 4rem),
+    transparent 100%
+  );
+}
+
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee-drift 48s linear infinite;
+  animation-play-state: paused;
+}
+
+.marquee.is-running .marquee-track {
+  animation-play-state: running;
+}
+
+.marquee-run {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+/* The gap is padding on the item rather than `gap` on the run, and that is not
+   a preference. `gap` applies between children and not after the last one, so
+   the join between the two runs would be tighter than every other join in the
+   band -- once per loop, a visible hiccup in a row whose only job is to look
+   continuous. Padding on both sides of every item makes all the joins the
+   same. */
+.marquee-item {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding-inline: clamp(1.25rem, 3vw, 2.5rem);
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--ck-text-muted);
+}
+
+.marquee-icon {
+  width: 1.125rem;
+  height: 1.125rem;
+  flex-shrink: 0;
+  color: var(--ck-brand);
+  /* Thinner than the set's default for the same reason the footer's contact
+     marks are: at 18px the standard weight closes up the counters in the leaf
+     and the bowl. */
+  stroke-width: 1.5;
+}
+
+@keyframes marquee-drift {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+/* --------------------------------------------------------------------------
    Paper stocks.
 
    The front page is a stack of full-width bands on one continuous ground, and a
@@ -4376,8 +4567,12 @@ html:has(.nav-sheet[open]) {
       no direction to read into, which is what makes it ground rather than
       content; the four steps supply all the direction this band needs.
    3. **Menu** -- `.texture-hatch`, deli paper. The stock food is wrapped in.
-   4. **About** -- no texture at all. `bg-sunken`, flat. The closing statement is
-      the one band that should feel like it has stopped moving.
+   4. **About** -- `.texture-brick`, a running-bond wall. The band that says
+      "one kitchen, one neighbourhood" is the one place on the page where the
+      argument is about a building rather than about food, and a wall is what a
+      building is made of. It is the heaviest of the four stocks by pitch and
+      the faintest by ink, which is how it stays a ground: you read the
+      sentence, and only then notice what it is printed on.
 
    ## Why the third one is diagonal
 
@@ -4419,13 +4614,15 @@ html:has(.nav-sheet[open]) {
    neighbour's background or over anything else on the page.
    -------------------------------------------------------------------------- */
 .texture-dots,
-.texture-hatch {
+.texture-hatch,
+.texture-brick {
   position: relative;
   isolation: isolate;
 }
 
 .texture-dots::before,
-.texture-hatch::before {
+.texture-hatch::before,
+.texture-brick::before {
   content: '';
   position: absolute;
   inset: 0;
@@ -4547,6 +4744,56 @@ html:has(.nav-sheet[open]) {
 }
 
 /* --------------------------------------------------------------------------
+   Brickwork. The wall the kitchen is in.
+
+   ## Why this one is not a gradient
+
+   The other three stocks are `repeating-linear-gradient`, and this one cannot
+   be, for a reason worth stating so nobody spends an afternoon rediscovering
+   it. A running bond -- the offset courses that make brickwork read as
+   brickwork rather than as tiling -- needs a mark that exists at some *x* range
+   AND some *y* range: the vertical joint in one course is present for the top
+   half of the tile and absent for the bottom. Background layers composite, they
+   do not intersect, and a linear gradient's stops run along one axis only. So
+   no number of gradient layers can draw the offset; stacking a horizontal
+   ruling and a vertical one gives a stack bond, which is a bathroom, not a
+   house.
+
+   An SVG tile can state the four rectangles directly, and being a tile it costs
+   one 300-byte data URI that never leaves the stylesheet -- no request, nothing
+   to 404, and the browser rasterises it once per size.
+
+   ## Why the ink is written out
+
+   The colour is baked into the URI rather than coming from a token, which is
+   the one place this file breaks its own rule and it is `.texture-dots`'s
+   precedent rather than a new liberty: that stock hardcodes its ink too, for
+   the same reason -- there is no way to interpolate a custom property into a
+   `url()`. `#0d1714` is `--color-dark-slate-grey-950`, the same ink the dots
+   are mixed from, so the three stocks are still one palette even though this
+   one arrives by a different route.
+
+   6% where the dots are 13%, and that is the pitch paying for itself. A dot
+   field at 16px is mostly empty; a wall at 64px is continuous line in both
+   directions, which holds several times the ink per square inch at the same
+   alpha. Matched to the dots this read as a drawn grid sitting in front of the
+   page. Halved, it reads as what the page is printed on.
+
+   ## The unit
+
+   64 by 24 with a 1px joint, offset half a brick per course. Real stretcher
+   bond runs about 2.2:1 face and this is 2.7:1, deliberately: at 2.2 the
+   courses are close enough to square that the eye starts reading the wall as a
+   grid again, and the whole point of the stock is that it should not resolve
+   into one. The tile is two courses tall because the offset only closes after
+   two -- a one-course tile has nothing to be offset from.
+   -------------------------------------------------------------------------- */
+.texture-brick::before {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='48'%3E%3Cg fill='%230d1714' fill-opacity='0.06'%3E%3Crect width='64' height='1'/%3E%3Crect y='24' width='64' height='1'/%3E%3Crect width='1' height='24'/%3E%3Crect x='32' y='24' width='1' height='24'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: 4rem 3rem;
+}
+
+/* --------------------------------------------------------------------------
    Corners off.
 
    Shape only, no colour, so it composes with any variant -- which is the
@@ -4612,8 +4859,8 @@ html:has(.nav-sheet[open]) {
   display: inline-flex;
   align-items: center;
   min-height: 2.75rem;
-  font-size: 0.6875rem;
-  letter-spacing: 0.035em;
+  font-size: 1.625rem;
+  letter-spacing: 0.02em;
 }
 
 .hero-container {
@@ -4744,8 +4991,172 @@ html:has(.nav-sheet[open]) {
   margin-top: clamp(0.75rem, 2vw, 1.75rem);
 }
 
-.site-footer nav { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 2rem; gap: 0 2rem; }
-.site-footer nav a { display: flex; align-items: center; min-height: 2.75rem; }
+/* --------------------------------------------------------------------------
+   The closing note.
+
+   Three columns of different kinds of thing -- a paragraph, a list of pages, a
+   list of ways to get hold of somebody -- and the job of these rules is to make
+   them read as one block rather than as three widgets that happened to land in
+   a row. What ties them together is the heading treatment and a single vertical
+   rhythm: every column starts with something at the same height off the top,
+   and every row inside a column is the same height as every other.
+
+   The columns stack to one on a phone and to two from `sm`, which is set in the
+   markup. Nothing here is width-aware, and that is on purpose: a footer that
+   needs breakpoint rules of its own is a footer doing too much.
+   -------------------------------------------------------------------------- */
+
+/* The blurb. `leading-relaxed` and a measure, because this is the one piece of
+   prose in the footer and prose at 14px set solid is the thing people mean when
+   they say a footer looks cramped. */
+.footer-blurb {
+  max-width: 26rem;
+  font-size: 0.875rem;
+  line-height: 1.65;
+  color: var(--ck-text-muted);
+}
+
+/* Column headings, in the voice the rest of the shell speaks in: the wordmark,
+   the bar's two actions and the footer's own links are all tracked capitals, so
+   a sentence-case heading over them would be the one thing here in a different
+   register.
+
+   Smaller and paler than the links under it, which is the inversion that makes
+   the hierarchy work. A heading louder than its list turns the list into a
+   footnote of the heading; the heading's job here is only to say what kind of
+   thing follows, and then get out of the way. */
+.footer-heading {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ck-text-subtle);
+}
+
+/* One rhythm for both lists, so "Menu" and the phone number sit on the same
+   baselines across the gap between the columns. The top margin is what lines
+   the first row of each list up with the first line of the blurb beside it. */
+.footer-list {
+  display: flex;
+  flex-direction: column;
+  margin-top: 0.5rem;
+}
+
+/* --------------------------------------------------------------------------
+   The footer's links.
+
+   Vertical now, one per row, where they used to be a 2x2 grid and then a single
+   horizontal line. Both of those were arrangements for a list that had to sit
+   beside a paragraph; in its own column a list is a column, and reading down
+   four items is what a footer nav is for.
+
+   Each link keeps its 2.75rem box, which is the tap target rather than the
+   type. Capitals at 12px are a small thing to hit, and the padding is what
+   makes the target the size of a finger instead of the size of the word.
+   -------------------------------------------------------------------------- */
+.footer-link {
+  display: flex;
+  align-items: center;
+  min-height: 2.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--ck-text-muted);
+  transition: color 150ms var(--ck-ease);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .footer-link:hover {
+    color: var(--ck-text);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Contact rows.
+
+   Sentence case and full ink, against the links next door which are tracked
+   capitals in muted. That is not an inconsistency, it is the difference between
+   a label and a value: "MENU" is the name of a page and can be set as a name,
+   while `hello@example.com` is a literal string somebody is going to read
+   character by character and possibly type. Capitalising an email address makes
+   it wrong, tracking it makes it slower to read, and muting it makes the one
+   thing in this column worth copying the palest thing in it.
+
+   Same 2.75rem row as the links, so the two columns share a rhythm even though
+   they are set differently.
+
+   The icon does not change colour on hover and the text does. A mark that
+   brightens with its label reads as a second thing lighting up; holding it
+   still lets it stay what it is, which is a sign for the row rather than part
+   of the link's state.
+   -------------------------------------------------------------------------- */
+.footer-contact {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  min-height: 2.75rem;
+  font-size: 0.875rem;
+  color: var(--ck-text-muted);
+  transition: color 150ms var(--ck-ease);
+}
+
+.footer-contact-icon {
+  flex-shrink: 0;
+  color: var(--ck-brand);
+  /* 1.5 against the set's 2, and it is the one place that weight is overridden.
+     These marks carry more line per unit than an arrow or a search glyph -- a
+     bubble inside a bubble, a square around a circle -- so at 20px the standard
+     weight closes their counters up and all three go muddy. Thinning the stroke
+     opens them back out and, at this size beside 14px text, brings the mark to
+     about the visual weight of the word next to it. */
+  stroke-width: 1.5;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .footer-contact:hover {
+    color: var(--ck-text);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   The sign-off.
+
+   Six words above the rule, and they are the only sentence in the shell written
+   to be *said* rather than read. A footer's last line is usually the copyright,
+   which tells the visitor nothing they wanted; this tells them the one thing
+   the whole site is arguing -- that the food was cooked this morning -- in the
+   words somebody would use handing over a tiffin.
+
+   Set larger than everything around it and still quiet: it is the brand face at
+   a size between the blurb and a heading, in muted ink, with no rule of its own.
+   The white space above it is what gives it weight.
+   -------------------------------------------------------------------------- */
+.footer-signoff {
+  font-family: var(--font-brand);
+  font-size: 1.125rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--ck-text-muted);
+}
+
+/* The signature under it, set as the wordmark and sized down to a whisper.
+
+   Smaller than the line it signs and paler, which is the whole relationship: a
+   signature that competes with the sentence is a logo, and there is already one
+   of those at the top of this footer. `0.14em` rather than the wordmark's
+   0.16em -- tracking is a correction for small type in one direction only up to
+   a point, and past about 11px in capitals the letters start reading as
+   separate marks rather than as a word. */
+.footer-signature {
+  margin-top: 0.5rem;
+  font-family: var(--font-brand);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  color: var(--ck-text-subtle);
+}
 
 /* The icons introduce the sequence; instructions stay readable throughout. */
 .step-flow.is-revealed .step-hop {
@@ -4773,7 +5184,7 @@ html:has(.nav-sheet[open]) {
   .hero-bowl { aspect-ratio: 16 / 10; }
   .hero-bowl-img { animation: none; }
   .hero-nav { column-gap: 0.75rem; }
-  .hero-nav-link { font-size: 0.625rem; letter-spacing: 0.02em; }
+  .hero-nav-link { font-size: 1.625rem; letter-spacing: 0.01em; }
   .hero-copy > p { font-size: 0.9375rem; }
   .hero-copy > div { margin-top: 1.75rem; }
   .hero-split { gap: 1.75rem; }
@@ -4796,7 +5207,7 @@ html:has(.nav-sheet[open]) {
 
 @media (min-width: 40rem) {
   .hero-container { padding-top: 2.5rem; }
-  .hero-nav-link { font-size: 0.8125rem; }
+  .hero-nav-link { font-size: 2.25rem; }
   .account-actions .account-sign-in { display: inline-flex; }
   .account-cta-short { display: none; }
   .account-cta-long { display: inline; }
@@ -4808,7 +5219,7 @@ html:has(.nav-sheet[open]) {
   .hero-headline { font-size: clamp(3rem, 4.7vw, 3.875rem); }
   .hero-part { display: block; }
   .hero-nav { flex-wrap: wrap; gap: 0.25rem 1rem; }
-  .hero-nav-link { font-size: 0.6875rem; }
+  .hero-nav-link { font-size: 2.5rem; }
   .hero-bowl { margin-top: -4.5rem; }
   .about-split { grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); gap: 3rem; }
   .about-art { margin-inline: 0; }
@@ -4820,6 +5231,10 @@ html:has(.nav-sheet[open]) {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  /* The band stays, the travel goes. A row of five claims sitting still is
+     still a divider between two sections, which is what it was for -- and the
+     second run simply sits off the right edge where the mask fades it out. */
+  .marquee-track { animation: none; }
   .hero-roll { display: none; }
   .hero-part,
   .hero-enter,

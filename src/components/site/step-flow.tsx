@@ -3,6 +3,7 @@
 import { useRef } from 'react';
 import { useInView } from 'motion/react';
 import { cx } from '@/components/ui/button-styles';
+import { typedLengthOf } from '@/components/site/typing';
 import { CalendarIcon, ChoiceIcon, PauseIcon, PotIcon } from './icons';
 
 /**
@@ -99,8 +100,40 @@ type Step = { title: string; body: string; icon: StepIcon };
  * offers the browser a break opportunity between every pair of them, which
  * wraps this heading mid-word on a narrow screen; holding each word together
  * puts the break opportunities back where they belong, at the spaces.
+ *
+ * ## Typing more than one of these in a row
+ *
+ * `delay` and `step` are what let several of these read as one machine rather
+ * than as three that happened to start together. Each instance watches its own
+ * element, so three stacked in a footer all cross the threshold within a frame
+ * of each other and type in parallel -- which is not a typewriter, it is three
+ * typewriters. `delay` holds the later ones back by however long the earlier
+ * ones run, and the caller does that arithmetic because only the caller knows
+ * what order they are in. `typedLengthOf` is there for exactly that sum.
+ *
+ * `typedLengthOf` lives in `typing.ts` rather than here, because a server
+ * component cannot call a function exported from a client module -- see the note
+ * on it.
+ *
+ * `step` exists because a heading and a paragraph do not want the same pace.
+ * 46ms per character is right for six words you are meant to watch land; over
+ * a hundred and twenty it is nearly six seconds of somebody waiting to read a
+ * sentence. Body text runs at roughly half that and still reads as typed.
  */
-export function Typewriter({ text, className }: { text: string; className?: string }) {
+
+export function Typewriter({
+  text,
+  className,
+  delay = 0,
+  step = CHAR_STEP,
+}: {
+  text: string;
+  className?: string;
+  /** Milliseconds to wait after this element is seen before the first letter. */
+  delay?: number;
+  /** Milliseconds per character. Defaults to the heading pace. */
+  step?: number;
+}) {
   const ref = useRef<HTMLSpanElement>(null);
   // `once`, because this is an introduction and not a state readout. Retyping
   // the heading every time it scrolls back into view would make the section
@@ -111,11 +144,9 @@ export function Typewriter({ text, className }: { text: string; className?: stri
   // The reveal runs across the whole line, so each character is delayed by its
   // position in the heading rather than its position in its own word.
   let index = 0;
-  // Counted over the words rather than taken from `text.length`: the spaces
-  // between them are rendered as plain text and never get a slot of their own,
-  // so the string's length overstates how long the type-out actually runs. The
-  // caret waits exactly this long before it starts blinking.
-  const typedLength = words.reduce((total, word) => total + word.length, 0);
+  // See `typedLengthOf`: spaces are not typed, so `text.length` would overstate
+  // the run. The caret waits exactly this long before it starts blinking.
+  const typedLength = typedLengthOf(text);
 
   return (
     <>
@@ -127,8 +158,8 @@ export function Typewriter({ text, className }: { text: string; className?: stri
         className={cx('typewriter', seen && 'is-typing', className)}
         style={
           {
-            '--type-step': `${CHAR_STEP}ms`,
-            '--caret-at': `${typedLength * CHAR_STEP}ms`,
+            '--type-step': `${step}ms`,
+            '--caret-at': `${delay + typedLength * step}ms`,
           } as React.CSSProperties
         }
       >
@@ -142,7 +173,7 @@ export function Typewriter({ text, className }: { text: string; className?: stri
                   <span
                     key={`${character}-${characterIndex}`}
                     className="type-char"
-                    style={{ '--char-at': `${at * CHAR_STEP}ms` } as React.CSSProperties}
+                    style={{ '--char-at': `${delay + at * step}ms` } as React.CSSProperties}
                   >
                     {character}
                   </span>
