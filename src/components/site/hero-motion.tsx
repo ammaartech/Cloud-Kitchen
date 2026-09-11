@@ -39,7 +39,7 @@ import { cx } from '@/components/ui/button-styles';
  * JavaScript entrance animation on this surface would mean the hero holds
  * still until the bundle lands, which is exactly the load-time win this
  * project already paid for. It matters most for the first gateway card: it
- * carries the `priority` photograph and is the LCP candidate, so its entrance
+ * carries the high-priority photograph and is the LCP candidate, so its entrance
  * moves it but never fades it -- an element at `opacity: 0` does not count as
  * painted.
  *

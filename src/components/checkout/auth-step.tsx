@@ -2,8 +2,16 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { browserClient } from '@/lib/supabase/client';
 import { Alert, Button, Card, Field, Input, Spinner, cx } from '@/components/ui/primitives';
+
+/**
+ * The Supabase browser client, fetched when it is about to be needed rather
+ * than with the page. Focusing any field in the form starts the download, so by
+ * the time somebody has typed an email and a password it has long since
+ * arrived -- and `import()` is cached, so the focus and the submit share one
+ * request. A visitor who reads the page and leaves never downloads it at all.
+ */
+const loadClient = () => import('@/lib/supabase/client');
 
 /**
  * Account creation, positioned late in checkout (PRD 6).
@@ -28,6 +36,7 @@ export function CheckoutAuthStep() {
     setError(null);
     setNotice(null);
 
+    const { browserClient } = await loadClient();
     const supabase = browserClient();
 
     if (mode === 'create') {
@@ -99,7 +108,7 @@ export function CheckoutAuthStep() {
         and food.
       </p>
 
-      <form onSubmit={submit} className="mt-5 space-y-4">
+      <form onSubmit={submit} onFocus={() => void loadClient()} className="mt-5 space-y-4">
         {error ? <Alert tone="danger">{error}</Alert> : null}
         {notice ? <Alert tone="info">{notice}</Alert> : null}
 

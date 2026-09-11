@@ -2,7 +2,34 @@
 
 import { buttonClasses } from '@/components/ui/button-styles';
 import { ArrowUpIcon } from './icons';
-import { useScrolledPastViewport } from './scroll';
+import { useElementInView, useScrolledPastViewport } from './scroll';
+
+/** The footer's own copy of this control. See `FooterTopButton`. */
+const DOCK_ID = 'footer-to-top';
+
+/**
+ * Back to the top of the page, taking focus with it. Shared by both buttons
+ * below, so the floating one and the footer's copy cannot drift apart.
+ */
+function toTop() {
+  // Read the preference at the moment of the press rather than through a
+  // hook. This is a one-shot imperative action, and the setting can be
+  // changed by the visitor while the page is open.
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  window.scrollTo({ top: 0, behavior: reduced ? 'auto' : 'smooth' });
+
+  // The scroll is only half the job. Without this, a keyboard visitor who
+  // presses the button is looking at the top of the page with their focus
+  // still three screens down: the next Tab returns them to where they came
+  // from, which reads as the button having done nothing.
+  //
+  // `preventScroll` is what stops the two halves fighting. Focusing an
+  // element that is off-screen scrolls it into view instantly, which would
+  // jump the page to the top and then leave the smooth scroll animating from
+  // a position it had already arrived at.
+  document.getElementById('site-top')?.focus({ preventScroll: true });
+}
 
 /**
  * Back to top.
@@ -24,6 +51,17 @@ import { useScrolledPastViewport } from './scroll';
  * `.to-top` in `globals.css` for the two insets and why the mobile one is
  * larger.
  *
+ * ## Why it leaves at the footer
+ *
+ * The footer ends on the kitchen's name set as wide as the window, and a
+ * control floating in the corner sat squarely on its last letter -- brand green
+ * on the footer's green, over the one piece of type at the foot of the page
+ * that is there to be looked at. So the footer carries its own copy of this
+ * button, in the same outlined circle as the ways to reach the kitchen, and
+ * this one steps aside whenever that copy is on screen. The two are never
+ * visible together, the name is never covered, and there is always exactly one
+ * way back up.
+ *
  * ## Why it is a real button that stays in the DOM
  *
  * Rendering it conditionally would make it appear with no transition and, worse,
@@ -35,27 +73,9 @@ import { useScrolledPastViewport } from './scroll';
  * in the corner of every page.
  */
 export function ScrollTopButton() {
-  const shown = useScrolledPastViewport();
-
-  function toTop() {
-    // Read the preference at the moment of the press rather than through a
-    // hook. This is a one-shot imperative action, and the setting can be
-    // changed by the visitor while the page is open.
-    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-    window.scrollTo({ top: 0, behavior: reduced ? 'auto' : 'smooth' });
-
-    // The scroll is only half the job. Without this, a keyboard visitor who
-    // presses the button is looking at the top of the page with their focus
-    // still three screens down: the next Tab returns them to where they came
-    // from, which reads as the button having done nothing.
-    //
-    // `preventScroll` is what stops the two halves fighting. Focusing an
-    // element that is off-screen scrolls it into view instantly, which would
-    // jump the page to the top and then leave the smooth scroll animating from
-    // a position it had already arrived at.
-    document.getElementById('site-top')?.focus({ preventScroll: true });
-  }
+  const past = useScrolledPastViewport();
+  const docked = useElementInView(DOCK_ID);
+  const shown = past && !docked;
 
   return (
     <button
@@ -75,6 +95,29 @@ export function ScrollTopButton() {
       aria-hidden={shown ? undefined : true}
       tabIndex={shown ? undefined : -1}
       className={buttonClasses('primary', 'md', 'to-top')}
+    >
+      <ArrowUpIcon />
+    </button>
+  );
+}
+
+/**
+ * The same control, docked in the footer.
+ *
+ * Set as one of the footer's circles rather than as a second copy of the
+ * floating button: on the footer's green, the brand-filled square is the thing
+ * that disappeared, and an outline in the footer's own edge colour is what
+ * reads there. Its presence on screen is what sends the floating one away --
+ * see `ScrollTopButton`.
+ */
+export function FooterTopButton() {
+  return (
+    <button
+      type="button"
+      id={DOCK_ID}
+      onClick={toTop}
+      aria-label="Back to top"
+      className="footer-social footer-to-top"
     >
       <ArrowUpIcon />
     </button>

@@ -10,7 +10,22 @@ import { Badge, cx } from '@/components/ui/primitives';
  * not selectable (PRD 6, PRD 19) -- shown rather than hidden, so a customer
  * learns what the kitchen normally makes and why it is off today.
  */
-export function ProductTile({ product }: { product: Product }) {
+export function ProductTile({
+  product,
+  loading,
+  fetchPriority,
+}: {
+  product: Product;
+  /**
+   * `eager` for a tile the page knows is on the first screen. Lazy is right
+   * for the rest of a grid and wrong for its first row: a lazy image is only
+   * requested once layout has placed it, so the largest picture on the screen
+   * arrives last.
+   */
+  loading?: 'eager' | 'lazy';
+  /** `high` for the one tile that is the page's LCP candidate, and no other. */
+  fetchPriority?: 'high' | 'low' | 'auto';
+}) {
   const unavailable = !product.isAvailable;
 
   return (
@@ -27,6 +42,8 @@ export function ProductTile({ product }: { product: Product }) {
             alt={product.imageAlt}
             fill
             sizes="(max-width: 639px) calc(100vw - 40px), (max-width: 1023px) calc(50vw - 34px), (max-width: 1152px) 33vw, 360px"
+            loading={loading}
+            fetchPriority={fetchPriority}
             className="object-cover"
           />
         ) : (

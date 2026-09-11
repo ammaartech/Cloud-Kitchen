@@ -49,6 +49,13 @@ const nextConfig: NextConfig = {
   },
 
   images: {
+    // AVIF where the browser accepts it, WebP where it does not. AVIF runs
+    // 20-30% smaller than WebP at the same quality, which on a food site --
+    // where the photographs are most of every page's weight -- is the largest
+    // single saving available. The cost is a slower first encode per size and
+    // a second cached copy on disk; both are paid once, on the server.
+    formats: ['image/avif', 'image/webp'],
+
     // Product imagery is database-driven (PRD 13), so the host allowlist is
     // what constrains it rather than any hardcoded asset path.
     remotePatterns: [

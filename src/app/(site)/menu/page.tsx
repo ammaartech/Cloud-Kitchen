@@ -170,12 +170,25 @@ async function MenuResults({
         </div>
       ) : (
         <div className="mt-10 space-y-14">
-          {groups.map((group) => (
+          {groups.map((group, groupIndex) => (
             <section key={group.slug}>
               <h2 className="text-xl font-semibold tracking-tight">{group.name}</h2>
               <div className="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-                {group.products.map((product) => (
-                  <ProductTile key={product.id} product={product} />
+                {group.products.map((product, index) => (
+                  <ProductTile
+                    key={product.id}
+                    product={product}
+                    /* The first row of the first category is the first screen
+                       at every width -- three across on a desktop, the top one
+                       or two on a phone -- so those load eagerly and the very
+                       first, the page's LCP candidate, asks to jump the queue.
+                       Everything below stays lazy. `fetchPriority` rather than
+                       Next's `preload` prop, for the reason the hero gives: a
+                       preload link on its own fetches at the browser's low
+                       default image priority. */
+                    loading={groupIndex === 0 && index < 3 ? 'eager' : undefined}
+                    fetchPriority={groupIndex === 0 && index === 0 ? 'high' : undefined}
+                  />
                 ))}
               </div>
             </section>

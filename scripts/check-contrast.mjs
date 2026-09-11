@@ -138,16 +138,19 @@ const pairs = (t, on) => [
         ['white / danger', WHITE, t.danger, 4.5],
         ['white / success', WHITE, t.success, 4.5],
 
-        // The mission band at the foot of the home page. It is the one dark
-        // surface on the storefront and it does not inherit the ops ramp, so
-        // its inks are checked here rather than anywhere else. The focus ring
-        // is the reason this block exists: the global ring is brand green,
-        // which is invisible on this ground, and the band re-points the token
-        // at a light step. Held to 3:1 like every other ring.
-        ['mission ink / mission', t['mission-ink'], t.mission, 4.5],
-        ['mission muted / mission', t['mission-muted'], t.mission, 4.5],
-        ['mission subtle / mission', t['mission-subtle'], t.mission, 4.5],
-        ['mission focus ring / mission', t['mission-focus'], t.mission, 3],
+        // The footer: the one dark surface on the storefront. It does not
+        // inherit the ops ramp, so its inks are checked here rather than
+        // anywhere else. The focus ring is re-pointed at a light step inside
+        // it -- the global ring is brand green, invisible on this ground --
+        // and the pill's label is the ground colour itself, on ink and on
+        // its hover.
+        ['footer ink / footer', t['footer-ink'], t.footer, 4.5],
+        ['footer muted / footer', t['footer-muted'], t.footer, 4.5],
+        ['footer subtle / footer', t['footer-subtle'], t.footer, 4.5],
+        ['footer edge / footer', t['footer-edge'], t.footer, 3],
+        ['footer focus ring / footer', t['footer-focus'], t.footer, 3],
+        ['footer / footer ink (pill)', t.footer, t['footer-ink'], 4.5],
+        ['footer / footer muted (pill hover)', t.footer, t['footer-muted'], 4.5],
       ]
     : [
         ['ops accent / surface', t.accent, t.surface, 4.5],

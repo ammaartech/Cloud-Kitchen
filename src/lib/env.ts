@@ -119,12 +119,12 @@ export function serverEnv(): ServerEnv {
   return cached;
 }
 
-/** The public subset, safe to reference from the browser bundle. */
-export const publicEnv = {
-  supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL ?? '',
-  supabaseAnonKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? '',
-  siteUrl: process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000',
-};
+/**
+ * The public subset. Defined in `env-public.ts` so the browser can read it
+ * without importing this module -- and Zod with it. Re-exported here so server
+ * code keeps one place to import configuration from.
+ */
+export { publicEnv } from './env-public';
 
 /**
  * Whether a payment provider has enough credentials to be offered at checkout.

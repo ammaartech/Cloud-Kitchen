@@ -221,3 +221,34 @@ export function useScrolledPastElement(id: string, watch: string): boolean {
 
   return seen?.watch === watch && seen.past;
 }
+
+/**
+ * Is an element on screen right now?
+ *
+ * The back-to-top handoff is the reader. The footer carries its own copy of
+ * that control, and the floating one steps aside while the copy is in view --
+ * so the two are never on screen together, and the floating one never sits
+ * over the name set across the foot of the footer.
+ *
+ * No route key here, unlike `useScrolledPastElement` above, because nothing
+ * this watches belongs to a route: the footer is part of the storefront
+ * layout, which survives client-side navigation along with the observer.
+ */
+export function useElementInView(id: string): boolean {
+  const [inView, setInView] = useState(false);
+
+  useEffect(() => {
+    const element = document.getElementById(id);
+    if (!element) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => setInView(entry.isIntersecting),
+      { threshold: 0 },
+    );
+
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, [id]);
+
+  return inView;
+}

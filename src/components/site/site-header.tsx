@@ -294,7 +294,12 @@ export function SiteHeader() {
             width={933}
             height={416}
             sizes="63px"
-            priority
+            /* Eager, and not `priority`, which Next 16 has deprecated. It is
+               above the fold on every page, so it must not wait for the lazy
+               loader. React still emits a preload for it, at the browser's
+               default image priority; `fetchPriority="high"` is left to the one
+               image on each page that is the largest thing on screen. */
+            loading="eager"
             className="h-7 w-auto"
           />
           <span className="wordmark hidden sm:inline">INFINITY KITCHENS</span>

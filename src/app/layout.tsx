@@ -12,20 +12,37 @@ import './globals.css';
  * arm's length under bad lighting (PRD 19), and it has true tabular figures
  * for the money and ticket columns.
  *
- * `latin-ext` is not optional. The rupee sign (U+20B9) lives in that subset,
- * not in `latin`, so loading `latin` alone leaves every price on the site
- * falling back to whatever the operating system happens to have.
+ * The rupee sign (U+20B9) lives in the `latin-ext` file, not `latin`, and it is
+ * still served: next/font ships an `@font-face` for every subset the face has,
+ * each behind its own `unicode-range`, and `subsets` only decides which of them
+ * are *preloaded*. Preloading `latin-ext` put an 85 KB file -- the largest font
+ * here -- on the critical path of every page to draw one glyph, including the
+ * pages with no price on them. Now the browser fetches it on a page that
+ * actually renders a rupee, and the sign settles a beat after the text around
+ * it.
  */
 const sans = Inter({
   variable: '--font-inter',
-  subsets: ['latin', 'latin-ext'],
+  subsets: ['latin'],
   display: 'swap',
 });
 
+/**
+ * Not preloaded. On the storefront the mono face sets coupon codes -- the offer
+ * strip's among them, which sits above the header on every page while an offer
+ * runs -- and invoice numbers; on the operational screens, ticket codes.
+ * Preloading put both of its files on the critical path of every page in the
+ * app, ahead of the photographs. Unpreloaded, a page fetches only the file its
+ * text actually needs, once that text is laid out, and with `swap` the code
+ * draws in the system monospace for a moment and settles -- a code is read
+ * character by character, and the fallback is a perfectly good monospace to
+ * read it in.
+ */
 const mono = JetBrains_Mono({
   variable: '--font-jetbrains-mono',
   subsets: ['latin', 'latin-ext'],
   display: 'swap',
+  preload: false,
 });
 
 /**

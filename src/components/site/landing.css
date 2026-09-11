@@ -104,13 +104,6 @@
 }
 .hang-blade { stroke-width: 1.5; opacity: 0; }
 .hang-pin { fill: var(--color-dark-slate-grey-800); }
-/* The footer's nav was laid out here as a two-column grid, and that rule is
-   gone rather than moved. It was a duplicate of one in `globals.css` and it
-   outlived it: the footer now puts its links in a column of their own with a
-   heading above them, so a grid on the <nav> put "Explore" in the first track
-   and the whole list in the second -- the heading sitting a third of a column
-   to the left of the words it introduces. Sizing for those links lives with
-   `.footer-link`, next to the treatment it belongs to. */
 
 /* Only the icons enter; instructions stay readable throughout the sequence. */
 .step-flow.is-revealed .step-hop {

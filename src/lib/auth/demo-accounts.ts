@@ -1,6 +1,7 @@
 import { adminClient } from '@/lib/supabase/admin';
 import { serverEnv } from '@/lib/env';
 import type { AppRole } from './permissions';
+import { ROLE_LABELS } from './role-labels';
 
 /**
  * The seeded accounts, for the sign-in page's development panel.
@@ -31,13 +32,9 @@ const ROLE_ORDER: AppRole[] = [
   'customer',
 ];
 
-export const ROLE_LABELS: Record<AppRole, string> = {
-  developer_admin: 'Developer Admin',
-  owner: 'Owner',
-  branch_manager: 'Branch Manager',
-  kitchen_staff: 'Kitchen Staff',
-  customer: 'Customer',
-};
+// Defined in `role-labels.ts` so client code can read it without importing
+// this module, and re-exported for anything that already imports it from here.
+export { ROLE_LABELS };
 
 const ROLE_NOTES: Record<AppRole, string> = {
   developer_admin: 'Everything, plus system config and integrations.',

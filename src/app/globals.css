@@ -157,6 +157,28 @@
      palette somebody meant to use. */
   --ck-mission: #254139;        /* 800 */
 
+  /* The footer's ground and inks. The same green as `--ck-mission`, and the
+     one place on the storefront that sets type on it. Its own tokens rather
+     than a re-pointing of `--ck-text` and friends: nothing inside the footer is
+     a component that has to flip with a surface, it is one band's type, and
+     naming it that way keeps `check:contrast` honest about what sits on what.
+
+     Ink, muted and subtle are steps 50, 200 and 300 -- the ops surface's text
+     ramp, which clears 4.5:1 here as it does there. The edge is 500, the
+     lightest step that is still plainly green, at 3.7:1 for the circles'
+     boundaries. The focus ring is 100, because the global ring is brand green
+     and brand green is invisible on this ground. The rule and the giant name
+     are decoration and carry no contrast contract: 600 for the rule, which has
+     to be seen, and 700 for the name, which only has to be felt. */
+  --ck-footer: #254139;         /* 800 */
+  --ck-footer-ink: #eff6f4;     /* 50  */
+  --ck-footer-muted: #bedad2;   /* 200 */
+  --ck-footer-subtle: #9ec7bb;  /* 300 */
+  --ck-footer-edge: #5da28d;    /* 500 */
+  --ck-footer-focus: #dfece8;   /* 100 */
+  --ck-footer-line: #4a8271;    /* 600 */
+  --ck-footer-type: #386155;    /* 700 */
+
   /* The ink the marginalia -- the drawn kitchen tools out in the page margins
      -- are painted in. Two values for one idea: the drawings are masks, so the
      same file is the same drawing on any ground and only the paint changes.
@@ -4495,7 +4517,7 @@ html:has(.nav-sheet[open]) {
 .marquee-track {
   display: flex;
   width: max-content;
-  animation: marquee-drift 48s linear infinite;
+  animation: marquee-drift 38.4s linear infinite;
   animation-play-state: paused;
 }
 
@@ -4992,170 +5014,398 @@ html:has(.nav-sheet[open]) {
 }
 
 /* --------------------------------------------------------------------------
-   The closing note.
+   The footer.
 
-   Three columns of different kinds of thing -- a paragraph, a list of pages, a
-   list of ways to get hold of somebody -- and the job of these rules is to make
-   them read as one block rather than as three widgets that happened to land in
-   a row. What ties them together is the heading treatment and a single vertical
-   rhythm: every column starts with something at the same height off the top,
-   and every row inside a column is the same height as every other.
+   The one dark ground on the storefront, and it is the hero's green rather
+   than near-black: the bowl panel at the top of the home page is painted in
+   step 800, so the page opens and closes on the same colour. 950 would read as
+   a dark-mode strip bolted to the foot of a light page; 800 still reads as the
+   brand.
 
-   The columns stack to one on a phone and to two from `sm`, which is set in the
-   markup. Nothing here is width-aware, and that is on purpose: a footer that
-   needs breakpoint rules of its own is a footer doing too much.
+   Everything inside paints with `--ck-footer-*`, and the focus ring is
+   re-pointed for the whole band -- a keyboard user tabbing down through the
+   links would otherwise lose the ring the moment it crossed the edge.
+
+   `overflow: clip`, not `hidden`. The name at the foot is wider than the
+   window on purpose, and a footer that became a scroll container would also
+   become the thing the name's scroll timeline measures against, instead of
+   the page.
    -------------------------------------------------------------------------- */
-
-/* The blurb. `leading-relaxed` and a measure, because this is the one piece of
-   prose in the footer and prose at 14px set solid is the thing people mean when
-   they say a footer looks cramped. */
-.footer-blurb {
-  max-width: 26rem;
-  font-size: 0.875rem;
-  line-height: 1.65;
-  color: var(--ck-text-muted);
+.site-footer {
+  --ck-focus: var(--ck-footer-focus);
+  overflow: clip;
+  background-color: var(--ck-footer);
+  color: var(--ck-footer-ink);
 }
 
-/* Column headings, in the voice the rest of the shell speaks in: the wordmark,
-   the bar's two actions and the footer's own links are all tracked capitals, so
-   a sentence-case heading over them would be the one thing here in a different
-   register.
+.footer-top {
+  display: grid;
+  gap: 3rem;
+}
 
-   Smaller and paler than the links under it, which is the inversion that makes
-   the hierarchy work. A heading louder than its list turns the list into a
-   footnote of the heading; the heading's job here is only to say what kind of
-   thing follows, and then get out of the way. */
+@media (min-width: 64rem) {
+  .footer-top {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr);
+    gap: 4rem;
+  }
+}
+
+/* Three ways in, as circles. The circle is what makes a mark read as a thing
+   to press rather than as decoration beside a label, and 2.75rem is the tap
+   target the rest of the shell holds to. */
+.footer-socials {
+  display: flex;
+  gap: 0.625rem;
+}
+
+.footer-social {
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border: 1px solid var(--ck-footer-edge);
+  border-radius: 999px;
+  color: var(--ck-footer-ink);
+  transition:
+    background-color 150ms var(--ck-ease),
+    border-color 150ms var(--ck-ease),
+    color 150ms var(--ck-ease),
+    scale 150ms var(--ck-ease);
+}
+
+/* 1.5 against the set's 2, for the reason the old contact rows gave: these
+   marks carry more line per unit than an arrow, and at 20px the standard
+   weight closes their counters up. */
+.footer-social svg {
+  width: 1.25rem;
+  height: 1.25rem;
+  stroke-width: 1.5;
+}
+
+.footer-social:active {
+  scale: 0.94;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .footer-social:hover {
+    border-color: var(--ck-footer-ink);
+    background-color: var(--ck-footer-ink);
+    color: var(--ck-footer);
+  }
+}
+
+/* The number and the address written out: full ink and a size up from the
+   links, because they are values rather than labels -- strings somebody reads
+   character by character and may copy. */
+.footer-details {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-top: 1.5rem;
+  font-style: normal;
+}
+
+.footer-detail,
+.footer-legal-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.5rem;
+  color: var(--ck-footer-ink);
+  text-decoration-line: underline;
+  text-decoration-color: transparent;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.3em;
+  transition: text-decoration-color 150ms var(--ck-ease);
+}
+
+.footer-detail {
+  font-size: 1.0625rem;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .footer-detail:hover,
+  .footer-legal-link:hover {
+    text-decoration-color: var(--ck-footer-subtle);
+  }
+}
+
+/* Three short lists.
+
+   On a phone there is room for two across, and left to `auto-fit` the third
+   wrapped onto a row of its own with a column-wide hole beside it. So below
+   the width three fit at, the third list takes the whole row and sets its
+   links in the same two tracks -- same gap, so they line up under the two
+   lists above -- and the grid closes up with no gap in it. `nth-child(3)`
+   rather than naming the account list: on a deploy with no plans published
+   that column does not render, the account list is second, and it sits beside
+   "explore" the ordinary way.
+
+   From 30.5rem, `auto-fit` again: that is exactly the width at which three
+   8.5rem columns and their gaps fit the container. */
+.footer-columns {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 2rem 1.5rem;
+}
+
+.footer-columns > nav:nth-child(3) {
+  grid-column: 1 / -1;
+}
+
+.footer-columns > nav:nth-child(3) .footer-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: 1.5rem;
+}
+
+@media (min-width: 30.5rem) {
+  .footer-columns {
+    grid-template-columns: repeat(auto-fit, minmax(8.5rem, 1fr));
+    gap: 2.5rem 1.5rem;
+  }
+
+  .footer-columns > nav:nth-child(3) {
+    grid-column: auto;
+  }
+
+  .footer-columns > nav:nth-child(3) .footer-list {
+    display: flex;
+  }
+}
+
+/* Lower case and quiet, in the voice the home page's section headings use.
+   Paler than the links beneath it: the heading only says what kind of thing
+   follows, and a heading louder than its list turns the list into a footnote. */
 .footer-heading {
-  font-size: 0.6875rem;
-  font-weight: 600;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--ck-text-subtle);
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: 0;
+  color: var(--ck-footer-subtle);
 }
 
-/* One rhythm for both lists, so "Menu" and the phone number sit on the same
-   baselines across the gap between the columns. The top margin is what lines
-   the first row of each list up with the first line of the blurb beside it. */
 .footer-list {
   display: flex;
   flex-direction: column;
   margin-top: 0.5rem;
 }
 
-/* --------------------------------------------------------------------------
-   The footer's links.
-
-   Vertical now, one per row, where they used to be a 2x2 grid and then a single
-   horizontal line. Both of those were arrangements for a list that had to sit
-   beside a paragraph; in its own column a list is a column, and reading down
-   four items is what a footer nav is for.
-
-   Each link keeps its 2.75rem box, which is the tap target rather than the
-   type. Capitals at 12px are a small thing to hit, and the padding is what
-   makes the target the size of a finger instead of the size of the word.
-   -------------------------------------------------------------------------- */
+/* Padding rather than a pinned row height, because plan names are written by
+   the kitchen and "Build Your Own Lunch" wraps in a column this narrow; a
+   fixed height would push its second line into the row below. */
 .footer-link {
-  display: flex;
-  align-items: center;
-  min-height: 2.75rem;
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  white-space: nowrap;
-  color: var(--ck-text-muted);
+  display: inline-block;
+  padding-block: 0.625rem;
+  font-size: 0.9375rem;
+  line-height: 1.35;
+  color: var(--ck-footer-muted);
+  text-wrap: pretty;
   transition: color 150ms var(--ck-ease);
+}
+
+@media (min-width: 64rem) {
+  .footer-link {
+    padding-block: 0.375rem;
+  }
 }
 
 @media (hover: hover) and (pointer: fine) {
   .footer-link:hover {
-    color: var(--ck-text);
+    color: var(--ck-footer-ink);
   }
 }
 
-/* --------------------------------------------------------------------------
-   Contact rows.
-
-   Sentence case and full ink, against the links next door which are tracked
-   capitals in muted. That is not an inconsistency, it is the difference between
-   a label and a value: "MENU" is the name of a page and can be set as a name,
-   while `hello@example.com` is a literal string somebody is going to read
-   character by character and possibly type. Capitalising an email address makes
-   it wrong, tracking it makes it slower to read, and muting it makes the one
-   thing in this column worth copying the palest thing in it.
-
-   Same 2.75rem row as the links, so the two columns share a rhythm even though
-   they are set differently.
-
-   The icon does not change colour on hover and the text does. A mark that
-   brightens with its label reads as a second thing lighting up; holding it
-   still lets it stay what it is, which is a sign for the row rather than part
-   of the link's state.
-   -------------------------------------------------------------------------- */
-.footer-contact {
+/* The rule runs into the action and stops there. A line that ends at a
+   button reads as the page arriving somewhere; the same button under a
+   full-width rule would be one more item in the footer. */
+.footer-rule {
   display: flex;
   align-items: center;
-  gap: 0.625rem;
-  min-height: 2.75rem;
-  font-size: 0.875rem;
-  color: var(--ck-text-muted);
-  transition: color 150ms var(--ck-ease);
+  margin-top: 3rem;
 }
 
-.footer-contact-icon {
+/* The larger gap is for a screen with room around it; on a phone it was a
+   blank band the height of a thumb between the lists and the action. */
+@media (min-width: 40rem) {
+  .footer-rule {
+    margin-top: 4rem;
+  }
+}
+
+.footer-rule-line {
+  flex: 1;
+  height: 1px;
+  background-color: var(--ck-footer-line);
+}
+
+/* The only filled thing in the footer. Light on the dark ground with the
+   ground's own green as its label, so it reads as a hole cut in the band
+   rather than a sticker placed on it. The press is the button system's 0.97. */
+.footer-cta {
+  display: inline-flex;
   flex-shrink: 0;
-  color: var(--ck-brand);
-  /* 1.5 against the set's 2, and it is the one place that weight is overridden.
-     These marks carry more line per unit than an arrow or a search glyph -- a
-     bubble inside a bubble, a square around a circle -- so at 20px the standard
-     weight closes their counters up and all three go muddy. Thinning the stroke
-     opens them back out and, at this size beside 14px text, brings the mark to
-     about the visual weight of the word next to it. */
-  stroke-width: 1.5;
+  align-items: center;
+  height: 2.75rem;
+  padding-inline: 1.375rem;
+  border-radius: 999px;
+  background-color: var(--ck-footer-ink);
+  color: var(--ck-footer);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  white-space: nowrap;
+  transition:
+    background-color 150ms var(--ck-ease),
+    scale 150ms var(--ck-ease);
+}
+
+.footer-cta:active {
+  scale: 0.97;
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .footer-contact:hover {
-    color: var(--ck-text);
+  .footer-cta:hover {
+    background-color: var(--ck-footer-muted);
   }
 }
 
-/* --------------------------------------------------------------------------
-   The sign-off.
-
-   Six words above the rule, and they are the only sentence in the shell written
-   to be *said* rather than read. A footer's last line is usually the copyright,
-   which tells the visitor nothing they wanted; this tells them the one thing
-   the whole site is arguing -- that the food was cooked this morning -- in the
-   words somebody would use handing over a tiffin.
-
-   Set larger than everything around it and still quiet: it is the brand face at
-   a size between the blurb and a heading, in muted ink, with no rule of its own.
-   The white space above it is what gives it weight.
-   -------------------------------------------------------------------------- */
-.footer-signoff {
-  font-family: var(--font-brand);
-  font-size: 1.125rem;
-  font-weight: 600;
-  letter-spacing: -0.01em;
-  color: var(--ck-text-muted);
+.footer-base {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  margin-top: 1.75rem;
 }
 
-/* The signature under it, set as the wordmark and sized down to a whisper.
+@media (min-width: 48rem) {
+  .footer-base {
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 3rem;
+  }
+}
 
-   Smaller than the line it signs and paler, which is the whole relationship: a
-   signature that competes with the sentence is a logo, and there is already one
-   of those at the top of this footer. `0.14em` rather than the wordmark's
-   0.16em -- tracking is a correction for small type in one direction only up to
-   a point, and past about 11px in capitals the letters start reading as
-   separate marks rather than as a word. */
-.footer-signature {
-  margin-top: 0.5rem;
+.footer-blurb {
+  max-width: 44ch;
+  font-size: 0.875rem;
+  line-height: 1.7;
+  color: var(--ck-footer-muted);
+  text-wrap: pretty;
+}
+
+.footer-fine {
+  max-width: 60ch;
+  margin-top: 0.75rem;
+  font-size: 0.75rem;
+  line-height: 1.6;
+  color: var(--ck-footer-subtle);
+  text-wrap: pretty;
+}
+
+.footer-legal {
+  display: flex;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+  column-gap: 1.75rem;
+}
+
+.footer-legal-link {
+  font-size: 0.8125rem;
+  white-space: nowrap;
+}
+
+/* The legal links and the footer's copy of the back-to-top button, as one
+   row. On a phone the base stacks, and `margin-inline-start: auto` sends the
+   button to the right edge -- the side of the screen the floating button it
+   takes over from was on. It borrows `.footer-social` for its circle; the
+   cursor is the one thing an <a> gets by default and a <button> does not. */
+.footer-base-end {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 0.75rem 1.75rem;
+}
+
+.footer-to-top {
+  flex-shrink: 0;
+  margin-inline-start: auto;
+  cursor: pointer;
+}
+
+/* The name, wider than the window and cut off by the bottom of it.
+
+   The wordmark's face, in the lower case every heading on the home page uses.
+   Sized to run almost exactly edge to edge rather than off both sides. A word
+   cut at the sides reads as something too big for the page, which is a good
+   effect for a phrase and a bad one for a name: the first thing it cuts is the
+   "i", and "nfinity" is not what the kitchen is called. So the width is the
+   window's, and the only crop is the bottom.
+
+   The crop is `height` against a line box of 1 -- the ascenders and most of
+   the x-height show, and the page's bottom edge cuts the letters just above
+   their baseline. Step 700 on 800: loud by size, quiet by colour, so it closes
+   the page without competing with the links above it. */
+.footer-giant {
+  display: flex;
+  justify-content: center;
+  height: 0.74em;
+  margin-top: clamp(2.5rem, 7vw, 5rem);
+  overflow: clip;
   font-family: var(--font-brand);
-  font-size: 0.6875rem;
+  font-size: 13.4vw;
   font-weight: 600;
-  letter-spacing: 0.14em;
-  color: var(--ck-text-subtle);
+  line-height: 1;
+  letter-spacing: -0.04em;
+  white-space: nowrap;
+  color: var(--ck-footer-type);
+  user-select: none;
+  view-timeline: --footer-giant;
+}
+
+.footer-giant > span {
+  flex-shrink: 0;
+}
+
+/* On a phone the name goes onto two lines.
+
+   On one line it is 13.4vw, about fifty pixels on a phone -- a caption, not
+   the plinth it is on every other screen -- and the crop leaves a strip of
+   letter-tops nobody reads as a word. Stacked, each word runs nearly the
+   width of the screen, which is the scale the name has everywhere else, and
+   the crop still falls just above the last line's baseline: 1.62em is one
+   line at 0.92 plus the same 0.7 of a line the single-line crop shows.
+
+   The span becomes a block because the rise is a `translate`, and transforms
+   do nothing to an inline box. */
+@media (max-width: 30.499rem) {
+  .footer-giant {
+    display: block;
+    height: 1.62em;
+    font-size: 23vw;
+    line-height: 0.92;
+    text-align: center;
+    white-space: normal;
+  }
+
+  .footer-giant > span {
+    display: block;
+  }
+}
+
+/* It rises into the crop as the page arrives at its end. Scroll-linked, and
+   only where the browser can do that in CSS; elsewhere the word is simply
+   there, which is the right fallback for decoration. The range ends at
+   `entry 100%`, which for the last thing on the page is exactly the bottom of
+   the scroll. */
+@supports (animation-timeline: view()) {
+  .footer-giant > span {
+    animation: footer-rise linear both;
+    animation-timeline: --footer-giant;
+    animation-range: entry 0% entry 100%;
+  }
+}
+
+@keyframes footer-rise {
+  from { translate: 0 45%; }
+  to { translate: 0 0; }
 }
 
 /* The icons introduce the sequence; instructions stay readable throughout. */
@@ -5244,5 +5494,6 @@ html:has(.nav-sheet[open]) {
   .step-flow.is-revealed .step-copy,
   .typewriter.is-typing .type-char { animation: none; }
   .type-caret { display: none; }
+  .footer-giant > span { animation: none; }
   .sticky-note { transition: none; }
 }

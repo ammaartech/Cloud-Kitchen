@@ -125,7 +125,9 @@ export default async function OrderPage() {
             width={933}
             height={416}
             sizes="(max-width: 639px) 54px, 63px"
-            priority
+            /* Eager at the default priority: the reel's first photograph is
+               this page's LCP image and the only one asking to jump the queue. */
+            loading="eager"
             className="h-6 w-auto sm:h-7"
           />
           {/* `.wordmark` is the shared setting -- see the note over it in

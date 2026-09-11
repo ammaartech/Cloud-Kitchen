@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import type { DemoAccount, DemoAccountList } from '@/lib/auth/demo-accounts';
-import { ROLE_LABELS } from '@/lib/auth/demo-accounts';
+import { ROLE_LABELS } from '@/lib/auth/role-labels';
 import { Badge, Button, Card, cx } from '@/components/ui/primitives';
 
 /**

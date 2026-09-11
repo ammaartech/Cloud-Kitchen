@@ -9,7 +9,7 @@ Two registers share one token system:
 - **Storefront** (default `:root`): light and calm. White cards on a barely tinted ground, colour spent on actions and state rather than on surfaces. The food photography carries the appetite.
 - **Operations** (`[data-surface="ops"]`, set by the KOT screens): dark, high-contrast ramp for kitchen glanceability. Components are surface-agnostic; the attribute flips the variables.
 
-One surface sits outside both: the **mission band** (`.mission`) that closes the home page — ramp step 800, the only dark ground on the storefront. It is deliberately *not* the ops surface, which is tuned for a cook reading a wall screen rather than for a closing statement. It carries its own `--ck-mission-*` inks and re-points two inherited tokens for everything inside it: `--ck-focus` (the brand-green ring is invisible on that ground) and `--ck-mark` (the marginalia invert to light). Re-pointing rather than overriding is what keeps the components inside it surface-agnostic.
+One surface sits outside both: the **footer** (`.site-footer`) — ramp step 800, the green the hero's bowl panel is painted in, and the only dark ground on the storefront, so the page opens and closes on the same colour. It is deliberately *not* the ops surface, which is tuned for a cook reading a wall screen rather than for the close of a page. It carries its own `--ck-footer-*` inks (checked by `npm run check:contrast`) and re-points `--ck-focus` for everything inside it, because the brand-green ring is invisible on that ground.
 
 ## Color Palette
 
@@ -45,7 +45,7 @@ Three constraints shaped these and are not free to change casually:
 
 - Family: **Inter** (`--font-inter`) for everything; **JetBrains Mono** (`--font-jetbrains-mono`) for ticket codes and tabular data. One family — this is product UI.
 - **The kitchen's own voice is set in two other faces**, and they are a system rather than decoration: **Zodiak** (`--font-zodiak`, serif) and **Cabinet Grotesk** (`--font-cabinet`, grotesque), paired on the contrast axis so neither can be mistaken for the other. They appear exactly where someone is *speaking* rather than where something is being operated — the plan notes, which are a piece of paper someone wrote on, and the home page's mission band, which is the kitchen making a promise. Inter appears on neither, and that exclusion is the whole point: Inter is what the surrounding interface is already set in. Both load `preload: false` (below the fold on one route each) and are never used on admin or KOT.
-- **`subsets` must include `latin-ext`.** The rupee sign (U+20B9) lives there, not in `latin`. Loading `latin` alone leaves every price on the site falling back to a system font, which is what the previous setup did.
+- **Only `latin` is preloaded.** The rupee sign (U+20B9) is in the `latin-ext` file, which next/font still ships as an `@font-face` behind its `unicode-range` — `subsets` controls preloading, not availability. Preloading `latin-ext` cost every page an 85 KB request for one glyph; the browser now fetches it only where a price is on screen.
 - `cv05` is on globally: the lower-case *l* gets a tail, so `l` / `I` / `1` stay apart in dish names and ticket codes.
 - Fixed rem scale, tight ratio. `.tabular` (tabular-nums) on any column of figures.
 - `h1`–`h3` carry `-0.02em`; Inter is drawn loose for small sizes and needs tightening as it grows.

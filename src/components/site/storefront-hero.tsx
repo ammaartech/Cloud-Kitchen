@@ -515,7 +515,7 @@ export function StorefrontHero({
  *
  * The alt is empty on purpose. The dish is decorative here: it illustrates the
  * headline beside it rather than saying anything the headline does not, and it
- * is not a link to itself. `priority` because at `lg` this is the largest thing
+ * is not a link to itself. `fetchPriority` because at `lg` this is the largest thing
  * above the fold and therefore the LCP element -- it is the one image on the
  * page worth pre-empting the network for.
  */
@@ -552,8 +552,12 @@ function HeroBowl() {
             alt=""
             sizes="(max-width: 64rem) 100vw, 56vw"
             /* Only the first pre-empts the network. It is the LCP element at
-               `lg`; the other three have a second, two and three of runway. */
-            priority={index === 0}
+               `lg`; the other three have a second, two and three of runway.
+               `fetchPriority` rather than Next 16's `preload`: a preload link fetches at the browser's default image priority,
+               which is low, and this is the one request on the page that must
+               not wait behind anything. */
+            loading={index === 0 ? 'eager' : undefined}
+            fetchPriority={index === 0 ? 'high' : undefined}
             style={{ '--i': index } as CSSProperties}
             className="hero-bowl-img"
           />
@@ -900,7 +904,7 @@ function GatewayCard({
               width={384}
               height={384}
               sizes="(max-width: 640px) 96px, 144px"
-              // No `priority`, deliberately. These two are above the fold and
+              // No `fetchPriority`, deliberately. These two are above the fold and
               // the instinct is to preload them -- but the bowl beside them is
               // the LCP candidate and already has it, and a second and third
               // preload on the same connection is how a page ends up racing

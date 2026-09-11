@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { browserClient } from '@/lib/supabase/client';
 import { clearAccount } from '@/components/site/account';
 import { Button, Spinner } from '@/components/ui/primitives';
 import type { ButtonVariant } from '@/components/ui/button-styles';
@@ -36,6 +35,14 @@ export function SignOutButton({
 
   async function signOut() {
     setPending(true);
+
+    // Fetched on the press rather than imported with the page. The storefront
+    // header renders this button, so a static import put the whole Supabase
+    // browser client -- auth, realtime and all -- into the bundle of every
+    // storefront page, for every visitor, to serve the one click a signed-in
+    // visitor makes on the way out. On the operational screens the client is
+    // already loaded and this resolves at once.
+    const { browserClient } = await import('@/lib/supabase/client');
 
     // A failure here still leaves a stale cookie, so the redirect happens
     // either way and the sign-in page re-checks the session for real.

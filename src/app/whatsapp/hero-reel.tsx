@@ -62,7 +62,11 @@ export function HeroReel({ className }: { className?: string }) {
                sees at 0ms and the hero's LCP candidate; the other three have
                0.75s, 1.5s and 2.25s of runway and are in the viewport anyway,
                so they fetch without being asked to jump the queue. */
-            priority={index === 0}
+            /* `fetchPriority` rather than Next 16's `preload`: a preload link fetches at the browser's default image priority,
+               which is low, and this is the one request on the page that must
+               not wait behind anything. */
+            loading={index === 0 ? 'eager' : undefined}
+            fetchPriority={index === 0 ? 'high' : undefined}
             className="hero-shot"
           />
         </div>
