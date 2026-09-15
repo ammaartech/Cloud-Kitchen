@@ -1,0 +1,985 @@
+/* ==========================================================================
+   /subscriptions
+
+   Scoped to the one route that imports it. Everything here composes with the
+   storefront's existing stocks and classes -- `.paper-grid`, `.texture-dots`,
+   `.section-display`, `.btn-plain`, `.tool-mark` -- and adds only what this
+   page has that no other page does: the ticket, the cycle board, and the gate
+   that keeps GSAP entrances from flashing.
+
+   Motion lives in `subscriptions-motion.tsx` and `cycle-board.tsx`. The only
+   motion declared here is hover and press feedback, on elements GSAP never
+   transforms.
+   ========================================================================== */
+
+/* The entrance gate that keeps GSAP entrances from flashing is shared with the
+   menu page and lives in `motion-gate.css`, keyed to `.motion-stage`. */
+
+/* --------------------------------------------------------------------------
+   Intro.
+   -------------------------------------------------------------------------- */
+.subs-intro {
+  position: relative;
+  overflow: clip;
+}
+
+.subs-intro-inner {
+  padding-block: clamp(3.5rem, 8vw, 6.5rem) clamp(3.5rem, 7vw, 5.5rem);
+}
+
+.subs-intro-split {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 3rem;
+}
+
+@media (min-width: 64rem) {
+  .subs-intro-split {
+    grid-template-columns: minmax(0, 1.08fr) minmax(0, 0.92fr);
+    gap: 4rem;
+    align-items: end;
+  }
+}
+
+.subs-kicker {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ck-text-muted);
+}
+
+.subs-kicker::before {
+  content: '';
+  width: 2rem;
+  height: 1px;
+  background-color: currentColor;
+}
+
+/* The hero's register, a step down. The hero headline is the loudest thing on
+   the storefront and this page is one click behind it, so this is larger than
+   a section heading and smaller than that. */
+.subs-headline {
+  margin-top: 1.25rem;
+  font-size: clamp(2.625rem, 7.4vw, 4.375rem);
+  font-weight: 600;
+  line-height: 1.04;
+  letter-spacing: -0.035em;
+  color: var(--ck-text);
+}
+
+/* Each phrase rises out of its own box. The padding widens the clip to take
+   the ascenders and descenders a 1.04 line-height does not leave room for, and
+   the negative margin gives the space straight back to the layout. */
+.subs-line-mask {
+  display: block;
+  overflow: clip;
+  padding-block: 0.06em 0.16em;
+  margin-block: -0.06em -0.16em;
+}
+
+.subs-line {
+  display: block;
+}
+
+/* The drawn underline, under the one verb the page is promising. Positioned
+   against the word itself, so it follows the word through every reflow
+   without anything being measured. */
+.subs-marked {
+  position: relative;
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.subs-scribble {
+  position: absolute;
+  left: -4%;
+  bottom: -0.2em;
+  width: 108%;
+  height: auto;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.subs-scribble path {
+  fill: none;
+  stroke: var(--ck-brand);
+  stroke-width: 5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.subs-lede {
+  margin-top: 1.5rem;
+  max-width: 36rem;
+  font-size: 1.0625rem;
+  line-height: 1.6;
+  color: var(--ck-text-muted);
+}
+
+@media (min-width: 40rem) {
+  .subs-lede {
+    font-size: 1.125rem;
+  }
+}
+
+/* The offer, as a slip of note paper stuck under the lede -- the same canary
+   the plan notes on the home page are cut from, so an offer reads as something
+   the kitchen wrote down rather than as an alert. */
+.subs-offer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.375rem 0.75rem;
+  max-width: 34rem;
+  margin-top: 1.75rem;
+  padding: 0.875rem 1.125rem;
+  rotate: -0.8deg;
+  border-bottom-right-radius: 18px 4px;
+  background-color: var(--ck-note);
+  box-shadow:
+    0 1px 1px rgb(13 23 20 / 0.1),
+    0 10px 18px -12px rgb(13 23 20 / 0.35);
+  font-family: var(--font-cabinet), system-ui, sans-serif;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--ck-text-muted);
+}
+
+.subs-offer strong {
+  font-weight: 600;
+  color: var(--ck-text);
+}
+
+.subs-offer-code {
+  padding: 0.125rem 0.5rem;
+  border: 1px dashed var(--ck-note-rule);
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--ck-text);
+}
+
+.subs-actions {
+  margin-top: 2rem;
+}
+
+.subs-actions .btn-plain {
+  min-width: 14rem;
+}
+
+/* The three facts somebody arrives wanting, set like the delivery windows on
+   the hero: large, ruled, and read straight off the database. */
+.subs-facts {
+  border-bottom: 1px solid color-mix(in srgb, var(--ck-border-strong) 45%, transparent);
+}
+
+.subs-fact {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.375rem;
+  padding-block: 1.25rem;
+}
+
+@media (min-width: 40rem) {
+  .subs-fact {
+    grid-template-columns: 6.5rem minmax(0, 1fr);
+    gap: 1.5rem;
+  }
+}
+
+.subs-fact-rule {
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 1px;
+  background-color: color-mix(in srgb, var(--ck-border-strong) 45%, transparent);
+}
+
+.subs-fact dt {
+  padding-top: 0.5rem;
+  font-family: var(--font-cabinet), system-ui, sans-serif;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ck-text-muted);
+}
+
+.subs-fact-value {
+  display: block;
+  font-family: var(--font-cabinet), system-ui, sans-serif;
+  font-size: clamp(1.625rem, 3vw, 2.125rem);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--ck-text);
+}
+
+/* A fact made of words rather than a figure. At the figure size three window
+   names break after a separator and leave one word alone on the second line;
+   a step smaller and balanced, they sit on one line wherever there is room and
+   split evenly where there is not. */
+.subs-fact-words {
+  font-size: clamp(1.25rem, 2.1vw, 1.5rem);
+  line-height: 1.25;
+  text-wrap: balance;
+}
+
+.subs-fact-note {
+  display: block;
+  margin-top: 0.375rem;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: var(--ck-text-muted);
+}
+
+/* The two drawn tools, out in the margins where the hero keeps its own. Same
+   width rule as the hero: only where that margin exists at all, and centred
+   in it. GSAP owns their entrance and drift here, so none of the hero keyframes
+   apply -- `.tool-mark` supplies the drawing, the tilt and the transparent
+   base. */
+@supports (mask-image: url('/tools/spatula.png')) or
+  (-webkit-mask-image: url('/tools/spatula.png')) {
+  @media (min-width: 90rem) {
+    .subs-intro > .tool-mark {
+      display: block;
+    }
+  }
+}
+
+.subs-intro > .tool-spatula {
+  top: 6rem;
+  left: calc((100% - 72rem) / 4 - var(--tool-w) / 2);
+}
+
+.subs-intro > .tool-grater {
+  top: auto;
+  bottom: 4.5rem;
+  right: calc((100% - 72rem) / 4 - var(--tool-w) / 2);
+}
+
+/* --------------------------------------------------------------------------
+   Section heads: the heading on the left, its one sentence set against the
+   bottom of it on the right, so the pair reads as one line of thought on a
+   wide screen and stacks on a narrow one.
+   -------------------------------------------------------------------------- */
+.subs-section-head {
+  display: grid;
+  gap: 1rem;
+}
+
+@media (min-width: 64rem) {
+  .subs-section-head {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 24rem);
+    align-items: end;
+    gap: 3rem;
+  }
+}
+
+.subs-section-lede {
+  max-width: 32rem;
+  line-height: 1.6;
+  color: var(--ck-text-muted);
+}
+
+/* --------------------------------------------------------------------------
+   The plan tickets.
+
+   See `plan-ticket.tsx` for why a ticket, and why subgrid. The shape is three
+   things, all on `.ticket-paper`:
+
+   - a torn top edge, a row of small teeth where the ticket left the printer
+   - two half-circle notches at the perforation above the stub
+   - grain, the same noise the home page notes carry, at a lower strength
+     because it is on white rather than canary
+
+   The first two are one mask. The shadow cannot be a `box-shadow`, which a
+   mask would clip to a rectangle, so it is a `drop-shadow` on the ticket
+   around the paper -- a filter follows the masked shape, teeth and notches
+   included.
+   -------------------------------------------------------------------------- */
+.ticket-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 2.5rem 1.5rem;
+  margin-top: clamp(2.5rem, 5vw, 3.5rem);
+}
+
+@media (min-width: 40rem) {
+  .ticket-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 64rem) {
+  .ticket-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    column-gap: 1.25rem;
+  }
+}
+
+.plan-ticket {
+  display: grid;
+  grid-row: span 5;
+  grid-template-rows: subgrid;
+  row-gap: 0;
+  filter:
+    drop-shadow(0 1px 1px rgb(13 23 20 / 0.1))
+    drop-shadow(0 14px 16px rgb(13 23 20 / 0.12));
+  /* `translate`, not `transform`: GSAP writes `transform` on the paper inside,
+     and the lift here has to stay out of its way. */
+  transition: translate 240ms var(--ck-ease);
+}
+
+.plan-ticket:focus-within {
+  translate: 0 -6px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .plan-ticket:hover {
+    translate: 0 -6px;
+  }
+}
+
+.ticket-paper {
+  --tooth: 7px;
+  --notch: 9px;
+  --stub: 3.75rem;
+
+  position: relative;
+  display: grid;
+  grid-row: 1 / -1;
+  grid-template-rows: subgrid;
+  row-gap: 0;
+  padding-top: calc(var(--tooth) + 1.25rem);
+
+  background-color: var(--ck-surface);
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23p)' opacity='0.09'/%3E%3C/svg%3E"),
+    linear-gradient(to bottom, rgb(13 23 20 / 0.035), transparent 3rem);
+  background-size: 160px 160px, auto;
+  background-repeat: repeat, no-repeat;
+
+  font-family: var(--font-cabinet), system-ui, sans-serif;
+  color: var(--ck-text);
+}
+
+/* Composited, so behind a guard: without `mask-composite` the layers would be
+   added together instead of cut from each other, which draws nothing useful.
+   Where it is missing the ticket is a plain rectangle, which is still a ticket.
+
+   Read the layers bottom up. The teeth and the body below them are added into
+   one shape; each notch is then intersected out of it. */
+@supports (mask-composite: intersect) {
+  .ticket-paper {
+    mask:
+      radial-gradient(circle var(--notch) at 0 calc(100% - var(--stub)), #0000 98%, #000),
+      radial-gradient(circle var(--notch) at 100% calc(100% - var(--stub)), #0000 98%, #000),
+      linear-gradient(#000 0 0) 0 var(--tooth) / 100% calc(100% - var(--tooth)) no-repeat,
+      conic-gradient(from 135deg at top, #0000, #000 1deg 90deg, #0000 91deg) 0 0 /
+        calc(var(--tooth) * 2) var(--tooth) repeat-x;
+    mask-composite: intersect, intersect, add, add;
+  }
+}
+
+.ticket-head,
+.ticket-how,
+.ticket-facts {
+  padding-inline: 1.25rem;
+}
+
+.ticket-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ck-text-muted);
+}
+
+.ticket-no {
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  letter-spacing: 0;
+}
+
+/* Zodiak for the name, as on the notes: the plan is the thing being said, and
+   everything under it is counted. */
+.ticket-name {
+  margin-top: 0.75rem;
+  font-family: var(--font-zodiak), Georgia, serif;
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1.12;
+  letter-spacing: -0.015em;
+  text-wrap: pretty;
+}
+
+.ticket-tagline {
+  margin-top: 0.375rem;
+  padding-bottom: 1rem;
+  font-size: 0.875rem;
+  line-height: 1.45;
+  color: var(--ck-text-muted);
+  text-wrap: pretty;
+}
+
+.ticket-how {
+  margin-inline: 1.25rem;
+  padding: 0.875rem 0;
+  border-block: 1px dashed var(--ck-note-rule);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+}
+
+.ticket-facts {
+  padding-block: 1rem 1.25rem;
+}
+
+.ticket-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  font-size: 0.8125rem;
+  line-height: 1.45;
+}
+
+.ticket-row + .ticket-row {
+  margin-top: 0.5rem;
+}
+
+/* The leader. The label takes whatever width the value leaves, and its dotted
+   tail fills that width -- which is how a receipt runs a label to its price. */
+.ticket-row dt {
+  display: flex;
+  flex: 1 0 auto;
+  align-items: baseline;
+  gap: 0.5rem;
+  color: var(--ck-text-muted);
+}
+
+.ticket-row dt::after {
+  content: '';
+  flex: 1;
+  min-width: 1rem;
+  border-bottom: 1.5px dotted var(--ck-border-strong);
+  translate: 0 -0.25em;
+}
+
+.ticket-row dd {
+  max-width: 62%;
+  font-weight: 600;
+  text-align: right;
+}
+
+.ticket-note {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--ck-text-subtle);
+}
+
+.ticket-row.ticket-note {
+  margin-top: 0.75rem;
+}
+
+/* The total: under a solid rule, the way a receipt closes its column. */
+.ticket-total {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-inline: 1.25rem;
+  padding-block: 0.875rem 1.25rem;
+  border-top: 2px solid var(--ck-text);
+}
+
+.ticket-total-label {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ck-text-muted);
+}
+
+.ticket-price {
+  font-size: 1.875rem;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+/* The stub, and the ticket's one link.
+
+   Not positioned, so its `::after` stretches over the whole paper rather than
+   over the stub alone, and the ticket is one target. The perforation is a
+   background on the stub rather than an element so it cannot be covered by the
+   link's fill, and its drawn length is `--perf`, which is what GSAP runs across
+   when the ticket prints. */
+.ticket-stub {
+  --perf: 1;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  height: var(--stub);
+  padding-inline: 1.25rem;
+
+  background-color: var(--ck-surface-sunken);
+  background-image: repeating-linear-gradient(
+    90deg,
+    var(--ck-border-strong) 0 6px,
+    transparent 6px 11px
+  );
+  background-repeat: no-repeat;
+  background-position: calc(var(--notch) + 4px) 0;
+  background-size: calc((100% - 2 * (var(--notch) + 4px)) * var(--perf)) 2px;
+
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--ck-brand);
+  transition:
+    background-color 180ms var(--ck-ease),
+    color 180ms var(--ck-ease);
+}
+
+.ticket-stub::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+}
+
+/* The mask clips anything past the paper edge, the focus ring included, so
+   the ring is drawn inside the stub where the mask cannot reach it. */
+.ticket-stub:focus-visible {
+  outline-offset: -5px;
+}
+
+.ticket-stub-arrow {
+  transition: translate 200ms var(--ck-ease);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .plan-ticket:hover .ticket-stub {
+    background-color: var(--ck-brand);
+    color: #fff;
+  }
+
+  .plan-ticket:hover .ticket-stub-arrow {
+    translate: 4px 0;
+  }
+}
+
+.ticket-stub:active {
+  background-color: var(--ck-text);
+  color: #fff;
+}
+
+/* --------------------------------------------------------------------------
+   What a cycle looks like.
+   -------------------------------------------------------------------------- */
+.cycle-split {
+  display: grid;
+  gap: 2.5rem;
+  margin-top: clamp(2.5rem, 5vw, 3.5rem);
+}
+
+@media (min-width: 64rem) {
+  .cycle-split {
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+    gap: 4rem;
+    align-items: start;
+  }
+}
+
+.cycle-rule {
+  position: relative;
+  padding: 1.25rem 0 1.25rem 1.5rem;
+  border-top: 1px solid var(--ck-border);
+}
+
+.cycle-rule:last-child {
+  border-bottom: 1px solid var(--ck-border);
+}
+
+/* Which rule the board is acting out. Decoration, so it starts collapsed in the
+   base rule and is only ever seen while the cycle plays. */
+.cycle-rule-bar {
+  position: absolute;
+  top: 1.25rem;
+  bottom: 1.25rem;
+  left: 0;
+  width: 3px;
+  background-color: var(--ck-brand);
+  transform: scaleY(0);
+  transform-origin: top;
+}
+
+.cycle-rule h3 {
+  font-size: 1.0625rem;
+  font-weight: 600;
+  color: var(--ck-text);
+}
+
+.cycle-rule p {
+  margin-top: 0.25rem;
+  font-size: 0.9375rem;
+  line-height: 1.55;
+  color: var(--ck-text-muted);
+}
+
+/* A page off a wall calendar: white, ruled at the head, two binding holes. */
+.cycle-board {
+  position: relative;
+  padding: 1.75rem clamp(1rem, 3vw, 1.75rem) 1.25rem;
+  border: 1px solid var(--ck-border);
+  border-radius: 2px;
+  background-color: var(--ck-surface);
+  box-shadow: var(--ck-shadow-lg);
+  font-family: var(--font-cabinet), system-ui, sans-serif;
+}
+
+.cycle-board::before,
+.cycle-board::after {
+  content: '';
+  position: absolute;
+  top: 0.625rem;
+  width: 0.625rem;
+  height: 0.625rem;
+  border-radius: 50%;
+  background-color: var(--ck-surface-sunken);
+  box-shadow: inset 0 1px 2px rgb(13 23 20 / 0.25);
+}
+
+.cycle-board::before {
+  left: 30%;
+}
+
+.cycle-board::after {
+  right: 30%;
+}
+
+.cycle-board-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--ck-border);
+}
+
+.cycle-board-kicker {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ck-text-muted);
+}
+
+.cycle-board-title {
+  margin-top: 0.25rem;
+  font-family: var(--font-zodiak), Georgia, serif;
+  font-size: 1.25rem;
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--ck-text);
+}
+
+.cycle-tally {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.25rem;
+}
+
+.cycle-count {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  color: var(--ck-text-muted);
+}
+
+.cycle-count b {
+  min-width: 1.5ch;
+  font-size: 1.5rem;
+  font-weight: 700;
+  text-align: right;
+  color: var(--ck-text);
+}
+
+/* Where returned meals land. */
+.cycle-pot {
+  display: inline-block;
+  width: 0.875rem;
+  height: 0.875rem;
+  border-radius: 50%;
+  background-color: var(--ck-brand-soft);
+  box-shadow: inset 0 0 0 2px var(--ck-brand);
+}
+
+.cycle-week {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: clamp(0.25rem, 1vw, 0.5rem);
+}
+
+.cycle-weekdays {
+  margin-top: 1rem;
+  font-size: 0.6875rem;
+  letter-spacing: 0.06em;
+  text-align: center;
+  text-transform: uppercase;
+  color: var(--ck-text-subtle);
+}
+
+.cycle-grid {
+  margin-top: 0.5rem;
+}
+
+/* `--on` is the day's outcome, 0 before it happens and 1 after. It is 1 in the
+   base rule, which is what makes the finished month the markup's own state. */
+.cycle-day {
+  --on: 1;
+
+  position: relative;
+  aspect-ratio: 1;
+  padding: 0.3rem 0.4rem;
+  border-radius: 4px;
+  background-color: var(--ck-surface-sunken);
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.cycle-day[data-role='off'] {
+  background-color: transparent;
+  box-shadow: inset 0 0 0 1px var(--ck-border);
+}
+
+.cycle-num {
+  position: relative;
+  z-index: 1;
+  color: var(--ck-text-muted);
+}
+
+.cycle-day[data-role='off'] .cycle-num {
+  color: var(--ck-text-placeholder);
+}
+
+/* The dashed ring and the hatch both run under the corner the number sits in.
+   A chip of the cell's own ground behind the number keeps it off the lines
+   without moving it out of the corner every other day uses. */
+.cycle-day:is([data-role='skipped'], [data-role='paused']) .cycle-num {
+  margin: -0.125rem -0.1875rem;
+  padding: 0.125rem 0.1875rem;
+  border-radius: 2px;
+  background-color: var(--ck-surface-sunken);
+}
+
+.cycle-fill {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background-color: var(--ck-brand);
+  scale: var(--on);
+}
+
+.cycle-day[data-role='delivered'] .cycle-num {
+  color: color-mix(in srgb, var(--ck-surface) calc(var(--on) * 100%), var(--ck-text-muted));
+}
+
+.cycle-ring {
+  position: absolute;
+  inset: 3px;
+  border: 2px dashed var(--ck-brand);
+  border-radius: 3px;
+  opacity: var(--on);
+  scale: calc(0.6 + var(--on) * 0.4);
+}
+
+.cycle-hatch {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background-image: repeating-linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--ck-brand) 38%, transparent) 0 2px,
+    transparent 2px 7px
+  );
+  scale: var(--on) 1;
+  transform-origin: left center;
+}
+
+.cycle-day[data-role='cancelled'] {
+  background-color: color-mix(
+    in srgb,
+    var(--ck-surface) calc(var(--on) * 100%),
+    var(--ck-surface-sunken)
+  );
+  box-shadow: inset 0 0 0 1px var(--ck-border);
+}
+
+.cycle-day[data-role='cancelled'] .cycle-num {
+  opacity: calc(1 - var(--on) * 0.5);
+}
+
+.cycle-strike {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.cycle-strike line {
+  stroke: var(--ck-text-muted);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+}
+
+/* A meal waiting on its day. Decoration that only exists while the cycle plays,
+   so it is transparent in the base rule. Above every other layer, because it
+   flies out of its cell and across the board. */
+.cycle-dot {
+  position: absolute;
+  top: 58%;
+  left: 50%;
+  z-index: 2;
+  width: 0.5rem;
+  height: 0.5rem;
+  margin: -0.25rem 0 0 -0.25rem;
+  border-radius: 50%;
+  background-color: var(--ck-brand);
+  opacity: 0;
+}
+
+.cycle-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.25rem;
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--ck-border);
+  font-size: 0.75rem;
+  color: var(--ck-text-muted);
+}
+
+.cycle-legend li {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.cycle-key {
+  width: 0.875rem;
+  height: 0.875rem;
+  border-radius: 3px;
+  background-color: var(--ck-surface-sunken);
+}
+
+.cycle-key[data-key='delivered'] {
+  background-color: var(--ck-brand);
+}
+
+.cycle-key[data-key='skipped'] {
+  border: 1.5px dashed var(--ck-brand);
+}
+
+.cycle-key[data-key='paused'] {
+  background-image: repeating-linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--ck-brand) 38%, transparent) 0 2px,
+    transparent 2px 5px
+  );
+}
+
+.cycle-key[data-key='cancelled'] {
+  background-color: transparent;
+  background-image: linear-gradient(
+    135deg,
+    transparent 44%,
+    var(--ck-text-muted) 44% 56%,
+    transparent 56%
+  );
+  box-shadow: inset 0 0 0 1px var(--ck-border);
+}
+
+.cycle-replay-row {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1rem;
+}
+
+/* A replay needs something to replay. */
+@media (prefers-reduced-motion: reduce), (scripting: none) {
+  .cycle-replay-row {
+    display: none;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Before you pay.
+   -------------------------------------------------------------------------- */
+.subs-assure-split {
+  display: grid;
+  gap: 2rem;
+}
+
+@media (min-width: 64rem) {
+  .subs-assure-split {
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+    gap: 4rem;
+  }
+}
+
+.subs-assure-item {
+  position: relative;
+  display: grid;
+  grid-template-columns: 2.75rem minmax(0, 1fr);
+  column-gap: 1rem;
+  padding-block: 1.5rem;
+}
+
+.subs-rule {
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 1px;
+  background-color: color-mix(in srgb, var(--ck-border-strong) 55%, transparent);
+}
+
+.subs-assure-no {
+  grid-row: span 2;
+  padding-top: 0.25rem;
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-size: 0.8125rem;
+  color: var(--ck-text-subtle);
+}
+
+.subs-assure-item h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--ck-text);
+}
+
+.subs-assure-item p {
+  margin-top: 0.375rem;
+  line-height: 1.6;
+  color: var(--ck-text-muted);
+}
+
+.subs-closing {
+  display: grid;
+  gap: 1rem;
+  margin-top: clamp(3rem, 6vw, 4.5rem);
+}
+
+.subs-closing p {
+  color: var(--ck-text-muted);
+}

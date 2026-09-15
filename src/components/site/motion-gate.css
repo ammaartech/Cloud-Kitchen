@@ -1,0 +1,38 @@
+/* ==========================================================================
+   The GSAP entrance gate, shared by every storefront route that animates with
+   GSAP. Imported by those routes only.
+
+   An entrance has to start hidden before first paint, and JavaScript cannot
+   run before first paint -- so the stylesheet does the hiding, and only where
+   the entrance is actually going to run. A page opts in by putting
+   `motion-stage` on an ancestor; its components mark what enters with
+   `data-enter` (with the page) and `data-rise` (on scroll).
+
+   `scripting: enabled` is the half that makes this safe. A browser with
+   JavaScript off does not match it, so the page is simply there. A visitor who
+   asked for reduced motion does not match the other half, and the GSAP branch
+   for them never hides anything either. Browsers too old to know `scripting`
+   fail the whole query, show the content, and at worst see it hidden and
+   brought back in once the bundle lands.
+
+   The failsafe is for the case left over: scripting on, but the bundle failed
+   or threw. A keyframe that only sets `visibility` runs after 2.6s and holds
+   it, which brings the content back. It cannot fight GSAP, because by then
+   every entrance above the fold has finished, and anything below the fold is
+   held by an inline `opacity` or `clip-path` that a `visibility` keyframe does
+   not touch. Content streamed in later gets its own clock: the animation
+   starts when the element is inserted, not when the page loaded.
+   ========================================================================== */
+@media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+  .motion-stage [data-enter],
+  .motion-stage [data-rise] {
+    visibility: hidden;
+    animation: motion-failsafe 1ms linear 2.6s forwards;
+  }
+}
+
+@keyframes motion-failsafe {
+  to {
+    visibility: visible;
+  }
+}
