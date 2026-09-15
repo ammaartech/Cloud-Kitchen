@@ -64,6 +64,39 @@ const nextConfig: NextConfig = {
     ],
   },
   typedRoutes: true,
+
+  /**
+   * Response headers every route carries.
+   *
+   * These are the ones with no trade-off: none of them changes how a page
+   * renders, and each closes a class of attack the framework does not close
+   * on its own. The operational and admin screens additionally refuse to be
+   * framed at all -- there is no legitimate reason for a kitchen board or the
+   * Owner's settings to render inside somebody else's page, and clickjacking
+   * a "Mark unavailable" button is exactly the kind of thing framing enables.
+   */
+  async headers() {
+    const everywhere = [
+      // Browsers must not guess a content type; a JSON response is JSON.
+      { key: 'X-Content-Type-Options', value: 'nosniff' },
+      // Full URL to same-origin, origin only to others, nothing on downgrade.
+      { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+      // Nothing here needs a camera, microphone or location.
+      { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=()' },
+    ];
+
+    return [
+      { source: '/:path*', headers: everywhere },
+      {
+        source: '/(admin|kot|account|checkout|sign-in)/:path*',
+        headers: [{ key: 'X-Frame-Options', value: 'DENY' }],
+      },
+      {
+        source: '/(admin|kot|account|checkout|sign-in)',
+        headers: [{ key: 'X-Frame-Options', value: 'DENY' }],
+      },
+    ];
+  },
 };
 
 export default nextConfig;

@@ -3,6 +3,7 @@ import ExcelJS from 'exceljs';
 import { getSession } from '@/lib/auth/session';
 import { PERMISSIONS } from '@/lib/auth/permissions';
 import { serverClient } from '@/lib/supabase/server';
+import { fetchAll } from '@/lib/supabase/query';
 import { SOURCE_LABELS } from '@/lib/format';
 import {
   RANGE_LABELS,
@@ -35,15 +36,13 @@ export async function GET(request: NextRequest) {
   const filters = resolveFilters(rawParams);
   const supabase = await serverClient();
 
-  const [orderRes, itemRes, paymentRes] = await Promise.all([
-    buildOrderQuery(supabase, filters),
-    buildItemQuery(supabase, filters),
-    buildPaymentQuery(supabase, filters),
+  // Paged, for the same reason the page is: a workbook that silently stops at
+  // the API's per-response cap is a wrong export, not a partial one.
+  const [orders, items, payments] = await Promise.all([
+    fetchAll<OrderRow>(() => buildOrderQuery(supabase, filters), 'v_analytics_orders'),
+    fetchAll<ItemRow>(() => buildItemQuery(supabase, filters), 'v_analytics_order_items'),
+    fetchAll<PaymentRow>(() => buildPaymentQuery(supabase, filters), 'v_analytics_payments'),
   ]);
-
-  const orders = (orderRes.data ?? []) as OrderRow[];
-  const items = (itemRes.data ?? []) as ItemRow[];
-  const payments = (paymentRes.data ?? []) as PaymentRow[];
 
   const scopedItems = filters.categorySlug
     ? items.filter((row) => row.category_slug === filters.categorySlug)
@@ -124,38 +123,46 @@ interface PaymentRow {
 /* Queries                                                                   */
 /* ========================================================================= */
 
+/*
+ * Each builder returns a fresh query with an exact count and a stable order,
+ * which is what `fetchAll` needs to page the rest of the rows in parallel.
+ */
 function buildOrderQuery(supabase: Supa, filters: AnalyticsFilters) {
   let query = supabase
     .from('v_analytics_orders')
     .select(
       'order_id, order_number, source, business_date, placed_at, revenue, estimated_food_cost, channel_fees, customer_id, customer_name_snapshot',
+      { count: 'exact' },
     );
   if (filters.startDate && filters.endDate) {
     query = query.gte('business_date', filters.startDate).lte('business_date', filters.endDate);
   }
-  return query;
+  return query.order('order_id');
 }
 
 function buildItemQuery(supabase: Supa, filters: AnalyticsFilters) {
   let query = supabase
     .from('v_analytics_order_items')
     .select(
-      'order_id, business_date, source, product_name, category_slug, category_name, quantity, line_subtotal',
+      'order_item_id, order_id, business_date, source, product_name, category_slug, category_name, quantity, line_subtotal',
+      { count: 'exact' },
     );
   if (filters.startDate && filters.endDate) {
     query = query.gte('business_date', filters.startDate).lte('business_date', filters.endDate);
   }
-  return query;
+  return query.order('order_item_id');
 }
 
 function buildPaymentQuery(supabase: Supa, filters: AnalyticsFilters) {
   let query = supabase
     .from('v_analytics_payments')
-    .select('order_id, subscription_id, method, amount, business_date');
+    .select('payment_id, order_id, subscription_id, method, amount, business_date', {
+      count: 'exact',
+    });
   if (filters.startDate && filters.endDate) {
     query = query.gte('business_date', filters.startDate).lte('business_date', filters.endDate);
   }
-  return query;
+  return query.order('payment_id');
 }
 
 /* ========================================================================= */

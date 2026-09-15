@@ -4,9 +4,20 @@ import { revalidateStorefront } from '@/lib/data/catalog-cache';
 import { requirePermission } from '@/lib/auth/session';
 import { PERMISSIONS } from '@/lib/auth/permissions';
 import { serverClient } from '@/lib/supabase/server';
+import { rowsOf } from '@/lib/supabase/query';
 import { dateTime } from '@/lib/format';
 import { str } from '@/lib/admin/form';
-import { ActionFeedback, done, fail, readable } from '@/lib/admin/feedback';
+import { ActionFeedback, done, fail, flashFrom, readable } from '@/lib/admin/feedback';
+
+import {
+  Badge,
+  Button,
+  Card,
+  EmptyState,
+  Input,
+  SectionHeading,
+  cx,
+} from '@/components/ui/primitives';
 
 /**
  * These screens are per-user by definition -- a session decides not just what
@@ -18,15 +29,6 @@ import { ActionFeedback, done, fail, readable } from '@/lib/admin/feedback';
  * storefront next door is held to the opposite standard.
  */
 export const instant = false;
-import {
-  Badge,
-  Button,
-  Card,
-  EmptyState,
-  Input,
-  SectionHeading,
-  cx,
-} from '@/components/ui/primitives';
 
 export const metadata = { title: 'Reviews' };
 
@@ -83,7 +85,6 @@ function Rating({ value }: { value: number }) {
  * itself part of the audit history.
  */
 export default async function ReviewsPage({ searchParams }: PageProps<'/admin/reviews'>) {
-  await requirePermission(PERMISSIONS.reviewsModerate);
   const params = await searchParams;
   const supabase = await serverClient();
 
@@ -102,19 +103,34 @@ export default async function ReviewsPage({ searchParams }: PageProps<'/admin/re
 
   if (filter !== 'all') request = request.eq('status', filter);
 
-  const [reviewsResult, countsResult] = await Promise.all([
+  // The per-status tallies on the filter chips are head requests carrying only
+  // a count, one per status, sent together with the guard and the list. See
+  // the refunds screen for why that beats reading every row's status.
+  const countable = FILTERS.filter((option) => option.value !== 'all');
+
+  // The guard and the reads go out together. Every read is already filtered
+  // by RLS as this user, and a refused guard still redirects before render.
+  const [, reviewsResult, ...countResults] = await Promise.all([
+    requirePermission(PERMISSIONS.reviewsModerate),
     request,
-    supabase.from('reviews').select('status'),
+    ...countable.map((option) =>
+      supabase
+        .from('reviews')
+        .select('id', { count: 'exact', head: true })
+        .eq('status', option.value),
+    ),
   ]);
 
-  const reviews = (reviewsResult.data ?? []) as unknown as ReviewRow[];
+  const reviews = rowsOf<ReviewRow>(reviewsResult, 'reviews');
   const counts = new Map<string, number>();
-  for (const row of (countsResult.data ?? []) as Array<{ status: string }>) {
-    counts.set(row.status, (counts.get(row.status) ?? 0) + 1);
-  }
+  countable.forEach((option, index) => {
+    counts.set(option.value, countResults[index].count ?? 0);
+  });
 
   async function moderate(formData: FormData) {
     'use server';
+
+    await requirePermission(PERMISSIONS.reviewsModerate);
 
     const status = str(formData, 'status');
     const db = await serverClient();
@@ -139,7 +155,7 @@ export default async function ReviewsPage({ searchParams }: PageProps<'/admin/re
         description="Nothing a customer writes appears on the storefront until it is published here."
       />
 
-      <ActionFeedback error={params.error as string} ok={params.ok as string} />
+      <ActionFeedback {...flashFrom(params)} />
 
       <nav className="mb-6 flex flex-wrap gap-1" aria-label="Filter reviews">
         {FILTERS.map((option) => {

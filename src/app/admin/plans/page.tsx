@@ -4,20 +4,11 @@ import { revalidateStorefront } from '@/lib/data/catalog-cache';
 import { requirePermission } from '@/lib/auth/session';
 import { PERMISSIONS } from '@/lib/auth/permissions';
 import { serverClient } from '@/lib/supabase/server';
+import { rowsOf } from '@/lib/supabase/query';
 import { money, PLAN_TYPE_LABELS, pluralise } from '@/lib/format';
 import { num, nullableNum, slugify, str } from '@/lib/admin/form';
-import { ActionFeedback, done, fail, readable } from '@/lib/admin/feedback';
+import { ActionFeedback, done, fail, flashFrom, readable } from '@/lib/admin/feedback';
 
-/**
- * These screens are per-user by definition -- a session decides not just what
- * they show but whether you may see them at all -- so there is no static shell
- * to prerender and no point pretending otherwise. `instant = false` says that
- * plainly: this segment is allowed to block.
- *
- * It is a statement about *this* route, not a global escape hatch. The public
- * storefront next door is held to the opposite standard.
- */
-export const instant = false;
 import {
   Badge,
   Button,
@@ -30,6 +21,17 @@ import {
   SectionHeading,
   Select,
 } from '@/components/ui/primitives';
+
+/**
+ * These screens are per-user by definition -- a session decides not just what
+ * they show but whether you may see them at all -- so there is no static shell
+ * to prerender and no point pretending otherwise. `instant = false` says that
+ * plainly: this segment is allowed to block.
+ *
+ * It is a statement about *this* route, not a global escape hatch. The public
+ * storefront next door is held to the opposite standard.
+ */
+export const instant = false;
 
 export const metadata = { title: 'Plans' };
 
@@ -52,6 +54,9 @@ interface PlanRow {
   sort_order: number;
 }
 
+/** Subscription states that still hold a customer to the plan. */
+const LIVE_STATUSES = ['active', 'paused', 'past_due'] as const;
+
 /** What a plan hands the customer each cycle, in one phrase. */
 function entitlement(plan: PlanRow): string {
   if (plan.plan_type === 'meal_credits') {
@@ -70,36 +75,42 @@ function entitlement(plan: PlanRow): string {
  * is never a wall of forty fields.
  */
 export default async function PlansPage({ searchParams }: PageProps<'/admin/plans'>) {
-  await requirePermission(PERMISSIONS.plansManage);
   const params = await searchParams;
   const supabase = await serverClient();
 
-  const [plansResult, subscriptionsResult] = await Promise.all([
+  // The guard and the reads go out together. Every read is already filtered
+  // by RLS as this user, and a refused guard still redirects before render.
+  const [, plansResult] = await Promise.all([
+    requirePermission(PERMISSIONS.plansManage),
+    // Live subscribers ride along as an embedded count, filtered to the live
+    // states at the database: one request, and it cannot silently truncate
+    // the way reading every subscription row ever created eventually would.
     supabase
       .from('subscription_plans')
       .select(
         `id, slug, name, tagline, plan_type, price, payment_flow, billing_period_days,
-         meals_per_cycle, credits_per_cycle, is_published, is_active, archived_at, sort_order`,
+         meals_per_cycle, credits_per_cycle, is_published, is_active, archived_at, sort_order,
+         subscriptions ( count )`,
       )
+      .in('subscriptions.status', [...LIVE_STATUSES])
       .order('sort_order'),
-    supabase.from('subscriptions').select('plan_id, status'),
   ]);
 
-  const plans = (plansResult.data ?? []) as unknown as PlanRow[];
-  const subscriptions = (subscriptionsResult.data ?? []) as Array<{
-    plan_id: string;
-    status: string;
-  }>;
+  const plans = rowsOf<PlanRow & { subscriptions: Array<{ count: number }> }>(
+    plansResult,
+    'subscription_plans',
+  );
 
   // Live subscribers per plan -- the reason a plan is archived, never deleted.
   const liveCount = new Map<string, number>();
-  for (const subscription of subscriptions) {
-    if (!['active', 'paused', 'past_due'].includes(subscription.status)) continue;
-    liveCount.set(subscription.plan_id, (liveCount.get(subscription.plan_id) ?? 0) + 1);
+  for (const plan of plans) {
+    liveCount.set(plan.id, plan.subscriptions[0]?.count ?? 0);
   }
 
   async function createPlan(formData: FormData) {
     'use server';
+
+    await requirePermission(PERMISSIONS.plansManage);
 
     const name = str(formData, 'name');
     if (!name) fail(PATH, 'A plan needs a name.');
@@ -146,6 +157,8 @@ export default async function PlansPage({ searchParams }: PageProps<'/admin/plan
   async function setPublished(formData: FormData) {
     'use server';
 
+    await requirePermission(PERMISSIONS.plansManage);
+
     const db = await serverClient();
     const { error } = await db
       .from('subscription_plans')
@@ -160,6 +173,8 @@ export default async function PlansPage({ searchParams }: PageProps<'/admin/plan
 
   async function setArchived(formData: FormData) {
     'use server';
+
+    await requirePermission(PERMISSIONS.plansManage);
 
     const archive = str(formData, 'archive') === 'true';
 
@@ -190,7 +205,7 @@ export default async function PlansPage({ searchParams }: PageProps<'/admin/plan
         description="These are the real commercial plans customers buy. Only published, active plans reach the storefront."
       />
 
-      <ActionFeedback error={params.error as string} ok={params.ok as string} />
+      <ActionFeedback {...flashFrom(params)} />
 
       {/* ------------------------------------------------------------------ */}
       {/* Create                                                              */}

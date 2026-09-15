@@ -16,7 +16,7 @@ Built against `c.k.p.prd.pdf` (Working PRD v1.0).
 | 2. Database, schema, RLS | Done — 22 migrations, 56 tables, 90 policies |
 | 3. Domain engine (checkout, payments, subscriptions, KOT, marketplace) | Done — 30 SQL routines |
 | 4. Seed data through real workflows | Done |
-| 5. Automated tests | Done — 116 tests |
+| 5. Automated tests | Done — 131 tests |
 | 6. Provider abstractions (payments, marketplaces, notifications) | Done |
 | 7. Auth/RBAC application layer | Done |
 | 8. Storefront, checkout and customer account | Done |
@@ -25,7 +25,7 @@ Built against `c.k.p.prd.pdf` (Working PRD v1.0).
 | 11. Webhooks and scheduled jobs | Done |
 | 12. Live verification against a Supabase project | Done |
 
-`npm run build` compiles all 46 routes; `npm test` runs 116 tests; `tsc` and
+`npm run build` compiles all 46 routes; `npm test` runs 131 tests; `tsc` and
 `eslint` are clean. The schema, the seed and the full operational walkthrough
 have been run against a live Supabase project — see below.
 
@@ -65,6 +65,20 @@ shared component rather than by discipline:
 | A form that is saving says so | `Button` reads `useFormStatus`, so every server-action submit disables itself and shows a spinner automatically. |
 | A destructive action needs two clicks | `ConfirmButton` — arms on the first click, submits on the second, disarms after 4s (PRD 19). |
 | A refused write is reported, never swallowed | `fail()` / `done()` + `<ActionFeedback>`. A save that silently does nothing is how an Owner comes to believe a setting changed when it did not. |
+
+Three more rules apply to the Owner admin screens under `src/app/admin`, and
+each exists because of a measured cost rather than taste:
+
+| Rule | How |
+| --- | --- |
+| The permission guard and the page's reads go out **together** | `Promise.all([requirePermission(...), ...reads])`. Every read is already RLS-filtered as the caller, so starting early exposes nothing, and a refused guard still redirects before render. The hosted database is a region away; a sequential guard cost every screen a round-trip before its own data could start. |
+| Every Server Action **re-checks its permission** first | `await requirePermission(...)` is the first line of each action. An action is a public endpoint, and RLS refusing a write shows up as zero rows affected, not an error -- which the action would otherwise report as success. |
+| A read that can grow with the business is **paged** | `fetchAll()` in `src/lib/supabase/query.ts`. PostgREST caps every response at 1,000 rows and says nothing; a revenue figure summed from a capped list is wrong, not slow. Small lookups use `rowsOf()` / `rowOf()`, which throw on a real failure instead of rendering an empty state that looks like "no data yet". |
+
+The session itself (`src/lib/auth/session.ts`) verifies the access token
+locally against the project's ES256 signing key and reads the profile, grants
+and customer row in one parallel round; `src/proxy.ts` does the same local
+check and only goes to the auth server when a token has actually expired.
 
 Design tokens live in `src/app/globals.css`. The KOT screens set
 `data-surface="ops"` to flip the whole palette to the dark, high-contrast ramp;

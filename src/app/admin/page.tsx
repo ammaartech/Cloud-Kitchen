@@ -1,6 +1,7 @@
 import { requirePermission } from '@/lib/auth/session';
 import { PERMISSIONS } from '@/lib/auth/permissions';
 import { serverClient } from '@/lib/supabase/server';
+import { fetchAll, rowsOf } from '@/lib/supabase/query';
 import { money, duration, dateOnly, SOURCE_LABELS } from '@/lib/format';
 import { Alert, Badge, Card, EmptyState, SectionHeading, Stat } from '@/components/ui/primitives';
 import { RevenueChart } from '@/components/admin/revenue-chart';
@@ -40,21 +41,31 @@ interface DailyRow {
 }
 
 export default async function AdminOverviewPage() {
-  await requirePermission(PERMISSIONS.analyticsView);
   const supabase = await serverClient();
 
-  const [dashboardResult, dailyResult, costResult] = await Promise.all([
+  // The guard and the reads go out together. Every read is already filtered
+  // by RLS as this user, and a refused guard still redirects before render.
+  const [, dashboardResult, daily, costResult] = await Promise.all([
+    requirePermission(PERMISSIONS.analyticsView),
     supabase.from('v_owner_dashboard').select('*'),
-    supabase
-      .from('v_kot_metrics_daily')
-      .select('business_date, source, order_count, revenue, estimated_profit')
-      .order('business_date', { ascending: true }),
+    // One row per business day per channel, for the life of the business. A
+    // year of trading is past the API's single-response cap, so this pages.
+    fetchAll<DailyRow>(
+      () =>
+        supabase
+          .from('v_kot_metrics_daily')
+          .select('business_date, source, order_count, revenue, estimated_profit', {
+            count: 'exact',
+          })
+          .order('business_date', { ascending: true })
+          .order('source', { ascending: true }),
+      'v_kot_metrics_daily',
+    ),
     supabase.from('cost_settings').select('label, is_dummy_data').eq('is_active', true),
   ]);
 
-  const rows = (dashboardResult.data ?? []) as unknown as DashboardRow[];
-  const daily = (dailyResult.data ?? []) as unknown as DailyRow[];
-  const costs = (costResult.data ?? []) as Array<{ label: string; is_dummy_data: boolean }>;
+  const rows = rowsOf<DashboardRow>(dashboardResult, 'v_owner_dashboard');
+  const costs = rowsOf<{ label: string; is_dummy_data: boolean }>(costResult, 'cost_settings');
 
   const usesDummyCosts = costs.some((cost) => cost.is_dummy_data);
 

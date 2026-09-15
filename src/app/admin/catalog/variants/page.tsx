@@ -3,21 +3,12 @@ import { revalidateStorefront } from '@/lib/data/catalog-cache';
 import { requirePermission } from '@/lib/auth/session';
 import { PERMISSIONS } from '@/lib/auth/permissions';
 import { serverClient } from '@/lib/supabase/server';
+import { rowsOf } from '@/lib/supabase/query';
 import { money } from '@/lib/format';
 import { bool, codify, nullableNum, num, str } from '@/lib/admin/form';
-import { ActionFeedback, done, fail, readable } from '@/lib/admin/feedback';
+import { ActionFeedback, done, fail, flashFrom, readable } from '@/lib/admin/feedback';
 import { CatalogNav } from '@/components/admin/catalog-nav';
 
-/**
- * These screens are per-user by definition -- a session decides not just what
- * they show but whether you may see them at all -- so there is no static shell
- * to prerender and no point pretending otherwise. `instant = false` says that
- * plainly: this segment is allowed to block.
- *
- * It is a statement about *this* route, not a global escape hatch. The public
- * storefront next door is held to the opposite standard.
- */
-export const instant = false;
 import {
   Badge,
   Button,
@@ -30,6 +21,17 @@ import {
   SectionHeading,
   Select,
 } from '@/components/ui/primitives';
+
+/**
+ * These screens are per-user by definition -- a session decides not just what
+ * they show but whether you may see them at all -- so there is no static shell
+ * to prerender and no point pretending otherwise. `instant = false` says that
+ * plainly: this segment is allowed to block.
+ *
+ * It is a statement about *this* route, not a global escape hatch. The public
+ * storefront next door is held to the opposite standard.
+ */
+export const instant = false;
 
 export const metadata = { title: 'Variant groups' };
 
@@ -69,11 +71,13 @@ interface VariantGroupRow {
 export default async function VariantsPage({
   searchParams,
 }: PageProps<'/admin/catalog/variants'>) {
-  await requirePermission(PERMISSIONS.catalogManage);
   const params = await searchParams;
   const supabase = await serverClient();
 
-  const [groupsResult, linksResult] = await Promise.all([
+  // The guard and the reads go out together. Every read is already filtered
+  // by RLS as this user, and a refused guard still redirects before render.
+  const [, groupsResult, linksResult] = await Promise.all([
+    requirePermission(PERMISSIONS.catalogManage),
     supabase
       .from('variant_groups')
       .select(
@@ -85,15 +89,17 @@ export default async function VariantsPage({
     supabase.from('product_variant_groups').select('variant_group_id'),
   ]);
 
-  const groups = (groupsResult.data ?? []) as unknown as VariantGroupRow[];
+  const groups = rowsOf<VariantGroupRow>(groupsResult, 'groups');
 
   const usage = new Map<string, number>();
-  for (const row of (linksResult.data ?? []) as Array<{ variant_group_id: string }>) {
+  for (const row of rowsOf<{ variant_group_id: string }>(linksResult, 'links')) {
     usage.set(row.variant_group_id, (usage.get(row.variant_group_id) ?? 0) + 1);
   }
 
   async function createGroup(formData: FormData) {
     'use server';
+
+    await requirePermission(PERMISSIONS.catalogManage);
 
     const name = str(formData, 'name');
     if (!name) fail(PATH, 'A variant group needs a name.');
@@ -117,6 +123,8 @@ export default async function VariantsPage({
 
   async function updateGroup(formData: FormData) {
     'use server';
+
+    await requirePermission(PERMISSIONS.catalogManage);
 
     const db = await serverClient();
     const { error } = await db
@@ -143,6 +151,8 @@ export default async function VariantsPage({
   async function deleteGroup(formData: FormData) {
     'use server';
 
+    await requirePermission(PERMISSIONS.catalogManage);
+
     const db = await serverClient();
     const { error } = await db.from('variant_groups').delete().eq('id', str(formData, 'groupId'));
 
@@ -154,6 +164,8 @@ export default async function VariantsPage({
 
   async function addVariant(formData: FormData) {
     'use server';
+
+    await requirePermission(PERMISSIONS.catalogManage);
 
     const name = str(formData, 'name');
     if (!name) fail(PATH, 'An option needs a name.');
@@ -180,6 +192,8 @@ export default async function VariantsPage({
   async function updateVariant(formData: FormData) {
     'use server';
 
+    await requirePermission(PERMISSIONS.catalogManage);
+
     const db = await serverClient();
     const { error } = await db
       .from('variants')
@@ -203,6 +217,8 @@ export default async function VariantsPage({
   async function deleteVariant(formData: FormData) {
     'use server';
 
+    await requirePermission(PERMISSIONS.catalogManage);
+
     const db = await serverClient();
     const { error } = await db.from('variants').delete().eq('id', str(formData, 'variantId'));
 
@@ -221,7 +237,7 @@ export default async function VariantsPage({
 
       <CatalogNav />
 
-      <ActionFeedback error={params.error as string} ok={params.ok as string} />
+      <ActionFeedback {...flashFrom(params)} />
 
       <Card className="mb-8 p-5">
         <h2 className="mb-4 font-semibold">New variant group</h2>

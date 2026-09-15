@@ -1,9 +1,11 @@
+import { cache } from 'react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
-import { requireAnyPermission, can } from '@/lib/auth/session';
+import { requireAnyPermission, requirePermission, can } from '@/lib/auth/session';
 import { PERMISSIONS } from '@/lib/auth/permissions';
 import { serverClient } from '@/lib/supabase/server';
+import { rowOf, rowsOf } from '@/lib/supabase/query';
 import {
   dateOnly,
   dateTime,
@@ -11,18 +13,8 @@ import {
   SUBSCRIPTION_STATUS_LABELS,
 } from '@/lib/format';
 import { bool, str } from '@/lib/admin/form';
-import { ActionFeedback, done, fail, readable } from '@/lib/admin/feedback';
+import { ActionFeedback, done, fail, flashFrom, readable } from '@/lib/admin/feedback';
 
-/**
- * These screens are per-user by definition -- a session decides not just what
- * they show but whether you may see them at all -- so there is no static shell
- * to prerender and no point pretending otherwise. `instant = false` says that
- * plainly: this segment is allowed to block.
- *
- * It is a statement about *this* route, not a global escape hatch. The public
- * storefront next door is held to the opposite standard.
- */
-export const instant = false;
 import {
   Alert,
   Badge,
@@ -36,17 +28,33 @@ import {
   Textarea,
 } from '@/components/ui/primitives';
 
+/**
+ * These screens are per-user by definition -- a session decides not just what
+ * they show but whether you may see them at all -- so there is no static shell
+ * to prerender and no point pretending otherwise. `instant = false` says that
+ * plainly: this segment is allowed to block.
+ *
+ * It is a statement about *this* route, not a global escape hatch. The public
+ * storefront next door is held to the opposite standard.
+ */
+export const instant = false;
+
+
+/**
+ * One read of the customer per request, shared by the metadata and the page.
+ * `generateMetadata` and the page body render concurrently and used to issue
+ * the same lookup twice; `cache()` dedupes them into one round-trip.
+ */
+const loadCustomer = cache(async (customerId: string) => {
+  const supabase = await serverClient();
+  const result = await supabase.from('customers').select('*').eq('id', customerId).maybeSingle();
+  return rowOf<Customer>(result, 'customers');
+});
 
 export async function generateMetadata({ params }: PageProps<'/admin/customers/[customerId]'>) {
   const { customerId } = await params;
-  const supabase = await serverClient();
-  const { data } = await supabase
-    .from('customers')
-    .select('full_name')
-    .eq('id', customerId)
-    .maybeSingle();
-
-  return { title: data ? (data as { full_name: string }).full_name : 'Customer' };
+  const customer = await loadCustomer(customerId);
+  return { title: customer ? customer.full_name : 'Customer' };
 }
 
 interface Customer {
@@ -79,18 +87,16 @@ export default async function CustomerDetailPage({
   params,
   searchParams,
 }: PageProps<'/admin/customers/[customerId]'>) {
-  const session = await requireAnyPermission([
-    PERMISSIONS.customersView,
-    PERMISSIONS.customersManage,
-  ]);
-
   const { customerId } = await params;
   const query = await searchParams;
   const path = `/admin/customers/${customerId}`;
   const supabase = await serverClient();
 
+  // The guard and the reads go out together. Every read is already filtered
+  // by RLS as this user, and a refused guard still redirects before render.
   const [
-    customerResult,
+    session,
+    customer,
     addressesResult,
     subscriptionsResult,
     ordersResult,
@@ -98,7 +104,8 @@ export default async function CustomerDetailPage({
     reviewsResult,
     refundsResult,
   ] = await Promise.all([
-    supabase.from('customers').select('*').eq('id', customerId).maybeSingle(),
+    requireAnyPermission([PERMISSIONS.customersView, PERMISSIONS.customersManage]),
+    loadCustomer(customerId),
     supabase
       .from('customer_addresses')
       .select('*')
@@ -135,14 +142,13 @@ export default async function CustomerDetailPage({
       .order('created_at', { ascending: false }),
   ]);
 
-  const customer = customerResult.data as Customer | null;
   if (!customer) notFound();
 
   // Captured before the actions below close over it -- an Owner-created
   // customer has no login at all, and deactivation has to cope with that.
   const customerProfileId = customer.profile_id;
 
-  const addresses = (addressesResult.data ?? []) as Array<{
+  const addresses = rowsOf<{
     id: string;
     label: string;
     recipient_name: string;
@@ -156,7 +162,7 @@ export default async function CustomerDetailPage({
     delivery_instructions: string | null;
     is_default: boolean;
     is_active: boolean;
-  }>;
+  }>(addressesResult, 'addresses');
 
   const subscriptions = (subscriptionsResult.data ?? []) as unknown as Array<{
     id: string;
@@ -168,21 +174,21 @@ export default async function CustomerDetailPage({
     subscription_plans: { name: string } | null;
   }>;
 
-  const orders = (ordersResult.data ?? []) as Array<{
+  const orders = rowsOf<{
     id: string;
     order_number: number;
     source: string;
     status: string;
     grand_total: string;
     placed_at: string;
-  }>;
+  }>(ordersResult, 'orders');
 
-  const invoices = (invoicesResult.data ?? []) as Array<{
+  const invoices = rowsOf<{
     id: string;
     invoice_number: string;
     issued_at: string;
     total: string;
-  }>;
+  }>(invoicesResult, 'invoices');
 
   const reviews = (reviewsResult.data ?? []) as unknown as Array<{
     id: string;
@@ -193,13 +199,13 @@ export default async function CustomerDetailPage({
     products: { name: string } | null;
   }>;
 
-  const refunds = (refundsResult.data ?? []) as Array<{
+  const refunds = rowsOf<{
     id: string;
     status: string;
     reason: string;
     requested_amount: string | null;
     created_at: string;
-  }>;
+  }>(refundsResult, 'refunds');
 
   const canManage = can(session, PERMISSIONS.customersManage);
 
@@ -209,6 +215,8 @@ export default async function CustomerDetailPage({
 
   async function saveCustomer(formData: FormData) {
     'use server';
+
+    await requirePermission(PERMISSIONS.customersManage);
 
     const db = await serverClient();
     const { error } = await db
@@ -230,6 +238,8 @@ export default async function CustomerDetailPage({
   async function setConsent(formData: FormData) {
     'use server';
 
+    await requirePermission(PERMISSIONS.customersManage);
+
     const consent = bool(formData, 'marketingConsent');
 
     const db = await serverClient();
@@ -250,6 +260,8 @@ export default async function CustomerDetailPage({
 
   async function setAccountActive(formData: FormData) {
     'use server';
+
+    await requirePermission(PERMISSIONS.customersManage);
 
     const activate = str(formData, 'activate') === 'true';
     const reason = str(formData, 'reason');
@@ -292,6 +304,8 @@ export default async function CustomerDetailPage({
 
   async function saveAddress(formData: FormData) {
     'use server';
+
+    await requirePermission(PERMISSIONS.customersManage);
 
     const addressId = str(formData, 'addressId');
     const makeDefault = bool(formData, 'isDefault');
@@ -341,6 +355,8 @@ export default async function CustomerDetailPage({
   async function removeAddress(formData: FormData) {
     'use server';
 
+    await requirePermission(PERMISSIONS.customersManage);
+
     const db = await serverClient();
     // Subscriptions reference an address with ON DELETE RESTRICT, so retiring
     // it is the only safe removal for an address that has been delivered to.
@@ -389,7 +405,7 @@ export default async function CustomerDetailPage({
         />
       </div>
 
-      <ActionFeedback error={query.error as string} ok={query.ok as string} />
+      <ActionFeedback {...flashFrom(query)} />
 
       {!customer.is_active ? (
         <div className="mb-6">

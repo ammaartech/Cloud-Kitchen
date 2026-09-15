@@ -4,21 +4,12 @@ import { revalidateStorefront } from '@/lib/data/catalog-cache';
 import { requirePermission } from '@/lib/auth/session';
 import { PERMISSIONS } from '@/lib/auth/permissions';
 import { serverClient } from '@/lib/supabase/server';
+import { rowsOf } from '@/lib/supabase/query';
 import { money } from '@/lib/format';
 import { num, nullableNum, slugify, str } from '@/lib/admin/form';
-import { ActionFeedback, done, fail, readable } from '@/lib/admin/feedback';
+import { ActionFeedback, done, fail, flashFrom, readable } from '@/lib/admin/feedback';
 import { CatalogNav } from '@/components/admin/catalog-nav';
 
-/**
- * These screens are per-user by definition -- a session decides not just what
- * they show but whether you may see them at all -- so there is no static shell
- * to prerender and no point pretending otherwise. `instant = false` says that
- * plainly: this segment is allowed to block.
- *
- * It is a statement about *this* route, not a global escape hatch. The public
- * storefront next door is held to the opposite standard.
- */
-export const instant = false;
 import {
   Badge,
   Button,
@@ -31,6 +22,17 @@ import {
   SectionHeading,
   Select,
 } from '@/components/ui/primitives';
+
+/**
+ * These screens are per-user by definition -- a session decides not just what
+ * they show but whether you may see them at all -- so there is no static shell
+ * to prerender and no point pretending otherwise. `instant = false` says that
+ * plainly: this segment is allowed to block.
+ *
+ * It is a statement about *this* route, not a global escape hatch. The public
+ * storefront next door is held to the opposite standard.
+ */
+export const instant = false;
 
 export const metadata = { title: 'Catalog' };
 
@@ -64,13 +66,15 @@ interface ProductRow {
  * nutrition -- lives in the editor, one dish at a time.
  */
 export default async function CatalogPage({ searchParams }: PageProps<'/admin/catalog'>) {
-  await requirePermission(PERMISSIONS.catalogManage);
   const params = await searchParams;
   const supabase = await serverClient();
 
   const showArchived = params.archived === 'true';
 
-  const [productsResult, categoriesResult] = await Promise.all([
+  // The guard and the reads go out together. Every read is already filtered
+  // by RLS as this user, and a refused guard still redirects before render.
+  const [, productsResult, categoriesResult] = await Promise.all([
+    requirePermission(PERMISSIONS.catalogManage),
     supabase
       .from('products')
       .select(
@@ -81,13 +85,15 @@ export default async function CatalogPage({ searchParams }: PageProps<'/admin/ca
     supabase.from('categories').select('id, name').order('sort_order'),
   ]);
 
-  const all = (productsResult.data ?? []) as unknown as ProductRow[];
+  const all = rowsOf<ProductRow>(productsResult, 'products');
   const products = all.filter((product) => (showArchived ? product.archived_at : !product.archived_at));
-  const categories = (categoriesResult.data ?? []) as Array<{ id: string; name: string }>;
+  const categories = rowsOf<{ id: string; name: string }>(categoriesResult, 'categories');
   const archivedCount = all.filter((product) => product.archived_at).length;
 
   async function createProduct(formData: FormData) {
     'use server';
+
+    await requirePermission(PERMISSIONS.catalogManage);
 
     const name = str(formData, 'name');
     if (!name) fail(PATH, 'A dish needs a name.');
@@ -120,6 +126,8 @@ export default async function CatalogPage({ searchParams }: PageProps<'/admin/ca
   async function toggleAvailability(formData: FormData) {
     'use server';
 
+    await requirePermission(PERMISSIONS.catalogManage);
+
     const makeAvailable = str(formData, 'makeAvailable') === 'true';
     const reason = str(formData, 'reason');
 
@@ -141,6 +149,8 @@ export default async function CatalogPage({ searchParams }: PageProps<'/admin/ca
 
   async function updatePricing(formData: FormData) {
     'use server';
+
+    await requirePermission(PERMISSIONS.catalogManage);
 
     const db = await serverClient();
     const { error } = await db
@@ -174,7 +184,7 @@ export default async function CatalogPage({ searchParams }: PageProps<'/admin/ca
 
       <CatalogNav />
 
-      <ActionFeedback error={params.error as string} ok={params.ok as string} />
+      <ActionFeedback {...flashFrom(params)} />
 
       {!showArchived ? (
         <Card className="mb-8 p-5">

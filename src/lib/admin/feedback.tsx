@@ -38,6 +38,30 @@ export function readable(error: { message: string; code?: string } | null): stri
   return error.message;
 }
 
+type SearchParams = Record<string, string | string[] | undefined>;
+
+/** The longest message any action writes; anything past it did not come from us. */
+const MAX_FLASH_LENGTH = 300;
+
+/**
+ * Reads the `ok` / `error` outcome off a page's search params.
+ *
+ * The query string is public input like any other. A repeated key arrives as
+ * an array, and a hand-built link can carry a paragraph -- neither of which
+ * an action ever produces. Only the first value is read, and it is cut at the
+ * length of the longest message this code writes, so what the alert shows is
+ * always the shape of something an action said.
+ */
+export function flashFrom(params: SearchParams): { error?: string; ok?: string } {
+  const pick = (value: string | string[] | undefined): string | undefined => {
+    const first = Array.isArray(value) ? value[0] : value;
+    if (!first) return undefined;
+    return first.slice(0, MAX_FLASH_LENGTH);
+  };
+
+  return { error: pick(params.error), ok: pick(params.ok) };
+}
+
 export function ActionFeedback({ error, ok }: { error?: string; ok?: string }) {
   if (!error && !ok) return null;
 

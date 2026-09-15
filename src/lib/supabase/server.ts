@@ -1,3 +1,4 @@
+import { cache } from 'react';
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 import { serverEnv } from '@/lib/env';
@@ -9,8 +10,16 @@ import { serverEnv } from '@/lib/env';
  * every RPC sees them as `auth.uid()` -- which is how the KOT transition
  * checks, the subscription ownership guards and the audit trail all resolve to
  * a real person without the application passing an identity around.
+ *
+ * Memoised per request with React's `cache()`. A page, its layout, its
+ * `generateMetadata` and the session helper all ask for "the client", and
+ * before this each call built a fresh one and re-parsed the auth cookie. One
+ * instance per request means the token is decoded once and the in-memory
+ * session state (including a refreshed token) is shared by every caller in the
+ * same render. It holds no state that could leak between requests: the cache is
+ * scoped to the request, and the client only ever sees that request's cookies.
  */
-export async function serverClient() {
+export const serverClient = cache(async () => {
   const env = serverEnv();
   const cookieStore = await cookies();
 
@@ -27,11 +36,10 @@ export async function serverClient() {
         } catch {
           // Server Components cannot set cookies. `src/proxy.ts` refreshes the
           // session before the render begins, so this is safe to ignore here.
-          // That file did not exist when this comment was first written, which
-          // meant nothing rotated an expiring token and signed-in users were
-          // dropped without explanation once theirs ran out.
         }
       },
     },
   });
-}
+});
+
+export type ServerSupabase = Awaited<ReturnType<typeof serverClient>>;
