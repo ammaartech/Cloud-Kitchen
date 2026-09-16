@@ -1,5 +1,6 @@
 import { cache } from 'react';
 import { redirect } from 'next/navigation';
+import { connection } from 'next/server';
 import { serverClient } from '@/lib/supabase/server';
 import type { AppRole, Permission } from './permissions';
 
@@ -46,6 +47,25 @@ export interface SessionProfile {
  * caller -- which is the same empty set they had before.
  */
 export const getSession = cache(async (): Promise<SessionProfile | null> => {
+  /*
+   * Nothing past this line may run while a shell is being prerendered.
+   *
+   * Verifying the access token locally means comparing its expiry against the
+   * clock, and `Date.now()` is a different answer on every render -- so Cache
+   * Components refuses to bake it into a static shell rather than shipping one
+   * built against a moment that has passed. The prefetch pass hits this too,
+   * which is what made `/account` throw on navigation and, after a sign-out,
+   * on the refresh that follows it.
+   *
+   * `connection()` holds the helper until a real request is in hand. That is
+   * not a concession: "who is asking" has no answer before there is a request,
+   * and every caller here is already request-bound by the cookie read below.
+   * It belongs in the helper rather than in each of the thirty-odd callers,
+   * and it keeps the guards (`requireSession`, `requirePermission`) covered by
+   * construction.
+   */
+  await connection();
+
   const supabase = await serverClient();
 
   const { data: verified } = await supabase.auth.getClaims();
