@@ -326,7 +326,8 @@ export function SiteHeader() {
           The click handler is the outside-click dismissal. A click on the
           backdrop has the dialog itself as its target -- the backdrop is a
           pseudo-element and cannot be one -- so this fires only when the press
-          landed outside the panel's own box. */}
+          landed outside the panel's own box. `.nav-sheet-body` fills the panel
+          so that nothing inside it can be mistaken for the dialog. */}
       <dialog
         ref={sheet}
         id="site-menu"
@@ -337,28 +338,57 @@ export function SiteHeader() {
           if (event.target === sheet.current) setOpenAt(null);
         }}
       >
-        <nav aria-label="Main">
-          <ul className="flex flex-col">
-            {SITE_NAV.map((item, index) => (
-              <li key={item.href}>
-                <Link
-                  href={item.section ? `/#${item.section}` : item.href}
-                  transitionTypes={['nav-back']}
-                  onClick={() => setOpenAt(null)}
-                  aria-current={currentState(item)}
-                  // The stagger is the sheet's, not the link's: the panel opens
-                  // and the rows arrive behind it, 40ms apart. Short, because
-                  // there are five and a cascade that outlasts the panel it is
-                  // inside stops reading as one movement.
-                  style={{ '--row-at': `${index * 40}ms` } as React.CSSProperties}
-                  className={cx('nav-row', currentState(item) && 'is-current')}
-                >
-                  {item.label}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </nav>
+        <div className="nav-sheet-body">
+          {/* The drawer covers the toggle that opened it, so it carries its own
+              way out in the same spot. First in the panel on purpose:
+              `showModal()` focuses the first focusable element, so a keyboard
+              visitor lands on the close button rather than on a link they did
+              not choose. */}
+          <div className="nav-sheet-head">
+            <button
+              type="button"
+              onClick={() => setOpenAt(null)}
+              aria-label="Close menu"
+              className={buttonClasses('ghost', 'md', 'nav-toggle nav-sheet-close')}
+            >
+              <MenuGlyph />
+            </button>
+            {/* Decorative: the bar's mark is the home link, and it is one
+                tap away the moment this closes. Same file and `sizes` as the
+                bar's, so it is already in the cache. */}
+            <Image
+              src="/brand/mark-green.png"
+              alt=""
+              width={933}
+              height={416}
+              sizes="63px"
+              className="h-7 w-auto"
+            />
+          </div>
+
+          <nav aria-label="Main">
+            <ul className="flex flex-col gap-0.5">
+              {SITE_NAV.map((item, index) => (
+                <li key={item.href}>
+                  <Link
+                    href={item.section ? `/#${item.section}` : item.href}
+                    transitionTypes={['nav-back']}
+                    onClick={() => setOpenAt(null)}
+                    aria-current={currentState(item)}
+                    // The stagger is the drawer's, not the link's: the panel
+                    // slides in and the rows settle behind it, 45ms apart.
+                    // Short, because a cascade that outlasts the panel it is
+                    // inside stops reading as one movement.
+                    style={{ '--row-at': `${index * 45}ms` } as React.CSSProperties}
+                    className={cx('nav-row', currentState(item) && 'is-current')}
+                  >
+                    {item.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        </div>
       </dialog>
     </header>
   );

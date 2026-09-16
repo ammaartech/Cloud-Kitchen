@@ -72,7 +72,7 @@ family lives in its own files because it needs `'use client'`.
 | Component | Notes |
 | --- | --- |
 | `SiteHeader` | The shell's top bar, one light register on every route. The layout hands it a flattened account, never the session. |
-| `AccountNav` / `AccountMenu` | Signed out: "Sign in" (carrying the current page as `?next=`) and "Start a plan today". Signed in: one control, a monogram, the name and a chevron, opening a native popover with the account link and "Sign out". The panel hangs from the trigger's right edge and unrolls downward out of the bar (clip + half-rem travel + fade, 210ms in, 150ms out); on phones it spans the screen. The two states cross-fade. Identity comes from a small external store (`site/account.ts`) that every reader shares and other tabs follow over a `BroadcastChannel`. |
+| `AccountNav` / `AccountMenu` | Signed out: "Sign in" (carrying the current page as `?next=`) and "Start a plan today". Signed in: one control, a monogram, the name and a chevron, opening a native popover with the account link and "Sign out". The panel is centred under the trigger with anchor positioning (`position-area: bottom`, a rem of side margin so a narrow window slides it in rather than pinning it to the edge, and a `@position-try` fallback that hangs it flush from the trigger's right edge) and unrolls downward out of the bar (clip + half-rem travel + fade, 210ms in, 150ms out); on phones it spans the screen. The two states cross-fade. Identity comes from a small external store (`site/account.ts`) that every reader shares and other tabs follow over a `BroadcastChannel`. |
 | Sign-in / sign-out | Sign-out is `POST /api/auth/sign-out`: session cookies expired on the response, the session revoked at Supabase in `after()`, scope `local` (this device). Storefront sign-out returns to the top of `/`; staff screens go to `/sign-in`. Sign-in returns to a safe `?next=` or the role's landing screen. The submit button carries the progress ("Sign in" → spinner "Signing in" → tick "Signed in"); a refusal shakes it, shows the reason beneath and selects the password. Motion in `auth/auth.css`. |
 | `StorefrontHero` | Headline (see `HeroHeadline` — the rolling introduction), one search field, two gateway cards, delivery windows, on a lightly tinted ground. The composition follows the Indian delivery apps; the treatment does not — colour is spent on the actions, and the food photography carries the appetite. Every figure is read from the database, and a missing one renders nothing rather than a placeholder. |
 | `MissionSection` | The home page's closing statement: who the kitchen cooks for. A full-bleed dark-green band (the one dark storefront surface), a mission statement set large in Zodiak, and two audiences — the desk and the hostel — each a photograph, a lower-case label, a heading and one link. Not cards: the photograph gives each block its edge. Photographs come from the catalogue, offset past the two the hero has already spent, so the page never shows a dish twice. |
@@ -101,10 +101,33 @@ every decision below follows from that.
 | `DeliveryForm` | Name, mobile and address, asked once — it replaces two screens that between them asked for a name and a number three times. Rules come from `lib/checkout/fields.ts` and run in the browser (on leaving a field, cleared on the keystroke that fixes it) and again on the server. Keyboards, `autocomplete` tokens and a `+91` prefix are chosen per field; required and optional are both marked. |
 | `PaymentStep` / `Receipt` | Delivery and payment together, because the address picked in one is what the other pays for. Methods lead with what they accept, not the gateway's name. The pay button says the amount and sits in a dock stuck to the bottom of a phone screen. All three outcomes stay honest, the unconfirmed one loudest. The receipt is the ticket printed and stamped, and the one sequence in the flow. |
 
+### The account overview (`components/account/`)
+
+`/account` is a task surface, arranged in the order of the customer's
+questions: what is happening, is food coming and can I change it, what am I on,
+what happened, everything else. The page reads the database once
+(`lib/account/overview.ts`, one parallel round, the credit balance chained onto
+the subscription read rather than waiting behind the batch) and hands a plain
+model to `AccountOverview`; the calendar arithmetic is pure and unit-tested in
+`lib/account/schedule.ts`.
+
+| Component | Notes |
+| --- | --- |
+| `NextDelivery` | The one weighted panel. The day in words ("Tomorrow"), the window, the dishes, and the kitchen's real skip deadline — window opening less `kot.release_lead_time_minutes`, the moment `release_due_deliveries` takes it. Once released, a five-step progress line in plain words with the ticket code and an estimate labelled as one. |
+| `ScheduleStrip` | The next fourteen days, two rows of seven. Every state a different shape as well as colour (dot, ringed dot, struck ring, hatched square, dash), every cell described in words, today marked by a rule, the cycle's last day by a dashed edge. Days with a delivery link to its row. Draws the pause form's range as it is typed. |
+| `DeliveryRow` / `SkipControl` | A ruled list, not cards; skipped deliveries stay, struck through. There is no un-skip on the server, so a skip is two presses with the consequence written beside the second — no dialog, no disarming timeout, Escape or "Keep it" to back out. |
+| Plan ticket + `CreditsFigure` / `PlanControls` | The plan as the checkout ticket (`ticket-stock`, Zodiak name, Cabinet figures, dotted leaders), with the ledger balance and a meter against the cycle's grant. Pause and cancel open inline under a perforation, back in Inter. Pause shows its limits before any date is typed and previews the deliveries, credits and resume date from the calendar's own arithmetic; cancel lists what actually happens. Sticky beside the calendar only while the ticket fits the window and no form is open. |
+| `AccountStage` | The client shell: holds the pause preview between the ticket and the calendar (two contexts, so typing dates re-renders only the calendar), and the confirmation at the foot of the screen — a polite status message, five seconds, paused on hover or focus — because the control that asked is often gone by the time the answer arrives. |
+
+Its actions (`account/actions.ts`) return a result to the control that called
+them through `useActionState` instead of redirecting with `?ok=`, and rewrite
+the RPCs' refusals in the customer's words.
+
 ### Server-action feedback
 
 A server action cannot return a value to a server-rendered page, so outcomes
-travel back in the query string: `fail(path, msg)` / `done(path, msg)` from
+travel back in the query string (the account overview above is the exception,
+through `useActionState`): `fail(path, msg)` / `done(path, msg)` from
 `src/lib/admin/feedback.tsx`, rendered by `<ActionFeedback>`. `readable()`
 turns Postgres error codes into sentences. **Every server action that can be
 refused must report it** — a save that silently does nothing is how an Owner
@@ -122,6 +145,7 @@ comes to believe a setting changed when it did not.
   - `/menu` (GSAP, see `MenuBoard` / `MenuStage`). Browsing, not a task. Only the board has an entrance (strings drawn, border painted round, title lettered in, under a second). Everything else is either a short scroll reveal or feedback about where the reader is: the index marker following the section, the pass following the dish.
 - **The buying flow answers; it does not perform.** The plan page and checkout have no entrance at all: nothing is hidden, nothing has to finish before the page can be used. GSAP runs there only in response to something the customer did — the ring travelling to the option just chosen, price rows making room for an offer line while the total counts to it (Flip), the tick written on a section that just completed (DrawSVG), a refused field shaking beside its reason, the pay button's label sliding as what it is waiting on changes. Each is one movement of 300–450ms on the `ck` curve, and none of them stands between a tap and its result. The confirmed payment is the single sequence — the receipt printing, stamped, its number resolving out of scrambled digits — and it plays once the money has moved and there is no task left to delay.
 - Its plugins are registered in `checkout/checkout-gsap.ts` (Flip, DrawSVG, ScrambleText), not `site/gsap.ts`, so ScrollTrigger and SplitText stay off the one route where a slow phone is closest to paying.
+- **The account overview answers too.** No entrance. GSAP moves only what an action changed: a skipped day folds into its struck ring, the row's date is struck from its left end, the balance counts to its new value while the meter grows and the figure flashes the brand tint, the next delivery rises into the top panel when the one above it was skipped, pause and cancel open from nothing with focus moved in and returned on close, and a refusal shakes beside its reason. GSAP is not in the route's bundle at all: `account/account-motion.ts` imports the core and `ck` on the first pointer or focus inside the page (or when it goes idle), and every animation checks for it synchronously — if it has not arrived, the change simply happens. Panels animate `opacity`, never `autoAlpha`, so a moment of `visibility: hidden` can never swallow the focus move.
 - The rule holds everywhere else.
 - GSAP tweens use the system curve: `ck` in `site/gsap.ts` is `--ck-ease`. Transforms GSAP writes and transitions CSS runs never share a property on one element (tickets lift with `translate` on the outer element, GSAP moves the paper inside).
 - Failure modes decide base rules for any reveal. Content that must survive is never hidden by a base rule, only inside keyframes, so a renderer that never animates still shows it; decoration does the reverse, starting transparent so it can only ever appear by animating. Never gate real content on a class-triggered transition.

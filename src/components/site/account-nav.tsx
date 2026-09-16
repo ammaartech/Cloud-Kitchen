@@ -88,11 +88,11 @@ export function AccountNav() {
  * than an ARIA `menu`, which promises arrow-key navigation this does not need
  * (the APG's advice for navigation-style dropdowns).
  *
- * It hangs from the trigger's right edge because the trigger is the last thing
- * in the bar -- there is no room to its right -- which is where Google, YouTube
- * and GitHub hang theirs. What makes it read as a drop-down rather than a
- * sideways pop is the motion: it unrolls downward from under the bar. On a
- * phone it spans the width of the screen instead. See `.account-panel`.
+ * It is centred under the trigger, so it reads as dropping out of the control
+ * rather than out of the corner of the screen, and it unrolls downward from
+ * under the bar. Where centring would push it past the edge of a narrow window
+ * it hangs flush from the trigger's right edge instead. On a phone it spans the
+ * width of the screen. See `.account-panel`.
  */
 function AccountMenu({ account }: { account: AccountChip }) {
   const menu = useRef<HTMLDivElement>(null);

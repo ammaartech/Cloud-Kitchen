@@ -49,7 +49,6 @@
 .account-cta-long { display: none; }
 .account-actions .account-sign-in { display: inline-flex; }
 .account-cta-short { display: inline; }
-.nav-sheet { max-height: calc(100dvh - 5.5rem); overflow-y: auto; overscroll-behavior: contain; }
 .about-split { gap: 2.5rem; }
 .about-copy { max-width: 40rem; }
 .about-split:not(:has(.about-art)) { grid-template-columns: minmax(0, 1fr); }

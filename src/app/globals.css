@@ -119,6 +119,12 @@
   /* Confident deceleration. No bounce, no elastic. */
   --ck-ease: cubic-bezier(0.25, 1, 0.5, 1);
 
+  /* The drawer curve (the iOS sheet curve Ionic and Vaul use). Most of the
+     travel is spent in the first third, then a long settle -- a panel that
+     crosses most of the screen needs that tail, where `--ck-ease` would land it
+     with a thump. */
+  --ck-ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+
   /* The focus ring is a token, not a literal: the ops surface flips the brand
      colour out from under it and the ring has to follow. */
   --ck-focus: var(--ck-brand);
@@ -3404,69 +3410,82 @@ h3 {
     rotate 180ms var(--ck-ease) 40ms;
 }
 
-.nav-toggle[aria-expanded='true'] .nav-glyph-top {
+.nav-toggle[aria-expanded='true'] .nav-glyph-top,
+.nav-sheet-close .nav-glyph-top {
   translate: 0 3px;
   rotate: 45deg;
 }
 
-.nav-toggle[aria-expanded='true'] .nav-glyph-bottom {
+.nav-toggle[aria-expanded='true'] .nav-glyph-bottom,
+.nav-sheet-close .nav-glyph-bottom {
   translate: 0 -3px;
   rotate: -45deg;
 }
 
 /* --------------------------------------------------------------------------
-   The mobile navigation sheet.
+   The navigation drawer.
 
    A real `<dialog>` in the top layer, which is what buys the focus trap, the
    Escape key and an inert page behind it without a line of JavaScript for any
    of the three. Most of what follows is undoing the user-agent default -- a
-   centred box with a border and a fixed maximum size -- and putting a panel
-   under the header in its place.
+   centred box with a border and a fixed maximum size -- and pinning a
+   full-height panel to the left edge in its place.
 
-   It scales out of the top right because that is where the button that opened
-   it is. A panel growing from its own centre has no relationship to the thing
-   that summoned it; one growing out of the trigger reads as the trigger
-   opening. `0.97`, never `0`: nothing in the world appears from nothing, and a
-   panel starting at no size at all pops rather than opens.
+   It comes in from the left because that is where the button that opened it
+   is. The motion says where the menu lives: it came out of that corner, and it
+   goes back into it.
 
-   `allow-discrete` is what gives it an exit. `display` and `overlay` are
+   `translate` only, no fade on the panel. A drawer is a physical thing sliding
+   over the page, and a surface that also dissolves while it travels reads as a
+   ghost. The backdrop does the fading, on the same curve and clock, so the two
+   read as one movement.
+
+   Asymmetric on purpose: 420ms in, 280ms out. The way in is being watched, and
+   the long settle of `--ck-ease-drawer` is the smoothness. The way out is
+   something the visitor has already decided on -- they want the page back, and
+   every extra frame is spent in their way. A transition uses the timing of the
+   state it is heading *to*, so the closed rule carries the exit and `[open]`
+   carries the entrance.
+
+   `allow-discrete` is what gives it an exit at all. `display` and `overlay` are
    discrete properties -- they flip rather than tween -- so without it the
    element leaves the top layer on the first frame of the close and takes the
-   animation with it. With it the browser holds both until the transition has
-   run, and Escape gets the same 180ms the button does.
+   slide with it. With it the browser holds both until the transition has run,
+   and Escape gets the same exit the button does.
    -------------------------------------------------------------------------- */
 .nav-sheet {
   position: fixed;
-  /* Clear of the bar rather than under it: the header is 4rem tall. */
-  top: 4.5rem;
-  right: 0.75rem;
-  left: 0.75rem;
-  width: auto;
+  inset: 0 auto 0 0;
+  /* Never the whole screen: a strip of the page stays visible beside it, which
+     is both the tap target that closes it and the reminder that the page is
+     still there underneath. */
+  width: min(20rem, calc(100vw - 3.5rem));
+  height: auto;
   max-width: none;
   max-height: none;
   margin: 0;
-  padding: 0.5rem;
-  border: 1px solid var(--ck-border);
-  border-radius: var(--ck-radius-lg);
+  padding: 0;
+  border: 0;
+  border-right: 1px solid var(--ck-border);
+  border-radius: 0 var(--ck-radius-lg) var(--ck-radius-lg) 0;
   background-color: var(--ck-surface);
   box-shadow: var(--ck-shadow-lg);
-  transform-origin: top right;
+  overflow-y: auto;
+  overscroll-behavior: contain;
 
-  opacity: 0;
-  scale: 0.97;
-  translate: 0 -0.5rem;
+  translate: -100% 0;
   transition:
-    opacity 180ms var(--ck-ease),
-    scale 180ms var(--ck-ease),
-    translate 180ms var(--ck-ease),
-    display 180ms allow-discrete,
-    overlay 180ms allow-discrete;
+    translate 280ms var(--ck-ease-drawer),
+    display 280ms allow-discrete,
+    overlay 280ms allow-discrete;
 }
 
 .nav-sheet[open] {
-  opacity: 1;
-  scale: 1;
   translate: 0 0;
+  transition:
+    translate 420ms var(--ck-ease-drawer),
+    display 420ms allow-discrete,
+    overlay 420ms allow-discrete;
 }
 
 /* The opening frame, and it has to be its own rule. The browser needs a value
@@ -3475,23 +3494,25 @@ h3 {
    the element has no previous style to interpolate against. */
 @starting-style {
   .nav-sheet[open] {
-    opacity: 0;
-    scale: 0.97;
-    translate: 0 -0.5rem;
+    translate: -100% 0;
   }
 }
 
 .nav-sheet::backdrop {
-  background-color: rgb(13 23 20 / 0.32);
+  background-color: rgb(13 23 20 / 0.4);
   opacity: 0;
   transition:
-    opacity 180ms var(--ck-ease),
-    display 180ms allow-discrete,
-    overlay 180ms allow-discrete;
+    opacity 280ms var(--ck-ease-drawer),
+    display 280ms allow-discrete,
+    overlay 280ms allow-discrete;
 }
 
 .nav-sheet[open]::backdrop {
   opacity: 1;
+  transition:
+    opacity 420ms var(--ck-ease-drawer),
+    display 420ms allow-discrete,
+    overlay 420ms allow-discrete;
 }
 
 @starting-style {
@@ -3500,17 +3521,48 @@ h3 {
   }
 }
 
+/* Everything inside the panel, and it is a wrapper for the sake of one click
+   handler. The dialog closes when a press lands on the dialog element itself,
+   which is how a backdrop tap is told apart from a tap on the panel. Any
+   padding on the dialog would count as the dialog too -- so the dialog has
+   none, and this fills it instead, and a tap on the empty lower half of the
+   drawer lands here and leaves it open. */
+.nav-sheet-body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  padding: env(safe-area-inset-top, 0px) 0.75rem calc(1rem + env(safe-area-inset-bottom, 0px));
+}
+
+/* The head mirrors the bar -- same height, same button, the mark beside it --
+   so the drawer arriving over the header looks like the header's own left end
+   sliding out rather than a second, different toolbar appearing. */
+.nav-sheet-head {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  height: 4rem;
+  padding-inline: 0.25rem;
+  margin-bottom: 0.5rem;
+  border-bottom: 1px solid var(--ck-border);
+}
+
 /* The rows, arriving behind the panel rather than with it.
 
    Keyframes rather than a transition, which is the one place around here that
    choice goes the other way: these are not two states a visitor can interrupt,
    they play once as the sheet opens. `backwards` holds them at the opening
-   frame through their delay and hands `opacity` back at the end. */
+   frame through their delay and hands `opacity` back at the end.
+
+   They travel the same way the panel does, a little behind it, so they read
+   as carried in by the drawer and settling a beat after it stops -- rather
+   than as a second movement going somewhere else. The 80ms head start is the
+   panel's: rows animating from frame one are animating off-screen. */
 .nav-row {
   display: block;
   border-radius: var(--ck-radius);
-  padding: 0.75rem 0.875rem;
-  font-size: 1rem;
+  padding: 0.875rem 1rem;
+  font-size: 1.0625rem;
   font-weight: 500;
   color: var(--ck-text);
   transition: background-color 150ms var(--ck-ease);
@@ -3522,24 +3574,50 @@ h3 {
   font-weight: 600;
 }
 
-/* Ungated: a press is real on every device, and this panel only exists on the
-   ones without a pointer. */
+/* Gated: below `xl` this panel now also opens on laptops and tablets with a
+   mouse, and a touchscreen would otherwise leave the hover stuck on whichever
+   row was tapped. */
+@media (hover: hover) and (pointer: fine) {
+  .nav-row:not(.is-current):hover {
+    background-color: var(--ck-surface-sunken);
+  }
+}
+
+/* Ungated: a press is real on every device. */
 .nav-row:active {
   background-color: var(--ck-surface-sunken);
 }
 
 .nav-sheet[open] .nav-row {
-  animation: nav-row-in 220ms var(--ck-ease) var(--row-at, 0ms) backwards;
+  animation: nav-row-in 380ms var(--ck-ease) calc(80ms + var(--row-at, 0ms)) backwards;
 }
 
 @keyframes nav-row-in {
   from {
     opacity: 0;
-    translate: 0 -0.375rem;
+    translate: -1rem 0;
   }
   to {
     opacity: 1;
     translate: 0 0;
+  }
+}
+
+/* The close button's cross draws itself as the drawer arrives: it starts as the
+   two level lines of the toggle that opened it and turns, so the button the
+   visitor pressed appears to have come with the panel. Held back so it turns
+   as the panel lands, not while it is still mostly off-screen. */
+.nav-sheet[open] .nav-sheet-close :is(.nav-glyph-top, .nav-glyph-bottom) {
+  transition:
+    translate 180ms var(--ck-ease) 120ms,
+    rotate 180ms var(--ck-ease) 160ms;
+}
+
+@starting-style {
+  .nav-sheet[open] .nav-sheet-close .nav-glyph-top,
+  .nav-sheet[open] .nav-sheet-close .nav-glyph-bottom {
+    translate: 0 0;
+    rotate: 0deg;
   }
 }
 
@@ -4639,7 +4717,8 @@ html:has(.nav-sheet[open]) {
 .texture-dots,
 .texture-hatch,
 .texture-brick,
-.texture-kolam {
+.texture-kolam,
+.texture-contour {
   position: relative;
   isolation: isolate;
 }
@@ -4647,7 +4726,8 @@ html:has(.nav-sheet[open]) {
 .texture-dots::before,
 .texture-hatch::before,
 .texture-brick::before,
-.texture-kolam::before {
+.texture-kolam::before,
+.texture-contour::before {
   content: '';
   position: absolute;
   inset: 0;
@@ -4846,6 +4926,44 @@ html:has(.nav-sheet[open]) {
     right calc(var(--kolam-size) * -0.36) top 1.5rem,
     left calc(var(--kolam-size) * -0.44) top 62%;
   opacity: 0.055;
+}
+
+/* --------------------------------------------------------------------------
+   Contours. The survey sheet under the questions on `/about`.
+
+   Every other stock here is either a lattice -- rules, dots, a diagonal, a
+   wall -- or a placed motif, and all of them are drawn with a straight edge or
+   a compass. This is the one ground with no geometry in it at all, which is
+   what lets it sit on a page that already uses three of the others without
+   reading as a fourth variation on them. It is also the one that is a map, and
+   the band it sits under is where "where do you deliver" gets answered.
+
+   ## How the drawing was made
+
+   Generated, not traced: three octaves of gradient noise, periodic across the
+   tile so the edges meet, cut into nineteen levels by marching squares, then
+   simplified and smoothed into quadratic curves. Every fifth line is heavier,
+   the way an index contour is on a real survey sheet, so the field has a
+   rhythm to it rather than being nineteen identical hairlines. The top octave
+   is kept very quiet on purpose -- at full strength it put small kinks into
+   every line, and a contour map with kinks reads as a coastline.
+
+   ## Size and level
+
+   75rem, one tile per 1200px, which is wider than the section's container:
+   on a desktop no hill is visibly repeated side by side, and down the page the
+   repeat arrives after the mask has already started fading it.
+
+   The ink is full strength in the SVG and the layer's opacity sets the level,
+   the kolam's method. 7.5% puts an ordinary line at about the weight of the
+   question rows' own hairlines and the index lines just above them, so the
+   rules the list is built from still read as the rules.
+   -------------------------------------------------------------------------- */
+.texture-contour::before {
+  background-image: url('/textures/contours.svg');
+  background-size: 75rem 75rem;
+  background-position: center top;
+  opacity: 0.075;
 }
 
 /* --------------------------------------------------------------------------
@@ -5452,18 +5570,18 @@ html:has(.nav-sheet[open]) {
    name is the one thing in it not set in capitals -- it is who you are, not a
    control. On a phone it is the monogram and the chevron alone.
 
-   The panel is squared too, and it drops. It hangs from the trigger's right
-   edge -- the trigger is the last thing in the bar, so there is nothing to its
-   right to hang from -- and it unrolls downward out of the bar: a clip that
-   opens from its top edge, a half-rem of travel, and the fade. It used to
-   scale out of its top-right corner, and a panel growing from a corner reads
-   as popping out sideways, which is not what a menu under a header does.
+   The panel is squared too, and it drops. It is centred under the trigger and
+   unrolls downward out of the bar: a clip that opens from its top edge, a
+   half-rem of travel, and the fade. It used to hang from the trigger's right
+   edge, and a panel wider than its trigger hung that way spills out to one
+   side of it -- it looked like it had popped out of the corner rather than out
+   of the control.
 
    210ms in on the codebase's ease-out, 150ms out on the same path in reverse,
    so it leaves the way it came and gets out of the way faster than it arrived.
-   Anchor positioning pins it under the trigger where the browser supports it;
-   the fallback puts it under the right end of the header's 72rem column, which
-   is where the trigger always is. On a phone it spans the screen.
+   Anchor positioning centres it under the trigger where the browser supports
+   it; the fallback puts it under the right end of the header's 72rem column,
+   which is where the trigger always is. On a phone it spans the screen.
    -------------------------------------------------------------------------- */
 .account-menu {
   display: flex;
@@ -5580,12 +5698,34 @@ html:has(.nav-sheet[open]) {
     overlay 210ms allow-discrete;
 }
 
+/* Centred under the trigger, which is what makes it read as dropping out of
+   the control rather than out of the corner of the screen. `position-area:
+   bottom` sets it below the anchor and centres it on the anchor's own middle,
+   whatever width the name gives the trigger. The insets from the fallback
+   above have to go back to `auto`, or they would be applied inside that area.
+
+   A narrow window is the case to design for: the trigger is the last thing in
+   the bar, so centring a panel wider than it pushes the right half toward the
+   screen edge. The side margins are what keep it off that edge. They do not
+   move a centred panel -- they are symmetric -- but they count as part of its
+   box, so Chrome slides it back in while there is still a rem of air rather
+   than letting it sit flat against the edge of the window. The try-fallback
+   covers an engine that overflows instead of sliding: it hangs flush from the
+   trigger's right edge, the way it always used to. */
 @supports (anchor-name: --a) {
   .account-panel {
     position-anchor: --account-trigger;
-    top: calc(anchor(bottom) + 0.5rem);
-    right: anchor(right);
+    top: auto;
+    right: auto;
+    margin: 0.5rem 1rem 0;
+    position-area: bottom;
+    position-try-fallbacks: --account-panel-flush;
   }
+}
+
+@position-try --account-panel-flush {
+  position-area: bottom span-left;
+  margin: 0.5rem 0 0;
 }
 
 /* Closed, and where opening starts from: rolled up to its top edge and lifted
@@ -5614,6 +5754,18 @@ html:has(.nav-sheet[open]) {
     left: 0.75rem;
     right: 0.75rem;
     width: auto;
+  }
+
+  /* Out of the area grid, or the insets above would be measured inside the
+     trigger-wide column under the monogram instead of across the screen. */
+  @supports (anchor-name: --a) {
+    .account-panel,
+    .account-panel:not(:popover-open) {
+      position-area: none;
+      position-try-fallbacks: none;
+      top: calc(anchor(bottom) + 0.5rem);
+      margin: 0;
+    }
   }
 }
 
@@ -5725,12 +5877,6 @@ html:has(.nav-sheet[open]) {
       clip-path: none;
     }
   }
-}
-
-.nav-sheet {
-  max-height: calc(100dvh - 5.5rem);
-  overflow-y: auto;
-  overscroll-behavior: contain;
 }
 
 .about-split {

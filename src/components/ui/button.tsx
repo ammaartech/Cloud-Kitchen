@@ -1,6 +1,6 @@
 'use client';
 
-import type { ComponentPropsWithoutRef } from 'react';
+import type { ComponentPropsWithRef } from 'react';
 import { useFormStatus } from 'react-dom';
 import { buttonClasses, type ButtonSize, type ButtonVariant } from './button-styles';
 import { Spinner } from './spinner';
@@ -26,7 +26,9 @@ export function Button({
   type,
   disabled,
   ...rest
-}: ComponentPropsWithoutRef<'button'> & { variant?: ButtonVariant; size?: ButtonSize }) {
+  // `ref` rides along in `rest`: React 19 passes it to a function component as
+  // an ordinary prop, so a caller that needs to move focus can reach the button.
+}: ComponentPropsWithRef<'button'> & { variant?: ButtonVariant; size?: ButtonSize }) {
   const { pending } = useFormStatus();
   const submitting = pending && (type === 'submit' || type === undefined);
 

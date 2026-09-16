@@ -1,0 +1,1276 @@
+/* --------------------------------------------------------------------------
+   The account overview.
+
+   A task surface on the storefront's materials: Inter for the interface, the
+   green ramp for state, hairlines rather than boxes. One panel carries weight
+   -- the next delivery -- and one object carries the plan, the ticket it was
+   bought on. Everything else is a list.
+
+   Motion lives in the islands (`account-motion.ts`) and only ever answers
+   something the customer did. Nothing on this page enters on load, and nothing
+   here is hidden waiting for a script: every rule below describes the finished
+   state, so a page whose JavaScript never arrives is complete.
+   -------------------------------------------------------------------------- */
+
+.acct-page {
+  padding-block: 1.5rem 5rem;
+}
+
+/* --- Greeting ------------------------------------------------------------ */
+
+.acct-head {
+  margin-top: 1.25rem;
+}
+
+.acct-date {
+  font-size: 0.8125rem;
+  color: var(--ck-text-subtle);
+}
+
+.acct-hello {
+  margin-top: 0.25rem;
+  font-size: 1.875rem;
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: var(--ck-text);
+  text-wrap: balance;
+}
+
+.acct-summary {
+  margin-top: 0.5rem;
+  max-width: 62ch;
+  font-size: 1rem;
+  line-height: 1.55;
+  color: var(--ck-text-muted);
+  text-wrap: pretty;
+}
+
+.acct-summary strong {
+  font-weight: 600;
+  color: var(--ck-text);
+}
+
+/* --- Layout ---------------------------------------------------------------- */
+
+.acct-grid {
+  display: grid;
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.acct-main {
+  min-width: 0;
+}
+
+@media (min-width: 64rem) {
+  .acct-grid {
+    grid-template-columns: minmax(0, 1fr) 21.5rem;
+    align-items: start;
+    gap: 2.5rem;
+  }
+}
+
+/* The plan stays in view while the calendar below it is read -- but only while
+   the ticket fits the window. A sticky element taller than the viewport cannot
+   be scrolled to its own bottom until its column ends, which put the pause
+   form's submit button out of reach. So it sticks on a tall enough screen, and
+   lets go the moment a form opens inside it. */
+@media (min-width: 64rem) and (min-height: 50rem) {
+  .acct-aside:not(:has(.acct-panel)) {
+    position: sticky;
+    top: 5.5rem;
+  }
+}
+
+.acct-section {
+  margin-top: 2.5rem;
+}
+
+.acct-section-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.25rem 1rem;
+}
+
+.acct-section-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--ck-text);
+}
+
+.acct-section-note {
+  font-size: 0.8125rem;
+  color: var(--ck-text-muted);
+}
+
+.acct-label {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--ck-text-muted);
+}
+
+.acct-quiet {
+  margin-top: 0.75rem;
+  max-width: 60ch;
+  font-size: 0.875rem;
+  line-height: 1.55;
+  color: var(--ck-text-muted);
+}
+
+.acct-inline-icon {
+  flex-shrink: 0;
+  width: 1rem;
+  height: 1rem;
+}
+
+.acct-link {
+  font-weight: 600;
+  color: var(--ck-brand);
+  text-decoration-line: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
+.acct-mono,
+.acct-ticket-code {
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+}
+
+/* --- The next delivery ----------------------------------------------------- */
+
+/* The one panel on the page with weight: a surface, a hairline and the small
+   shadow cards carry. Everything below it is lists. */
+.acct-next {
+  border: 1px solid var(--ck-border);
+  border-radius: var(--ck-radius-lg);
+  background-color: var(--ck-surface);
+  box-shadow: var(--ck-shadow-sm);
+  padding: 1.25rem;
+}
+
+@media (min-width: 40rem) {
+  .acct-next {
+    padding: 1.5rem 1.75rem;
+  }
+}
+
+.acct-next-day {
+  margin-top: 0.5rem;
+  font-size: 2.25rem;
+  font-weight: 600;
+  line-height: 1.05;
+  letter-spacing: -0.025em;
+  color: var(--ck-text);
+}
+
+.acct-next-when {
+  margin-top: 0.375rem;
+  font-size: 0.9375rem;
+  color: var(--ck-text-muted);
+}
+
+.acct-next-dishes {
+  margin-top: 1rem;
+  max-width: 60ch;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: var(--ck-text);
+  text-wrap: pretty;
+}
+
+.acct-next-empty {
+  margin-top: 0.5rem;
+  max-width: 55ch;
+  font-size: 0.9375rem;
+  line-height: 1.55;
+  color: var(--ck-text-muted);
+}
+
+.acct-next-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem 1.25rem;
+  margin-top: 1.25rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--ck-border);
+}
+
+.acct-next-lock {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--ck-text-muted);
+}
+
+.acct-next-body > .acct-next-lock {
+  margin-top: 1.25rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--ck-border);
+}
+
+.acct-next-lock[data-tone='danger'] {
+  color: var(--ck-danger);
+}
+
+/* --- Skip ------------------------------------------------------------------ */
+
+.acct-skip {
+  min-width: 0;
+}
+
+.acct-skip-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.acct-skip-question {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.625rem 1rem;
+}
+
+.acct-skip-text {
+  max-width: 44ch;
+  font-size: 0.875rem;
+  line-height: 1.45;
+  color: var(--ck-text-muted);
+}
+
+.acct-skip-text strong {
+  font-weight: 600;
+  color: var(--ck-text);
+}
+
+.acct-skip-error,
+.acct-form-error {
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  color: var(--ck-danger);
+}
+
+.acct-skip-error:not(:empty) {
+  margin-top: 0.5rem;
+}
+
+/* The next delivery's skip, once armed, takes the full width of the panel's
+   foot so the question never wraps into a column beside the deadline. */
+.acct-next-foot:has(.acct-skip[data-armed]) .acct-next-lock {
+  display: none;
+}
+
+/* --- Kitchen progress ------------------------------------------------------ */
+
+.acct-progress {
+  margin-top: 1.25rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--ck-border);
+}
+
+.acct-progress-now {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--ck-brand);
+}
+
+.acct-ticket-code {
+  padding: 0.125rem 0.375rem;
+  border-radius: var(--ck-radius-sm);
+  background-color: var(--ck-surface-sunken);
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--ck-text-muted);
+}
+
+.acct-progress-steps {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  margin-top: 1rem;
+}
+
+/* The line runs between the first and last dots; the filled part is scaled
+   rather than sized, so it is drawn by the compositor. */
+.acct-progress-steps::before,
+.acct-progress-steps::after {
+  content: '';
+  position: absolute;
+  top: 0.5625rem;
+  left: 10%;
+  right: 10%;
+  height: 2px;
+  border-radius: 1px;
+  background-color: var(--ck-border);
+}
+
+.acct-progress-steps::after {
+  background-color: var(--ck-brand);
+  transform: scaleX(var(--acct-progress, 0));
+  transform-origin: left center;
+}
+
+.acct-progress-steps li {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.375rem;
+  text-align: center;
+}
+
+.acct-progress-dot {
+  display: grid;
+  place-items: center;
+  width: 1.125rem;
+  height: 1.125rem;
+  border: 2px solid var(--ck-border-strong);
+  border-radius: 999px;
+  background-color: var(--ck-surface);
+  color: var(--ck-surface);
+}
+
+.acct-progress-dot svg {
+  width: 0.75rem;
+  height: 0.75rem;
+  stroke-width: 3;
+}
+
+.acct-progress-steps li[data-state='done'] .acct-progress-dot {
+  border-color: var(--ck-brand);
+  background-color: var(--ck-brand);
+}
+
+.acct-progress-steps li[data-state='now'] .acct-progress-dot {
+  border-color: var(--ck-brand);
+  box-shadow: 0 0 0 4px var(--ck-brand-soft);
+}
+
+.acct-progress-label {
+  font-size: 0.6875rem;
+  line-height: 1.3;
+  color: var(--ck-text-subtle);
+}
+
+.acct-progress-steps li[data-state='now'] .acct-progress-label {
+  font-weight: 600;
+  color: var(--ck-text);
+}
+
+.acct-progress-eta {
+  margin-top: 0.875rem;
+  font-size: 0.8125rem;
+  color: var(--ck-text-muted);
+}
+
+/* --- Next two weeks -------------------------------------------------------- */
+
+.acct-strip {
+  margin-top: 1rem;
+}
+
+.acct-days {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 0.375rem;
+}
+
+.acct-day-cell {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.125rem;
+  min-height: 4.5rem;
+  padding: 0.5rem 0 0.625rem;
+  border: 1px solid var(--ck-border);
+  border-radius: var(--ck-radius);
+  background-color: var(--ck-surface);
+  transition:
+    background-color 200ms var(--ck-ease),
+    border-color 200ms var(--ck-ease);
+}
+
+.acct-day[data-kind='rest'] .acct-day-cell {
+  border-color: transparent;
+  background-color: transparent;
+}
+
+.acct-day-name {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  color: var(--ck-text-subtle);
+}
+
+.acct-day-num {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--ck-text);
+}
+
+.acct-day[data-kind='rest'] .acct-day-num {
+  font-weight: 500;
+  color: var(--ck-text-muted);
+}
+
+/* Today is marked by a rule across the top of its cell -- a position, not a
+   colour, so it survives every state the day can be in. */
+.acct-day[data-today] .acct-day-cell::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: 25%;
+  right: 25%;
+  height: 3px;
+  border-radius: 0 0 3px 3px;
+  background-color: var(--ck-text);
+}
+
+.acct-day[data-today] .acct-day-name {
+  font-weight: 700;
+  color: var(--ck-text);
+}
+
+/* The end of the paid cycle: a dashed edge after the day, so the strip shows
+   where this cycle's deliveries stop without a label in the way. */
+.acct-day[data-cycle-end] .acct-day-cell::after {
+  content: '';
+  position: absolute;
+  top: 0.5rem;
+  bottom: 0.5rem;
+  right: calc(-0.1875rem - 1px);
+  border-right: 1.5px dashed var(--ck-border-strong);
+}
+
+/* Marks: a different shape for every state, so none of them relies on colour. */
+.acct-day-mark {
+  position: relative;
+  display: block;
+  width: 0.625rem;
+  height: 0.625rem;
+  margin-top: 0.375rem;
+}
+
+[data-kind='delivery'] > .acct-day-mark,
+.acct-day[data-kind='delivery'] .acct-day-mark {
+  border-radius: 999px;
+  background-color: var(--ck-brand);
+}
+
+[data-kind='kitchen'] > .acct-day-mark,
+.acct-day[data-kind='kitchen'] .acct-day-mark {
+  border-radius: 999px;
+  background-color: var(--ck-brand);
+  box-shadow: 0 0 0 3px var(--ck-brand-soft), 0 0 0 4px var(--ck-brand);
+}
+
+[data-kind='skipped'] > .acct-day-mark,
+.acct-day[data-kind='skipped'] .acct-day-mark {
+  border: 1.5px solid var(--ck-border-strong);
+  border-radius: 999px;
+}
+
+.acct-day-strike {
+  position: absolute;
+  top: calc(50% - 0.75px);
+  left: -0.1875rem;
+  right: -0.1875rem;
+  height: 1.5px;
+  border-radius: 1px;
+  background-color: var(--ck-text-muted);
+  rotate: -45deg;
+}
+
+[data-kind='paused'] > .acct-day-mark,
+.acct-day[data-kind='paused'] .acct-day-mark {
+  border-radius: 2px;
+  background-image: repeating-linear-gradient(
+    135deg,
+    var(--ck-warning) 0 1.5px,
+    transparent 1.5px 3.5px
+  );
+  box-shadow: inset 0 0 0 1px var(--ck-warning);
+}
+
+.acct-day[data-kind='rest'] .acct-day-mark {
+  width: 0.375rem;
+  height: 1.5px;
+  margin-top: calc(0.375rem + 4px);
+  margin-bottom: 4px;
+  background-color: var(--ck-border-strong);
+}
+
+/* The pause preview: the days the form is describing, drawn as they would be. */
+.acct-day[data-preview] .acct-day-cell {
+  border-color: var(--ck-warning);
+  background-color: var(--ck-warning-soft);
+}
+
+.acct-day[data-preview='skip'] .acct-day-mark {
+  border-radius: 2px;
+  background-color: transparent;
+  background-image: repeating-linear-gradient(
+    135deg,
+    var(--ck-warning) 0 1.5px,
+    transparent 1.5px 3.5px
+  );
+  box-shadow: inset 0 0 0 1px var(--ck-warning);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  a.acct-day-cell:hover {
+    border-color: var(--ck-border-strong);
+    background-color: var(--ck-surface-sunken);
+  }
+}
+
+.acct-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem 1.125rem;
+  margin-top: 0.75rem;
+  font-size: 0.75rem;
+  color: var(--ck-text-muted);
+}
+
+.acct-legend li {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4375rem;
+}
+
+.acct-legend .acct-day-mark {
+  margin-top: 0;
+}
+
+/* --- Coming up --------------------------------------------------------------- */
+
+.acct-rows {
+  margin-top: 1.5rem;
+  border-top: 1px solid var(--ck-border);
+}
+
+.acct-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    'when end'
+    'dishes dishes';
+  align-items: center;
+  gap: 0.375rem 1rem;
+  padding-block: 0.875rem;
+  border-bottom: 1px solid var(--ck-border);
+  scroll-margin-top: 6rem;
+}
+
+@media (min-width: 40rem) {
+  .acct-row {
+    grid-template-columns: 10.5rem minmax(0, 1fr) auto;
+    grid-template-areas: 'when dishes end';
+  }
+}
+
+.acct-row-when {
+  grid-area: when;
+  min-width: 0;
+}
+
+.acct-row-dishes {
+  grid-area: dishes;
+  min-width: 0;
+  overflow: hidden;
+  font-size: 0.875rem;
+  line-height: 1.45;
+  color: var(--ck-text-muted);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.acct-row-end {
+  grid-area: end;
+  justify-self: end;
+}
+
+/* An armed skip in a row takes the row's full width underneath, rather than
+   squeezing a question into the button's column. */
+.acct-row:has(.acct-skip[data-armed]) {
+  grid-template-areas:
+    'when when'
+    'dishes dishes'
+    'end end';
+}
+
+@media (min-width: 40rem) {
+  .acct-row:has(.acct-skip[data-armed]) {
+    grid-template-areas:
+      'when dishes dishes'
+      'end end end';
+  }
+}
+
+.acct-row:has(.acct-skip[data-armed]) .acct-row-end {
+  justify-self: stretch;
+  padding-block: 0.25rem;
+}
+
+.acct-row-day {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 0.5rem;
+}
+
+.acct-row-date {
+  position: relative;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--ck-text);
+}
+
+.acct-row-calendar {
+  font-size: 0.8125rem;
+  color: var(--ck-text-subtle);
+}
+
+.acct-row-meta {
+  font-size: 0.8125rem;
+  color: var(--ck-text-muted);
+}
+
+.acct-row-strike {
+  position: absolute;
+  top: 55%;
+  left: -0.125rem;
+  right: -0.125rem;
+  height: 1.5px;
+  border-radius: 1px;
+  background-color: currentColor;
+}
+
+.acct-row[data-status='skipped'] .acct-row-date {
+  color: var(--ck-text-subtle);
+}
+
+.acct-row[data-status='skipped'] .acct-row-dishes {
+  color: var(--ck-text-subtle);
+}
+
+.acct-row-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--ck-text-muted);
+  white-space: nowrap;
+}
+
+.acct-row-status[data-tone='brand'] {
+  color: var(--ck-brand);
+}
+
+/* Arriving from the calendar: the row the day linked to lights briefly, so the
+   eye lands on it after the jump. Flattened by the reduced-motion rule. */
+.acct-row:target {
+  animation: acct-target 1.4s var(--ck-ease);
+}
+
+@keyframes acct-target {
+  0%,
+  30% {
+    background-color: var(--ck-brand-soft);
+  }
+  100% {
+    background-color: transparent;
+  }
+}
+
+.acct-more {
+  margin-top: 0.25rem;
+}
+
+.acct-more > summary {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--ck-brand);
+  list-style: none;
+}
+
+.acct-more > summary::-webkit-details-marker {
+  display: none;
+}
+
+.acct-more > summary:focus-visible {
+  outline: 2px solid var(--ck-focus);
+  outline-offset: 2px;
+  border-radius: var(--ck-radius-sm);
+}
+
+.acct-more[open] > summary {
+  display: none;
+}
+
+.acct-more > .acct-rows {
+  margin-top: 0;
+  border-top: 0;
+}
+
+/* --- The plan ticket ----------------------------------------------------------- */
+
+.acct-plan {
+  border: 1px solid var(--ck-border);
+  border-radius: var(--ck-radius-lg);
+  box-shadow: var(--ck-shadow-sm);
+  padding: 1.25rem 1.25rem 1.125rem;
+}
+
+.acct-plan .ticket-name {
+  margin-top: 0.5rem;
+  font-size: 1.5rem;
+}
+
+.acct-plan-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4375rem;
+  margin-top: 0.5rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--ck-text);
+}
+
+.acct-plan-status-dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 999px;
+  background-color: var(--ck-success);
+}
+
+.acct-plan-status[data-status='paused'] .acct-plan-status-dot {
+  border-radius: 1px;
+  background-color: var(--ck-warning);
+}
+
+.acct-plan-status[data-status='past_due'] .acct-plan-status-dot {
+  border-radius: 0;
+  rotate: 45deg;
+  background-color: var(--ck-danger);
+}
+
+.acct-plan-alert {
+  margin-top: 0.875rem;
+  padding: 0.625rem 0.75rem;
+  border-radius: var(--ck-radius-sm);
+  background-color: var(--ck-danger-soft);
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  color: var(--ck-danger);
+}
+
+.acct-credits {
+  margin-top: 1rem;
+  margin-inline: -0.625rem;
+  padding: 0.625rem;
+  border-radius: var(--ck-radius);
+}
+
+.acct-credits-figure {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.acct-credits-value {
+  font-size: 2.5rem;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  color: var(--ck-text);
+}
+
+.acct-credits-unit {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--ck-text-muted);
+}
+
+.acct-credits-of {
+  color: var(--ck-text-subtle);
+}
+
+.acct-credits-missing {
+  font-size: 0.8125rem;
+  color: var(--ck-text-muted);
+}
+
+.acct-meter {
+  height: 0.375rem;
+  margin-top: 0.625rem;
+  overflow: hidden;
+  border-radius: 999px;
+  background-color: var(--ck-surface-sunken);
+  box-shadow: inset 0 0 0 1px var(--ck-border);
+}
+
+.acct-meter-fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background-color: var(--ck-brand);
+  transform: scaleX(var(--acct-fill, 0));
+  transform-origin: left center;
+}
+
+.acct-plan-facts {
+  margin-top: 1rem;
+}
+
+.acct-plan-facts dd {
+  max-width: 64%;
+}
+
+.acct-cycle {
+  margin-top: 0.875rem;
+}
+
+.acct-cycle-bar {
+  height: 2px;
+  overflow: hidden;
+  background-color: var(--ck-border);
+}
+
+.acct-cycle-bar span {
+  display: block;
+  height: 100%;
+  background-color: var(--ck-accent);
+  transform: scaleX(var(--acct-fill, 0));
+  transform-origin: left center;
+}
+
+.acct-cycle-note {
+  margin-top: 0.375rem;
+  font-size: 0.75rem;
+  color: var(--ck-text-subtle);
+}
+
+.acct-plan-total.ticket-total {
+  margin: 1rem 0 0;
+  padding-bottom: 0.875rem;
+}
+
+/* The controls are interface, not ticket: back to Inter, under a perforation. */
+.acct-controls {
+  padding-top: 1rem;
+  border-top: 1.5px dashed var(--ck-border-strong);
+  font-family: var(--font-inter), system-ui, sans-serif;
+}
+
+.acct-controls-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.acct-controls-note {
+  margin-top: 0.625rem;
+  font-size: 0.75rem;
+  line-height: 1.45;
+  color: var(--ck-text-subtle);
+}
+
+.acct-panel {
+  overflow: hidden;
+}
+
+.acct-form {
+  display: grid;
+  gap: 0.875rem;
+  padding-top: 1rem;
+}
+
+.acct-form-lede {
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: var(--ck-text-muted);
+}
+
+.acct-form-title {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--ck-text);
+}
+
+.acct-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+}
+
+.acct-preset {
+  min-height: 2.25rem;
+  padding: 0.25rem 0.625rem;
+  border: 1px solid var(--ck-border-strong);
+  border-radius: var(--ck-radius-sm);
+  background-color: var(--ck-surface);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--ck-text);
+  transition:
+    background-color 150ms var(--ck-ease),
+    border-color 150ms var(--ck-ease),
+    color 150ms var(--ck-ease);
+}
+
+.acct-preset[aria-pressed='true'] {
+  border-color: var(--ck-brand);
+  background-color: var(--ck-brand-soft);
+  color: var(--ck-brand);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .acct-preset:not([aria-pressed='true']):hover {
+    background-color: var(--ck-surface-sunken);
+  }
+}
+
+.acct-form-dates {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.625rem;
+}
+
+.acct-impact {
+  padding: 0.625rem 0.75rem;
+  border-radius: var(--ck-radius-sm);
+  background-color: var(--ck-surface-sunken);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: var(--ck-text);
+}
+
+.acct-impact[data-tone='danger'] {
+  background-color: var(--ck-danger-soft);
+  color: var(--ck-danger);
+}
+
+.acct-consequences {
+  display: grid;
+  gap: 0.4375rem;
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  color: var(--ck-text-muted);
+}
+
+.acct-consequences li {
+  position: relative;
+  padding-left: 1rem;
+}
+
+.acct-consequences li::before {
+  content: '';
+  position: absolute;
+  left: 0.125rem;
+  top: 0.6em;
+  width: 0.4375rem;
+  height: 1.5px;
+  background-color: var(--ck-border-strong);
+}
+
+.acct-panel-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+/* --- Records ------------------------------------------------------------------ */
+
+.acct-records {
+  display: grid;
+  gap: 0;
+  margin-top: 1rem;
+}
+
+@media (min-width: 64rem) {
+  .acct-records {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 2.5rem;
+  }
+}
+
+.acct-section-link {
+  font-size: 0.875rem;
+}
+
+.acct-list {
+  margin-top: 0.75rem;
+  border-top: 1px solid var(--ck-border);
+}
+
+.acct-list-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 3.5rem;
+  padding-block: 0.625rem;
+  border-bottom: 1px solid var(--ck-border);
+}
+
+.acct-list-main {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.acct-list-title {
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--ck-text);
+}
+
+.acct-list-title.acct-mono {
+  font-size: 0.8125rem;
+}
+
+.acct-list-sub {
+  overflow: hidden;
+  font-size: 0.8125rem;
+  color: var(--ck-text-muted);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.acct-list-status {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 0.3125rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--ck-text-muted);
+}
+
+.acct-list-row[data-status='fulfilled'] .acct-list-status {
+  color: var(--ck-success);
+}
+
+.acct-list-amount {
+  flex-shrink: 0;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--ck-text);
+}
+
+/* --- More in your account ----------------------------------------------------- */
+
+.acct-links {
+  display: grid;
+  margin-top: 3rem;
+  border-top: 1px solid var(--ck-border);
+}
+
+@media (min-width: 48rem) {
+  .acct-links {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    column-gap: 2rem;
+  }
+}
+
+.acct-link-row {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  min-height: 4.25rem;
+  padding-block: 0.875rem;
+  border-bottom: 1px solid var(--ck-border);
+  color: var(--ck-text);
+}
+
+.acct-link-icon {
+  flex-shrink: 0;
+  width: 1.25rem;
+  height: 1.25rem;
+  color: var(--ck-brand);
+}
+
+.acct-link-glyph {
+  display: grid;
+  place-items: center;
+  font-size: 1.0625rem;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.acct-link-text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.acct-link-title {
+  font-size: 0.9375rem;
+  font-weight: 600;
+}
+
+.acct-link-sub {
+  overflow: hidden;
+  font-size: 0.8125rem;
+  color: var(--ck-text-muted);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.acct-link-arrow {
+  flex-shrink: 0;
+  color: var(--ck-text-subtle);
+  transition: translate 160ms var(--ck-ease);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .acct-link-row:hover .acct-link-title {
+    color: var(--ck-brand);
+  }
+
+  .acct-link-row:hover .acct-link-arrow {
+    translate: 0.1875rem 0;
+    color: var(--ck-brand);
+  }
+}
+
+/* --- No plan ----------------------------------------------------------------- */
+
+.acct-empty {
+  display: grid;
+  gap: 1.5rem;
+  margin-top: 2rem;
+  padding: 1.5rem;
+  border: 1px solid var(--ck-border);
+  border-radius: var(--ck-radius-lg);
+  background-color: var(--ck-surface);
+  box-shadow: var(--ck-shadow-sm);
+}
+
+@media (min-width: 48rem) {
+  .acct-empty {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: end;
+    padding: 2rem;
+  }
+}
+
+.acct-empty-title {
+  font-size: 1.375rem;
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: -0.015em;
+  color: var(--ck-text);
+  text-wrap: balance;
+}
+
+.acct-empty-list {
+  display: grid;
+  gap: 0.625rem;
+  margin-top: 1rem;
+  font-size: 0.9375rem;
+  line-height: 1.45;
+  color: var(--ck-text-muted);
+}
+
+.acct-empty-list li {
+  display: flex;
+  gap: 0.625rem;
+}
+
+.acct-empty-list .acct-inline-icon {
+  margin-top: 0.1875rem;
+  color: var(--ck-brand);
+}
+
+.acct-empty-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.625rem;
+}
+
+/* --- The confirmation ------------------------------------------------------------- */
+
+.acct-notice {
+  position: fixed;
+  inset-inline: 0;
+  bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
+  z-index: 45;
+  display: flex;
+  justify-content: center;
+  padding-inline: 1rem;
+  pointer-events: none;
+}
+
+/* Clear of the back-to-top button, which owns the bottom-right corner on a
+   phone. */
+@media (max-width: 39.99rem) {
+  .acct-notice {
+    padding-right: 4.25rem;
+  }
+}
+
+.acct-notice-card {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  max-width: 34rem;
+  padding: 0.5rem 0.5rem 0.5rem 0.875rem;
+  border-radius: var(--ck-radius);
+  background-color: var(--color-dark-slate-grey-900);
+  box-shadow: var(--ck-shadow-lg);
+  font-size: 0.875rem;
+  line-height: 1.4;
+  color: #fff;
+  pointer-events: auto;
+}
+
+.acct-notice-icon {
+  flex-shrink: 0;
+  color: var(--color-dark-slate-grey-200);
+}
+
+.acct-notice-close {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: var(--ck-radius-sm);
+  color: var(--color-dark-slate-grey-200);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .acct-notice-close:hover {
+    background-color: rgb(255 255 255 / 0.1);
+    color: #fff;
+  }
+}
+
+/* The brand-green ring disappears on the dark card; the footer re-points the
+   same token for the same reason. */
+.acct-notice-card :focus-visible {
+  outline-color: #fff;
+}

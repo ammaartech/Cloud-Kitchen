@@ -446,49 +446,187 @@
 }
 
 /* --------------------------------------------------------------------------
-   What the kitchen will not do.
+   Common questions.
 
-   Two columns of short statements, each opening on a struck-through phrase --
-   the thing that is not done -- and answering it in plain text. The strike is
-   the whole device: a list of refusals written as ordinary sentences reads as
-   marketing, and the same list with the refused thing visibly crossed out reads
-   as a decision that was made.
+   The same ruled list as "why the menu is small" -- a hairline, a monospaced
+   number, the words -- with the answer folded away under each question. One
+   column rather than that section's two: an answer opening in one column of a
+   two-column grid pushes down only half the page, and the rows beside it stop
+   lining up with anything.
+
+   The height animation is in `faq.tsx`, because `height: auto` cannot be
+   transitioned in every browser this page has to run in. Everything here is
+   the parts CSS can do on its own: the icon, hover and press.
    -------------------------------------------------------------------------- */
-.story-pledges {
-  display: grid;
-  gap: 0;
+.faq-list {
+  position: relative;
   margin-top: clamp(2.5rem, 5vw, 3.5rem);
 }
 
-@media (min-width: 64rem) {
-  .story-pledges {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    column-gap: 4rem;
-  }
-}
-
-.story-pledge {
+.faq-item {
   position: relative;
-  padding-block: 1.5rem;
 }
 
-.story-pledge h3 {
-  font-size: 1.0625rem;
-  font-weight: 600;
-  color: var(--ck-text);
+.faq-question {
+  display: block;
+  list-style: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
 }
 
-.story-pledge del {
-  text-decoration-line: line-through;
-  text-decoration-thickness: 2px;
-  text-decoration-color: color-mix(in srgb, var(--ck-danger) 70%, transparent);
+/* Safari still draws the disclosure triangle from this, not from `list-style`. */
+.faq-question::-webkit-details-marker {
+  display: none;
+}
+
+/* `summary` is not in the global focus rule's list of focusable things, so it
+   would otherwise get the browser's own ring instead of the kitchen's. Outset,
+   not inset: the number and the icon sit flush with the row's edges, and a ring
+   drawn inside it cuts straight through both. The container's gutter has the
+   room. */
+.faq-question:focus-visible {
+  outline: 2px solid var(--ck-focus);
+  outline-offset: 4px;
+  border-radius: var(--ck-radius-sm);
+}
+
+/* The grid is on a span inside the summary rather than on the summary itself:
+   older Safari will not lay out a `<summary>` as a grid or flex container. */
+.faq-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  column-gap: 1rem;
+  padding-block: 1.375rem;
+}
+
+/* The number column only once there is room for it. On a phone it would take
+   a sixth of the width from questions that already wrap. */
+.faq-no {
+  display: none;
+  padding-top: 0.25rem;
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-size: 0.8125rem;
   color: var(--ck-text-subtle);
 }
 
-.story-pledge p {
-  margin-top: 0.5rem;
+@media (min-width: 40rem) {
+  .faq-row {
+    grid-template-columns: 2.75rem minmax(0, 1fr) auto;
+  }
+
+  .faq-no {
+    display: block;
+  }
+}
+
+.faq-title {
+  font-size: 1.0625rem;
+  font-weight: 600;
+  line-height: 1.45;
+  color: var(--ck-text);
+  transition: color 150ms var(--ck-ease);
+}
+
+/* A plus that turns into a minus. Two bars in one grid cell; the upright one
+   swings down flat onto the other, and both turn with it, so it reads as the
+   mark rotating rather than a line disappearing. The fill comes in behind it
+   so an open question can be picked out of the list at a glance. */
+.faq-icon {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 1.75rem;
+  height: 1.75rem;
+  margin-top: -0.125rem;
+  border: 1px solid var(--ck-border-strong);
+  border-radius: 999px;
+  color: var(--ck-text);
+  transition:
+    background-color 200ms var(--ck-ease),
+    border-color 200ms var(--ck-ease),
+    color 200ms var(--ck-ease),
+    scale 150ms var(--ck-ease);
+}
+
+.faq-icon::before,
+.faq-icon::after {
+  content: '';
+  grid-area: 1 / 1;
+  width: 0.625rem;
+  height: 1.5px;
+  border-radius: 1px;
+  background-color: currentColor;
+  transition: rotate 300ms var(--ck-ease);
+}
+
+.faq-icon::after {
+  rotate: 90deg;
+}
+
+/* `data-state` is set by `FaqItem` on the click. `[open]` without it is the
+   page before hydration, or with no JavaScript at all. */
+:is(.faq-item[data-state='open'], .faq-item[open]:not([data-state])) .faq-icon {
+  border-color: var(--ck-brand);
+  background-color: var(--ck-brand);
+  color: var(--ck-surface);
+}
+
+:is(.faq-item[data-state='open'], .faq-item[open]:not([data-state])) .faq-icon::before,
+:is(.faq-item[data-state='open'], .faq-item[open]:not([data-state])) .faq-icon::after {
+  rotate: 180deg;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .faq-question:hover .faq-title {
+    color: var(--ck-brand);
+  }
+
+  .faq-question:hover .faq-icon {
+    border-color: var(--ck-brand);
+  }
+}
+
+/* Ungated: a press is real on every device. */
+.faq-question:active .faq-icon {
+  scale: 0.9;
+}
+
+/* Clipped so the answer is uncovered by the growing height rather than
+   spilling out under the next question while it opens. The clip margin keeps
+   a focused link's ring from being shaved off at the edge. */
+.faq-panel {
+  overflow: clip;
+  overflow-clip-margin: 0.25rem;
+}
+
+.faq-answer {
+  padding: 0 2.75rem 1.5rem 0;
+}
+
+@media (min-width: 40rem) {
+  .faq-answer {
+    padding-left: 3.75rem;
+  }
+}
+
+.faq-answer p {
+  max-width: 44rem;
   line-height: 1.6;
   color: var(--ck-text-muted);
+}
+
+.faq-answer a {
+  font-weight: 600;
+  color: var(--ck-brand);
+  white-space: nowrap;
+  text-decoration-line: underline;
+  text-underline-offset: 2px;
+}
+
+/* The rule under the last question. The shared rule class sits on top. */
+.faq-list-end {
+  inset: auto 0 0 0;
 }
 
 /* --------------------------------------------------------------------------

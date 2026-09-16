@@ -1,10 +1,13 @@
 import '@/components/site/motion-gate.css';
 import '@/components/site/about.css';
+import type { ReactNode } from 'react';
 import { listDeliveryWindows, listMenu, type DeliveryWindow } from '@/lib/data/catalog';
 import { clockTime } from '@/lib/format';
 import { ButtonLink } from '@/components/ui/primitives';
 import { buttonClasses } from '@/components/ui/button-styles';
 import { AboutStage } from '@/components/site/about-motion';
+import { CONTACT } from '@/components/site/contact';
+import { FaqItem } from '@/components/site/faq';
 
 export const metadata = {
   title: 'About',
@@ -41,37 +44,66 @@ const RULES = [
 ] as const;
 
 /**
- * What the kitchen will not do, written as refusals.
+ * The questions people ask before they start a plan.
  *
- * The struck-through phrase is the thing that is not done and the sentence
- * under it is what happens instead. A list of refusals written as ordinary
- * sentences reads as marketing; the same list with the refused thing visibly
- * crossed out reads as a decision somebody made.
- *
- * All four are behaviours enforced elsewhere in this codebase rather than
- * promises made here -- the unavailable reason on the menu, the single day's
- * list, payment as the last step of checkout, and marketing consent as its own
- * switch. If one of them stops being true in the product, the pledge has to
- * come off this page with it.
+ * Every answer is a restatement of something the product already commits to
+ * elsewhere, not a new promise made here: delivery zones, skips, cancellation
+ * and refunds are the Terms page in plainer words, and "when am I charged" is
+ * the checkout's own order of steps. If the terms change, these change with
+ * them -- an FAQ that disagrees with the terms is the one a customer quotes
+ * back at you.
  */
-const PLEDGES = [
+const FAQS: readonly { question: string; answer: ReactNode }[] = [
   {
-    refused: 'Substitute a dish without telling you',
-    body: 'If what you ordered is off, the menu says so with the reason before you order, and we would rather be short a dish than send you something you did not choose.',
+    question: 'How does a meal plan work?',
+    answer:
+      'You pick a plan, choose your delivery window and the days you want food, and pay for one cycle up front. We cook to that plan, which is how the kitchen knows how many portions to make before the day starts.',
   },
   {
-    refused: 'List a thousand dishes we do not cook',
-    body: 'Everything on the menu is cooked in this kitchen, by us, on the day you get it. There is no second kitchen behind the name and no brand we are white-labelling.',
+    question: 'Where do you deliver?',
+    answer:
+      'Single and small orders are delivered in North Bangalore only. Bulk orders can go anywhere in Bangalore. If your address is outside our zone, we will tell you before anything is charged.',
   },
   {
-    refused: 'Charge you before you have confirmed',
-    body: 'You configure the plan first and pay last. A payment that does not go through creates no subscription and schedules no food, rather than leaving you to find out later.',
+    question: 'Can I skip a meal or pause my plan?',
+    answer:
+      'Yes, both from your account. A skipped meal goes back to your balance instead of being lost, and a paused plan picks up where it left off. It needs to reach us before the kitchen starts on that window; after that the food is already cooking, so the skip applies to your next delivery.',
   },
   {
-    refused: 'Treat marketing consent as account consent',
-    body: 'They are separate switches and turning one off does not silently change the other. Closing your account stops the marketing; the order and invoice records stay, because a food business is required to hold them.',
+    question: 'How do I cancel?',
+    answer:
+      'From your account, at any time. Cancelling stops the next renewal. The cycle you have already paid for runs to its end, and the meals left on it stay available until then.',
   },
-] as const;
+  {
+    question: 'When will I be charged?',
+    answer:
+      'Payment is the last step of checkout, after your plan is set up. If a payment does not go through, no subscription is created and no food is scheduled. Payments are handled by our payment gateway, so we never see your card number, UPI PIN or bank details.',
+  },
+  {
+    question: 'What happens if a dish is not available?',
+    answer:
+      'It is marked unavailable on the menu with the reason next to it. We never quietly swap in something else for what you chose.',
+  },
+  {
+    question: 'I have a food allergy. Can I still order?',
+    answer:
+      'Please tell us before you start a plan. Our kitchen handles dairy, nuts, gluten and other common allergens, so we cannot guarantee that any dish is free of traces of them.',
+  },
+  {
+    question: 'What if my order arrives wrong or late?',
+    answer: (
+      <>
+        Tell us within 24 hours, with a photo if you can, and we will refund that meal or
+        credit it back to your balance. Refunds go back to the method you paid with. The
+        quickest way to reach us is WhatsApp on{' '}
+        <a href={CONTACT.whatsappHref} target="_blank" rel="noopener noreferrer">
+          {CONTACT.whatsappDisplay}
+        </a>
+        .
+      </>
+    ),
+  },
+];
 
 /**
  * A clock time, some number of minutes earlier.
@@ -381,30 +413,33 @@ export default async function AboutPage() {
       ) : null}
 
       {/* ---------------------------------------------------------------- */}
-      {/* What we will not do                                               */}
+      {/* Common questions                                                  */}
       {/* ---------------------------------------------------------------- */}
-      <section className="texture-hatch border-b border-line">
+      <section id="faq" className="section-anchor texture-contour border-b border-line">
         <div className="landing-container landing-spacing mx-auto max-w-6xl px-4">
           <div className="story-section-head">
             <h2 className="section-display font-semibold" data-enter data-split-heading>
-              what we will not do
+              common questions
             </h2>
             <p className="story-section-lede text-pretty" data-rise>
-              Four things a kitchen this size is regularly tempted into. Each one is
-              refused in the product itself, not only on this page.
+              The things people ask most before they start a plan. If yours is not here,
+              message us on WhatsApp.
             </p>
           </div>
 
-          <div className="story-pledges">
-            {PLEDGES.map((pledge) => (
-              <div key={pledge.refused} className="story-pledge" data-rise>
-                <span className="story-rule-line" data-rule aria-hidden />
-                <h3>
-                  <del>{pledge.refused}</del>
-                </h3>
-                <p>{pledge.body}</p>
-              </div>
+          <div className="faq-list">
+            {FAQS.map((faq, index) => (
+              <FaqItem
+                key={faq.question}
+                number={String(index + 1).padStart(2, '0')}
+                question={faq.question}
+              >
+                <p>{faq.answer}</p>
+              </FaqItem>
             ))}
+            {/* The rule under the last question, so the list closes the way
+                every row in it opens. */}
+            <span className="story-rule-line faq-list-end" data-rule aria-hidden />
           </div>
         </div>
       </section>
