@@ -1,8 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import type { Route } from 'next';
 import { useRouter } from 'next/navigation';
-import { clearAccount } from '@/components/site/account';
+import { refreshAccount } from '@/components/site/account';
+import { CheckIcon } from '@/components/site/icons';
+import { safeNextPath } from '@/lib/auth/redirect';
 import { Alert, Button, Field, Input, Spinner } from '@/components/ui/primitives';
 
 /**
@@ -14,6 +17,22 @@ import { Alert, Button, Field, Input, Spinner } from '@/components/ui/primitives
  */
 const loadClient = () => import('@/lib/supabase/client');
 
+type Phase = 'idle' | 'pending' | 'success';
+
+/**
+ * The refusal, as the checkout says it: a short sideways shake on the thing
+ * that said no, paired with the words that say why. Same keyframes and 360ms as
+ * `shake()` in `checkout-gsap.ts`; written with the Web Animations API because
+ * this page does not otherwise load GSAP, and a shake is not worth a library.
+ */
+function shake(target: Element | null | undefined): void {
+  if (!target || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  target.animate(
+    [0, -6, 6, -4, 4, -2, 0].map((x) => ({ transform: `translateX(${x}px)` })),
+    { duration: 360, easing: 'linear' },
+  );
+}
+
 /**
  * Email + password sign-in.
  *
@@ -22,6 +41,22 @@ const loadClient = () => import('@/lib/supabase/client');
  * application code: enabling them in the project dashboard is what makes them
  * work, and offering a button for a provider that is not enabled would just
  * produce a confusing error. So this renders what is actually wired up.
+ *
+ * ## After signing in
+ *
+ * Back to where the visitor was when they chose to sign in -- the header's
+ * "Sign in" carries the page along as `?next=` -- and otherwise to the screen
+ * their role lands on. That second part used to be the home page for everyone,
+ * which sent a kitchen account to the storefront.
+ *
+ * ## The button is the progress
+ *
+ * It holds the whole exchange in one place, so the eye never has to go looking:
+ * "Sign in", then a spinner and "Signing in" on the same frame as the press,
+ * then a tick and "Signed in" while the next page loads. A wrong password
+ * shakes the button, puts the words under it -- where the eye already is, and
+ * where appearing moves nothing above it -- and hands focus back to the
+ * password with its contents selected, ready to be typed over.
  */
 /**
  * The credential fields are controlled from outside so the development account
@@ -44,11 +79,28 @@ export function SignInForm({
 }) {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
-  const [pending, setPending] = useState(false);
+  const [phase, setPhase] = useState<Phase>('idle');
 
-  async function submit(event: React.FormEvent) {
+  // Next keeps a recently visited page alive but hidden, and shows it again --
+  // state and all -- when it is visited again. A sign-in that finished must not
+  // be what the next visit finds: a disabled form still saying "Signed in".
+  // Effects are torn down when the page is hidden, so this cleanup is the
+  // moment to put the form back, and to drop the password rather than keep it
+  // in a hidden page on a shared device.
+  useEffect(
+    () => () => {
+      setPhase('idle');
+      setError(null);
+      onPasswordChange('');
+    },
+    [onPasswordChange],
+  );
+
+  async function submit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setPending(true);
+    // Held now: `currentTarget` is gone once the handler first awaits.
+    const form = event.currentTarget;
+    setPhase('pending');
     setError(null);
 
     const { browserClient } = await loadClient();
@@ -61,30 +113,43 @@ export function SignInForm({
       // Deliberately not distinguishing "no such account" from "wrong
       // password" -- that difference tells an attacker which emails exist.
       setError('That email and password combination did not work.');
-      setPending(false);
+      setPhase('idle');
+      shake(form.querySelector('[type="submit"]'));
+      const passwordField = form.querySelector<HTMLInputElement>('input[type="password"]');
+      // After the re-render that re-enables the field; a disabled input
+      // cannot take focus.
+      requestAnimationFrame(() => {
+        passwordField?.focus();
+        passwordField?.select();
+      });
       return;
     }
 
-    // The counterpart to the call in `SignOutButton`: the storefront header
-    // caches "signed out" from before this form was submitted, and the push
-    // below does not reload the page that would forget it.
-    clearAccount();
+    setPhase('success');
 
-    // A full refresh so the server components re-read the session cookie.
+    // Re-reads the identity for every open tab, and answers where this role
+    // lands when there is no page to go back to.
+    const account = await refreshAccount();
+    const destination = safeNextPath(next) ?? account?.href ?? '/';
+
+    // Refresh first, then navigate. The refresh drops whatever the router cached
+    // while signed out; issued after the navigation instead, it can supersede a
+    // navigation still in flight and leave the page where it was.
     router.refresh();
-    router.push((next ?? '/') as never);
+    router.replace(destination as Route);
   }
+
+  const busy = phase !== 'idle';
 
   return (
     <form onSubmit={submit} onFocus={() => void loadClient()} className="space-y-4">
-      {error ? <Alert tone="danger">{error}</Alert> : null}
-
       <Field label="Email" required>
         <Input
           type="email"
           value={email}
           autoComplete="email"
           required
+          disabled={busy}
           onChange={(event) => onEmailChange(event.target.value)}
           placeholder="you@example.com"
         />
@@ -96,14 +161,34 @@ export function SignInForm({
           value={password}
           autoComplete="current-password"
           required
+          disabled={busy}
           onChange={(event) => onPasswordChange(event.target.value)}
         />
       </Field>
 
-      <Button type="submit" className="w-full" size="lg" disabled={pending}>
-        {pending ? <Spinner /> : null}
-        Sign in
+      <Button
+        type="submit"
+        className="signin-submit w-full"
+        size="lg"
+        disabled={busy}
+        aria-busy={phase === 'pending'}
+        data-phase={phase}
+      >
+        {/* Keyed by phase, so each state mounts fresh and fades in through a
+            touch of blur -- the two labels read as one changing, not two
+            swapping. See `.signin-submit-face` in `auth.css`. */}
+        <span key={phase} className="signin-submit-face">
+          {phase === 'pending' ? <Spinner /> : null}
+          {phase === 'success' ? <CheckIcon className="signin-submit-tick" /> : null}
+          {phase === 'pending' ? 'Signing in' : phase === 'success' ? 'Signed in' : 'Sign in'}
+        </span>
       </Button>
+
+      {error ? (
+        <div className="signin-error">
+          <Alert tone="danger">{error}</Alert>
+        </div>
+      ) : null}
     </form>
   );
 }

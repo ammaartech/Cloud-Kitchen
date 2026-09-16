@@ -4,7 +4,13 @@ import { money } from '@/lib/format';
 import { Badge, cx } from '@/components/ui/primitives';
 
 /**
- * A meal on the menu.
+ * A meal on the menu, as it sits on the home page's printed spread.
+ *
+ * Set like a line on a paper menu: the name in Zodiak, a dotted leader, the
+ * price at the end of the line. The photograph is inset from the card's edge
+ * rather than bled to it, so it reads as a plate on the sheet -- and it stays
+ * the loudest thing in the card, because nothing else in it has colour. See
+ * `.menu-spread` in `globals.css`.
  *
  * An unavailable product is rendered grayscale with an explicit badge and is
  * not selectable (PRD 6, PRD 19) -- shown rather than hidden, so a customer
@@ -27,21 +33,17 @@ export function ProductTile({
   fetchPriority?: 'high' | 'low' | 'auto';
 }) {
   const unavailable = !product.isAvailable;
+  const rated = product.ratingCount > 0 && product.ratingAverage !== null;
 
   return (
-    <article
-      className={cx(
-        'group overflow-hidden rounded-ck-lg border border-line bg-surface shadow-ck-sm',
-        unavailable && 'is-unavailable',
-      )}
-    >
-      <div className="relative aspect-[4/3] bg-sunken">
+    <article className={cx('spread-dish', unavailable && 'is-unavailable')}>
+      <div className="spread-dish-photo">
         {product.imageUrl ? (
           <Image
             src={product.imageUrl}
             alt={product.imageAlt}
             fill
-            sizes="(max-width: 639px) calc(100vw - 40px), (max-width: 1023px) calc(50vw - 34px), (max-width: 1152px) 33vw, 360px"
+            sizes="(max-width: 639px) calc(100vw - 56px), (max-width: 1023px) calc(50vw - 52px), (max-width: 1248px) 31vw, 390px"
             loading={loading}
             fetchPriority={fetchPriority}
             className="object-cover"
@@ -59,7 +61,7 @@ export function ProductTile({
           </div>
         ) : null}
 
-        <div className="absolute top-2 left-2 flex gap-1">
+        <div className="absolute top-2.5 left-2.5 flex gap-1">
           <Badge tone={product.isVegetarian ? 'success' : 'danger'}>
             {product.isVegetarian ? 'Veg' : 'Non-veg'}
           </Badge>
@@ -67,42 +69,43 @@ export function ProductTile({
         </div>
       </div>
 
-      <div className="p-4">
-        <div className="flex items-start justify-between gap-3">
-          <h3 className="font-semibold text-ink">{product.name}</h3>
-          <p className="shrink-0 font-semibold tabular text-ink">{money(product.basePrice)}</p>
+      <div className="spread-dish-body">
+        <div className="spread-dish-line">
+          <h3 className="spread-dish-name">{product.name}</h3>
+          <span className="spread-dish-leader" aria-hidden />
+          <p className="spread-dish-price tabular">{money(product.basePrice)}</p>
         </div>
 
-        {product.ratingCount > 0 && product.ratingAverage !== null ? (
-          <p className="mt-1 flex items-center gap-1.5 text-xs">
-            <span aria-hidden className="text-warning">
-              {'★'.repeat(Math.round(product.ratingAverage))}
-              <span className="text-subtle">
-                {'★'.repeat(5 - Math.round(product.ratingAverage))}
-              </span>
-            </span>
-            <span className="text-muted">
-              {product.ratingAverage.toFixed(1)} from{' '}
-              {product.ratingCount === 1 ? '1 review' : `${product.ratingCount} reviews`}
-            </span>
-          </p>
-        ) : null}
-
         {product.shortDescription ? (
-          <p className="mt-1 text-sm text-muted">{product.shortDescription}</p>
+          <p className="spread-dish-desc">{product.shortDescription}</p>
         ) : null}
 
-        <dl className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-subtle">
+        <dl className="spread-dish-facts">
           {product.calories !== null ? (
-            <div className="flex gap-1">
+            <div>
               <dt>Calories</dt>
-              <dd className="tabular font-medium text-muted">{product.calories}</dd>
+              <dd className="tabular">{product.calories}</dd>
             </div>
           ) : null}
           {product.proteinGrams ? (
-            <div className="flex gap-1">
+            <div>
               <dt>Protein</dt>
-              <dd className="tabular font-medium text-muted">{product.proteinGrams}g</dd>
+              <dd className="tabular">{product.proteinGrams}g</dd>
+            </div>
+          ) : null}
+          {rated ? (
+            <div>
+              <dt className="sr-only">Rating</dt>
+              <dd className="tabular">
+                <span aria-hidden className="spread-dish-star">
+                  ★{' '}
+                </span>
+                {product.ratingAverage!.toFixed(1)}
+                <span className="spread-dish-soft">
+                  {' '}
+                  ({product.ratingCount === 1 ? '1 review' : `${product.ratingCount} reviews`})
+                </span>
+              </dd>
             </div>
           ) : null}
         </dl>

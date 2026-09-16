@@ -29,10 +29,9 @@ type NavItem = {
  * Offers is not in it. It has no section, it has no place in a footer of four
  * destinations, and the strip above the header says the same thing with the
  * actual discount in it rather than the word "Offers" -- so the word was the
- * weakest of the five links in every list it appeared in. `/offers` is still a
- * route and the strip is still how visitors reach it; that strip only renders
- * when there is an offer running, which is also the only time the page has
- * anything on it.
+ * weakest of the five links in every list it appeared in. There is no `/offers`
+ * page any more; the strip is the whole message and the discount is applied at
+ * checkout.
  *
  * The pages did not go anywhere and that is deliberate. A single page is the
  * better *first* visit: everything the kitchen offers is one scroll away and

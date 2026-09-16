@@ -1,7 +1,6 @@
 import '@/components/site/motion-gate.css';
 import '@/components/site/menu.css';
 import { Suspense } from 'react';
-import Link from 'next/link';
 import { listMenuByCategory, type ProductCard } from '@/lib/data/catalog';
 import { money, pluralise } from '@/lib/format';
 import { ButtonLink, EmptyState, Skeleton } from '@/components/ui/primitives';
@@ -140,7 +139,7 @@ export default function MenuPage({ searchParams }: PageProps<'/menu'>) {
         </div>
       </section>
 
-      <section className="menu-body texture-hatch">
+      <section className="menu-body texture-kolam">
         <div className="landing-container mx-auto max-w-6xl px-4">
           <Suspense fallback={<MenuResultsFallback />}>
             <MenuResults searchParams={searchParams} />
@@ -212,12 +211,11 @@ async function BoardDetails({
       <MenuSearch defaultValue={query} className="board-search" />
 
       {query ? (
-        <p className="board-status" role="status">
+        // Keyed by the query so each new search mounts a fresh line and it
+        // fades in, rather than its text changing in place.
+        <p key={query} className="board-status" role="status">
           {shown === 0 ? 'No dishes match' : `${pluralise(shown, 'dish', 'dishes')} matching`}{' '}
-          <span className="board-query">“{query}”</span>.{' '}
-          <Link href="/menu" className="board-clear">
-            Clear search
-          </Link>
+          <span className="board-query">“{query}”</span>
         </p>
       ) : null}
     </div>

@@ -3689,20 +3689,6 @@ html:has(.nav-sheet[open]) {
   background-color: var(--ck-brand);
   color: #fff;
   text-align: center;
-  /* The strip is a link, and a link that fills the viewport width has no
-     business showing a text cursor across the whole of it. */
-  cursor: pointer;
-  transition: background-color 150ms var(--ck-ease);
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .offer-bar:hover {
-    background-color: var(--ck-brand-hover);
-  }
-}
-
-.offer-bar:active {
-  background-color: var(--ck-text);
 }
 
 .offer-bar-text {
@@ -4486,7 +4472,7 @@ html:has(.nav-sheet[open]) {
    wrap inside it; sized to its content it is as wide as both runs laid end to
    end, which is the number -50% is half of.
 
-   The duration is long on purpose. 48 seconds for a full pass reads as drift
+   The duration is long on purpose. 32 seconds for a full pass reads as drift
    rather than as a ticker -- fast enough that the band is visibly alive when
    you look at it, slow enough that a phrase stays put long enough to be read
    by somebody who chose to. A marquee that hurries is asking to be read and
@@ -4532,7 +4518,7 @@ html:has(.nav-sheet[open]) {
 .marquee-track {
   display: flex;
   width: max-content;
-  animation: marquee-drift 38.4s linear infinite;
+  animation: marquee-drift 32s linear infinite;
   animation-play-state: paused;
 }
 
@@ -4652,14 +4638,16 @@ html:has(.nav-sheet[open]) {
    -------------------------------------------------------------------------- */
 .texture-dots,
 .texture-hatch,
-.texture-brick {
+.texture-brick,
+.texture-kolam {
   position: relative;
   isolation: isolate;
 }
 
 .texture-dots::before,
 .texture-hatch::before,
-.texture-brick::before {
+.texture-brick::before,
+.texture-kolam::before {
   content: '';
   position: absolute;
   inset: 0;
@@ -4831,6 +4819,476 @@ html:has(.nav-sheet[open]) {
 }
 
 /* --------------------------------------------------------------------------
+   Kolam. The ground under the full menu page.
+
+   A sikku kolam: a 9x9 field of dots with one unbroken line woven round every
+   one of them, the way it is drawn on a doorstep in the morning. It is a
+   generated mirror curve rather than a traced drawing -- border dots each get
+   a round loop, the middle is the woven diamond lattice, and the loops between
+   are placed with four-fold rotational symmetry and kept only when the whole
+   thing closes as a single stroke.
+
+   Two of them, very large and cropped by the page edges -- top right, and lower
+   left -- so it reads as a floor the menu is laid on, not a motif repeated
+   across it. The ink lives in the SVG at full strength and the layer's opacity
+   sets the level, so crossings do not darken where the line overlaps itself.
+   At 5.5% the rows read exactly as they did on plain ground.
+   -------------------------------------------------------------------------- */
+.texture-kolam {
+  --kolam-size: clamp(30rem, 52vw, 56rem);
+}
+
+.texture-kolam::before {
+  background-image: url('/textures/kolam.svg'), url('/textures/kolam.svg');
+  background-repeat: no-repeat;
+  background-size: var(--kolam-size) var(--kolam-size);
+  background-position:
+    right calc(var(--kolam-size) * -0.36) top 1.5rem,
+    left calc(var(--kolam-size) * -0.44) top 62%;
+  opacity: 0.055;
+}
+
+/* --------------------------------------------------------------------------
+   The menu spread. "What we cook" on the home page, as the day's menu printed
+   on a sheet of handmade paper.
+
+   This band is art-directed on its own rather than drawn from the shared
+   stocks above, because it is the one place the page stops describing the
+   service and shows the food. So it gets its own paper, and the rest of the
+   page's ground stays exactly as it was.
+
+   ## The paper
+
+   Warm ivory, and flat. The tooth is `paper-grain.svg`: fine specks plus a few
+   dozen short fibres, the pulp a handmade sheet carries. Its threshold was
+   tuned by measuring rather than by eye -- at the opacity below it moves the
+   average colour by about one level, which is texture you notice at a glance
+   and never while reading.
+
+   ## The leaf
+
+   One banana leaf, drawn as line art (`banana-leaf.svg`): a midrib, fine veins
+   swept toward the tip, and the splits a banana leaf tears into along its
+   veins. It is the only illustration in the band, in the brand green at 6.5%,
+   and it is placed rather than tiled -- cropped by the edges of the sheet, and
+   kept off the masthead at every width (the placements are argued out over
+   the media queries below). The cards are opaque, so what shows of the leaf
+   is what falls between and around the plates, the way a leaf shows around
+   what is served on it.
+
+   ## The ink
+
+   Four roles, all local: the paper, a near-black ink, a softer ink for the
+   lede and descriptions, and a hairline. The soft ink is 7:1 on the paper and
+   the card metadata 5:1 on the card, so neither of the quiet colours is quiet
+   enough to fail.
+   -------------------------------------------------------------------------- */
+.menu-spread {
+  --spread-paper: #f3f0e6;
+  --spread-card: #fffdf8;
+  --spread-ink: #171a17;
+  --spread-ink-soft: #4a4f47;
+  --spread-meta: #666b62;
+  --spread-line: rgb(23 26 23 / 0.1);
+  --spread-rule: rgb(23 26 23 / 0.16);
+
+  /* Where the leaf sits, per viewport. Its box is the SVG's own 16:10, drawn
+     with the tip at the upper left and the stem at the lower right; `--leaf-flip`
+     mirrors it. */
+  --leaf-width: 160vw;
+  --leaf-left: 35vw;
+  --leaf-top: auto;
+  --leaf-bottom: -55vw;
+  --leaf-flip: 1;
+
+  position: relative;
+  isolation: isolate;
+  /* `clip`, not `hidden`: the leaf is cropped by the sheet, and this must not
+     become a scroll container. */
+  overflow: clip;
+  background-color: var(--spread-paper);
+  color: var(--spread-ink);
+}
+
+.menu-spread::before,
+.menu-spread::after {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.menu-spread::before {
+  inset: 0;
+  background: url('/textures/paper-grain.svg') 0 0 / 45rem 45rem repeat;
+  opacity: 0.24;
+}
+
+.menu-spread::after {
+  top: var(--leaf-top);
+  bottom: var(--leaf-bottom);
+  left: var(--leaf-left);
+  width: var(--leaf-width);
+  scale: var(--leaf-flip) 1;
+  aspect-ratio: 16 / 10;
+  background: url('/textures/banana-leaf.svg') center / contain no-repeat;
+  opacity: 0.065;
+}
+
+/* On a phone the column is one card wide and the cards are opaque, so the only
+   open paper is under the last plate: the leaf lies along the foot of the
+   sheet there, its tip starting just past the end of "see the full menu". A
+   tablet does the same on the other side, because the link moves right.
+
+   From `lg` it is laid across the spread, mirrored: tip at the upper right,
+   the blade running down behind the grid, the stem leaving through the left
+   edge. It shows in the gutters and in the open corner the masthead leaves --
+   the balance a heading on the left needs. Its top is a length rather than a
+   percentage because it is set against the masthead's height, which does not
+   scale with the width: at 15rem the blade's upper edge clears the lede at
+   every width from 1024px to 2560px. */
+@media (min-width: 40rem) {
+  .menu-spread {
+    --leaf-width: 110vw;
+    --leaf-left: -43.6vw;
+    --leaf-top: auto;
+    --leaf-bottom: -37vw;
+    --leaf-flip: -1;
+  }
+}
+
+@media (min-width: 64rem) {
+  .menu-spread {
+    --leaf-width: 86vw;
+    --leaf-left: -5.5vw;
+    --leaf-top: 15rem;
+    --leaf-bottom: auto;
+  }
+}
+
+/* The masthead. The heading is the page's own `.section-display`, lower case
+   like every other band's, so the spread changes the paper and not the voice. */
+.menu-spread-head {
+  max-width: 40rem;
+}
+
+.menu-spread-lede {
+  margin-top: clamp(1rem, 2vw, 1.5rem);
+  max-width: 34rem;
+  font-size: clamp(1rem, 1.3vw, 1.125rem);
+  line-height: 1.6;
+  color: var(--spread-ink-soft);
+  text-wrap: pretty;
+}
+
+.menu-spread-empty {
+  margin-top: 2.5rem;
+  font-size: 0.875rem;
+  color: var(--spread-ink-soft);
+}
+
+/* The rule under the masthead is the grid's top edge: it spans the whole
+   column, and the plates start below it the way a menu's first course starts
+   under its heading. */
+.menu-spread-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: clamp(1.25rem, 2.4vw, 2rem);
+  margin-top: clamp(2.25rem, 5vw, 3.5rem);
+  padding-top: clamp(1.75rem, 4vw, 3rem);
+  border-top: 1px solid var(--spread-rule);
+}
+
+@media (min-width: 40rem) {
+  .menu-spread-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 64rem) {
+  .menu-spread-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* A plate on the sheet. Barely lighter than the paper, a hairline instead of a
+   shadow, and a small radius -- a card that floats or is heavily rounded is an
+   app tile, and this is meant to be printed. */
+.spread-dish {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 0.5rem;
+  border: 1px solid var(--spread-line);
+  border-radius: 0.5rem;
+  background-color: var(--spread-card);
+}
+
+.spread-dish-photo {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border-radius: 0.25rem;
+  background-color: #ebe7dc;
+}
+
+.spread-dish-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  padding: 1rem 0.625rem 0.5rem;
+}
+
+.spread-dish-line {
+  display: flex;
+  align-items: baseline;
+}
+
+.spread-dish-name {
+  min-width: 0;
+  font-family: var(--font-zodiak), Georgia, serif;
+  font-size: clamp(1.1875rem, 1.6vw, 1.3125rem);
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.005em;
+  color: var(--spread-ink);
+  text-wrap: pretty;
+}
+
+/* The dots a menu runs from a dish to its price. Its baseline is its bottom
+   border, so aligning it to the text's baseline and lifting it by a third of
+   an em puts the dots at the height of the letters' middle. */
+.spread-dish-leader {
+  flex: 1;
+  min-width: 1.25rem;
+  margin-inline: 0.625rem;
+  border-bottom: 1.5px dotted rgb(23 26 23 / 0.28);
+  translate: 0 -0.3em;
+}
+
+.spread-dish-price {
+  flex-shrink: 0;
+  font-size: 1.0625rem;
+  font-weight: 600;
+  color: var(--spread-ink);
+}
+
+.spread-dish-desc {
+  margin-top: 0.375rem;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  color: var(--spread-ink-soft);
+  text-wrap: pretty;
+}
+
+/* Pushed to the foot of the card, so across a row the facts share a line
+   however long each description runs. */
+.spread-dish-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1.25rem;
+  margin-top: auto;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--spread-line);
+  font-size: 0.8125rem;
+  color: var(--spread-meta);
+}
+
+.spread-dish-facts:empty {
+  display: none;
+}
+
+/* The least room between the words and the facts, whichever comes last. */
+.spread-dish-body > :nth-last-child(2) {
+  margin-bottom: 0.875rem;
+}
+
+.spread-dish-facts > div {
+  display: flex;
+  gap: 0.3125rem;
+}
+
+.spread-dish-facts dd {
+  font-weight: 500;
+  color: var(--spread-ink-soft);
+}
+
+.spread-dish-star {
+  color: var(--color-warning);
+}
+
+.spread-dish-soft {
+  font-weight: 400;
+  color: var(--spread-meta);
+}
+
+/* "see the full menu": words, not a button, closing the sheet the way the
+   rule under the heading opens it. A second hairline runs the width of the
+   column and the link sits on it at the right, so the grid is bracketed top and
+   bottom like a printed page.
+
+   The motion all points one way, toward /menu. Pointed at, a brand-green
+   stroke draws along the hairline from the left; the arrow slides out to the
+   right and a second one follows it in from the left, like a page turning
+   forward. Moving away, the stroke leaves through the right rather than
+   rewinding -- `transform-origin` swaps side between the two states, so the
+   line always travels in reading direction. Transitions rather than keyframes,
+   so a pointer that skims past mid-draw retargets the stroke instead of
+   restarting it.
+
+   Pressing scales the whole link to 0.97 on pointer-down, so it answers before
+   the navigation does. Hover motion is gated to fine pointers: on a phone the
+   first tap would otherwise play a hover state and navigate in the same beat.
+   Reduced motion keeps the colour and drops the travel. */
+.menu-spread-foot {
+  display: flex;
+  margin-top: clamp(2rem, 4vw, 3rem);
+  padding-top: clamp(1rem, 2vw, 1.25rem);
+  border-top: 1px solid var(--spread-rule);
+}
+
+@media (min-width: 40rem) {
+  .menu-spread-foot {
+    justify-content: flex-end;
+  }
+}
+
+.menu-spread-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.625rem;
+  min-height: 2.75rem;
+  font-size: 1.0625rem;
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  color: var(--spread-ink);
+  text-decoration: none;
+  transition: scale 140ms var(--ck-ease);
+}
+
+.menu-spread-cta:active {
+  scale: 0.97;
+}
+
+.menu-spread-cta-label {
+  position: relative;
+  padding-bottom: 0.3rem;
+}
+
+/* The resting hairline, and the stroke drawn over it. */
+.menu-spread-cta-label::before,
+.menu-spread-cta-label::after {
+  content: '';
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+}
+
+.menu-spread-cta-label::before {
+  height: 1px;
+  background-color: rgb(23 26 23 / 0.28);
+}
+
+/* Twice the hairline's weight, so the stroke reads as drawn over it rather
+   than as the same line changing colour. */
+.menu-spread-cta-label::after {
+  height: 2px;
+  background-color: var(--ck-brand);
+  scale: 0 1;
+  transform-origin: right center;
+  transition: scale 260ms var(--ck-ease);
+}
+
+/* A one-arrow window. The second arrow waits just outside it, on the left.
+   The bottom margin matches the label's underline padding, so the arrow
+   centres on the words rather than on the words plus their rule. */
+.menu-spread-cta-arrow {
+  position: relative;
+  display: grid;
+  width: 1rem;
+  height: 1rem;
+  margin-bottom: 0.3rem;
+  overflow: clip;
+  color: var(--spread-ink);
+  transition: color 200ms ease;
+}
+
+.menu-spread-cta-arrow > svg {
+  grid-area: 1 / 1;
+  transition:
+    translate 260ms var(--ck-ease) 40ms,
+    opacity 260ms var(--ck-ease) 40ms;
+}
+
+.menu-spread-cta-arrow > svg:last-child {
+  translate: -110% 0;
+  opacity: 0;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .menu-spread-cta:hover .menu-spread-cta-label::after {
+    scale: 1 1;
+    transform-origin: left center;
+  }
+
+  .menu-spread-cta:hover .menu-spread-cta-arrow {
+    color: var(--ck-brand);
+  }
+
+  .menu-spread-cta:hover .menu-spread-cta-arrow > svg:first-child {
+    translate: 110% 0;
+    opacity: 0;
+  }
+
+  .menu-spread-cta:hover .menu-spread-cta-arrow > svg:last-child {
+    translate: 0 0;
+    opacity: 1;
+  }
+}
+
+/* Keyboard focus gets the drawn stroke as well as the ring, so the link reads
+   as the same object whichever way it was reached. */
+.menu-spread-cta:focus-visible {
+  outline-offset: 6px;
+}
+
+.menu-spread-cta:focus-visible .menu-spread-cta-label::after {
+  scale: 1 1;
+  transform-origin: left center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .menu-spread-cta:active {
+    scale: 1;
+  }
+
+  .menu-spread-cta-label::after {
+    scale: 1 1;
+    opacity: 0;
+    transition: opacity 200ms ease;
+  }
+
+  .menu-spread-cta:hover .menu-spread-cta-label::after,
+  .menu-spread-cta:focus-visible .menu-spread-cta-label::after {
+    opacity: 1;
+  }
+
+  /* Same selectors as the hover rules, so these win on source order. */
+  .menu-spread-cta-arrow > svg:first-child,
+  .menu-spread-cta:hover .menu-spread-cta-arrow > svg:first-child {
+    translate: 0 0;
+    opacity: 1;
+    transition: none;
+  }
+
+  .menu-spread-cta-arrow > svg:last-child,
+  .menu-spread-cta:hover .menu-spread-cta-arrow > svg:last-child {
+    opacity: 0;
+    transition: none;
+  }
+}
+
+/* --------------------------------------------------------------------------
    Corners off.
 
    Shape only, no colour, so it composes with any variant -- which is the
@@ -4976,12 +5434,6 @@ html:has(.nav-sheet[open]) {
   white-space: nowrap;
 }
 
-.account-name {
-  max-width: 9rem;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
 .account-cta-long {
   display: none;
 }
@@ -4990,6 +5442,289 @@ html:has(.nav-sheet[open]) {
 
 .account-cta-short {
   display: inline;
+}
+
+/* --------------------------------------------------------------------------
+   The signed-in account control: a monogram and a name that open a small menu.
+   See `AccountMenu` in `account-nav.tsx`.
+
+   The trigger is a squared ghost like the rest of the bar's controls, and the
+   name is the one thing in it not set in capitals -- it is who you are, not a
+   control. On a phone it is the monogram and the chevron alone.
+
+   The panel is squared too, and it drops. It hangs from the trigger's right
+   edge -- the trigger is the last thing in the bar, so there is nothing to its
+   right to hang from -- and it unrolls downward out of the bar: a clip that
+   opens from its top edge, a half-rem of travel, and the fade. It used to
+   scale out of its top-right corner, and a panel growing from a corner reads
+   as popping out sideways, which is not what a menu under a header does.
+
+   210ms in on the codebase's ease-out, 150ms out on the same path in reverse,
+   so it leaves the way it came and gets out of the way faster than it arrived.
+   Anchor positioning pins it under the trigger where the browser supports it;
+   the fallback puts it under the right end of the header's 72rem column, which
+   is where the trigger always is. On a phone it spans the screen.
+   -------------------------------------------------------------------------- */
+.account-menu {
+  display: flex;
+}
+
+/* Signing in or out swaps this group for the other one. It fades in rather
+   than cutting; the first paint of a page is not a swap and does not play. */
+.account-swap {
+  display: flex;
+  align-items: center;
+  gap: inherit;
+  transition: opacity 200ms var(--ck-ease);
+}
+
+@starting-style {
+  .account-swap {
+    opacity: 0;
+  }
+}
+
+.account-trigger {
+  anchor-name: --account-trigger;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2.75rem;
+  padding: 0.25rem 0.5rem 0.25rem 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--ck-text);
+  transition:
+    background-color 150ms ease,
+    scale 140ms var(--ck-ease);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .account-trigger:hover {
+    background-color: var(--color-sunken);
+  }
+}
+
+.account-trigger:active {
+  scale: 0.97;
+}
+
+.account-menu:has(:popover-open) .account-trigger {
+  background-color: var(--color-brand-soft);
+}
+
+.account-avatar {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 1.875rem;
+  height: 1.875rem;
+  border-radius: 999px;
+  background-color: var(--ck-brand);
+  color: #fff;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.account-avatar-lg {
+  width: 2.5rem;
+  height: 2.5rem;
+  font-size: 1rem;
+}
+
+.account-trigger-name {
+  display: none;
+  max-width: 8rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (min-width: 40rem) {
+  .account-trigger-name {
+    display: inline;
+  }
+}
+
+.account-chevron {
+  color: var(--color-muted);
+  transition: rotate 200ms var(--ck-ease);
+}
+
+.account-menu:has(:popover-open) .account-chevron {
+  rotate: 180deg;
+}
+
+.account-panel {
+  position: fixed;
+  inset: auto;
+  top: 4.25rem;
+  right: max(1rem, calc((100% - 72rem) / 2 + 1rem));
+  width: 15rem;
+  margin: 0;
+  padding: 0;
+  overflow: visible;
+  border: 1px solid var(--ck-border);
+  background-color: var(--ck-surface);
+  color: var(--ck-text);
+  box-shadow: var(--ck-shadow-lg);
+  /* Open: the clip reaches past the box on three sides so the shadow is not
+     cut off; only the top edge is the panel's own. */
+  clip-path: inset(0 -2rem -3rem -2rem);
+  transition:
+    opacity 210ms var(--ck-ease),
+    translate 210ms var(--ck-ease),
+    clip-path 210ms var(--ck-ease),
+    display 210ms allow-discrete,
+    overlay 210ms allow-discrete;
+}
+
+@supports (anchor-name: --a) {
+  .account-panel {
+    position-anchor: --account-trigger;
+    top: calc(anchor(bottom) + 0.5rem);
+    right: anchor(right);
+  }
+}
+
+/* Closed, and where opening starts from: rolled up to its top edge and lifted
+   into the bar. */
+.account-panel:not(:popover-open) {
+  opacity: 0;
+  translate: 0 -0.5rem;
+  clip-path: inset(0 -2rem 100% -2rem);
+  transition-duration: 150ms;
+}
+
+@starting-style {
+  .account-panel:popover-open {
+    opacity: 0;
+    translate: 0 -0.5rem;
+    clip-path: inset(0 -2rem 100% -2rem);
+  }
+}
+
+/* A phone has no room for a floating card beside the trigger: the panel runs
+   the width of the screen under the bar, which is what the large apps' account
+   sheets do at this size. */
+@media (max-width: 39.99rem) {
+  .account-panel,
+  .account-panel:not(:popover-open) {
+    left: 0.75rem;
+    right: 0.75rem;
+    width: auto;
+  }
+}
+
+.account-panel-head {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.875rem 1rem;
+  border-bottom: 1px solid var(--ck-border);
+}
+
+.account-panel-name {
+  overflow: hidden;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  line-height: 1.3;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.account-panel-note {
+  font-size: 0.75rem;
+  color: var(--color-subtle);
+}
+
+.account-panel-items {
+  display: flex;
+  flex-direction: column;
+  padding: 0.375rem;
+}
+
+.account-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  width: 100%;
+  height: auto;
+  min-height: 2.5rem;
+  padding: 0 0.625rem;
+  border: 0;
+  border-radius: 0;
+  background-color: transparent;
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-align: left;
+  text-transform: none;
+  color: var(--ck-text);
+  transition: background-color 120ms ease;
+}
+
+.account-item-quiet {
+  justify-content: flex-start;
+  color: var(--color-muted);
+}
+
+/* Signing out: the item keeps its full ink while it works -- a faded row reads
+   as unavailable, not as busy -- and the spinner says the rest. */
+.account-item[data-status='pending'] {
+  opacity: 1;
+  color: var(--ck-text);
+}
+
+.account-item[data-status='failed'] {
+  color: var(--color-danger);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .account-item:hover {
+    background-color: var(--color-sunken);
+    color: var(--ck-text);
+  }
+
+  .account-item:hover .account-item-arrow {
+    translate: 0.125rem 0;
+  }
+}
+
+.account-item:active {
+  background-color: var(--color-brand-soft);
+}
+
+.account-item-arrow {
+  color: var(--color-subtle);
+  transition: translate 160ms var(--ck-ease);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .account-trigger:active {
+    scale: 1;
+  }
+
+  .account-chevron,
+  .account-item-arrow {
+    transition: none;
+  }
+
+  /* The fade stays; the travel and the unrolling go. */
+  .account-panel,
+  .account-panel:not(:popover-open) {
+    translate: 0 0;
+    clip-path: none;
+  }
+
+  @starting-style {
+    .account-panel:popover-open {
+      translate: 0 0;
+      clip-path: none;
+    }
+  }
 }
 
 .nav-sheet {

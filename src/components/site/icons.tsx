@@ -29,6 +29,15 @@ export function SearchIcon({ className }: { className?: string }) {
   );
 }
 
+export function CloseIcon({ className }: { className?: string }) {
+  return (
+    <svg {...BASE} className={cx('size-4', className)} aria-hidden>
+      <path d="M6 6l12 12" />
+      <path d="M18 6 6 18" />
+    </svg>
+  );
+}
+
 export function ArrowRightIcon({ className }: { className?: string }) {
   return (
     <svg {...BASE} className={cx('size-4', className)} aria-hidden>

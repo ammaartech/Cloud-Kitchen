@@ -46,7 +46,8 @@ export function SignInPanel({
         <div>
           <Link
             href="/"
-            className="mb-8 flex items-center gap-2.5"
+            className="signin-enter mb-8 flex items-center gap-2.5"
+            style={{ '--enter-step': 0 } as React.CSSProperties}
           >
             <Image
               src="/brand/mark-green.png"
@@ -59,7 +60,7 @@ export function SignInPanel({
             <span className="wordmark">INFINITY KITCHENS</span>
           </Link>
 
-          <Card className="p-6">
+          <Card className="signin-enter p-6" style={{ '--enter-step': 1 } as React.CSSProperties}>
             <h1 className="text-xl font-semibold tracking-tight">Sign in</h1>
             <p className="mt-1 text-sm text-muted">
               Staff and customers use the same sign-in. You will land on the right screen.
@@ -76,13 +77,16 @@ export function SignInPanel({
             </div>
           </Card>
 
-          <p className="mt-6 text-center text-xs text-subtle">
+          <p
+            className="signin-enter mt-6 text-center text-xs text-subtle"
+            style={{ '--enter-step': 2 } as React.CSSProperties}
+          >
             Buying a plan? You do not need an account first. We create one during checkout.
           </p>
         </div>
 
         {accounts ? (
-          <div className="lg:pt-18">
+          <div className="signin-enter lg:pt-18" style={{ '--enter-step': 3 } as React.CSSProperties}>
             <DemoAccounts accounts={accounts} onUse={useAccount} />
           </div>
         ) : null}

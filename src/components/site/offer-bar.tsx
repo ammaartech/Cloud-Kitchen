@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import { listPublicOffers } from '@/lib/data/catalog';
 import { headlineOffer, offerLabel } from '@/lib/offers';
 
@@ -33,12 +32,10 @@ import { headlineOffer, offerLabel } from '@/lib/offers';
  * the top edge, which is the arrangement every site that has thought about this
  * arrives at.
  *
- * ## Why the whole strip is the link
+ * ## Why it is not a link
  *
- * The code is the useful part and it is also small text on a coloured ground.
- * Making the bar itself the target means the hit area is the full width of the
- * viewport rather than six characters, which matters most on the device where
- * the text is smallest.
+ * The offer is applied at checkout, so there is nowhere useful to send the
+ * visitor. The strip is the whole message; a page restating it was a detour.
  */
 export async function OfferBar() {
   const offers = await listPublicOffers();
@@ -48,7 +45,7 @@ export async function OfferBar() {
   if (!offer || !label) return null;
 
   return (
-    <Link href="/offers" className="offer-bar">
+    <div className="offer-bar">
       <span className="offer-bar-text">
         {/* The code first, because it is the part that has to be remembered and
             the part that is copied out. The discount is the reason to care and
@@ -60,6 +57,6 @@ export async function OfferBar() {
         </span>
         {label} on your first plan
       </span>
-    </Link>
+    </div>
   );
 }

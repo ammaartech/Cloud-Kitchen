@@ -45,7 +45,10 @@ export function MenuBoard({ children }: { children: ReactNode }) {
 
       mm.add('(prefers-reduced-motion: no-preference)', () => {
         const [title] = q('.board-title');
-        const split = SplitText.create(title, { type: 'chars', mask: 'chars' });
+        // Words as well as chars: a bare char split makes every letter its own
+        // inline box, so the browser can break "menu" into "me" / "nu" until the
+        // split is reverted. Word wrappers keep each word unbreakable.
+        const split = SplitText.create(title, { type: 'words,chars', mask: 'chars' });
         const paint = { duration: 0.28, ease: 'none' };
 
         gsap
@@ -117,6 +120,10 @@ export function MenuBoard({ children }: { children: ReactNode }) {
 export function MenuStage({ dishes, children }: { dishes: PassDish[]; children: ReactNode }) {
   const scope = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState(0);
+  const entered = useRef(false);
+  // A search swaps the rows under a stage that stays mounted, so the wiring is
+  // rebuilt for the new rows -- but the entrance only ever plays once.
+  const rows = dishes.map((dish) => dish.id).join();
 
   useGSAP(
     () => {
@@ -125,6 +132,9 @@ export function MenuStage({ dishes, children }: { dishes: PassDish[]; children: 
 
       const q = gsap.utils.selector(root) as Query;
       const mm = gsap.matchMedia();
+      const first = !entered.current;
+      entered.current = true;
+      if (!first) setActive(0);
 
       mm.add(
         {
@@ -136,9 +146,13 @@ export function MenuStage({ dishes, children }: { dishes: PassDish[]; children: 
           const { moving, wide } = context.conditions as { moving: boolean; wide: boolean };
           const cleanups: Array<() => void> = [];
 
-          if (moving) {
+          if (moving && first) {
             splitHeadings(q);
             riseOnScroll(q);
+          } else if (moving) {
+            // Rows a search brought in are hidden by motion-gate.css until
+            // shown; they arrive in place rather than rising again.
+            gsap.set(q('[data-enter], [data-rise]'), { autoAlpha: 1, y: 0 });
           }
 
           cleanups.push(followSections(q, { moving, wide }));
@@ -158,7 +172,7 @@ export function MenuStage({ dishes, children }: { dishes: PassDish[]; children: 
         mm.revert();
       };
     },
-    { scope },
+    { scope, dependencies: [rows], revertOnUpdate: true },
   );
 
   /* Marks the row that is on the pass. An attribute rather than a class, so it

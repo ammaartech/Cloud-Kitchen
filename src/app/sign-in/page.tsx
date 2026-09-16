@@ -1,3 +1,4 @@
+import '@/components/auth/auth.css';
 import { redirect } from 'next/navigation';
 import { getSession } from '@/lib/auth/session';
 import { landingPathForRole } from '@/lib/auth/permissions';
@@ -21,12 +22,14 @@ export const metadata = { title: 'Sign in' };
 // The demo panel reads live account rows, so this page must not be cached.
 
 export default async function SignInPage({ searchParams }: PageProps<'/sign-in'>) {
-  const session = await getSession();
-  if (session) redirect(landingPathForRole(session.role));
-
   const params = await searchParams;
   // Only a path on this site is honoured; see `safeNextPath` for why.
   const next = safeNextPath(params.next);
+
+  // Already signed in: go where the link was headed, not only where the role
+  // lands, so a stale "Sign in" tab still returns the visitor to their page.
+  const session = await getSession();
+  if (session) redirect((next ?? landingPathForRole(session.role)) as never);
 
   // Returns null unless SHOW_DEMO_ACCOUNTS is set, in which case the panel is
   // never rendered and the accounts are never queried.

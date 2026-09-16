@@ -188,7 +188,7 @@ export default async function CouponsPage({ searchParams }: PageProps<'/admin/co
     if (error) fail(PATH, readable(error));
 
     revalidatePath(PATH);
-    revalidateStorefront('/offers');
+    revalidateStorefront('/');
     done(PATH, `Offer ${code} created.`);
   }
 
@@ -216,7 +216,7 @@ export default async function CouponsPage({ searchParams }: PageProps<'/admin/co
     if (error) fail(PATH, readable(error));
 
     revalidatePath(PATH);
-    revalidateStorefront('/offers');
+    revalidateStorefront('/');
     done(PATH, 'Offer updated.');
   }
 
@@ -234,7 +234,7 @@ export default async function CouponsPage({ searchParams }: PageProps<'/admin/co
     if (error) fail(PATH, readable(error));
 
     revalidatePath(PATH);
-    revalidateStorefront('/offers');
+    revalidateStorefront('/');
   }
 
   async function deleteCoupon(formData: FormData) {
@@ -250,7 +250,7 @@ export default async function CouponsPage({ searchParams }: PageProps<'/admin/co
     if (error) fail(PATH, readable(error));
 
     revalidatePath(PATH);
-    revalidateStorefront('/offers');
+    revalidateStorefront('/');
     done(PATH, 'Offer deleted.');
   }
 

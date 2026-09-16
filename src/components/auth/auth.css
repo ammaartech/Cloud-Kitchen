@@ -1,0 +1,132 @@
+/* ==========================================================================
+   Sign-in motion.
+
+   A page most people see a handful of times, which is the tier where an
+   entrance is allowed -- and every other movement here is feedback on
+   something the person just did. CSS throughout: the entrance runs off the
+   main thread while the page is still hydrating, and the rest are transitions
+   keyed to state the form already holds. All of it uses the codebase's own
+   ease-out, `--ck-ease`.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Arriving.
+
+   The mark, the card, the footnote and the development panel, in reading
+   order: 8px of rise and a fade, 320ms each, 60ms apart. Nothing is hidden
+   outside the keyframes, so with animations unavailable the page is simply
+   there.
+   -------------------------------------------------------------------------- */
+.signin-enter {
+  animation: signin-enter 320ms var(--ck-ease) both;
+  animation-delay: calc(var(--enter-step, 0) * 60ms);
+}
+
+@keyframes signin-enter {
+  from {
+    opacity: 0;
+    translate: 0 0.5rem;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   The button is the progress.
+
+   "Sign in" -> spinner and "Signing in" -> tick and "Signed in". Each face
+   mounts fresh (the form keys it by phase) and comes in through 2px of blur:
+   without it the eye sees one label vanish and another appear; with it, one
+   label changing. 180ms, inside a press-and-response budget.
+
+   The button stays at full strength while it works. It is disabled so it
+   cannot be sent twice, but the base style fades disabled buttons to 45%,
+   which reads as "unavailable" -- the opposite of what is happening.
+   -------------------------------------------------------------------------- */
+.signin-submit:disabled {
+  opacity: 1;
+}
+
+.signin-submit[data-phase='success'] {
+  background-color: var(--ck-brand);
+}
+
+.signin-submit-face {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition:
+    opacity 180ms var(--ck-ease),
+    filter 180ms var(--ck-ease),
+    translate 180ms var(--ck-ease);
+}
+
+@starting-style {
+  .signin-submit-face {
+    opacity: 0;
+    filter: blur(2px);
+    translate: 0 0.125rem;
+  }
+}
+
+/* The tick draws itself: a stroke revealed along its own path, 260ms, the
+   one flourish in the exchange -- it only ever plays once per sign-in. */
+.signin-submit-tick path {
+  stroke-dasharray: 24;
+  stroke-dashoffset: 0;
+  animation: signin-tick 260ms var(--ck-ease) 60ms both;
+}
+
+@keyframes signin-tick {
+  from {
+    stroke-dashoffset: 24;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Refused.
+
+   The button shakes (see the form) and the reason appears under it, where the
+   eye already is. Opening under the button moves nothing above it, so the
+   fields do not jump away from the hand that is about to retype into them.
+   -------------------------------------------------------------------------- */
+.signin-error {
+  transition:
+    opacity 200ms var(--ck-ease),
+    translate 200ms var(--ck-ease);
+}
+
+@starting-style {
+  .signin-error {
+    opacity: 0;
+    translate: 0 -0.25rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* Fewer and gentler, not none: the fades stay, the travel goes. */
+  .signin-enter {
+    animation-name: signin-fade;
+    animation-duration: 200ms;
+    animation-delay: 0ms;
+  }
+
+  @keyframes signin-fade {
+    from {
+      opacity: 0;
+    }
+  }
+
+  @starting-style {
+    .signin-submit-face {
+      filter: none;
+      translate: 0 0;
+    }
+
+    .signin-error {
+      translate: 0 0;
+    }
+  }
+
+  .signin-submit-tick path {
+    animation: none;
+  }
+}

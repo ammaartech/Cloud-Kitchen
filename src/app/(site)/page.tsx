@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import Link from 'next/link';
 import type { CSSProperties } from 'react';
 import {
   byPriceAscending,
@@ -15,6 +16,7 @@ import { Reveal } from '@/components/site/reveal';
 import { StepFlow, Typewriter } from '@/components/site/step-flow';
 import { HangingPhotos } from '@/components/site/hanging-photos';
 import { MarqueeBand } from '@/components/site/marquee-band';
+import { ArrowRightIcon } from '@/components/site/icons';
 
 export const metadata = {
   title: 'Home-style meals, on subscription',
@@ -286,7 +288,7 @@ export default async function HomePage() {
             why this is not a negative margin. */}
         <div className="landing-container mx-auto max-w-6xl px-4">
           <h2 className="section-display max-w-4xl font-semibold text-balance">
-            <Typewriter text="How a subscription works" />
+            <Typewriter text="how a subscription works" />
           </h2>
         </div>
 
@@ -325,42 +327,49 @@ export default async function HomePage() {
           `available` rather than every published dish: a preview leading with
           something the kitchen is not cooking today is a worse preview than a
           shorter one. */}
-      <section id="menu" className="landing-spacing section-anchor texture-hatch border-b border-line py-20 sm:py-24">
-        <div className="landing-container mx-auto max-w-6xl px-4">
-          <Reveal className="reveal-up">
+      {/* Printed rather than rendered: the day's menu on a sheet of handmade
+          paper, with one banana leaf drawn faintly underneath it -- see
+          `.menu-spread` in `globals.css`. The stock and the leaf are the
+          section's own art direction, which is why this band does not use one
+          of the shared `texture-*` stocks. */}
+      <section id="menu" className="menu-spread landing-spacing section-anchor border-b border-line">
+        <div className="landing-container mx-auto max-w-312 px-4">
+          <Reveal className="reveal-up menu-spread-head">
             <h2 className="section-display font-semibold text-balance">what we cook</h2>
-            <p className="mt-4 max-w-xl text-muted text-pretty">
-              A small menu, cooked fresh each morning. This is what is on it today &mdash;
-              meals are ordered through a subscription rather than one at a time.
+            <p className="menu-spread-lede">
+              <span className="block">
+                Today&rsquo;s dishes, cooked in small batches with produce bought fresh for the day.
+              </span>
+              <span className="block">
+                Pick a plan once, and your meals arrive in the delivery window you chose.
+              </span>
             </p>
           </Reveal>
 
           {available.length === 0 ? (
-            <p className="mt-10 text-sm text-muted">
+            <p className="menu-spread-empty">
               Nothing is published for today yet. Check back shortly.
             </p>
           ) : (
-            <div className="menu-grid mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            /* No entrance on the dishes. A printed menu does not arrive -- it
+               is already on the table -- and six plates lifting into place
+               would turn the page into a slideshow. The heading above is what
+               is said; this is simply there. */
+            <div className="menu-spread-grid">
               {available.slice(0, 6).map((product) => (
                 <ProductTile key={product.id} product={product} />
               ))}
             </div>
           )}
 
-          {/* The width of the grid above it rather than the width of its own
-              label -- see `.btn-wide` in `globals.css`. Six dishes end on "is
-              that all?", and the answer should not be set smaller than the
-              calorie counts in the tiles asking it. */}
-          <Reveal className="reveal-up mt-8" delay={220}>
-            <ButtonLink
-              href="/menu"
-              variant="outline"
-              size="lg"
-              className="btn-plain btn-wide"
-              transitionTypes={['nav-forward']}
-            >
-              see the full menu
-            </ButtonLink>
+          <Reveal className="reveal-up menu-spread-foot" delay={220}>
+            <Link href="/menu" className="menu-spread-cta" transitionTypes={['nav-forward']}>
+              <span className="menu-spread-cta-label">see the full menu</span>
+              <span className="menu-spread-cta-arrow" aria-hidden>
+                <ArrowRightIcon />
+                <ArrowRightIcon />
+              </span>
+            </Link>
           </Reveal>
         </div>
       </section>

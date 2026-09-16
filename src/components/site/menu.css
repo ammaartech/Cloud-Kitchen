@@ -217,15 +217,145 @@
   }
 }
 
-/* The form draws its ring in brand green, which vanishes on this ground. */
-.menu-board .board-search:focus-within {
+/* --------------------------------------------------------------------------
+   The search field, and the four things it does that move.
+
+   Focus: the ring is always there, transparent and tight to the field, and
+   focusing grows it outward while it takes colour -- so the field reads as
+   picked up rather than as having a border switched on. Brand green would
+   vanish on the board, so the ring is the board's own focus ink.
+
+   Clear: the icon exists while there is text, and arrives from 0.9, never
+   from nothing. Visibility waits for the fade on the way out, so the button
+   leaves the tab order only once it has actually gone.
+
+   Pending: a hairline sweeps along the bottom edge while the results are on
+   their way. It is held back 150ms, because most searches land sooner than
+   that and a loader that flashes for one frame is worse than none.
+
+   Typing does not animate. It happens on every keystroke.
+   -------------------------------------------------------------------------- */
+.menu-search {
+  position: relative;
+  overflow: hidden;
+  outline: 2px solid transparent;
+  outline-offset: 0;
+  transition:
+    outline-color 180ms var(--ck-ease),
+    outline-offset 180ms var(--ck-ease);
+}
+
+.menu-search:focus-within {
   outline-color: var(--ck-footer-focus);
+  outline-offset: 3px;
+}
+
+.menu-search-glyph {
+  color: var(--color-muted);
+  transition: color 180ms var(--ck-ease);
+}
+
+.menu-search:focus-within .menu-search-glyph {
+  color: var(--ck-brand);
+}
+
+/* The browser's own clear control would sit beside this one. */
+.menu-search input::-webkit-search-cancel-button,
+.menu-search input::-webkit-search-decoration {
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.menu-search-clear {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 999px;
+  color: var(--color-muted);
+  opacity: 0;
+  scale: 0.9;
+  visibility: hidden;
+  transition:
+    opacity 150ms var(--ck-ease),
+    scale 150ms var(--ck-ease),
+    color 150ms ease,
+    background-color 150ms ease,
+    visibility 0s linear 150ms;
+}
+
+.menu-search-clear[data-shown] {
+  opacity: 1;
+  scale: 1;
+  visibility: visible;
+  transition-delay: 0s;
+}
+
+.menu-search-clear:active {
+  scale: 0.9;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .menu-search-clear:hover {
+    color: var(--color-ink);
+    background-color: var(--color-sunken);
+  }
+}
+
+.menu-search-progress {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--ck-brand) 50%, transparent);
+  opacity: 0;
+  translate: -100% 0;
+  pointer-events: none;
+  transition: opacity 200ms var(--ck-ease);
+}
+
+.menu-search[data-pending] .menu-search-progress {
+  opacity: 1;
+  transition-delay: 150ms;
+  animation: menu-search-sweep 900ms linear infinite;
+}
+
+@keyframes menu-search-sweep {
+  from {
+    translate: -100% 0;
+  }
+  to {
+    translate: 100% 0;
+  }
+}
+
+/* The results dim while the next set loads, on the same 150ms hold, and come
+   back up as they are replaced -- so new rows fade in instead of snapping. */
+.menu-layout,
+.menu-empty {
+  transition: opacity 220ms var(--ck-ease);
+}
+
+.menu-page:has(.menu-search[data-pending]) :is(.menu-layout, .menu-empty) {
+  opacity: 0.5;
+  transition-delay: 150ms;
 }
 
 .board-status {
   margin-top: 0.75rem;
   font-size: 0.875rem;
   color: var(--ck-footer-muted);
+  transition:
+    opacity 220ms var(--ck-ease),
+    translate 220ms var(--ck-ease);
+}
+
+@starting-style {
+  .board-status {
+    opacity: 0;
+    translate: 0 4px;
+  }
 }
 
 .board-query {
@@ -233,11 +363,33 @@
   color: var(--ck-footer-ink);
 }
 
-.board-clear {
-  font-weight: 600;
-  color: var(--ck-footer-ink);
-  text-decoration: underline;
-  text-underline-offset: 3px;
+@media (prefers-reduced-motion: reduce) {
+  .menu-search,
+  .menu-search-clear {
+    transition-property: opacity, color, background-color, visibility, outline-color;
+  }
+
+  .menu-search:focus-within {
+    outline-offset: 2px;
+  }
+
+  .menu-search-clear,
+  .menu-search-clear:active {
+    scale: 1;
+  }
+
+  /* No sweep: the hairline just holds at full width while loading. */
+  .menu-search[data-pending] .menu-search-progress {
+    animation: none;
+    translate: 0 0;
+    background: var(--ck-brand);
+  }
+
+  @starting-style {
+    .board-status {
+      translate: 0 0;
+    }
+  }
 }
 
 .board-skeleton {

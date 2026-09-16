@@ -21,5 +21,10 @@ export function safeNextPath(value: unknown): string | null {
     const code = value.charCodeAt(index);
     if (code < 0x20 || code === 0x7f) return null;
   }
+  // Never back to the sign-in page itself. A signed-in visit to `/sign-in` is
+  // redirected to `next`, so `next=/sign-in` would redirect to itself forever.
+  if (value === '/sign-in' || value.startsWith('/sign-in?') || value.startsWith('/sign-in/')) {
+    return null;
+  }
   return value;
 }
