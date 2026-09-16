@@ -8,7 +8,8 @@
  */
 
 /** Statuses that keep a ticket on the live board. DELIVERED is terminal --
- * it belongs on the Completed tab (see `/api/kot/history`), not the live one. */
+ * it belongs on the Completed tab (see `hooks/use-kot-history.ts`), not the
+ * live one. */
 export const ACTIVE_STATUSES = [
   'NEW',
   'ACCEPTED',

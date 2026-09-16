@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/primitives';
 
 /**
@@ -13,7 +12,6 @@ import { Button } from '@/components/ui/primitives';
  * operational button.
  */
 export function DevGenerateOrderButton() {
-  const router = useRouter();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -27,10 +25,9 @@ export function DevGenerateOrderButton() {
         setError(body.error ?? 'Could not create test order');
         return;
       }
-      // The realtime KOT subscription usually surfaces the new ticket within
-      // a second; refresh as a belt-and-braces fallback for the initial
-      // server-rendered payload.
-      router.refresh();
+      // The realtime subscription surfaces the new ticket on its own. The
+      // board's state lives in the client now, so a server refresh would
+      // re-run the whole page render and change nothing on screen.
     } catch {
       setError('Network error');
     } finally {

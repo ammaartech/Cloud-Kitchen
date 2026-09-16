@@ -59,9 +59,23 @@ interface Address {
  * what confines them to their own addresses -- not a filter in this file.
  */
 export default async function AddressesPage({ searchParams }: PageProps<'/account/addresses'>) {
-  const session = await requireSession();
-  const params = await searchParams;
   const supabase = await serverClient();
+
+  // The guard and the reads go out together. Both reads are already confined
+  // to this customer by RLS, and a refused guard still redirects before render.
+  const [session, params, addressesResult, subscriptionsResult] = await Promise.all([
+    requireSession(),
+    searchParams,
+    supabase
+      .from('customer_addresses')
+      .select('*')
+      .order('is_default', { ascending: false })
+      .order('created_at'),
+    supabase
+      .from('subscriptions')
+      .select('delivery_address_id, status')
+      .in('status', ['active', 'paused', 'past_due']),
+  ]);
 
   if (!session.customerId) {
     return (
@@ -78,18 +92,6 @@ export default async function AddressesPage({ searchParams }: PageProps<'/accoun
   }
 
   const customerId = session.customerId;
-
-  const [addressesResult, subscriptionsResult] = await Promise.all([
-    supabase
-      .from('customer_addresses')
-      .select('*')
-      .order('is_default', { ascending: false })
-      .order('created_at'),
-    supabase
-      .from('subscriptions')
-      .select('delivery_address_id, status')
-      .in('status', ['active', 'paused', 'past_due']),
-  ]);
 
   const addresses = (addressesResult.data ?? []) as unknown as Address[];
   const inUse = new Set(

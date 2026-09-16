@@ -35,10 +35,65 @@ export const instant = false;
 
 export const metadata = { title: 'My account' };
 
+/** How many deliveries each list shows. */
+const UPCOMING_LIMIT = 30;
+const RECENT_LIMIT = 8;
+
 export default async function AccountPage({ searchParams }: PageProps<'/account'>) {
-  const session = await requireSession();
   const supabase = await serverClient();
-  const params = await searchParams;
+
+  // The guard and the reads go out together. Every read is already confined
+  // to this customer by RLS, and a refused guard still redirects before
+  // render. The hosted database is a region away; a sequential guard cost the
+  // page a round-trip before its own data could start.
+  //
+  // Upcoming and past deliveries are two reads, not one. A single list of the
+  // thirty earliest deliveries is the customer's oldest history once they have
+  // been subscribed for a few weeks, and "Upcoming" would then be empty while
+  // meals were still on their way.
+  const [
+    session,
+    params,
+    subscriptionsResult,
+    upcomingResult,
+    pastResult,
+    invoicesResult,
+    addressesResult,
+  ] = await Promise.all([
+    requireSession(),
+    searchParams,
+    supabase
+      .from('subscriptions')
+      .select(
+        `id, subscription_number, status, price_paid, starts_on, current_period_start,
+         current_period_end, delivery_days, grace_period_days, cancelled_at,
+         paused_until, pauses_used_this_period,
+         subscription_plans ( name, plan_type, billing_period_days, payment_flow ),
+         delivery_windows ( label, starts_at, ends_at )`,
+      )
+      .order('created_at', { ascending: false }),
+    supabase
+      .from('v_customer_deliveries')
+      .select('*')
+      .in('status', ['scheduled', 'released'])
+      .order('scheduled_date', { ascending: true })
+      .limit(UPCOMING_LIMIT),
+    supabase
+      .from('v_customer_deliveries')
+      .select('*')
+      .in('status', ['fulfilled', 'skipped', 'cancelled'])
+      .order('scheduled_date', { ascending: false })
+      .limit(RECENT_LIMIT),
+    supabase
+      .from('invoices')
+      .select('id, invoice_number, issued_at, total, tax_breakdown')
+      .order('issued_at', { ascending: false })
+      .limit(10),
+    supabase
+      .from('customer_addresses')
+      .select('id, label, line1, line2, city, postal_code, is_default')
+      .eq('is_active', true),
+  ]);
 
   if (!session.customerId) {
     return (
@@ -53,34 +108,6 @@ export default async function AccountPage({ searchParams }: PageProps<'/account'
       </div>
     );
   }
-
-  const [subscriptionsResult, deliveriesResult, invoicesResult, addressesResult] =
-    await Promise.all([
-      supabase
-        .from('subscriptions')
-        .select(
-          `id, subscription_number, status, price_paid, starts_on, current_period_start,
-           current_period_end, delivery_days, grace_period_days, cancelled_at,
-           paused_until, pauses_used_this_period,
-           subscription_plans ( name, plan_type, billing_period_days, payment_flow ),
-           delivery_windows ( label, starts_at, ends_at )`,
-        )
-        .order('created_at', { ascending: false }),
-      supabase
-        .from('v_customer_deliveries')
-        .select('*')
-        .order('scheduled_date', { ascending: true })
-        .limit(30),
-      supabase
-        .from('invoices')
-        .select('id, invoice_number, issued_at, total, tax_breakdown')
-        .order('issued_at', { ascending: false })
-        .limit(10),
-      supabase
-        .from('customer_addresses')
-        .select('id, label, line1, line2, city, postal_code, is_default')
-        .eq('is_active', true),
-    ]);
 
   type Subscription = {
     id: string;
@@ -105,7 +132,7 @@ export default async function AccountPage({ searchParams }: PageProps<'/account'
   const subscriptions = (subscriptionsResult.data ?? []) as unknown as Subscription[];
   const active = subscriptions.find((s) => ['active', 'paused', 'past_due'].includes(s.status));
 
-  const deliveries = (deliveriesResult.data ?? []) as Array<{
+  type Delivery = {
     id: string;
     scheduled_date: string;
     status: string;
@@ -115,10 +142,10 @@ export default async function AccountPage({ searchParams }: PageProps<'/account'
     kitchen_status: string | null;
     ticket_code: string | null;
     items: Array<{ name: string; quantity: number }>;
-  }>;
+  };
 
-  const upcoming = deliveries.filter((d) => ['scheduled', 'released'].includes(d.status));
-  const past = deliveries.filter((d) => ['fulfilled', 'skipped', 'cancelled'].includes(d.status));
+  const upcoming = (upcomingResult.data ?? []) as Delivery[];
+  const past = (pastResult.data ?? []) as Delivery[];
 
   const invoices = (invoicesResult.data ?? []) as Array<{
     id: string;
@@ -367,7 +394,7 @@ export default async function AccountPage({ searchParams }: PageProps<'/account'
             <p className="mt-3 text-sm text-muted">No history yet.</p>
           ) : (
             <ul className="mt-4 space-y-2">
-              {past.slice(0, 8).map((delivery) => (
+              {past.map((delivery) => (
                 <li
                   key={delivery.id}
                   className="flex items-center justify-between gap-3 rounded-ck border border-line bg-surface px-4 py-3 text-sm"

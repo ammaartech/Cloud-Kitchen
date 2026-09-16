@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { useKotBoard, type BoardTicket } from '@/lib/realtime/use-kot-board';
+import type { KotBoard } from '@/lib/realtime/use-kot-board';
+import { itemsFor, useTicketItems } from '@/lib/kot/items-store';
 import { useTicketActions } from './ticket-actions';
 import { ConnectionBadge } from './connection-badge';
 import { TicketItems } from './ticket-items';
@@ -41,27 +42,25 @@ const GROUPS: Array<{ key: string; title: string; statuses: string[] }> = [
   },
 ];
 
+/** How long a card keeps its flash after a change. */
+const FLASH_MS = 2000;
+
 /**
  * The realtime live board.
  *
- * Kept in its own component so the KOT subscription only runs while the Live
- * tab is mounted -- switching to Completed or All Orders unsubscribes and does
- * not compete with the history queries.
+ * The board state itself lives in `ManagerBoard`, so the subscription keeps
+ * running while the manager is on a history tab and the live tab is current
+ * the instant they return. This component renders it and acts on it.
  */
-export function LiveBoard({
-  initialTickets,
-  canAct,
-}: {
-  initialTickets: BoardTicket[];
-  canAct: boolean;
-}) {
-  const { tickets, connection, lastSyncedAt, apply, optimistic } =
-    useKotBoard(initialTickets);
+export function LiveBoard({ board, canAct }: { board: KotBoard; canAct: boolean }) {
+  const { tickets, connection, lastSyncedAt, apply, optimistic, now } = board;
   const actions = useTicketActions({ apply, optimistic });
   const [rejecting, setRejecting] = useState<string | null>(null);
   const [rejectReason, setRejectReason] = useState('');
   const [etaFor, setEtaFor] = useState<string | null>(null);
   const [etaValue, setEtaValue] = useState('');
+
+  useTicketItems(tickets.map((ticket) => ticket.order_id));
 
   return (
     <>
@@ -110,8 +109,8 @@ export function LiveBoard({
                   ) : null}
 
                   {groupTickets.map((ticket) => {
-                    const deadline = untilDeadline(ticket.sla_due_at);
-                    const busy = actions.pendingId === ticket.id;
+                    const deadline = untilDeadline(ticket.sla_due_at, now);
+                    const busy = actions.isPending(ticket.id);
 
                     return (
                       <Card
@@ -120,7 +119,7 @@ export function LiveBoard({
                           'flex flex-col p-4',
                           sourceCardTone(ticket.source, Boolean(ticket.subscription_number)),
                           ticket._changedAt !== undefined &&
-                            Date.now() - ticket._changedAt < 2000 &&
+                            now - ticket._changedAt < FLASH_MS &&
                             'ck-flash',
                           deadline?.overdue && 'border-danger',
                         )}
@@ -160,7 +159,7 @@ export function LiveBoard({
                           {ticket.scheduled_for ? ` · due ${timeOnly(ticket.scheduled_for)}` : ''}
                         </p>
 
-                        <TicketItems ticketId={ticket.id} orderId={ticket.order_id} />
+                        <TicketItems items={itemsFor(ticket.order_id)} />
 
                         {ticket.special_instructions ? (
                           <p className="mt-2 rounded-ck bg-warning-soft px-2 py-1 text-xs text-warning">
@@ -172,7 +171,7 @@ export function LiveBoard({
                           <div className="flex gap-1">
                             <dt>Waiting</dt>
                             <dd className="tabular text-muted">
-                              {elapsedSince(ticket.created_at)}
+                              {elapsedSince(ticket.created_at, now)}
                             </dd>
                           </div>
                           <div className="flex gap-1">
@@ -357,4 +356,3 @@ export function LiveBoard({
     </>
   );
 }
-

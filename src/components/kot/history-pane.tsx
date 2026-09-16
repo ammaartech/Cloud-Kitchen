@@ -7,6 +7,7 @@ import {
   EmptyState,
   Input,
   Skeleton,
+  Spinner,
   cx,
 } from '@/components/ui/primitives';
 import {
@@ -14,6 +15,7 @@ import {
   type HistoryScope,
   type HistoryTicket,
 } from '@/hooks/use-kot-history';
+import { itemsFor, useTicketItems } from '@/lib/kot/items-store';
 import { TicketCardReadonly } from './ticket-card-readonly';
 import { KOT_STATUS_LABELS } from '@/lib/format';
 import { todayISO } from '@/lib/kot/date';
@@ -41,7 +43,7 @@ export function HistoryPane({
   date: string;
   onDateChange: (next: string) => void;
 }) {
-  const { tickets, isLoading, error, refetch } = useKotHistory({ scope, date });
+  const { tickets, isLoading, isRefreshing, error, refetch } = useKotHistory({ scope, date });
   const [filter, setFilter] = useState<StatusFilter>('ANY');
 
   const filtered = useMemo(() => {
@@ -50,6 +52,10 @@ export function HistoryPane({
   }, [tickets, filter, scope]);
 
   const counts = useMemo(() => countByStatus(tickets), [tickets]);
+
+  // Lines for what is on screen, read in a handful of batched queries rather
+  // than one per card.
+  useTicketItems(filtered.map((ticket) => ticket.order_id));
 
   return (
     <div className="space-y-4">
@@ -71,7 +77,8 @@ export function HistoryPane({
             {tickets.length} {tickets.length === 1 ? 'order' : 'orders'}
           </p>
         </div>
-        <Button size="sm" variant="ghost" onClick={refetch} disabled={isLoading}>
+        <Button size="sm" variant="ghost" onClick={refetch} disabled={isLoading || isRefreshing}>
+          {isRefreshing ? <Spinner /> : null}
           Refresh
         </Button>
       </div>
@@ -122,7 +129,11 @@ export function HistoryPane({
       ) : (
         <div className="grid gap-3 lg:grid-cols-2 xl:grid-cols-3">
           {filtered.map((ticket) => (
-            <TicketCardReadonly key={ticket.id} ticket={ticket} />
+            <TicketCardReadonly
+              key={ticket.id}
+              ticket={ticket}
+              items={itemsFor(ticket.order_id)}
+            />
           ))}
         </div>
       )}
@@ -160,4 +171,3 @@ function countByStatus(tickets: HistoryTicket[]): Record<string, number> {
   for (const t of tickets) out[t.status] = (out[t.status] ?? 0) + 1;
   return out;
 }
-

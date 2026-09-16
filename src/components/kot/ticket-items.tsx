@@ -1,61 +1,24 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { browserClient } from '@/lib/supabase/client';
+import type { TicketItem } from '@/lib/kot/items';
 import { Skeleton } from '@/components/ui/primitives';
-
-interface Item {
-  id: string;
-  name: string;
-  quantity: number;
-  variants: Array<{ group?: string; name?: string }>;
-  add_ons: Array<{ name?: string }>;
-  special_instructions: string | null;
-}
 
 /**
  * The lines the kitchen actually cooks.
  *
- * Read from `v_kot_ticket_items`, which masks unit price and line total unless
- * the reader holds `orders.view_financial` -- so a Kitchen session receives no
- * money at all, rather than receiving it and being trusted not to render it
- * (PRD 5.4, PRD 17).
- *
- * Fetched per ticket rather than joined into the board query: the board is the
- * thing that must stay fast under a realtime firehose, and most tickets are
- * never expanded.
+ * Purely presentational. The rows come from the shared items store (see
+ * `lib/kot/items-store.ts`), which reads them in bulk for the whole board;
+ * this component never fetches. `undefined` means the read is still on its
+ * way, and the card holds the lines' shape until it lands.
  */
 export function TicketItems({
-  ticketId,
-  orderId,
+  items,
   size = 'sm',
 }: {
-  ticketId: string;
-  orderId: string;
+  items: TicketItem[] | undefined;
   size?: 'sm' | 'lg';
 }) {
-  const [items, setItems] = useState<Item[] | null>(null);
-
-  useEffect(() => {
-    let active = true;
-
-    async function load() {
-      const { data } = await browserClient()
-        .from('v_kot_ticket_items')
-        .select('id, name, quantity, variants, add_ons, special_instructions')
-        .eq('order_id', orderId);
-
-      if (active) setItems((data ?? []) as Item[]);
-    }
-
-    void load();
-
-    return () => {
-      active = false;
-    };
-  }, [orderId, ticketId]);
-
-  if (items === null) {
+  if (items === undefined) {
     return (
       <div className="mt-3 space-y-1.5">
         <Skeleton className="h-4 w-3/4" />

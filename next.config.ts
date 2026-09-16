@@ -83,6 +83,12 @@ const nextConfig: NextConfig = {
       { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
       // Nothing here needs a camera, microphone or location.
       { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=()' },
+      // Two years of HTTPS-only for this host. A session cookie and a payment
+      // form must never travel over a downgraded connection, and the browser
+      // honours this only when it arrives over HTTPS, so a local `http://`
+      // dev server is unaffected. Subdomains are left out: they are not this
+      // app's to make promises for.
+      { key: 'Strict-Transport-Security', value: 'max-age=63072000' },
     ];
 
     return [

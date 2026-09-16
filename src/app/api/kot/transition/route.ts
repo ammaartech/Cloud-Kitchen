@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { getSession } from '@/lib/auth/session';
+import { parseJsonBody } from '@/lib/api/request';
 import { serverClient } from '@/lib/supabase/server';
 
 const bodySchema = z.object({
@@ -39,18 +40,16 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Sign in to continue' }, { status: 401 });
   }
 
-  const parsed = bodySchema.safeParse(await request.json());
-  if (!parsed.success) {
-    return NextResponse.json({ error: 'That request was not valid' }, { status: 400 });
-  }
+  const body = await parseJsonBody(request, bodySchema);
+  if (!body.ok) return body.response;
 
   const supabase = await serverClient();
 
   const { data, error } = await supabase.rpc('transition_kot_ticket', {
-    p_ticket_id: parsed.data.ticketId,
-    p_to_status: parsed.data.toStatus,
-    p_reason: parsed.data.reason ?? null,
-    p_notes: parsed.data.notes ?? null,
+    p_ticket_id: body.data.ticketId,
+    p_to_status: body.data.toStatus,
+    p_reason: body.data.reason ?? null,
+    p_notes: body.data.notes ?? null,
     p_origin: 'manual',
   });
 
@@ -59,7 +58,8 @@ export async function POST(request: Request) {
     // generic 500, so the screen can say something useful.
     const forbidden =
       error.message.includes('may not perform transition') ||
-      error.message.includes('insufficient');
+      error.message.includes('insufficient') ||
+      error.message.includes('driven by the marketplace webhook');
 
     return NextResponse.json(
       { error: error.message },
@@ -72,7 +72,7 @@ export async function POST(request: Request) {
   const { data: ticket } = await supabase
     .from('v_kot_tickets')
     .select('*')
-    .eq('id', parsed.data.ticketId)
+    .eq('id', body.data.ticketId)
     .maybeSingle();
 
   return NextResponse.json({ ...(data as object | null), ticket });

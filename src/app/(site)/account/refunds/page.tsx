@@ -73,9 +73,24 @@ interface RequestRow {
  * guarantee the business has not agreed to yet.
  */
 export default async function AccountRefundsPage({ searchParams }: PageProps<'/account/refunds'>) {
-  const session = await requireSession();
-  const params = await searchParams;
   const supabase = await serverClient();
+
+  // The guard and the reads go out together. Both reads are already confined
+  // to this customer by RLS, and a refused guard still redirects before render.
+  const [session, params, requestsResult, subscriptionsResult] = await Promise.all([
+    requireSession(),
+    searchParams,
+    supabase
+      .from('refund_requests')
+      .select(
+        'id, reason, requested_amount, status, resolution_note, resolved_at, created_at, subscriptions ( subscription_number )',
+      )
+      .order('created_at', { ascending: false }),
+    supabase
+      .from('subscriptions')
+      .select('id, subscription_number, status, price_paid, subscription_plans ( name )')
+      .order('created_at', { ascending: false }),
+  ]);
 
   if (!session.customerId) {
     return (
@@ -92,19 +107,6 @@ export default async function AccountRefundsPage({ searchParams }: PageProps<'/a
   }
 
   const customerId = session.customerId;
-
-  const [requestsResult, subscriptionsResult] = await Promise.all([
-    supabase
-      .from('refund_requests')
-      .select(
-        'id, reason, requested_amount, status, resolution_note, resolved_at, created_at, subscriptions ( subscription_number )',
-      )
-      .order('created_at', { ascending: false }),
-    supabase
-      .from('subscriptions')
-      .select('id, subscription_number, status, price_paid, subscription_plans ( name )')
-      .order('created_at', { ascending: false }),
-  ]);
 
   const requests = (requestsResult.data ?? []) as unknown as RequestRow[];
   const subscriptions = (subscriptionsResult.data ?? []) as unknown as Array<{

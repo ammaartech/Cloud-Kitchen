@@ -1,6 +1,11 @@
 'use client';
 
+import { useState } from 'react';
 import { useKotBoard, type BoardTicket } from '@/lib/realtime/use-kot-board';
+import { KITCHEN_STATUSES } from '@/lib/realtime/kot-board-shared';
+import { itemsFor, primeTicketItems, useTicketItems } from '@/lib/kot/items-store';
+import type { TicketItem } from '@/lib/kot/items';
+import { useNow } from '@/hooks/use-now';
 import { useTicketActions } from './ticket-actions';
 import { ConnectionBadge } from './connection-badge';
 import { TicketItems } from './ticket-items';
@@ -40,17 +45,38 @@ const COLUMNS: Array<{ key: string; title: string; statuses: string[]; tone: str
   },
 ];
 
+/** How long a card keeps its flash after a change. */
+const FLASH_MS = 2000;
+
 export function KitchenBoard({
   initialTickets,
+  initialItems,
+  renderedAt,
   user,
 }: {
   initialTickets: BoardTicket[];
+  /** The initial tickets' lines, keyed by order id, read by the server. */
+  initialItems: Record<string, TicketItem[]>;
+  /** The server's clock when it rendered, so the first paint and hydration agree. */
+  renderedAt: number;
   /** All three kitchen accounts share this display, so it says which one. */
   user: { name: string; role: string };
 }) {
-  const { tickets, connection, lastSyncedAt, apply, optimistic } =
-    useKotBoard(initialTickets);
+  // Seeds the shared items cache before the first render reads from it, so
+  // no card ever shows a skeleton for lines the server already sent.
+  useState(() => {
+    primeTicketItems(new Map(Object.entries(initialItems)));
+    return null;
+  });
+
+  const now = useNow(renderedAt);
+  const { tickets, connection, lastSyncedAt, apply, optimistic } = useKotBoard(initialTickets, {
+    statuses: KITCHEN_STATUSES,
+    now,
+  });
   const actions = useTicketActions({ apply, optimistic });
+
+  useTicketItems(tickets.map((ticket) => ticket.order_id));
 
   return (
     <div data-surface="ops" className="min-h-dvh bg-bg text-ink">
@@ -104,8 +130,8 @@ export function KitchenBoard({
                 ) : null}
 
                 {columnTickets.map((ticket) => {
-                  const deadline = untilDeadline(ticket.sla_due_at);
-                  const busy = actions.pendingId === ticket.id;
+                  const deadline = untilDeadline(ticket.sla_due_at, now);
+                  const busy = actions.isPending(ticket.id);
 
                   return (
                     <Card
@@ -114,7 +140,7 @@ export function KitchenBoard({
                         'p-4',
                         sourceCardTone(ticket.source, Boolean(ticket.subscription_number)),
                         ticket._changedAt !== undefined &&
-                          Date.now() - ticket._changedAt < 2000 &&
+                          now - ticket._changedAt < FLASH_MS &&
                           'ck-flash',
                         deadline?.overdue && 'border-danger',
                       )}
@@ -133,7 +159,7 @@ export function KitchenBoard({
                               deadline?.overdue ? 'text-danger' : 'text-muted',
                             )}
                           >
-                            {deadline?.label ?? elapsedSince(ticket.created_at)}
+                            {deadline?.label ?? elapsedSince(ticket.created_at, now)}
                           </p>
                           <p className="text-xs text-subtle">
                             {SOURCE_LABELS[ticket.source] ?? ticket.source}
@@ -145,7 +171,7 @@ export function KitchenBoard({
                       </div>
 
                       {/* Large item list -- this is the part a cook reads. */}
-                      <TicketItems ticketId={ticket.id} orderId={ticket.order_id} size="lg" />
+                      <TicketItems items={itemsFor(ticket.order_id)} size="lg" />
 
                       {ticket.special_instructions ? (
                         <p className="mt-3 rounded-ck bg-warning-soft px-3 py-2 text-base font-medium text-warning">

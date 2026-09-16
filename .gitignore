@@ -32,6 +32,9 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+# The example is the one env file that must travel with the repo: it is the
+# list of variables a new checkout has to fill in, and README points at it.
+!.env.example
 
 # vercel
 .vercel

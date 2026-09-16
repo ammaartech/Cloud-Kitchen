@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { getSession } from '@/lib/auth/session';
+import { parseJsonBody } from '@/lib/api/request';
 import { confirmCheckout } from '@/lib/checkout/service';
 import { clearDraft } from '@/lib/checkout/draft';
 import { adminClient } from '@/lib/supabase/admin';
@@ -17,10 +18,8 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Sign in to continue' }, { status: 401 });
   }
 
-  const parsed = bodySchema.safeParse(await request.json());
-  if (!parsed.success) {
-    return NextResponse.json({ error: 'That request was not valid' }, { status: 400 });
-  }
+  const parsed = await parseJsonBody(request, bodySchema);
+  if (!parsed.ok) return parsed.response;
 
   // The payment must belong to the caller. Without this, a signed-in customer
   // could post a callback against someone else's payment id.

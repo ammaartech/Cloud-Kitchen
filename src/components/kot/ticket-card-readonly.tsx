@@ -3,6 +3,7 @@
 import { Badge, Card, SourceTag, cx, sourceCardTone } from '@/components/ui/primitives';
 import { TicketItems } from './ticket-items';
 import type { HistoryTicket } from '@/hooks/use-kot-history';
+import type { TicketItem } from '@/lib/kot/items';
 import {
   KOT_STATUS_LABELS,
   SOURCE_LABELS,
@@ -14,7 +15,13 @@ import {
  * A ticket in a history view: no action buttons, and the terminal event --
  * completed / rejected / cancelled -- is surfaced instead of the live ETA.
  */
-export function TicketCardReadonly({ ticket }: { ticket: HistoryTicket }) {
+export function TicketCardReadonly({
+  ticket,
+  items,
+}: {
+  ticket: HistoryTicket;
+  items: TicketItem[] | undefined;
+}) {
   const tone = statusTone(ticket.status);
   const terminal = terminalLabel(ticket);
 
@@ -51,7 +58,7 @@ export function TicketCardReadonly({ ticket }: { ticket: HistoryTicket }) {
         {ticket.scheduled_for ? ` · due ${timeOnly(ticket.scheduled_for)}` : ''}
       </p>
 
-      <TicketItems ticketId={ticket.id} orderId={ticket.order_id} />
+      <TicketItems items={items} />
 
       {ticket.special_instructions ? (
         <p className="mt-2 rounded-ck bg-warning-soft px-2 py-1 text-xs text-warning">
