@@ -1,4 +1,5 @@
 import '@/components/site/motion-gate.css';
+import '@/components/site/ticket.css';
 import '@/components/site/subscriptions.css';
 import { byPriceAscending, listPlans, listPublicOffers, type PlanSummary } from '@/lib/data/catalog';
 import { clockTime, money, PLAN_TYPE_LABELS } from '@/lib/format';

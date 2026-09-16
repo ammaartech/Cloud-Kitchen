@@ -41,24 +41,21 @@ export async function ensureCustomer(
 
   const supabase = await serverClient();
 
-  const { data, error } = await supabase
-    .from('customers')
-    .insert({
-      profile_id: session.id,
-      full_name: details.fullName,
-      email: session.email,
-      phone: details.phone,
-      phone_verified: false,
-      created_source: 'website',
-    })
-    .select('id')
-    .single();
+  // `public.ensure_customer_record` rather than an insert: the table has no
+  // insert policy for the customer themselves, deliberately, because a row
+  // written straight from the browser could claim `phone_verified` (migration
+  // 0107). The RPC is idempotent, so arriving here twice is safe.
+  const { data, error } = await supabase.rpc('ensure_customer_record', {
+    p_full_name: details.fullName,
+    p_phone: details.phone,
+    p_marketing_consent: false,
+  });
 
   if (error) {
     throw new Error(`Could not create your customer record: ${error.message}`);
   }
 
-  return data.id as string;
+  return data as string;
 }
 
 /**

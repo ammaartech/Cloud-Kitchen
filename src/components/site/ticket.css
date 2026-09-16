@@ -1,0 +1,134 @@
+/* --------------------------------------------------------------------------
+   The kitchen ticket: paper, rows and total.
+
+   Shared by the two places a plan is a ticket. On `/subscriptions` it is the
+   ticket a plan is chosen from (`PlanTicket`, whose shape -- torn edge,
+   notches, stub, subgrid -- stays in `subscriptions.css`); in checkout it is
+   the same ticket filled in, as the order summary. One definition, so the
+   thing being paid for is recognisably the thing that was chosen.
+   -------------------------------------------------------------------------- */
+
+/* The stock: white paper with the grain the home page notes carry, at a lower
+   strength because it is on white rather than canary. Cabinet for everything
+   counted; Zodiak comes in on `.ticket-name`. */
+.ticket-stock {
+  background-color: var(--ck-surface);
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23p)' opacity='0.09'/%3E%3C/svg%3E"),
+    linear-gradient(to bottom, rgb(13 23 20 / 0.035), transparent 3rem);
+  background-size: 160px 160px, auto;
+  background-repeat: repeat, no-repeat;
+
+  font-family: var(--font-cabinet), system-ui, sans-serif;
+  color: var(--ck-text);
+}
+
+.ticket-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ck-text-muted);
+}
+
+.ticket-no {
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  letter-spacing: 0;
+}
+
+/* Zodiak for the name, as on the notes: the plan is the thing being said, and
+   everything under it is counted. */
+.ticket-name {
+  margin-top: 0.75rem;
+  font-family: var(--font-zodiak), Georgia, serif;
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1.12;
+  letter-spacing: -0.015em;
+  text-wrap: pretty;
+}
+
+.ticket-tagline {
+  margin-top: 0.375rem;
+  padding-bottom: 1rem;
+  font-size: 0.875rem;
+  line-height: 1.45;
+  color: var(--ck-text-muted);
+  text-wrap: pretty;
+}
+
+.ticket-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  font-size: 0.8125rem;
+  line-height: 1.45;
+}
+
+.ticket-row + .ticket-row {
+  margin-top: 0.5rem;
+}
+
+/* The leader. The label takes whatever width the value leaves, and its dotted
+   tail fills that width -- which is how a receipt runs a label to its price. */
+.ticket-row dt {
+  display: flex;
+  flex: 1 0 auto;
+  align-items: baseline;
+  gap: 0.5rem;
+  color: var(--ck-text-muted);
+}
+
+.ticket-row dt::after {
+  content: '';
+  flex: 1;
+  min-width: 1rem;
+  border-bottom: 1.5px dotted var(--ck-border-strong);
+  translate: 0 -0.25em;
+}
+
+.ticket-row dd {
+  max-width: 62%;
+  font-weight: 600;
+  text-align: right;
+}
+
+.ticket-note {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--ck-text-subtle);
+}
+
+.ticket-row.ticket-note {
+  margin-top: 0.75rem;
+}
+
+/* The total: under a solid rule, the way a receipt closes its column. */
+.ticket-total {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-inline: 1.25rem;
+  padding-block: 0.875rem 1.25rem;
+  border-top: 2px solid var(--ck-text);
+}
+
+.ticket-total-label {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ck-text-muted);
+}
+
+.ticket-price {
+  font-size: 1.875rem;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+

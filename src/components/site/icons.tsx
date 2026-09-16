@@ -277,3 +277,73 @@ export function SunriseIcon({ className }: { className?: string }) {
     </svg>
   );
 }
+
+/* --------------------------------------------------------------------------
+   The buying flow: the plan page and checkout.
+
+   Same grid, same weight. The check is a single open path on purpose, so it
+   can be written in with DrawSVG when a step completes rather than appearing.
+   -------------------------------------------------------------------------- */
+
+export function CheckIcon({ className }: { className?: string }) {
+  return (
+    <svg {...BASE} className={cx('size-4', className)} aria-hidden>
+      <path d="m5 12.5 4.5 4.5L19 7.5" />
+    </svg>
+  );
+}
+
+export function LockIcon({ className }: { className?: string }) {
+  return (
+    <svg {...BASE} className={cx('size-4', className)} aria-hidden>
+      <rect x="5" y="11" width="14" height="10" rx="3" />
+      <path d="M8 11V8a4 4 0 0 1 8 0v3" />
+    </svg>
+  );
+}
+
+export function ChevronDownIcon({ className }: { className?: string }) {
+  return (
+    <svg {...BASE} className={cx('size-4', className)} aria-hidden>
+      <path d="m6 9 6 6 6-6" />
+    </svg>
+  );
+}
+
+export function ArrowLeftIcon({ className }: { className?: string }) {
+  return (
+    <svg {...BASE} className={cx('size-4', className)} aria-hidden>
+      <path d="M20 12H5" />
+      <path d="m11 6-6 6 6 6" />
+    </svg>
+  );
+}
+
+export function TagIcon({ className }: { className?: string }) {
+  return (
+    <svg {...BASE} className={cx('size-4', className)} aria-hidden>
+      <path d="M3 12V5a2 2 0 0 1 2-2h7l9 9-9 9Z" />
+      <path d="M8 8h.01" />
+    </svg>
+  );
+}
+
+export function EyeIcon({ className }: { className?: string }) {
+  return (
+    <svg {...BASE} className={cx('size-5', className)} aria-hidden>
+      <path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z" />
+      <circle cx="12" cy="12" r="3" />
+    </svg>
+  );
+}
+
+export function EyeOffIcon({ className }: { className?: string }) {
+  return (
+    <svg {...BASE} className={cx('size-5', className)} aria-hidden>
+      <path d="m3 3 18 18" />
+      <path d="M10.6 5.6a9.4 9.4 0 0 1 1.4-.1c6 0 9.5 6.5 9.5 6.5a16.6 16.6 0 0 1-3 3.7" />
+      <path d="M6.6 6.7C4 8.4 2.5 12 2.5 12S6 18.5 12 18.5a9 9 0 0 0 4.4-1.1" />
+      <path d="M9.9 9.9a3 3 0 0 0 4.2 4.2" />
+    </svg>
+  );
+}

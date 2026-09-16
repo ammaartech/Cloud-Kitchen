@@ -1,18 +1,22 @@
 import Link from 'next/link';
-import { redirect } from 'next/navigation';
-import { revalidatePath } from 'next/cache';
+import { io } from 'next/cache';
 import { getSession } from '@/lib/auth/session';
 import { readDraft } from '@/lib/checkout/draft';
-import { getPlan } from '@/lib/data/catalog';
+import { couponReason } from '@/lib/checkout/coupons';
+import { calendarDate, firstDeliveryDate, subscriptionStartDate } from '@/lib/checkout/schedule';
+import { getPlan, getPlanMeals } from '@/lib/data/catalog';
 import { serverClient } from '@/lib/supabase/server';
 import { availablePaymentProviders } from '@/lib/payments';
-import { money, weekdayList, clockTime, PLAN_TYPE_LABELS } from '@/lib/format';
-import { Alert, Badge, Card } from '@/components/ui/primitives';
-import { ActionFeedback, fail, readable } from '@/lib/admin/feedback';
+import { clockTime, weekdayList, PLAN_TYPE_LABELS } from '@/lib/format';
+import { Alert } from '@/components/ui/primitives';
+import { buttonClasses } from '@/components/ui/button-styles';
 import { CheckoutAuthStep } from '@/components/checkout/auth-step';
-import { ProfileStep } from '@/components/checkout/profile-step';
-import { AddressStep } from '@/components/checkout/address-step';
-import { PaymentStep } from '@/components/checkout/payment-step';
+import { CheckoutFlow } from '@/components/checkout/checkout-flow';
+import { CheckoutSection } from '@/components/checkout/checkout-section';
+import { DeliveryForm } from '@/components/checkout/delivery-form';
+import { OrderSummary, type SummaryQuote } from '@/components/checkout/order-summary';
+import { PaymentStep, type CheckoutAddress } from '@/components/checkout/payment-step';
+import { SwitchAccountButton } from '@/components/checkout/switch-account';
 
 /**
  * These screens are per-user by definition -- a session decides not just what
@@ -28,25 +32,47 @@ export const instant = false;
 export const metadata = { title: 'Checkout' };
 
 interface Quote {
-  subtotal: number;
-  discount_total: number;
-  delivery_fee: number;
-  tax_total: number;
-  grand_total: number;
+  subtotal: number | string;
+  discount_total: number | string;
+  delivery_fee: number | string;
+  tax_total: number | string;
+  grand_total: number | string;
   coupon_applied: boolean;
   coupon_code: string | null;
   coupon_message: string | null;
-  tax_breakdown: Array<{ code: string; label: string; rate: number; amount: number }>;
+  tax_breakdown: Array<{ code: string; label: string; rate: number | string; amount: number | string }>;
 }
 
-export default async function CheckoutPage({ searchParams }: PageProps<'/checkout'>) {
-  const draft = await readDraft();
-  if (!draft) redirect('/subscriptions');
+type Step = 'account' | 'delivery' | 'payment';
 
-  const params = await searchParams;
+/**
+ * Checkout: one page, three sections, the plan beside them.
+ *
+ * ## What changed, and why
+ *
+ * It was four screens in a row (account, your details, address, payment),
+ * each a card that replaced the last, and between them they asked for a name
+ * three times and a mobile number three times. It is now one page:
+ *
+ *   1. **Account.** Sign in or create one. Folds to a line once done.
+ *   2. **Delivery.** Name, mobile and address, asked once. For a returning
+ *      customer it is their saved address with "Change".
+ *   3. **Payment.** Method, then a pay button that says the amount, in a dock
+ *      that stays under the thumb on a phone.
+ *
+ * The summary is the plan's ticket, filled in, with the offer code and a total
+ * priced on the server. On a phone it is a bar at the top that opens.
+ *
+ * Which section is open is decided here, from the session and the customer's
+ * rows, never in the browser: the page re-renders when a step completes, and
+ * `CheckoutFlow` animates the handover.
+ */
+export default async function CheckoutPage({ searchParams }: PageProps<'/checkout'>) {
+  const [draft, params] = await Promise.all([readDraft(), searchParams]);
+  if (!draft) return <EmptyCheckout />;
 
   const [session, plan] = await Promise.all([getSession(), getPlan(draft.planSlug)]);
-  if (!plan) redirect('/subscriptions');
+  if (!plan) return <EmptyCheckout reason="plan" />;
 
   const supabase = await serverClient();
 
@@ -55,260 +81,237 @@ export default async function CheckoutPage({ searchParams }: PageProps<'/checkou
    * believes the price is, `begin_subscription_checkout` recomputes it before
    * a payment is created (PRD 6, PRD 8).
    */
-  const { data: quoteData } = await supabase.rpc('quote_subscription', {
-    p_plan_id: draft.planId,
-    p_customer_id: session?.customerId ?? null,
-    p_coupon_code: draft.couponCode,
-  });
+  const [{ data: quoteData }, { data: addressRows }, meals] = await Promise.all([
+    supabase.rpc('quote_subscription', {
+      p_plan_id: draft.planId,
+      p_customer_id: session?.customerId ?? null,
+      p_coupon_code: draft.couponCode,
+    }),
+    session?.customerId
+      ? supabase
+          .from('customer_addresses')
+          .select(
+            'id, label, recipient_name, phone, line1, line2, landmark, city, state, postal_code, delivery_instructions, is_default',
+          )
+          .eq('customer_id', session.customerId)
+          .eq('is_active', true)
+          .order('is_default', { ascending: false })
+          .order('created_at', { ascending: false })
+      : Promise.resolve({ data: [] }),
+    plan.planType === 'customer_selected' ? getPlanMeals(plan.id) : Promise.resolve(null),
+  ]);
 
-  const quote = quoteData as Quote | null;
-
-  const { data: addressRows } = session?.customerId
-    ? await supabase
-        .from('customer_addresses')
-        .select('id, label, recipient_name, phone, line1, line2, landmark, city, state, postal_code, is_default')
-        .eq('customer_id', session.customerId)
-        .eq('is_active', true)
-        .order('is_default', { ascending: false })
-    : { data: [] };
-
-  const addresses = (addressRows ?? []) as Array<{
-    id: string;
-    label: string;
-    recipient_name: string;
-    phone: string;
-    line1: string;
-    line2: string | null;
-    landmark: string | null;
-    city: string;
-    state: string;
-    postal_code: string;
-    is_default: boolean;
-  }>;
-
-  const window = plan.windows.find((w) => w.id === draft.deliveryWindowId) ?? plan.windows[0];
+  const raw = quoteData as Quote | null;
+  const addresses = (addressRows ?? []) as CheckoutAddress[];
   const providers = availablePaymentProviders();
 
-  /** Creates the customer record. Account creation happens late (PRD 6). */
-  async function saveProfile(formData: FormData) {
-    'use server';
+  const step: Step = !session
+    ? 'account'
+    : !session.customerId || addresses.length === 0
+      ? 'delivery'
+      : 'payment';
 
-    const current = await getSession();
-    if (!current) redirect('/checkout');
+  const deliveryWindow =
+    plan.windows.find((window) => window.id === draft.deliveryWindowId) ?? plan.windows[0];
+  const windowText = deliveryWindow
+    ? `${deliveryWindow.label}, ${clockTime(deliveryWindow.startsAt)} to ${clockTime(deliveryWindow.endsAt)}`
+    : null;
 
-    const db = await serverClient();
-    const { error } = await db.from('customers').insert({
-      profile_id: current.id,
-      full_name: String(formData.get('fullName') ?? ''),
-      email: current.email,
-      phone: String(formData.get('phone') ?? ''),
-      marketing_consent: formData.get('marketingConsent') === 'on',
-      marketing_consent_updated_at: new Date().toISOString(),
-      marketing_consent_source: 'checkout',
-      created_source: 'website',
-    });
+  const isCredits = plan.planType === 'meal_credits';
+  /**
+   * The two dates below are read off the clock, and under Cache Components a
+   * clock read is synchronous IO: left unannounced, Next either bakes today's
+   * answer into the prerendered shell or refuses the route outright, which
+   * `instant = false` does not excuse. `io()` says the true thing -- this is
+   * per request -- and suspends the prerender here, where `loading.tsx`
+   * already covers the gap. A promise of "first delivery Thu, 17 Sept" is
+   * worth nothing if it is the date the shell was built on.
+   */
+  await io();
 
-    // A silent refusal here would strand the customer on a step that never
-    // advances -- the failure has to be said out loud.
-    if (error) fail('/checkout', readable(error));
+  const startsOn = calendarDate(subscriptionStartDate());
+  const firstDelivery = isCredits
+    ? null
+    : `${calendarDate(firstDeliveryDate(draft.deliveryDays))}${deliveryWindow ? `, ${clockTime(deliveryWindow.startsAt)}` : ''}`;
 
-    revalidatePath('/checkout');
-  }
+  const chosenIds = new Set(draft.selectedMeals.map((meal) => meal.product_id));
+  const mealNames = meals ? meals.selectable.filter((meal) => chosenIds.has(meal.id)).map((meal) => meal.name) : [];
 
-  async function saveAddress(formData: FormData) {
-    'use server';
+  const quote: SummaryQuote | null = raw
+    ? {
+        subtotal: Number(raw.subtotal),
+        discount: Number(raw.discount_total),
+        deliveryFee: Number(raw.delivery_fee),
+        total: Number(raw.grand_total),
+        taxes: (raw.tax_breakdown ?? []).map((tax) => ({
+          code: tax.code,
+          rate: Number(tax.rate),
+          amount: Number(tax.amount),
+        })),
+        // The quote only names a code it applied; the draft is what is on the plan.
+        couponCode: draft.couponCode,
+        couponApplied: raw.coupon_applied,
+        couponReason:
+          draft.couponCode && !raw.coupon_applied && raw.coupon_message
+            ? couponReason(raw.coupon_message)
+            : null,
+      }
+    : null;
 
-    const current = await getSession();
-    if (!current?.customerId) redirect('/checkout');
-
-    const db = await serverClient();
-    // Only one address may be the default; the incumbent stands down first.
-    await db
-      .from('customer_addresses')
-      .update({ is_default: false })
-      .eq('customer_id', current.customerId);
-
-    const { error } = await db.from('customer_addresses').insert({
-      customer_id: current.customerId,
-      label: String(formData.get('label') ?? 'Home'),
-      recipient_name: String(formData.get('recipientName') ?? ''),
-      phone: String(formData.get('phone') ?? ''),
-      line1: String(formData.get('line1') ?? ''),
-      line2: String(formData.get('line2') ?? '') || null,
-      landmark: String(formData.get('landmark') ?? '') || null,
-      city: String(formData.get('city') ?? ''),
-      state: String(formData.get('state') ?? ''),
-      postal_code: String(formData.get('postalCode') ?? ''),
-      delivery_instructions: String(formData.get('instructions') ?? '') || null,
-      is_default: true,
-    });
-
-    if (error) fail('/checkout', readable(error));
-
-    revalidatePath('/checkout');
-  }
-
-  const step = !session
-    ? 'auth'
-    : !session.customerId
-      ? 'profile'
-      : addresses.length === 0
-        ? 'address'
-        : 'payment';
+  const summaryRows = [
+    {
+      label: 'you get',
+      value: isCredits ? `${plan.creditsPerCycle} credits` : `${plan.mealsPerCycle} meals`,
+    },
+    ...(windowText ? [{ label: 'window', value: windowText }] : []),
+    ...(isCredits ? [] : [{ label: 'days', value: weekdayList(draft.deliveryDays) }]),
+    isCredits
+      ? { label: 'starts', value: startsOn }
+      : { label: 'first delivery', value: firstDelivery ?? startsOn },
+    {
+      label: 'cycle',
+      value: `${plan.billingPeriodDays} days, ${plan.paymentFlow === 'recurring' ? 'renews' : 'one-time'}`,
+    },
+  ];
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-10">
-      <Link href={`/subscriptions/${plan.slug}`} className="text-sm text-muted hover:text-ink">
-        ← Back to plan
-      </Link>
+    <div className="co-page">
+      <div className="co-layout">
+        <OrderSummary
+          plan={{
+            name: plan.name,
+            kind: PLAN_TYPE_LABELS[plan.planType] ?? plan.planType,
+            slug: plan.slug,
+            rows: summaryRows,
+            meals: mealNames,
+          }}
+          quote={quote}
+          canCheckCode={Boolean(session?.customerId)}
+        />
 
-      <h1 className="mt-4 text-3xl font-semibold tracking-tight">Checkout</h1>
-
-      {typeof params.error === 'string' ? (
-        <div className="mt-6">
-          <ActionFeedback error={params.error} />
-        </div>
-      ) : null}
-
-      <ol className="mt-6 flex flex-wrap gap-2 text-sm" aria-label="Checkout progress">
-        {(
-          [
-            ['auth', 'Account'],
-            ['profile', 'Your details'],
-            ['address', 'Delivery address'],
-            ['payment', 'Payment'],
-          ] as const
-        ).map(([key, label], index) => {
-          const order = ['auth', 'profile', 'address', 'payment'];
-          const done = order.indexOf(step) > index;
-          const current = step === key;
-
-          return (
-            <li
-              key={key}
-              aria-current={current ? 'step' : undefined}
-              className={
-                current
-                  ? 'rounded-full bg-brand px-3 py-1 font-medium text-white'
-                  : done
-                    ? 'rounded-full bg-success-soft px-3 py-1 font-medium text-success'
-                    : 'rounded-full bg-sunken px-3 py-1 text-subtle'
-              }
-            >
-              {done ? '✓ ' : ''}
-              {label}
-            </li>
-          );
-        })}
-      </ol>
-
-      <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_20rem] lg:items-start">
-        <div className="space-y-6">
-          {step === 'auth' ? <CheckoutAuthStep /> : null}
-          {step === 'profile' ? <ProfileStep action={saveProfile} /> : null}
-          {step === 'address' ? <AddressStep action={saveAddress} /> : null}
-          {step === 'payment' && session?.customerId ? (
-            <PaymentStep
-              addresses={addresses}
-              providers={providers}
-              defaultName={session.fullName}
-              defaultPhone={session.phone ?? addresses[0]?.phone ?? ''}
-              newAddressAction={saveAddress}
-              /**
-               * Cashfree returns the customer here after a UPI or net-banking
-               * journey. The id is only a pointer: confirmation still runs
-               * server-side against Cashfree, and /api/checkout/confirm still
-               * checks the payment belongs to the caller, so a guessed value
-               * buys nothing.
-               */
-              returningOrderId={
-                typeof params.cf_order_id === 'string' ? params.cf_order_id : undefined
-              }
-            />
-          ) : null}
-        </div>
-
-        {/* Order summary. Every figure comes from the server-side quote. */}
-        <aside className="lg:sticky lg:top-6">
-          <Card className="p-5">
-            <Badge tone="neutral">{PLAN_TYPE_LABELS[plan.planType] ?? plan.planType}</Badge>
-            <h2 className="mt-2 font-semibold">{plan.name}</h2>
-
-            <dl className="mt-4 space-y-2 border-b border-line pb-4 text-sm">
-              <div className="flex justify-between gap-3">
-                <dt className="text-muted">Window</dt>
-                <dd className="text-right font-medium">
-                  {window ? `${window.label} · ${clockTime(window.startsAt)}` : '-'}
-                </dd>
-              </div>
-              <div className="flex justify-between gap-3">
-                <dt className="text-muted">Days</dt>
-                <dd className="text-right font-medium">{weekdayList(draft.deliveryDays)}</dd>
-              </div>
-              <div className="flex justify-between gap-3">
-                <dt className="text-muted">Cycle</dt>
-                <dd className="text-right font-medium">{plan.billingPeriodDays} days</dd>
-              </div>
-            </dl>
-
-            {quote ? (
-              <dl className="mt-4 space-y-2 text-sm">
-                <div className="flex justify-between gap-3">
-                  <dt className="text-muted">Plan</dt>
-                  <dd className="tabular">{money(quote.subtotal)}</dd>
-                </div>
-
-                {Number(quote.discount_total) > 0 ? (
-                  <div className="flex justify-between gap-3 text-success">
-                    <dt>Offer {quote.coupon_code ? `(${quote.coupon_code})` : ''}</dt>
-                    <dd className="tabular">−{money(quote.discount_total)}</dd>
-                  </div>
-                ) : null}
-
-                {Number(quote.delivery_fee) > 0 ? (
-                  <div className="flex justify-between gap-3">
-                    <dt className="text-muted">Delivery</dt>
-                    <dd className="tabular">{money(quote.delivery_fee)}</dd>
-                  </div>
-                ) : null}
-
-                {quote.tax_breakdown?.map((component) => (
-                  <div key={component.code} className="flex justify-between gap-3">
-                    <dt className="text-muted">
-                      {component.code} {Number(component.rate)}%
-                    </dt>
-                    <dd className="tabular">{money(component.amount)}</dd>
-                  </div>
-                ))}
-
-                <div className="flex justify-between gap-3 border-t border-line pt-3 text-base font-semibold">
-                  <dt>Total</dt>
-                  <dd className="tabular">{money(quote.grand_total)}</dd>
-                </div>
-              </dl>
-            ) : (
-              <p className="mt-4 text-sm text-muted">Could not price this plan.</p>
-            )}
-
-            {quote && !quote.coupon_applied && quote.coupon_message ? (
-              <p className="mt-3 text-xs text-warning">{quote.coupon_message}</p>
-            ) : null}
-
-            <p className="mt-4 text-xs text-subtle">
-              If your payment does not go through, no subscription is created and nothing is
-              scheduled.
-            </p>
-          </Card>
+        <div className="co-main">
+          <h1 className="co-title">Checkout</h1>
 
           {providers.length === 0 ? (
             <div className="mt-4">
               <Alert tone="warning" title="No payment method is configured">
-                Add Razorpay or Cashfree credentials, or enable the test gateway, before
-                taking payments.
+                Add Razorpay or Cashfree credentials, or enable the test gateway, before taking
+                payments.
               </Alert>
             </div>
           ) : null}
-        </aside>
+
+          <CheckoutFlow step={step}>
+            <CheckoutSection
+              id="co-account"
+              index={1}
+              title="Account"
+              state={session ? 'done' : 'current'}
+              summary={
+                session ? (
+                  <>
+                    <span className="co-summary-strong">{session.fullName || 'Signed in'}</span>
+                    {session.email ? <> · {session.email}</> : null}
+                  </>
+                ) : null
+              }
+              action={session ? <SwitchAccountButton /> : null}
+            >
+              {session ? null : <CheckoutAuthStep />}
+            </CheckoutSection>
+
+            {step === 'payment' && session ? (
+              <PaymentStep
+                addresses={addresses}
+                providers={providers}
+                contactName={session.fullName}
+                contactPhone={session.phone}
+                total={quote?.total ?? null}
+                planName={plan.name}
+                firstDelivery={firstDelivery ? `${firstDelivery}` : null}
+                isCredits={isCredits}
+                /**
+                 * Cashfree returns the customer here after a UPI or net-banking
+                 * journey. The id is only a pointer: confirmation still runs
+                 * server-side against Cashfree, and /api/checkout/confirm still
+                 * checks the payment belongs to the caller, so a guessed value
+                 * buys nothing.
+                 */
+                returningOrderId={
+                  typeof params.cf_order_id === 'string' ? params.cf_order_id : undefined
+                }
+              />
+            ) : (
+              <>
+                <CheckoutSection
+                  id="co-delivery"
+                  index={2}
+                  title="Delivery"
+                  state={step === 'delivery' ? 'current' : 'upcoming'}
+                  summary={
+                    firstDelivery ? (
+                      <>First delivery {firstDelivery}</>
+                    ) : (
+                      <>Credits usable from {startsOn}</>
+                    )
+                  }
+                >
+                  {step === 'delivery' && session ? (
+                    <DeliveryForm
+                      defaultName={session.fullName}
+                      defaultPhone={session.phone ?? ''}
+                      includeConsent={!session.customerId}
+                      submitLabel="Save and continue to payment"
+                    />
+                  ) : null}
+                </CheckoutSection>
+
+                <CheckoutSection
+                  id="co-payment"
+                  index={3}
+                  title="Payment"
+                  state="upcoming"
+                  summary="UPI, cards and net banking"
+                />
+              </>
+            )}
+          </CheckoutFlow>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * Nothing to check out: no plan was chosen, or the choice expired.
+ *
+ * This used to redirect to the plans page without a word, which on a
+ * two-hour-old tab reads as the site having lost the order. Saying what
+ * happened costs one screen and keeps the customer's trust.
+ */
+function EmptyCheckout({ reason = 'draft' }: { reason?: 'draft' | 'plan' }) {
+  return (
+    <div className="co-page">
+      <div className="co-empty">
+        <p className="ticket-meta">
+          <span>checkout</span>
+        </p>
+        <h1 className="co-empty-title">
+          {reason === 'plan' ? 'That plan is no longer offered' : 'Nothing to check out yet'}
+        </h1>
+        <p className="co-empty-text">
+          {reason === 'plan'
+            ? 'The plan you chose has been taken off the menu since. Nothing was charged. Pick another and your details will be waiting.'
+            : 'A plan you choose is held here for two hours. If you already paid, your subscription is in your account.'}
+        </p>
+        <div className="co-empty-actions">
+          <Link href="/subscriptions" className={`${buttonClasses('primary', 'lg')} btn-square`}>
+            See the plans
+          </Link>
+          <Link href="/account" className={`${buttonClasses('outline', 'lg')} btn-square`}>
+            My account
+          </Link>
+        </div>
       </div>
     </div>
   );

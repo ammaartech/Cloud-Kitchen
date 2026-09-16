@@ -1,12 +1,16 @@
 import { Suspense } from 'react';
-import { notFound, redirect } from 'next/navigation';
+import Image from 'next/image';
 import Link from 'next/link';
+import { notFound, redirect } from 'next/navigation';
+import '@/components/site/ticket.css';
+import '@/components/checkout/checkout.css';
 import { getPlan, getPlanMeals, listPlans, listPublicOffers } from '@/lib/data/catalog';
 import { saveDraft, draftSchema } from '@/lib/checkout/draft';
 import { PlanConfigurator } from '@/components/checkout/plan-configurator';
-import { ProductTile } from '@/components/product-card';
-import { money, PLAN_TYPE_LABELS } from '@/lib/format';
-import { Alert, Badge, Card } from '@/components/ui/primitives';
+import { FlowProgress } from '@/components/checkout/flow-progress';
+import { ArrowLeftIcon } from '@/components/site/icons';
+import { PLAN_TYPE_LABELS } from '@/lib/format';
+import { Alert } from '@/components/ui/primitives';
 
 /**
  * Enumerates every plan so each one is prerendered at build rather than on the
@@ -39,9 +43,9 @@ async function ConfigurationError({
 
   return (
     <div className="mt-4">
-      <Alert tone="danger" title="That configuration could not be saved">
+      <Alert tone="danger" title="That plan could not be saved">
         Something about the selection did not check out on our side. Nothing was charged.
-        Re-check your choices below and continue again.
+        Check your choices below and continue again.
       </Alert>
     </div>
   );
@@ -70,22 +74,43 @@ export default async function PlanPage({
    *
    * Deliberately stores intent only. No subscription, no payment and no price
    * exists until checkout runs `begin_subscription_checkout` on the server.
+   * The checks here are the cheap ones worth making before a redirect; the
+   * database repeats every one of them, and more, when the plan is bought.
    */
   async function continueToCheckout(formData: FormData) {
     'use server';
+
+    const current = await getPlan(slug);
+    if (!current) redirect('/subscriptions');
+
+    const deliveryDays = [...new Set(formData.getAll('day').map(Number))];
+    const selectedMeals = [...new Set(formData.getAll('meal').map(String))].map((productId) => ({
+      product_id: productId,
+      quantity: 1,
+    }));
 
     const parsed = draftSchema.safeParse({
       idempotencyKey: crypto.randomUUID(),
       planId: formData.get('planId'),
       planSlug: formData.get('planSlug'),
       deliveryWindowId: formData.get('deliveryWindowId'),
-      deliveryDays: JSON.parse(String(formData.get('deliveryDays') ?? '[]')),
-      selectedMeals: JSON.parse(String(formData.get('selectedMeals') ?? '[]')),
+      // Seven days chosen is every day, and is stored the way every day is.
+      deliveryDays: deliveryDays.length === 7 ? [] : deliveryDays,
+      selectedMeals,
       couponCode: autoOffer?.code ?? null,
-      deliveryInstructions: String(formData.get('deliveryInstructions') ?? '') || null,
+      // Instructions are asked for with the address at checkout, where the
+      // rider reads them; the kitchen ticket falls back to the address's note.
+      deliveryInstructions: null,
     });
 
-    if (!parsed.success) {
+    const pickedAll =
+      current.planType !== 'customer_selected' ||
+      selectedMeals.length === (current.selectableMealCount ?? 0);
+    const windowOffered = current.windows.some(
+      (window) => window.id === formData.get('deliveryWindowId'),
+    );
+
+    if (!parsed.success || parsed.data.planId !== current.id || !pickedAll || !windowOffered) {
       redirect(`/subscriptions/${slug}?error=invalid`);
     }
 
@@ -93,92 +118,87 @@ export default async function PlanPage({
     redirect('/checkout');
   }
 
+  const kind = PLAN_TYPE_LABELS[plan.planType] ?? plan.planType;
   const entitlement =
     plan.planType === 'meal_credits'
       ? `${plan.creditsPerCycle} credits`
       : `${plan.mealsPerCycle} meals`;
 
-  return (
-    <div className="mx-auto max-w-6xl px-4 py-12">
-      <Link href="/subscriptions" className="text-sm text-muted hover:text-ink">
-        ← All plans
-      </Link>
+  const header = (
+    <header>
+      <p className="ticket-meta">
+        <span>{kind}</span>
+      </p>
+      <h1 className="cfg-title">{plan.name}</h1>
+      <p className="cfg-lede">{plan.description}</p>
+      <ul className="cfg-facts">
+        <li>
+          <strong>{entitlement}</strong>
+        </li>
+        <li>every {plan.billingPeriodDays} days</li>
+        <li>{plan.paymentFlow === 'recurring' ? 'renews automatically' : 'one-time payment'}</li>
+      </ul>
+    </header>
+  );
 
-      <Suspense fallback={null}>
+  const included =
+    meals.fixed.length > 0 ? (
+      <section className="cfg-included" aria-labelledby="cfg-included-title">
+        <h2 id="cfg-included-title" className="cfg-section-title">
+          What is in it
+        </h2>
+        <ul className="cfg-included-list">
+          {meals.fixed.map((product) => (
+            <li key={product.id} className="cfg-dish">
+              {product.imageUrl ? (
+                <span className="cfg-thumb">
+                  <Image src={product.imageUrl} alt="" fill sizes="56px" className="object-cover" />
+                </span>
+              ) : null}
+              <span className="min-w-0">
+                <span className="cfg-dish-name block">{product.name}</span>
+                <span className="cfg-dish-meta block">
+                  {[
+                    product.calories ? `${product.calories} kcal` : null,
+                    product.proteinGrams ? `${Number(product.proteinGrams)} g protein` : null,
+                  ]
+                    .filter(Boolean)
+                    .join(' · ') || product.shortDescription}
+                </span>
+              </span>
+            </li>
+          ))}
+        </ul>
+      </section>
+    ) : null;
+
+  return (
+    <div className="cfg-page landing-container">
+      <div className="cfg-topbar">
+        <Link href="/subscriptions" className="co-link">
+          <ArrowLeftIcon />
+          All plans
+        </Link>
+        <FlowProgress current={1} />
+      </div>
+
+      {/* An empty element rather than `null`. A null fallback is not counted as
+          a placeholder, and the boundary then reads as a `searchParams` access
+          with nothing to stream behind it -- which Next reports in development
+          as data that stops this route navigating instantly. `hidden` keeps it
+          out of the layout and out of the accessibility tree. */}
+      <Suspense fallback={<div hidden />}>
         <ConfigurationError searchParams={searchParams} />
       </Suspense>
 
-      <div className="mt-4 grid gap-10 lg:grid-cols-[1fr_22rem] lg:items-start">
-        <div>
-          <header>
-            <Badge tone="neutral">{PLAN_TYPE_LABELS[plan.planType] ?? plan.planType}</Badge>
-            <h1 className="mt-3 text-3xl font-semibold tracking-tight">{plan.name}</h1>
-            <p className="mt-2 max-w-xl text-muted text-pretty">{plan.description}</p>
-          </header>
-
-          {meals.fixed.length > 0 ? (
-            <section className="mt-10">
-              <h2 className="font-semibold">What is included</h2>
-              <div className="mt-4 grid gap-5 sm:grid-cols-2">
-                {meals.fixed.map((product) => (
-                  <ProductTile key={product.id} product={product} />
-                ))}
-              </div>
-            </section>
-          ) : null}
-
-          <section className="mt-10">
-            <h2 className="text-xl font-semibold tracking-tight">Configure your plan</h2>
-            <div className="mt-5">
-              <PlanConfigurator
-                plan={plan}
-                selectableMeals={meals.selectable}
-                action={continueToCheckout}
-              />
-            </div>
-          </section>
-        </div>
-
-        {/* Sticky summary: what the plan gives, and what happens next. */}
-        <aside className="lg:sticky lg:top-24">
-          <Card className="p-6">
-            <p className="text-3xl font-semibold tabular">{money(plan.price)}</p>
-            <p className="text-sm text-subtle">
-              per {plan.billingPeriodDays} days
-              {plan.paymentFlow === 'recurring' ? ' · renews automatically' : ' · one-time'}
-            </p>
-
-            <dl className="mt-5 space-y-3 border-t border-line pt-5 text-sm">
-              <div className="flex justify-between gap-4">
-                <dt className="text-muted">You get</dt>
-                <dd className="font-medium tabular">{entitlement}</dd>
-              </div>
-              <div className="flex justify-between gap-4">
-                <dt className="text-muted">Variants</dt>
-                <dd className="font-medium">{plan.allowsVariants ? 'Allowed' : 'Fixed'}</dd>
-              </div>
-              <div className="flex justify-between gap-4">
-                <dt className="text-muted">Add-ons</dt>
-                <dd className="font-medium">{plan.allowsAddOns ? 'Allowed' : 'Not on this plan'}</dd>
-              </div>
-            </dl>
-
-            {autoOffer ? (
-              <div className="mt-5 rounded-ck border border-accent/30 bg-accent-soft p-3">
-                <p className="text-sm font-medium text-ink">{autoOffer.name}</p>
-                <p className="mt-0.5 text-xs text-muted">
-                  Applied at checkout if you qualify. We verify eligibility on our side.
-                </p>
-              </div>
-            ) : null}
-
-            <p className="mt-5 text-xs text-subtle">
-              You will not be charged until you confirm payment. If a payment fails, no
-              subscription is created and no food is scheduled.
-            </p>
-          </Card>
-        </aside>
-      </div>
+      <PlanConfigurator
+        plan={plan}
+        selectableMeals={meals.selectable}
+        action={continueToCheckout}
+        offer={autoOffer ? { code: autoOffer.code, name: autoOffer.name } : null}
+        header={header}
+        included={included}
+      />
     </div>
   );
 }

@@ -52,7 +52,7 @@ export function PlanTicket({ plan, index }: { plan: PlanSummary; index: number }
 
   return (
     <li className="plan-ticket" data-enter>
-      <article className="ticket-paper" aria-labelledby={nameId}>
+      <article className="ticket-paper ticket-stock" aria-labelledby={nameId}>
         <header className="ticket-head">
           <p className="ticket-meta">
             <span>{kind}</span>

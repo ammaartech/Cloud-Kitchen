@@ -136,7 +136,14 @@ export function configuredPaymentProviders(): Array<'razorpay' | 'cashfree' | 's
   const available: Array<'razorpay' | 'cashfree' | 'sandbox'> = [];
 
   if (env.RAZORPAY_KEY_ID && env.RAZORPAY_KEY_SECRET) available.push('razorpay');
-  if (env.CASHFREE_APP_ID && env.CASHFREE_SECRET_KEY) available.push('cashfree');
+  // Cashfree is withheld for the moment: its order lookup is answering 404 on
+  // the return leg, which strands a customer who has already left the site for
+  // UPI. Withheld here rather than by emptying the credentials, so the reason
+  // travels with the code and every environment behaves the same way. The
+  // adapter, the webhook route and the browser SDK are all untouched --
+  // restoring it is this one line. Razorpay covers UPI, cards and net banking
+  // in the meantime.
+  // if (env.CASHFREE_APP_ID && env.CASHFREE_SECRET_KEY) available.push('cashfree');
 
   // Offered last, and only outside production, so a real provider is always
   // preferred when one is configured.
