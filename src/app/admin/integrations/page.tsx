@@ -1,6 +1,7 @@
 import { requirePermission } from '@/lib/auth/session';
 import { PERMISSIONS } from '@/lib/auth/permissions';
 import { serverClient } from '@/lib/supabase/server';
+import { rowsOf } from '@/lib/supabase/query';
 import { dateTime } from '@/lib/format';
 import { Alert, Badge, Card, EmptyState, SectionHeading } from '@/components/ui/primitives';
 
@@ -58,10 +59,12 @@ const CAPABILITY_MEANING: Record<string, string> = {
  * when they are not.
  */
 export default async function IntegrationsPage() {
-  await requirePermission(PERMISSIONS.integrationsView);
   const supabase = await serverClient();
 
-  const [healthResult, reconResult] = await Promise.all([
+  // The guard and the reads go out together. Every read is already filtered
+  // by RLS as this user, and a refused guard still redirects before render.
+  const [, healthResult, reconResult] = await Promise.all([
+    requirePermission(PERMISSIONS.integrationsView),
     supabase.from('v_integration_health').select('*'),
     supabase
       .from('integration_reconciliation')
@@ -70,8 +73,8 @@ export default async function IntegrationsPage() {
       .limit(10),
   ]);
 
-  const providers = (healthResult.data ?? []) as unknown as HealthRow[];
-  const reconciliations = (reconResult.data ?? []) as Array<{
+  const providers = rowsOf<HealthRow>(healthResult, 'health');
+  const reconciliations = rowsOf<{
     id: string;
     provider: string;
     ran_at: string;
@@ -80,7 +83,7 @@ export default async function IntegrationsPage() {
     internal_count: number;
     missing_internal: string[];
     missing_external: string[];
-  }>;
+  }>(reconResult, 'recon');
 
   const anyIntegrated = providers.some((provider) =>
     provider.capabilities.some((capability) => capability.state === 'integrated'),

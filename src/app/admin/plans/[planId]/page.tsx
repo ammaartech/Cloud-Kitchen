@@ -1,3 +1,4 @@
+import { cache } from 'react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
@@ -5,20 +6,11 @@ import { revalidateStorefront } from '@/lib/data/catalog-cache';
 import { requirePermission } from '@/lib/auth/session';
 import { PERMISSIONS } from '@/lib/auth/permissions';
 import { serverClient } from '@/lib/supabase/server';
+import { rowOf, rowsOf } from '@/lib/supabase/query';
 import { clockTime, money, weekdayName, PLAN_TYPE_LABELS } from '@/lib/format';
 import { bool, list, nullableBool, nullableNum, num, str } from '@/lib/admin/form';
-import { ActionFeedback, done, fail, readable } from '@/lib/admin/feedback';
+import { ActionFeedback, done, fail, flashFrom, readable } from '@/lib/admin/feedback';
 
-/**
- * These screens are per-user by definition -- a session decides not just what
- * they show but whether you may see them at all -- so there is no static shell
- * to prerender and no point pretending otherwise. `instant = false` says that
- * plainly: this segment is allowed to block.
- *
- * It is a statement about *this* route, not a global escape hatch. The public
- * storefront next door is held to the opposite standard.
- */
-export const instant = false;
 import {
   Alert,
   Badge,
@@ -32,17 +24,33 @@ import {
   Textarea,
 } from '@/components/ui/primitives';
 
+/**
+ * These screens are per-user by definition -- a session decides not just what
+ * they show but whether you may see them at all -- so there is no static shell
+ * to prerender and no point pretending otherwise. `instant = false` says that
+ * plainly: this segment is allowed to block.
+ *
+ * It is a statement about *this* route, not a global escape hatch. The public
+ * storefront next door is held to the opposite standard.
+ */
+export const instant = false;
+
+
+/**
+ * One read of the plan per request, shared by the metadata and the page.
+ * `generateMetadata` and the page body render concurrently and used to issue
+ * the same lookup twice; `cache()` dedupes them into one round-trip.
+ */
+const loadPlan = cache(async (planId: string) => {
+  const supabase = await serverClient();
+  const result = await supabase.from('subscription_plans').select('*').eq('id', planId).maybeSingle();
+  return rowOf<Plan>(result, 'subscription_plans');
+});
 
 export async function generateMetadata({ params }: PageProps<'/admin/plans/[planId]'>) {
   const { planId } = await params;
-  const supabase = await serverClient();
-  const { data } = await supabase
-    .from('subscription_plans')
-    .select('name')
-    .eq('id', planId)
-    .maybeSingle();
-
-  return { title: data ? `${(data as { name: string }).name} · Plan` : 'Plan' };
+  const plan = await loadPlan(planId);
+  return { title: plan ? `${plan.name} · Plan` : 'Plan' };
 }
 
 interface Plan {
@@ -87,16 +95,17 @@ export default async function PlanEditorPage({
   params,
   searchParams,
 }: PageProps<'/admin/plans/[planId]'>) {
-  await requirePermission(PERMISSIONS.plansManage);
-
   const { planId } = await params;
   const query = await searchParams;
   const path = `/admin/plans/${planId}`;
   const supabase = await serverClient();
 
-  const [planResult, windowsResult, planWindowsResult, mealsResult, productsResult, subsResult] =
+  // The guard and the reads go out together. Every read is already filtered
+  // by RLS as this user, and a refused guard still redirects before render.
+  const [, plan, windowsResult, planWindowsResult, mealsResult, productsResult, subsResult] =
     await Promise.all([
-      supabase.from('subscription_plans').select('*').eq('id', planId).maybeSingle(),
+      requirePermission(PERMISSIONS.plansManage),
+      loadPlan(planId),
       supabase
         .from('delivery_windows')
         .select('id, code, label, starts_at, ends_at, is_active')
@@ -117,20 +126,19 @@ export default async function PlanEditorPage({
       supabase.from('subscriptions').select('id, status').eq('plan_id', planId),
     ]);
 
-  const plan = planResult.data as Plan | null;
   if (!plan) notFound();
 
-  const windows = (windowsResult.data ?? []) as Array<{
+  const windows = rowsOf<{
     id: string;
     code: string;
     label: string;
     starts_at: string;
     ends_at: string;
     is_active: boolean;
-  }>;
+  }>(windowsResult, 'windows');
 
   const selectedWindows = new Set(
-    ((planWindowsResult.data ?? []) as Array<{ delivery_window_id: string }>).map(
+    (rowsOf<{ delivery_window_id: string }>(planWindowsResult, 'planWindows')).map(
       (row) => row.delivery_window_id,
     ),
   );
@@ -145,14 +153,14 @@ export default async function PlanEditorPage({
     products: { name: string; credit_cost: number } | null;
   }>;
 
-  const products = (productsResult.data ?? []) as Array<{
+  const products = rowsOf<{
     id: string;
     name: string;
     credit_cost: number;
     is_available: boolean;
-  }>;
+  }>(productsResult, 'products');
 
-  const liveSubscribers = ((subsResult.data ?? []) as Array<{ status: string }>).filter((row) =>
+  const liveSubscribers = (rowsOf<{ status: string }>(subsResult, 'subs')).filter((row) =>
     ['active', 'paused', 'past_due'].includes(row.status),
   ).length;
 
@@ -162,6 +170,8 @@ export default async function PlanEditorPage({
 
   async function saveDetails(formData: FormData) {
     'use server';
+
+    await requirePermission(PERMISSIONS.plansManage);
 
     const planType = str(formData, 'planType');
     const mealsPerCycle = nullableNum(formData, 'mealsPerCycle');
@@ -205,6 +215,8 @@ export default async function PlanEditorPage({
   async function saveRules(formData: FormData) {
     'use server';
 
+    await requirePermission(PERMISSIONS.plansManage);
+
     const db = await serverClient();
     const { error } = await db
       .from('subscription_plans')
@@ -229,6 +241,8 @@ export default async function PlanEditorPage({
 
   async function saveWindows(formData: FormData) {
     'use server';
+
+    await requirePermission(PERMISSIONS.plansManage);
 
     const chosen = list(formData, 'windowId');
     const db = await serverClient();
@@ -259,6 +273,8 @@ export default async function PlanEditorPage({
   async function addMeal(formData: FormData) {
     'use server';
 
+    await requirePermission(PERMISSIONS.plansManage);
+
     const productId = str(formData, 'productId');
     if (!productId) fail(path, 'Pick a dish to add.');
 
@@ -283,6 +299,8 @@ export default async function PlanEditorPage({
   async function removeMeal(formData: FormData) {
     'use server';
 
+    await requirePermission(PERMISSIONS.plansManage);
+
     const db = await serverClient();
     const { error } = await db
       .from('subscription_plan_meals')
@@ -297,6 +315,8 @@ export default async function PlanEditorPage({
 
   async function setFlags(formData: FormData) {
     'use server';
+
+    await requirePermission(PERMISSIONS.plansManage);
 
     const db = await serverClient();
     const { error } = await db
@@ -355,7 +375,7 @@ export default async function PlanEditorPage({
         />
       </div>
 
-      <ActionFeedback error={query.error as string} ok={query.ok as string} />
+      <ActionFeedback {...flashFrom(query)} />
 
       {!plan.is_published && !readyToPublish ? (
         <div className="mb-6">

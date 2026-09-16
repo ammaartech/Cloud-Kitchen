@@ -2,9 +2,10 @@ import { revalidatePath } from 'next/cache';
 import { requirePermission } from '@/lib/auth/session';
 import { PERMISSIONS } from '@/lib/auth/permissions';
 import { serverClient } from '@/lib/supabase/server';
+import { rowsOf } from '@/lib/supabase/query';
 import { money, clockTime } from '@/lib/format';
 import { Alert, Badge, Button, Card, Input, SectionHeading } from '@/components/ui/primitives';
-import { ActionFeedback, done, fail, readable } from '@/lib/admin/feedback';
+import { ActionFeedback, done, fail, flashFrom, readable } from '@/lib/admin/feedback';
 
 /**
  * These screens are per-user by definition -- a session decides not just what
@@ -53,12 +54,14 @@ const GROUP_TITLES: Record<string, string> = {
  * being presented as settled policy (PRD 22).
  */
 export default async function SettingsPage({ searchParams }: PageProps<'/admin/settings'>) {
-  await requirePermission(PERMISSIONS.settingsManage);
   const supabase = await serverClient();
   const params = await searchParams;
 
-  const [settingsResult, taxResult, deliveryResult, costResult, windowResult] =
+  // The guard and the reads go out together. Every read is already filtered
+  // by RLS as this user, and a refused guard still redirects before render.
+  const [, settingsResult, taxResult, deliveryResult, costResult, windowResult] =
     await Promise.all([
+      requirePermission(PERMISSIONS.settingsManage),
       supabase
         .from('business_settings')
         .select('key, value, value_type, group_name, label, description, is_provisional')
@@ -85,15 +88,17 @@ export default async function SettingsPage({ searchParams }: PageProps<'/admin/s
         .order('sort_order'),
     ]);
 
-  const settings = (settingsResult.data ?? []) as unknown as SettingRow[];
-  const taxes = (taxResult.data ?? []) as Array<Record<string, string | boolean>>;
-  const delivery = (deliveryResult.data ?? []) as Array<Record<string, string>>;
-  const costs = (costResult.data ?? []) as Array<Record<string, string | boolean | null>>;
-  const windows = (windowResult.data ?? []) as Array<Record<string, string | number | boolean>>;
+  const settings = rowsOf<SettingRow>(settingsResult, 'settings');
+  const taxes = rowsOf<Record<string, string | boolean>>(taxResult, 'tax_settings');
+  const delivery = rowsOf<Record<string, string>>(deliveryResult, 'delivery_settings');
+  const costs = rowsOf<Record<string, string | boolean | null>>(costResult, 'cost_settings');
+  const windows = rowsOf<Record<string, string | number | boolean>>(windowResult, 'delivery_windows');
 
   /** Writes a setting. RLS re-checks `settings.manage` on the way in. */
   async function updateSetting(formData: FormData) {
     'use server';
+
+    await requirePermission(PERMISSIONS.settingsManage);
 
     const key = String(formData.get('key'));
     const label = String(formData.get('label') ?? '') || key;
@@ -141,10 +146,7 @@ export default async function SettingsPage({ searchParams }: PageProps<'/admin/s
         description="Everything here is data. Changing a value takes effect immediately. No deployment involved."
       />
 
-      <ActionFeedback
-        error={typeof params.error === 'string' ? params.error : undefined}
-        ok={typeof params.ok === 'string' ? params.ok : undefined}
-      />
+      <ActionFeedback {...flashFrom(params)} />
 
       {provisionalCount > 0 ? (
         <div className="mb-6">

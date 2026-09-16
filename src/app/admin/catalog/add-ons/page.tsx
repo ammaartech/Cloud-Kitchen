@@ -3,21 +3,12 @@ import { revalidateStorefront } from '@/lib/data/catalog-cache';
 import { requirePermission } from '@/lib/auth/session';
 import { PERMISSIONS } from '@/lib/auth/permissions';
 import { serverClient } from '@/lib/supabase/server';
+import { rowsOf } from '@/lib/supabase/query';
 import { money } from '@/lib/format';
 import { bool, codify, nullableNum, num, str } from '@/lib/admin/form';
-import { ActionFeedback, done, fail, readable } from '@/lib/admin/feedback';
+import { ActionFeedback, done, fail, flashFrom, readable } from '@/lib/admin/feedback';
 import { CatalogNav } from '@/components/admin/catalog-nav';
 
-/**
- * These screens are per-user by definition -- a session decides not just what
- * they show but whether you may see them at all -- so there is no static shell
- * to prerender and no point pretending otherwise. `instant = false` says that
- * plainly: this segment is allowed to block.
- *
- * It is a statement about *this* route, not a global escape hatch. The public
- * storefront next door is held to the opposite standard.
- */
-export const instant = false;
 import {
   Badge,
   Button,
@@ -29,6 +20,17 @@ import {
   Input,
   SectionHeading,
 } from '@/components/ui/primitives';
+
+/**
+ * These screens are per-user by definition -- a session decides not just what
+ * they show but whether you may see them at all -- so there is no static shell
+ * to prerender and no point pretending otherwise. `instant = false` says that
+ * plainly: this segment is allowed to block.
+ *
+ * It is a statement about *this* route, not a global escape hatch. The public
+ * storefront next door is held to the opposite standard.
+ */
+export const instant = false;
 
 export const metadata = { title: 'Add-ons' };
 
@@ -57,11 +59,13 @@ interface AddOnRow {
  * unavailable one is a thing the kitchen normally offers but has run out of.
  */
 export default async function AddOnsPage({ searchParams }: PageProps<'/admin/catalog/add-ons'>) {
-  await requirePermission(PERMISSIONS.catalogManage);
   const params = await searchParams;
   const supabase = await serverClient();
 
-  const [addOnsResult, linksResult] = await Promise.all([
+  // The guard and the reads go out together. Every read is already filtered
+  // by RLS as this user, and a refused guard still redirects before render.
+  const [, addOnsResult, linksResult] = await Promise.all([
+    requirePermission(PERMISSIONS.catalogManage),
     supabase
       .from('add_ons')
       .select(
@@ -71,15 +75,17 @@ export default async function AddOnsPage({ searchParams }: PageProps<'/admin/cat
     supabase.from('product_add_ons').select('add_on_id'),
   ]);
 
-  const addOns = (addOnsResult.data ?? []) as unknown as AddOnRow[];
+  const addOns = rowsOf<AddOnRow>(addOnsResult, 'addOns');
 
   const usage = new Map<string, number>();
-  for (const row of (linksResult.data ?? []) as Array<{ add_on_id: string }>) {
+  for (const row of rowsOf<{ add_on_id: string }>(linksResult, 'links')) {
     usage.set(row.add_on_id, (usage.get(row.add_on_id) ?? 0) + 1);
   }
 
   async function createAddOn(formData: FormData) {
     'use server';
+
+    await requirePermission(PERMISSIONS.catalogManage);
 
     const name = str(formData, 'name');
     if (!name) fail(PATH, 'An add-on needs a name.');
@@ -105,6 +111,8 @@ export default async function AddOnsPage({ searchParams }: PageProps<'/admin/cat
 
   async function updateAddOn(formData: FormData) {
     'use server';
+
+    await requirePermission(PERMISSIONS.catalogManage);
 
     const db = await serverClient();
     const { error } = await db
@@ -134,6 +142,8 @@ export default async function AddOnsPage({ searchParams }: PageProps<'/admin/cat
   async function deleteAddOn(formData: FormData) {
     'use server';
 
+    await requirePermission(PERMISSIONS.catalogManage);
+
     const db = await serverClient();
     const { error } = await db.from('add_ons').delete().eq('id', str(formData, 'addOnId'));
 
@@ -152,7 +162,7 @@ export default async function AddOnsPage({ searchParams }: PageProps<'/admin/cat
 
       <CatalogNav />
 
-      <ActionFeedback error={params.error as string} ok={params.ok as string} />
+      <ActionFeedback {...flashFrom(params)} />
 
       <Card className="mb-8 p-5">
         <h2 className="mb-4 font-semibold">New add-on</h2>

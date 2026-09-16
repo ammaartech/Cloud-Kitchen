@@ -2,6 +2,7 @@ import type { Route } from 'next';
 import { requirePermission } from '@/lib/auth/session';
 import { PERMISSIONS } from '@/lib/auth/permissions';
 import { serverClient } from '@/lib/supabase/server';
+import { chunk, fetchAll, rowsOf } from '@/lib/supabase/query';
 import { money, duration } from '@/lib/format';
 import { ButtonLink, Card, EmptyState, SectionHeading, Stat } from '@/components/ui/primitives';
 import { RangeChips } from '@/components/admin/analytics/range-chips';
@@ -66,20 +67,28 @@ interface FirstOrderRow {
   first_order_business_date: string;
 }
 
+/**
+ * `hourCycle: 'h23'` rather than `hour12: false`. The latter is allowed to
+ * render midnight as "24" in some engines and locales, which would index one
+ * past the end of a 24-slot bucket array and take the whole page down at
+ * 00:xx IST. `h23` pins the range to 00-23.
+ */
 const HOUR_LABEL = new Intl.DateTimeFormat('en-GB', {
   timeZone: 'Asia/Kolkata',
   hour: '2-digit',
-  hour12: false,
+  hourCycle: 'h23',
 });
 
 function hourOfDay(iso: string): number {
-  return Number(HOUR_LABEL.format(new Date(iso)));
+  const hour = Number(HOUR_LABEL.format(new Date(iso)));
+  return Number.isInteger(hour) && hour >= 0 && hour < 24 ? hour : 0;
 }
 
 /**
- * Weighted average across per-order sample rows, so a channel with 5 orders
- * doesn't drown out a channel with 500. Mirrors the helper in
- * /admin/page.tsx.
+ * Mean across the per-order rows that carry a value. Each row is one order, so
+ * a plain mean here is already weighted by order volume -- the per-channel
+ * helper in /admin/page.tsx has to weight explicitly because its rows are
+ * channel aggregates.
  */
 function weightedAverage(rows: OrderRow[], key: 'prep_seconds'): number | null {
   const withValue = rows.filter((row) => row[key] !== null && row[key] !== undefined);
@@ -98,47 +107,63 @@ const DAY_LABEL = new Intl.DateTimeFormat('en-IN', {
 export default async function AnalyticsPage({
   searchParams,
 }: PageProps<'/admin/analytics'>) {
-  await requirePermission(PERMISSIONS.analyticsView);
   const raw = await searchParams;
   const filters = resolveFilters(raw);
   const supabase = await serverClient();
 
   // ---------------------------------------------------------------------------
-  // Fetch everything in parallel. Filters below are the standard IST business
-  // date bounds; `all` skips the bounds entirely.
+  // Fetch everything in parallel, the permission guard included -- every read
+  // is RLS-filtered as this user, so nothing is exposed by starting early.
+  //
+  // The three fact reads page through `fetchAll`: a busy month is more orders
+  // than the API returns in one response, and a truncated order list is not a
+  // slow chart, it is a wrong revenue figure. Filters are the standard IST
+  // business date bounds; `all` skips the bounds entirely.
   // ---------------------------------------------------------------------------
-  let orderQuery = supabase
-    .from('v_analytics_orders')
-    .select(
-      'order_id, order_number, source, business_date, placed_at, revenue, estimated_food_cost, channel_fees, prep_seconds, customer_id, customer_name_snapshot',
-    );
-  let itemQuery = supabase
-    .from('v_analytics_order_items')
-    .select(
-      'order_id, business_date, source, product_id, product_name, category_slug, category_name, quantity, line_subtotal',
-    );
-  let paymentQuery = supabase
-    .from('v_analytics_payments')
-    .select('order_id, subscription_id, method, amount, business_date');
+  const inRange = <Q extends { gte(c: string, v: string): Q; lte(c: string, v: string): Q }>(
+    query: Q,
+  ): Q =>
+    filters.startDate && filters.endDate
+      ? query.gte('business_date', filters.startDate).lte('business_date', filters.endDate)
+      : query;
 
-  if (filters.startDate && filters.endDate) {
-    orderQuery = orderQuery.gte('business_date', filters.startDate).lte('business_date', filters.endDate);
-    itemQuery = itemQuery.gte('business_date', filters.startDate).lte('business_date', filters.endDate);
-    paymentQuery = paymentQuery
-      .gte('business_date', filters.startDate)
-      .lte('business_date', filters.endDate);
-  }
-
-  const [
-    orderRes,
-    itemRes,
-    paymentRes,
-    categoryRes,
-    queueRes,
-  ] = await Promise.all([
-    orderQuery,
-    itemQuery,
-    paymentQuery,
+  const [, allOrders, allItems, payments, categoryRes, queueRes] = await Promise.all([
+    requirePermission(PERMISSIONS.analyticsView),
+    fetchAll<OrderRow>(
+      () =>
+        inRange(
+          supabase
+            .from('v_analytics_orders')
+            .select(
+              'order_id, order_number, source, business_date, placed_at, revenue, estimated_food_cost, channel_fees, prep_seconds, customer_id, customer_name_snapshot',
+              { count: 'exact' },
+            ),
+        ).order('order_id'),
+      'v_analytics_orders',
+    ),
+    fetchAll<ItemRow>(
+      () =>
+        inRange(
+          supabase
+            .from('v_analytics_order_items')
+            .select(
+              'order_item_id, order_id, business_date, source, product_id, product_name, category_slug, category_name, quantity, line_subtotal',
+              { count: 'exact' },
+            ),
+        ).order('order_item_id'),
+      'v_analytics_order_items',
+    ),
+    fetchAll<PaymentRow>(
+      () =>
+        inRange(
+          supabase
+            .from('v_analytics_payments')
+            .select('payment_id, order_id, subscription_id, method, amount, business_date', {
+              count: 'exact',
+            }),
+        ).order('payment_id'),
+      'v_analytics_payments',
+    ),
     supabase.from('categories').select('slug, name').eq('is_active', true).order('sort_order'),
     supabase
       .from('v_kot_tickets')
@@ -146,10 +171,7 @@ export default async function AnalyticsPage({
       .in('status', ['ACCEPTED', 'PREPARING', 'READY_FOR_PICKUP']),
   ]);
 
-  const allOrders = (orderRes.data ?? []) as unknown as OrderRow[];
-  const allItems = (itemRes.data ?? []) as unknown as ItemRow[];
-  const payments = (paymentRes.data ?? []) as unknown as PaymentRow[];
-  const categories = (categoryRes.data ?? []) as Array<{ slug: string; name: string }>;
+  const categories = rowsOf<{ slug: string; name: string }>(categoryRes, 'categories');
   const queueCount = queueRes.count ?? 0;
 
   // ---------------------------------------------------------------------------
@@ -259,16 +281,21 @@ export default async function AnalyticsPage({
     if (row.customer_id) rangeCustomerIds.add(row.customer_id);
     else marketplaceGuestOrders += 1;
   }
-  const firstOrders =
-    rangeCustomerIds.size > 0
-      ? await supabase
-          .from('v_analytics_customer_first_order')
-          .select('customer_id, first_order_business_date')
-          .in('customer_id', [...rangeCustomerIds])
-      : { data: [] as FirstOrderRow[] };
+  // The id list rides in the URL, so it is sent in slices small enough for
+  // every proxy on the way, and the slices go out together.
+  const firstOrderPages = await Promise.all(
+    chunk([...rangeCustomerIds]).map((ids) =>
+      supabase
+        .from('v_analytics_customer_first_order')
+        .select('customer_id, first_order_business_date')
+        .in('customer_id', ids),
+    ),
+  );
   const firstOrderMap = new Map<string, string>();
-  for (const row of (firstOrders.data ?? []) as unknown as FirstOrderRow[]) {
-    firstOrderMap.set(row.customer_id, row.first_order_business_date);
+  for (const page of firstOrderPages) {
+    for (const row of rowsOf<FirstOrderRow>(page, 'v_analytics_customer_first_order')) {
+      firstOrderMap.set(row.customer_id, row.first_order_business_date);
+    }
   }
   let newCount = 0;
   let returningCount = 0;

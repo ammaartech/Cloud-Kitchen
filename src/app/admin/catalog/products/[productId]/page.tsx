@@ -1,3 +1,4 @@
+import { cache } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
@@ -6,21 +7,13 @@ import { revalidateStorefront } from '@/lib/data/catalog-cache';
 import { requirePermission } from '@/lib/auth/session';
 import { PERMISSIONS } from '@/lib/auth/permissions';
 import { serverClient } from '@/lib/supabase/server';
+import { rowOf, rowsOf } from '@/lib/supabase/query';
 import { money } from '@/lib/format';
 import { bool, list, nullableNum, num, str } from '@/lib/admin/form';
-import { ActionFeedback, done, fail, readable } from '@/lib/admin/feedback';
+import { ActionFeedback, done, fail, flashFrom, readable } from '@/lib/admin/feedback';
 import { CatalogNav } from '@/components/admin/catalog-nav';
+import { isOptimisableImage } from '@/lib/images';
 
-/**
- * These screens are per-user by definition -- a session decides not just what
- * they show but whether you may see them at all -- so there is no static shell
- * to prerender and no point pretending otherwise. `instant = false` says that
- * plainly: this segment is allowed to block.
- *
- * It is a statement about *this* route, not a global escape hatch. The public
- * storefront next door is held to the opposite standard.
- */
-export const instant = false;
 import {
   Alert,
   Badge,
@@ -34,19 +27,35 @@ import {
   Textarea,
 } from '@/components/ui/primitives';
 
+/**
+ * These screens are per-user by definition -- a session decides not just what
+ * they show but whether you may see them at all -- so there is no static shell
+ * to prerender and no point pretending otherwise. `instant = false` says that
+ * plainly: this segment is allowed to block.
+ *
+ * It is a statement about *this* route, not a global escape hatch. The public
+ * storefront next door is held to the opposite standard.
+ */
+export const instant = false;
+
+
+/**
+ * One read of the dish per request, shared by the metadata and the page.
+ * `generateMetadata` and the page body render concurrently and used to issue
+ * the same lookup twice; `cache()` dedupes them into one round-trip.
+ */
+const loadProduct = cache(async (productId: string) => {
+  const supabase = await serverClient();
+  const result = await supabase.from('products').select('*').eq('id', productId).maybeSingle();
+  return rowOf<Product>(result, 'products');
+});
 
 export async function generateMetadata({
   params,
 }: PageProps<'/admin/catalog/products/[productId]'>) {
   const { productId } = await params;
-  const supabase = await serverClient();
-  const { data } = await supabase
-    .from('products')
-    .select('name')
-    .eq('id', productId)
-    .maybeSingle();
-
-  return { title: data ? (data as { name: string }).name : 'Dish' };
+  const product = await loadProduct(productId);
+  return { title: product ? product.name : 'Dish' };
 }
 
 interface Product {
@@ -88,15 +97,16 @@ export default async function ProductEditorPage({
   params,
   searchParams,
 }: PageProps<'/admin/catalog/products/[productId]'>) {
-  await requirePermission(PERMISSIONS.catalogManage);
-
   const { productId } = await params;
   const query = await searchParams;
   const path = `/admin/catalog/products/${productId}`;
   const supabase = await serverClient();
 
+  // The guard and the reads go out together. Every read is already filtered
+  // by RLS as this user, and a refused guard still redirects before render.
   const [
-    productResult,
+    ,
+    product,
     categoriesResult,
     imagesResult,
     collectionsResult,
@@ -106,7 +116,8 @@ export default async function ProductEditorPage({
     addOnsResult,
     productAddOnsResult,
   ] = await Promise.all([
-    supabase.from('products').select('*').eq('id', productId).maybeSingle(),
+    requirePermission(PERMISSIONS.catalogManage),
+    loadProduct(productId),
     supabase.from('categories').select('id, name').order('sort_order'),
     supabase
       .from('product_images')
@@ -127,26 +138,25 @@ export default async function ProductEditorPage({
     supabase.from('product_add_ons').select('add_on_id, max_quantity').eq('product_id', productId),
   ]);
 
-  const product = productResult.data as Product | null;
   if (!product) notFound();
 
-  const categories = (categoriesResult.data ?? []) as Array<{ id: string; name: string }>;
+  const categories = rowsOf<{ id: string; name: string }>(categoriesResult, 'categories');
 
-  const images = (imagesResult.data ?? []) as Array<{
+  const images = rowsOf<{
     id: string;
     url: string;
     alt_text: string;
     is_primary: boolean;
     sort_order: number;
-  }>;
+  }>(imagesResult, 'images');
 
-  const collections = (collectionsResult.data ?? []) as Array<{
+  const collections = rowsOf<{
     id: string;
     name: string;
     is_published: boolean;
-  }>;
+  }>(collectionsResult, 'collections');
   const inCollections = new Set(
-    ((productCollectionsResult.data ?? []) as Array<{ collection_id: string }>).map(
+    (rowsOf<{ collection_id: string }>(productCollectionsResult, 'productCollections')).map(
       (row) => row.collection_id,
     ),
   );
@@ -162,22 +172,22 @@ export default async function ProductEditorPage({
   }>;
   const attachedGroups = new Map(
     (
-      (productVariantGroupsResult.data ?? []) as Array<{
+      rowsOf<{
         variant_group_id: string;
         is_required_override: boolean | null;
-      }>
+      }>(productVariantGroupsResult, 'productVariantGroups')
     ).map((row) => [row.variant_group_id, row.is_required_override]),
   );
 
-  const addOns = (addOnsResult.data ?? []) as Array<{
+  const addOns = rowsOf<{
     id: string;
     code: string;
     name: string;
     price: string;
     is_active: boolean;
-  }>;
+  }>(addOnsResult, 'addOns');
   const attachedAddOns = new Map(
-    ((productAddOnsResult.data ?? []) as Array<{ add_on_id: string; max_quantity: number }>).map(
+    (rowsOf<{ add_on_id: string; max_quantity: number }>(productAddOnsResult, 'productAddOns')).map(
       (row) => [row.add_on_id, row.max_quantity],
     ),
   );
@@ -188,6 +198,8 @@ export default async function ProductEditorPage({
 
   async function saveDetails(formData: FormData) {
     'use server';
+
+    await requirePermission(PERMISSIONS.catalogManage);
 
     const name = str(formData, 'name');
     if (!name) fail(path, 'A dish needs a name.');
@@ -228,6 +240,8 @@ export default async function ProductEditorPage({
   async function setAvailability(formData: FormData) {
     'use server';
 
+    await requirePermission(PERMISSIONS.catalogManage);
+
     const available = str(formData, 'available') === 'true';
 
     const db = await serverClient();
@@ -249,6 +263,8 @@ export default async function ProductEditorPage({
   async function setVisibility(formData: FormData) {
     'use server';
 
+    await requirePermission(PERMISSIONS.catalogManage);
+
     const publish = str(formData, 'publish') === 'true';
 
     const db = await serverClient();
@@ -266,6 +282,8 @@ export default async function ProductEditorPage({
 
   async function setArchived(formData: FormData) {
     'use server';
+
+    await requirePermission(PERMISSIONS.catalogManage);
 
     const archive = str(formData, 'archive') === 'true';
 
@@ -290,6 +308,8 @@ export default async function ProductEditorPage({
 
   async function addImage(formData: FormData) {
     'use server';
+
+    await requirePermission(PERMISSIONS.catalogManage);
 
     const url = str(formData, 'url');
     if (!url) fail(path, 'Paste an image URL.');
@@ -319,6 +339,8 @@ export default async function ProductEditorPage({
   async function makePrimaryImage(formData: FormData) {
     'use server';
 
+    await requirePermission(PERMISSIONS.catalogManage);
+
     const db = await serverClient();
     // A partial unique index allows exactly one primary per product, so the
     // old one has to stand down in the same breath.
@@ -338,6 +360,8 @@ export default async function ProductEditorPage({
   async function removeImage(formData: FormData) {
     'use server';
 
+    await requirePermission(PERMISSIONS.catalogManage);
+
     const db = await serverClient();
     const { error } = await db
       .from('product_images')
@@ -352,6 +376,8 @@ export default async function ProductEditorPage({
 
   async function saveCollections(formData: FormData) {
     'use server';
+
+    await requirePermission(PERMISSIONS.catalogManage);
 
     const chosen = list(formData, 'collectionId');
     const db = await serverClient();
@@ -378,6 +404,8 @@ export default async function ProductEditorPage({
 
   async function saveVariantGroups(formData: FormData) {
     'use server';
+
+    await requirePermission(PERMISSIONS.catalogManage);
 
     const chosen = list(formData, 'variantGroupId');
     const db = await serverClient();
@@ -413,6 +441,8 @@ export default async function ProductEditorPage({
 
   async function saveAddOns(formData: FormData) {
     'use server';
+
+    await requirePermission(PERMISSIONS.catalogManage);
 
     const chosen = list(formData, 'addOnId');
     const db = await serverClient();
@@ -489,7 +519,7 @@ export default async function ProductEditorPage({
 
       <CatalogNav />
 
-      <ActionFeedback error={query.error as string} ok={query.ok as string} />
+      <ActionFeedback {...flashFrom(query)} />
 
       <div className="mb-6">
         <Card className="flex flex-wrap items-end gap-4 p-4">
@@ -659,12 +689,18 @@ export default async function ProductEditorPage({
                 {images.map((image) => (
                   <div key={image.id} className="rounded-ck border border-line p-2">
                     <div className="relative aspect-[4/3] overflow-hidden rounded-ck bg-sunken">
+                      {/* A host outside the image allowlist is served as-is
+                          rather than through the optimizer, which would refuse
+                          it and take the whole editor down with it. The Owner
+                          still sees their photo, and the note below the form
+                          says how to get it optimised. */}
                       <Image
                         src={image.url}
                         alt={image.alt_text || product.name}
                         fill
                         sizes="200px"
                         className="object-cover"
+                        unoptimized={!isOptimisableImage(image.url)}
                       />
                     </div>
 

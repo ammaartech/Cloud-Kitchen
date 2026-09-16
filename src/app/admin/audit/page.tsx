@@ -1,6 +1,8 @@
+import Link from 'next/link';
 import { requirePermission } from '@/lib/auth/session';
 import { PERMISSIONS } from '@/lib/auth/permissions';
 import { serverClient } from '@/lib/supabase/server';
+import { rowsOf } from '@/lib/supabase/query';
 import { dateTime } from '@/lib/format';
 import { Badge, Card, EmptyState, SectionHeading } from '@/components/ui/primitives';
 
@@ -49,8 +51,6 @@ const ACTION_TONE: Record<string, 'neutral' | 'success' | 'warning' | 'danger' |
  * neither can anything else.
  */
 export default async function AuditPage({ searchParams }: PageProps<'/admin/audit'>) {
-  await requirePermission(PERMISSIONS.auditView);
-
   const params = await searchParams;
   const entityFilter = typeof params.entity === 'string' ? params.entity : null;
 
@@ -66,8 +66,10 @@ export default async function AuditPage({ searchParams }: PageProps<'/admin/audi
 
   if (entityFilter) query = query.eq('entity_type', entityFilter);
 
-  const { data } = await query;
-  const rows = (data ?? []) as unknown as AuditRow[];
+  // The guard and the reads go out together. Every read is already filtered
+  // by RLS as this user, and a refused guard still redirects before render.
+  const [, result] = await Promise.all([requirePermission(PERMISSIONS.auditView), query]);
+  const rows = rowsOf<AuditRow>(result, 'audit_logs');
 
   const entityTypes = [...new Set(rows.map((row) => row.entity_type))].sort();
 
@@ -79,7 +81,7 @@ export default async function AuditPage({ searchParams }: PageProps<'/admin/audi
       />
 
       <div className="mb-4 flex flex-wrap gap-2">
-        <a
+        <Link
           href="/admin/audit"
           className={
             entityFilter
@@ -88,11 +90,11 @@ export default async function AuditPage({ searchParams }: PageProps<'/admin/audi
           }
         >
           Everything
-        </a>
+        </Link>
         {entityTypes.map((type) => (
-          <a
+          <Link
             key={type}
-            href={`/admin/audit?entity=${type}`}
+            href={{ pathname: '/admin/audit', query: { entity: type } }}
             className={
               entityFilter === type
                 ? 'rounded-ck-sm bg-brand px-3 py-1 text-sm font-medium text-white'
@@ -100,7 +102,7 @@ export default async function AuditPage({ searchParams }: PageProps<'/admin/audi
             }
           >
             {type}
-          </a>
+          </Link>
         ))}
       </div>
 

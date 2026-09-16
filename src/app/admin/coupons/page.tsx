@@ -3,20 +3,11 @@ import { revalidateStorefront } from '@/lib/data/catalog-cache';
 import { requirePermission } from '@/lib/auth/session';
 import { PERMISSIONS } from '@/lib/auth/permissions';
 import { serverClient } from '@/lib/supabase/server';
+import { rowsOf } from '@/lib/supabase/query';
 import { dateTime, money } from '@/lib/format';
 import { bool, codify, list, nullableNum, num, str } from '@/lib/admin/form';
-import { ActionFeedback, done, fail, readable } from '@/lib/admin/feedback';
+import { ActionFeedback, done, fail, flashFrom, readable } from '@/lib/admin/feedback';
 
-/**
- * These screens are per-user by definition -- a session decides not just what
- * they show but whether you may see them at all -- so there is no static shell
- * to prerender and no point pretending otherwise. `instant = false` says that
- * plainly: this segment is allowed to block.
- *
- * It is a statement about *this* route, not a global escape hatch. The public
- * storefront next door is held to the opposite standard.
- */
-export const instant = false;
 import {
   Badge,
   Button,
@@ -30,6 +21,17 @@ import {
   Select,
   Textarea,
 } from '@/components/ui/primitives';
+
+/**
+ * These screens are per-user by definition -- a session decides not just what
+ * they show but whether you may see them at all -- so there is no static shell
+ * to prerender and no point pretending otherwise. `instant = false` says that
+ * plainly: this segment is allowed to block.
+ *
+ * It is a statement about *this* route, not a global escape hatch. The public
+ * storefront next door is held to the opposite standard.
+ */
+export const instant = false;
 
 export const metadata = { title: 'Offers' };
 
@@ -120,11 +122,13 @@ function describeRule(rule: RuleRow, planNames: Map<string, string>): string {
  * server at checkout; this screen only decides what the rules are.
  */
 export default async function CouponsPage({ searchParams }: PageProps<'/admin/coupons'>) {
-  await requirePermission(PERMISSIONS.couponsManage);
   const params = await searchParams;
   const supabase = await serverClient();
 
-  const [couponsResult, rulesResult, plansResult] = await Promise.all([
+  // The guard and the reads go out together. Every read is already filtered
+  // by RLS as this user, and a refused guard still redirects before render.
+  const [, couponsResult, rulesResult, plansResult] = await Promise.all([
+    requirePermission(PERMISSIONS.couponsManage),
     supabase.from('coupons').select('*').order('created_at', { ascending: false }),
     supabase.from('coupon_rules').select('id, coupon_id, rule_type, config'),
     supabase
@@ -134,9 +138,9 @@ export default async function CouponsPage({ searchParams }: PageProps<'/admin/co
       .order('sort_order'),
   ]);
 
-  const coupons = (couponsResult.data ?? []) as unknown as CouponRow[];
-  const rules = (rulesResult.data ?? []) as unknown as RuleRow[];
-  const plans = (plansResult.data ?? []) as Array<{ id: string; name: string }>;
+  const coupons = rowsOf<CouponRow>(couponsResult, 'coupons');
+  const rules = rowsOf<RuleRow>(rulesResult, 'rules');
+  const plans = rowsOf<{ id: string; name: string }>(plansResult, 'plans');
   const planNames = new Map(plans.map((plan) => [plan.id, plan.name]));
 
   const rulesByCoupon = new Map<string, RuleRow[]>();
@@ -150,6 +154,8 @@ export default async function CouponsPage({ searchParams }: PageProps<'/admin/co
 
   async function createCoupon(formData: FormData) {
     'use server';
+
+    await requirePermission(PERMISSIONS.couponsManage);
 
     const name = str(formData, 'name');
     const code = codify(str(formData, 'code') || name);
@@ -189,6 +195,8 @@ export default async function CouponsPage({ searchParams }: PageProps<'/admin/co
   async function updateCoupon(formData: FormData) {
     'use server';
 
+    await requirePermission(PERMISSIONS.couponsManage);
+
     const db = await serverClient();
     const { error } = await db
       .from('coupons')
@@ -215,6 +223,8 @@ export default async function CouponsPage({ searchParams }: PageProps<'/admin/co
   async function setActive(formData: FormData) {
     'use server';
 
+    await requirePermission(PERMISSIONS.couponsManage);
+
     const db = await serverClient();
     const { error } = await db
       .from('coupons')
@@ -230,6 +240,8 @@ export default async function CouponsPage({ searchParams }: PageProps<'/admin/co
   async function deleteCoupon(formData: FormData) {
     'use server';
 
+    await requirePermission(PERMISSIONS.couponsManage);
+
     const db = await serverClient();
     const { error } = await db.from('coupons').delete().eq('id', str(formData, 'couponId'));
 
@@ -244,6 +256,8 @@ export default async function CouponsPage({ searchParams }: PageProps<'/admin/co
 
   async function addRule(formData: FormData) {
     'use server';
+
+    await requirePermission(PERMISSIONS.couponsManage);
 
     const ruleType = str(formData, 'ruleType');
     let config: Record<string, unknown> = {};
@@ -280,6 +294,8 @@ export default async function CouponsPage({ searchParams }: PageProps<'/admin/co
   async function removeRule(formData: FormData) {
     'use server';
 
+    await requirePermission(PERMISSIONS.couponsManage);
+
     const db = await serverClient();
     const { error } = await db.from('coupon_rules').delete().eq('id', str(formData, 'ruleId'));
 
@@ -295,7 +311,7 @@ export default async function CouponsPage({ searchParams }: PageProps<'/admin/co
         description="Discounts, their limits and who qualifies. Eligibility is re-checked on the server at checkout. Nothing here is trusted from the browser."
       />
 
-      <ActionFeedback error={params.error as string} ok={params.ok as string} />
+      <ActionFeedback {...flashFrom(params)} />
 
       {/* ------------------------------------------------------------------ */}
       {/* Create                                                              */}

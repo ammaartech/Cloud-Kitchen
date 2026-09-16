@@ -8,9 +8,21 @@ import { revalidatePath } from 'next/cache';
 import { requirePermission } from '@/lib/auth/session';
 import { PERMISSIONS } from '@/lib/auth/permissions';
 import { serverClient } from '@/lib/supabase/server';
+import { rowsOf } from '@/lib/supabase/query';
 import { bool, num, slugify, str } from '@/lib/admin/form';
-import { ActionFeedback, done, fail, readable } from '@/lib/admin/feedback';
+import { ActionFeedback, done, fail, flashFrom, readable } from '@/lib/admin/feedback';
 import { CatalogNav } from '@/components/admin/catalog-nav';
+
+import {
+  Badge,
+  Button,
+  Card,
+  ConfirmButton,
+  EmptyState,
+  Field,
+  Input,
+  SectionHeading,
+} from '@/components/ui/primitives';
 
 /**
  * These screens are per-user by definition -- a session decides not just what
@@ -22,16 +34,6 @@ import { CatalogNav } from '@/components/admin/catalog-nav';
  * storefront next door is held to the opposite standard.
  */
 export const instant = false;
-import {
-  Badge,
-  Button,
-  Card,
-  ConfirmButton,
-  EmptyState,
-  Field,
-  Input,
-  SectionHeading,
-} from '@/components/ui/primitives';
 
 export const metadata = { title: 'Collections' };
 
@@ -58,11 +60,13 @@ interface CollectionRow {
 export default async function CollectionsPage({
   searchParams,
 }: PageProps<'/admin/catalog/collections'>) {
-  await requirePermission(PERMISSIONS.catalogManage);
   const params = await searchParams;
   const supabase = await serverClient();
 
-  const [collectionsResult, linksResult] = await Promise.all([
+  // The guard and the reads go out together. Every read is already filtered
+  // by RLS as this user, and a refused guard still redirects before render.
+  const [, collectionsResult, linksResult] = await Promise.all([
+    requirePermission(PERMISSIONS.catalogManage),
     supabase
       .from('collections')
       .select('id, slug, name, description, image_url, sort_order, is_published')
@@ -70,15 +74,17 @@ export default async function CollectionsPage({
     supabase.from('collection_products').select('collection_id'),
   ]);
 
-  const collections = (collectionsResult.data ?? []) as unknown as CollectionRow[];
+  const collections = rowsOf<CollectionRow>(collectionsResult, 'collections');
 
   const counts = new Map<string, number>();
-  for (const row of (linksResult.data ?? []) as Array<{ collection_id: string }>) {
+  for (const row of rowsOf<{ collection_id: string }>(linksResult, 'links')) {
     counts.set(row.collection_id, (counts.get(row.collection_id) ?? 0) + 1);
   }
 
   async function createCollection(formData: FormData) {
     'use server';
+
+    await requirePermission(PERMISSIONS.catalogManage);
 
     const name = str(formData, 'name');
     if (!name) fail(PATH, 'A collection needs a name.');
@@ -102,6 +108,8 @@ export default async function CollectionsPage({
   async function updateCollection(formData: FormData) {
     'use server';
 
+    await requirePermission(PERMISSIONS.catalogManage);
+
     const db = await serverClient();
     const { error } = await db
       .from('collections')
@@ -123,6 +131,8 @@ export default async function CollectionsPage({
 
   async function deleteCollection(formData: FormData) {
     'use server';
+
+    await requirePermission(PERMISSIONS.catalogManage);
 
     const db = await serverClient();
     // collection_products cascades, so this unlinks the dishes without
@@ -147,7 +157,7 @@ export default async function CollectionsPage({
 
       <CatalogNav />
 
-      <ActionFeedback error={params.error as string} ok={params.ok as string} />
+      <ActionFeedback {...flashFrom(params)} />
 
       <Card className="mb-8 p-5">
         <h2 className="mb-4 font-semibold">New collection</h2>

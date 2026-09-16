@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { requireAnyPermission } from '@/lib/auth/session';
 import { PERMISSIONS } from '@/lib/auth/permissions';
+import { ROLE_LABELS } from '@/lib/auth/role-labels';
 import { AdminNav } from '@/components/admin/admin-nav';
 import { SignOutButton } from '@/components/auth/sign-out-button';
 
@@ -81,7 +82,7 @@ export default async function AdminLayout({ children }: LayoutProps<'/admin'>) {
                 KOT board
               </Link>
               <span className="text-subtle">
-                {session.fullName} · {session.role.replace('_', ' ')}
+                {session.fullName} · {ROLE_LABELS[session.role]}
               </span>
               <span className="md:hidden">
                 <SignOutButton />

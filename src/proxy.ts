@@ -5,28 +5,33 @@ import { serverEnv } from '@/lib/env';
 /**
  * Supabase session refresh.
  *
- * This file is the thing `src/lib/supabase/server.ts` has been describing all
- * along. Its `setAll` swallows the write with "Server Components cannot set
- * cookies. The middleware refreshes the session instead" -- and there was no
- * middleware. Nothing anywhere refreshed a token. A signed-in customer was
- * carrying an access token that nothing renewed, so they stayed signed in
- * exactly as long as its lifetime and were then quietly logged out, most
- * visibly in the middle of a checkout.
+ * A Server Component may read cookies but may not write them, which is why the
+ * refresh has to happen out here: this runs before rendering, where the
+ * response is still open and a rotated token can actually be set on it.
+ * Without it a signed-in user carries an access token that nothing renews and
+ * is quietly logged out when it expires -- most visibly mid-checkout.
  *
  * It is `proxy.ts` rather than `middleware.ts` because Next 16 renamed the
  * convention. The behaviour is unchanged; the old name is deprecated.
  *
- * A Server Component may read cookies but may not write them, which is why the
- * refresh has to happen out here: this runs before rendering, where the
- * response is still open and a rotated token can actually be set on it.
+ * **Two things keep this cheap, and both are load-bearing.**
  *
- * **The early return is load-bearing.** `getUser()` validates the token against
- * the auth server, which is a network round-trip, and this runs on every
- * matched request. Paying that on the storefront -- whose visitors are mostly
- * signed out and whose speed is the entire point of the surrounding work --
- * would be trading one stall for another. A request with no Supabase auth
- * cookie has no session to refresh, and that is decidable from the cookie
- * header alone, so those requests leave without touching the network.
+ * The early return: a request with no Supabase auth cookie has no session to
+ * refresh, and that is decidable from the cookie header alone. The storefront's
+ * visitors are mostly signed out, and this runs on every matched request.
+ *
+ * `getClaims()` rather than `getUser()`: `getUser()` asks the auth server to
+ * validate the token on every request -- a network round-trip that every admin
+ * navigation, and every link prefetch, paid before the page could even begin.
+ * `getClaims()` verifies the token's signature locally against the project's
+ * public signing key (fetched once, cached ten minutes per process), and only
+ * goes to the network when the token has actually expired and needs rotating,
+ * which is the one case this file exists for. The project issues ES256 tokens;
+ * on a legacy HS256 project the call falls back to `getUser()` by itself, so
+ * this is never weaker than what it replaced.
+ *
+ * The result is deliberately unused -- authorizing anyone is `getSession()`'s
+ * job, and RLS re-checks it at the database no matter what this concludes.
  */
 
 /** `sb-<project-ref>-auth-token`, plus the `.0`/`.1` chunks of a split cookie. */
@@ -66,11 +71,9 @@ export async function proxy(request: NextRequest) {
     },
   );
 
-  // The call itself is the refresh: it rotates an expiring token and hands the
-  // new one to `setAll` above. The result is deliberately unused -- authorizing
-  // anyone is `getSession()`'s job, and RLS re-checks it at the database no
-  // matter what this concludes.
-  await supabase.auth.getUser();
+  // The call itself is the refresh: an expired token is rotated and handed to
+  // `setAll` above; a valid one is verified locally and nothing else happens.
+  await supabase.auth.getClaims();
 
   return response;
 }

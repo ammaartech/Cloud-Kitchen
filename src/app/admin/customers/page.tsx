@@ -1,22 +1,13 @@
 import Link from 'next/link';
 import { revalidatePath } from 'next/cache';
-import { requireAnyPermission, can } from '@/lib/auth/session';
+import { requireAnyPermission, requirePermission, can } from '@/lib/auth/session';
 import { PERMISSIONS } from '@/lib/auth/permissions';
 import { serverClient } from '@/lib/supabase/server';
+import { rowsOf } from '@/lib/supabase/query';
 import { dateOnly } from '@/lib/format';
 import { bool, str } from '@/lib/admin/form';
-import { ActionFeedback, done, fail, readable } from '@/lib/admin/feedback';
+import { ActionFeedback, done, fail, flashFrom, readable } from '@/lib/admin/feedback';
 
-/**
- * These screens are per-user by definition -- a session decides not just what
- * they show but whether you may see them at all -- so there is no static shell
- * to prerender and no point pretending otherwise. `instant = false` says that
- * plainly: this segment is allowed to block.
- *
- * It is a statement about *this* route, not a global escape hatch. The public
- * storefront next door is held to the opposite standard.
- */
-export const instant = false;
 import {
   Badge,
   Button,
@@ -29,6 +20,17 @@ import {
   SectionHeading,
   Textarea,
 } from '@/components/ui/primitives';
+
+/**
+ * These screens are per-user by definition -- a session decides not just what
+ * they show but whether you may see them at all -- so there is no static shell
+ * to prerender and no point pretending otherwise. `instant = false` says that
+ * plainly: this segment is allowed to block.
+ *
+ * It is a statement about *this* route, not a global escape hatch. The public
+ * storefront next door is held to the opposite standard.
+ */
+export const instant = false;
 
 export const metadata = { title: 'Customers' };
 
@@ -48,6 +50,12 @@ interface CustomerRow {
   created_at: string;
 }
 
+/** Subscription states that still hold a customer to a plan. */
+const LIVE_STATUSES = ['active', 'paused', 'past_due'] as const;
+
+/** Longest search anyone types; anything past it is not a name or a number. */
+const MAX_QUERY_LENGTH = 80;
+
 const SOURCE_LABELS: Record<string, string> = {
   website: 'Website',
   owner: 'Created by owner',
@@ -64,23 +72,27 @@ const SOURCE_LABELS: Record<string, string> = {
  * such a customer has business records but no login until they make one.
  */
 export default async function CustomersPage({ searchParams }: PageProps<'/admin/customers'>) {
-  const session = await requireAnyPermission([
-    PERMISSIONS.customersView,
-    PERMISSIONS.customersManage,
-  ]);
   const params = await searchParams;
   const supabase = await serverClient();
 
   // PostgREST parses commas and parentheses inside `or`, so anything that
   // could break out of the filter is stripped before it gets there.
-  const query = String(params.q ?? '').replace(/[,()*%\\]/g, '').trim();
+  const query = String(Array.isArray(params.q) ? params.q[0] : (params.q ?? ''))
+    .replace(/[,()*%\\]/g, '')
+    .trim()
+    .slice(0, MAX_QUERY_LENGTH);
 
+  // Live plans ride along as an embedded count filtered at the database, so
+  // the page reads the hundred customers it shows and nothing else -- rather
+  // than every subscription row ever created, which the API would eventually
+  // cap and silently miscount.
   let request = supabase
     .from('customers')
     .select(
       `id, full_name, email, phone, phone_verified, marketing_consent, created_source,
-       is_active, deleted_at, profile_id, created_at`,
+       is_active, deleted_at, profile_id, created_at, subscriptions ( count )`,
     )
+    .in('subscriptions.status', [...LIVE_STATUSES])
     .order('created_at', { ascending: false })
     .limit(100);
 
@@ -90,27 +102,29 @@ export default async function CustomersPage({ searchParams }: PageProps<'/admin/
     );
   }
 
-  const [customersResult, subscriptionsResult] = await Promise.all([
+  // The guard and the reads go out together. Every read is already filtered
+  // by RLS as this user, and a refused guard still redirects before render.
+  const [session, customersResult] = await Promise.all([
+    requireAnyPermission([PERMISSIONS.customersView, PERMISSIONS.customersManage]),
     request,
-    supabase.from('subscriptions').select('customer_id, status'),
   ]);
 
-  const customers = (customersResult.data ?? []) as unknown as CustomerRow[];
-  const subscriptions = (subscriptionsResult.data ?? []) as Array<{
-    customer_id: string;
-    status: string;
-  }>;
+  const customers = rowsOf<CustomerRow & { subscriptions: Array<{ count: number }> }>(
+    customersResult,
+    'customers',
+  );
 
   const liveSubs = new Map<string, number>();
-  for (const subscription of subscriptions) {
-    if (!['active', 'paused', 'past_due'].includes(subscription.status)) continue;
-    liveSubs.set(subscription.customer_id, (liveSubs.get(subscription.customer_id) ?? 0) + 1);
+  for (const customer of customers) {
+    liveSubs.set(customer.id, customer.subscriptions[0]?.count ?? 0);
   }
 
   const canManage = can(session, PERMISSIONS.customersManage);
 
   async function createCustomer(formData: FormData) {
     'use server';
+
+    await requirePermission(PERMISSIONS.customersManage);
 
     const fullName = str(formData, 'fullName');
     const phone = str(formData, 'phone');
@@ -147,7 +161,7 @@ export default async function CustomersPage({ searchParams }: PageProps<'/admin/
         description="Records, contact details and consent. Deactivating an account stops the login without erasing the orders behind it."
       />
 
-      <ActionFeedback error={params.error as string} ok={params.ok as string} />
+      <ActionFeedback {...flashFrom(params)} />
 
       <form className="mb-6 flex flex-wrap items-end gap-3">
         <Field label="Search">

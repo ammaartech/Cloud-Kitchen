@@ -1,22 +1,13 @@
 import Link from 'next/link';
 import { revalidatePath } from 'next/cache';
-import { requireAnyPermission, can } from '@/lib/auth/session';
+import { requireAnyPermission, requirePermission, can } from '@/lib/auth/session';
 import { PERMISSIONS } from '@/lib/auth/permissions';
 import { serverClient } from '@/lib/supabase/server';
+import { rowsOf } from '@/lib/supabase/query';
 import { dateTime, money } from '@/lib/format';
 import { str } from '@/lib/admin/form';
-import { ActionFeedback, done, fail, readable } from '@/lib/admin/feedback';
+import { ActionFeedback, done, fail, flashFrom, readable } from '@/lib/admin/feedback';
 
-/**
- * These screens are per-user by definition -- a session decides not just what
- * they show but whether you may see them at all -- so there is no static shell
- * to prerender and no point pretending otherwise. `instant = false` says that
- * plainly: this segment is allowed to block.
- *
- * It is a statement about *this* route, not a global escape hatch. The public
- * storefront next door is held to the opposite standard.
- */
-export const instant = false;
 import {
   Alert,
   Badge,
@@ -28,6 +19,17 @@ import {
   Select,
   cx,
 } from '@/components/ui/primitives';
+
+/**
+ * These screens are per-user by definition -- a session decides not just what
+ * they show but whether you may see them at all -- so there is no static shell
+ * to prerender and no point pretending otherwise. `instant = false` says that
+ * plainly: this segment is allowed to block.
+ *
+ * It is a statement about *this* route, not a global escape hatch. The public
+ * storefront next door is held to the opposite standard.
+ */
+export const instant = false;
 
 export const metadata = { title: 'Refunds' };
 
@@ -78,10 +80,6 @@ interface RequestRow {
  * case is what a real refund would be raised against.
  */
 export default async function RefundsPage({ searchParams }: PageProps<'/admin/refunds'>) {
-  const session = await requireAnyPermission([
-    PERMISSIONS.paymentsView,
-    PERMISSIONS.paymentsManage,
-  ]);
   const params = await searchParams;
   const supabase = await serverClient();
 
@@ -103,22 +101,37 @@ export default async function RefundsPage({ searchParams }: PageProps<'/admin/re
 
   if (filter !== 'all') request = request.eq('status', filter);
 
-  const [requestsResult, countsResult] = await Promise.all([
+  // The per-status tallies on the filter chips are head requests carrying only
+  // a count, one per status, sent together with the guard and the list.
+  // Reading the status column of every case ever raised would grow with the
+  // business and eventually be capped -- and a capped tally is a wrong one.
+  const countable = FILTERS.filter((option) => option.value !== 'all');
+
+  // The guard and the reads go out together. Every read is already filtered
+  // by RLS as this user, and a refused guard still redirects before render.
+  const [session, requestsResult, ...countResults] = await Promise.all([
+    requireAnyPermission([PERMISSIONS.paymentsView, PERMISSIONS.paymentsManage]),
     request,
-    supabase.from('refund_requests').select('status'),
+    ...countable.map((option) =>
+      supabase
+        .from('refund_requests')
+        .select('id', { count: 'exact', head: true })
+        .eq('status', option.value),
+    ),
   ]);
 
-  const requests = (requestsResult.data ?? []) as unknown as RequestRow[];
+  const requests = rowsOf<RequestRow>(requestsResult, 'refund_requests');
   const counts = new Map<string, number>();
-  for (const row of (countsResult.data ?? []) as Array<{ status: string }>) {
-    counts.set(row.status, (counts.get(row.status) ?? 0) + 1);
-  }
+  countable.forEach((option, index) => {
+    counts.set(option.value, countResults[index].count ?? 0);
+  });
 
   const canManage = can(session, PERMISSIONS.paymentsManage);
-  const actorId = session.id;
 
   async function resolveRequest(formData: FormData) {
     'use server';
+
+    const actor = await requirePermission(PERMISSIONS.paymentsManage);
 
     const status = str(formData, 'status');
     const note = str(formData, 'resolutionNote');
@@ -133,7 +146,7 @@ export default async function RefundsPage({ searchParams }: PageProps<'/admin/re
       .update({
         status,
         resolution_note: note || null,
-        handled_by: actorId,
+        handled_by: actor.id,
         resolved_at: TERMINAL.has(status) ? new Date().toISOString() : null,
       })
       .eq('id', str(formData, 'requestId'));
@@ -151,7 +164,7 @@ export default async function RefundsPage({ searchParams }: PageProps<'/admin/re
         description="Customer refund cases, from request to decision."
       />
 
-      <ActionFeedback error={params.error as string} ok={params.ok as string} />
+      <ActionFeedback {...flashFrom(params)} />
 
       <div className="mb-6">
         <Alert tone="info" title="This is a case workflow, not a refund button">
