@@ -1,6 +1,12 @@
+import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
+  resolve: {
+    // The `@/` alias `tsconfig.json` gives the app, so a test can import a
+    // module that itself imports through it.
+    alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) },
+  },
   test: {
     include: ['tests/**/*.test.ts'],
     // Each suite boots its own Postgres (PGlite) and replays every migration,

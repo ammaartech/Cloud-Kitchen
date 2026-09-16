@@ -16,7 +16,7 @@ Built against `c.k.p.prd.pdf` (Working PRD v1.0).
 | 2. Database, schema, RLS | Done — 22 migrations, 56 tables, 90 policies |
 | 3. Domain engine (checkout, payments, subscriptions, KOT, marketplace) | Done — 30 SQL routines |
 | 4. Seed data through real workflows | Done |
-| 5. Automated tests | Done — 131 tests |
+| 5. Automated tests | Done — 162 tests |
 | 6. Provider abstractions (payments, marketplaces, notifications) | Done |
 | 7. Auth/RBAC application layer | Done |
 | 8. Storefront, checkout and customer account | Done |
@@ -25,7 +25,7 @@ Built against `c.k.p.prd.pdf` (Working PRD v1.0).
 | 11. Webhooks and scheduled jobs | Done |
 | 12. Live verification against a Supabase project | Done |
 
-`npm run build` compiles all 46 routes; `npm test` runs 131 tests; `tsc` and
+`npm run build` compiles all 46 routes; `npm test` runs 162 tests; `tsc` and
 `eslint` are clean. The schema, the seed and the full operational walkthrough
 have been run against a live Supabase project — see below.
 
@@ -75,14 +75,26 @@ each exists because of a measured cost rather than taste:
 | Every Server Action **re-checks its permission** first | `await requirePermission(...)` is the first line of each action. An action is a public endpoint, and RLS refusing a write shows up as zero rows affected, not an error -- which the action would otherwise report as success. |
 | A read that can grow with the business is **paged** | `fetchAll()` in `src/lib/supabase/query.ts`. PostgREST caps every response at 1,000 rows and says nothing; a revenue figure summed from a capped list is wrong, not slow. Small lookups use `rowsOf()` / `rowOf()`, which throw on a real failure instead of rendering an empty state that looks like "no data yet". |
 
+The KOT screens under `src/app/kot` follow the same guard-and-read rule, and
+add four of their own. Each one replaced a measured delay on the manager's
+and the kitchen's screens:
+
+| Rule | How |
+| --- | --- |
+| Ticket lines are read **in bulk**, never per card | `loadTicketItems()` in `src/lib/kot/items.ts`. The server reads the initial board's lines in one query; the browser keeps them in `src/lib/kot/items-store.ts`, which coalesces requests and survives navigation. A card never fetches. |
+| A burst of change events is **one read** | `useKotBoard` collects the ids that signalled within a few milliseconds and refetches them with one query, and resyncs the whole board on every successful subscription, so the gap between the server render and the socket opening cannot lose a ticket. |
+| The board's clock **ticks** | `useNow()` re-renders every subscriber on an interval and when the tab regains focus. Waiting times, deadlines, overdue borders and the urgency ordering (`src/lib/kot/urgency.ts`, the view's formula mirrored) are never older than that. |
+| History is read **directly** | The Completed and All Orders tabs query `v_kot_tickets` from the browser under the caller's own token and cache the day. The same RLS and money masking apply as on the server; the extra hop through a route handler bought nothing. |
+
 The session itself (`src/lib/auth/session.ts`) verifies the access token
 locally against the project's ES256 signing key and reads the profile, grants
 and customer row in one parallel round; `src/proxy.ts` does the same local
 check and only goes to the auth server when a token has actually expired.
 
-Design tokens live in `src/app/globals.css`. The KOT screens set
+Design tokens live in `src/app/globals.css`. The kitchen display sets
 `data-surface="ops"` to flip the whole palette to the dark, high-contrast ramp;
-no component needs to know which screen it is on. No raw hex in components.
+no component needs to know which screen it is on. The manager's board stays on
+the light register on purpose. No raw hex in components.
 
 ## Architecture in one paragraph
 
@@ -310,7 +322,7 @@ The walkthrough:
 npm test
 ```
 
-116 tests run the **real migrations** against
+150 of the tests run the **real migrations** against
 [PGlite](https://pglite.dev) — Postgres compiled to WebAssembly — so
 constraints, triggers, RLS policies and RPCs are exercised as themselves, with
 no Docker daemon and no mocking of the database.

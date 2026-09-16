@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import type { BoardTicket } from '@/lib/realtime/kot-board-shared';
 
 /**
@@ -21,74 +21,89 @@ import type { BoardTicket } from '@/lib/realtime/kot-board-shared';
  * fails we roll back. That path never depends on the Realtime broadcast for
  * its own feedback, so the acting screen updates instantly rather than after
  * a round-trip through Postgres WAL.
+ *
+ * Pending is tracked per ticket. A manager accepting two orders in quick
+ * succession has two requests in flight, and each card reports its own.
  */
 export interface BoardHandle {
   apply: (id: string, ticket: BoardTicket | null) => void;
   optimistic: (id: string, patch: Partial<BoardTicket>) => () => void;
 }
 
-export function useTicketActions(board: BoardHandle, onDone?: () => void) {
-  const [pendingId, setPendingId] = useState<string | null>(null);
+interface ActionResponse {
+  error?: string;
+  ticket?: BoardTicket | null;
+}
+
+export function useTicketActions(board: BoardHandle) {
+  const [pending, setPending] = useState<ReadonlySet<string>>(() => new Set());
   const [error, setError] = useState<string | null>(null);
 
-  async function call(
-    url: string,
-    body: unknown,
-    ticketId: string,
-    rollback: () => void,
-  ) {
-    if (typeof navigator !== 'undefined' && !navigator.onLine) {
-      rollback();
-      setError('You are offline. This change was not saved. Reconnect and try again.');
-      return false;
-    }
+  const mark = useCallback((ticketId: string, busy: boolean) => {
+    setPending((current) => {
+      const next = new Set(current);
+      if (busy) next.add(ticketId);
+      else next.delete(ticketId);
+      return next;
+    });
+  }, []);
 
-    setPendingId(ticketId);
-    setError(null);
-
-    try {
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
+  const call = useCallback(
+    async (url: string, body: unknown, ticketId: string, rollback: () => void) => {
+      if (typeof navigator !== 'undefined' && !navigator.onLine) {
         rollback();
-        setError(data.error ?? 'That action could not be completed.');
+        setError('You are offline. This change was not saved. Reconnect and try again.');
         return false;
       }
 
-      // Server sends back the fresh v_kot_tickets row so we skip the extra
-      // refetch the Realtime path would trigger for other clients.
-      if (data && typeof data === 'object' && 'ticket' in data) {
-        board.apply(ticketId, (data as { ticket: BoardTicket | null }).ticket);
+      mark(ticketId, true);
+      setError(null);
+
+      try {
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        });
+
+        // A body that is not JSON (a proxy's error page, say) is still an
+        // answer: the status code decides, and the message falls back.
+        const data = (await response.json().catch(() => null)) as ActionResponse | null;
+
+        if (!response.ok) {
+          rollback();
+          setError(data?.error ?? 'That action could not be completed.');
+          return false;
+        }
+
+        // Server sends back the fresh v_kot_tickets row so we skip the extra
+        // refetch the Realtime path would trigger for other clients.
+        if (data && 'ticket' in data) board.apply(ticketId, data.ticket ?? null);
+
+        return true;
+      } catch {
+        // A network failure mid-request leaves the outcome genuinely unknown --
+        // say that rather than guessing either way. We do NOT roll back here:
+        // the mutation may well have committed and the Realtime broadcast will
+        // reconcile within a second or two.
+        setError(
+          'The connection dropped before we could confirm that change. ' +
+            'Check the ticket before trying again.',
+        );
+        return false;
+      } finally {
+        mark(ticketId, false);
       }
+    },
+    [board, mark],
+  );
 
-      onDone?.();
-      return true;
-    } catch {
-      // A network failure mid-request leaves the outcome genuinely unknown --
-      // say that rather than guessing either way. We do NOT roll back here:
-      // the mutation may well have committed and the Realtime broadcast will
-      // reconcile within a second or two.
-      setError(
-        'The connection dropped before we could confirm that change. ' +
-          'Check the ticket before trying again.',
-      );
-      return false;
-    } finally {
-      setPendingId(null);
-    }
-  }
+  const isPending = useCallback((ticketId: string) => pending.has(ticketId), [pending]);
 
-  return {
-    pendingId,
-    error,
-    clearError: () => setError(null),
-    transition: (ticketId: string, toStatus: string, reason?: string | null) => {
+  const clearError = useCallback(() => setError(null), []);
+
+  const transition = useCallback(
+    (ticketId: string, toStatus: string, reason?: string | null) => {
       const rollback = board.optimistic(ticketId, { status: toStatus });
       return call(
         '/api/kot/transition',
@@ -97,17 +112,19 @@ export function useTicketActions(board: BoardHandle, onDone?: () => void) {
         rollback,
       );
     },
-    overrideEta: (ticketId: string, minutes: number) => {
+    [board, call],
+  );
+
+  const overrideEta = useCallback(
+    (ticketId: string, minutes: number) => {
       const rollback = board.optimistic(ticketId, {
         prep_eta_minutes: minutes,
         eta_overridden_at: new Date().toISOString(),
       });
-      return call(
-        '/api/kot/eta',
-        { ticketId, minutes },
-        ticketId,
-        rollback,
-      );
+      return call('/api/kot/eta', { ticketId, minutes }, ticketId, rollback);
     },
-  };
+    [board, call],
+  );
+
+  return { isPending, error, clearError, transition, overrideEta };
 }

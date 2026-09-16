@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Alert, Button, Field, Input, cx } from '@/components/ui/primitives';
+import { businessDate } from '@/lib/checkout/schedule';
 
 /**
  * Pause and cancel.
@@ -36,7 +37,9 @@ export function SubscriptionControls({
     );
   }
 
-  const today = new Date().toISOString().slice(0, 10);
+  // The kitchen's day, not UTC's. Late in an Indian evening the two differ,
+  // and the earliest date the server will accept is the business date.
+  const today = businessDate();
 
   return (
     <div>

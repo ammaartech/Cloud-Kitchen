@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { getSession } from '@/lib/auth/session';
+import { parseJsonBody } from '@/lib/api/request';
 import { readDraft } from '@/lib/checkout/draft';
 import { beginCheckout, ensureCustomer } from '@/lib/checkout/service';
 import { configuredPaymentProviders } from '@/lib/env';
@@ -26,10 +27,8 @@ export async function POST(request: Request) {
     );
   }
 
-  const parsed = bodySchema.safeParse(await request.json());
-  if (!parsed.success) {
-    return NextResponse.json({ error: 'That request was not valid' }, { status: 400 });
-  }
+  const parsed = await parseJsonBody(request, bodySchema);
+  if (!parsed.ok) return parsed.response;
 
   // A provider without credentials is never offered, and is refused here too --
   // the client is not the authority on what is available.

@@ -62,9 +62,22 @@ const STATUS_NOTE: Record<string, string> = {
  * database trigger, not by this page, so it holds however the edit arrives.
  */
 export default async function AccountReviewsPage({ searchParams }: PageProps<'/account/reviews'>) {
-  const session = await requireSession();
-  const params = await searchParams;
   const supabase = await serverClient();
+
+  // The guard and the eaten-dishes read go out together. RLS confines the
+  // delivery items to this customer, and a refused guard still redirects
+  // before render. Reviewable dishes are the ones actually delivered, read in
+  // one query through the delivery rather than as a list of delivery ids and
+  // a second read filtered by them.
+  const [session, params, eatenResult] = await Promise.all([
+    requireSession(),
+    searchParams,
+    supabase
+      .from('subscription_delivery_items')
+      .select('product_id, products ( name ), subscription_deliveries!inner ( status )')
+      .eq('subscription_deliveries.status', 'fulfilled')
+      .limit(1000),
+  ]);
 
   if (!session.customerId) {
     return (
@@ -82,43 +95,29 @@ export default async function AccountReviewsPage({ searchParams }: PageProps<'/a
 
   const customerId = session.customerId;
 
-  // Reviewable dishes are the ones actually delivered. RLS already confines
-  // both queries to this customer, so neither filters by customer itself.
-  const [reviewsResult, deliveriesResult] = await Promise.all([
-    supabase
-      .from('reviews')
-      .select(
-        'id, product_id, rating, title, body, status, is_verified_purchase, edited_at, created_at, products ( name )',
-      )
-      .eq('customer_id', customerId)
-      .is('deleted_at', null)
-      .order('created_at', { ascending: false }),
-    supabase
-      .from('subscription_deliveries')
-      .select('id')
-      .eq('status', 'fulfilled')
-      .limit(200),
-  ]);
+  // Published reviews are readable by everyone, so this read has to name its
+  // customer -- which is why it waits for the session where the other did not.
+  const reviewsResult = await supabase
+    .from('reviews')
+    .select(
+      'id, product_id, rating, title, body, status, is_verified_purchase, edited_at, created_at, products ( name )',
+    )
+    .eq('customer_id', customerId)
+    .is('deleted_at', null)
+    .order('created_at', { ascending: false });
 
   const reviews = (reviewsResult.data ?? []) as unknown as ReviewRow[];
-  const deliveryIds = ((deliveriesResult.data ?? []) as Array<{ id: string }>).map((row) => row.id);
 
-  let eaten: Array<{ id: string; name: string }> = [];
-  if (deliveryIds.length > 0) {
-    const { data } = await supabase
-      .from('subscription_delivery_items')
-      .select('product_id, products ( name )')
-      .in('delivery_id', deliveryIds);
-
-    const seen = new Map<string, string>();
-    for (const row of (data ?? []) as unknown as Array<{
-      product_id: string;
-      products: { name: string } | null;
-    }>) {
-      if (row.products) seen.set(row.product_id, row.products.name);
-    }
-    eaten = [...seen].map(([id, name]) => ({ id, name })).sort((a, b) => a.name.localeCompare(b.name));
+  const seen = new Map<string, string>();
+  for (const row of (eatenResult.data ?? []) as unknown as Array<{
+    product_id: string;
+    products: { name: string } | null;
+  }>) {
+    if (row.products) seen.set(row.product_id, row.products.name);
   }
+  const eaten = [...seen]
+    .map(([id, name]) => ({ id, name }))
+    .sort((a, b) => a.name.localeCompare(b.name));
 
   const reviewedProducts = new Set(reviews.map((review) => review.product_id));
 

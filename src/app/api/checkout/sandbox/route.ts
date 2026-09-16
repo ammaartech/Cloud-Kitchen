@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { getSession } from '@/lib/auth/session';
+import { parseJsonBody } from '@/lib/api/request';
 import { adminClient } from '@/lib/supabase/admin';
 import { SandboxAdapter } from '@/lib/payments';
 import { confirmCheckout } from '@/lib/checkout/service';
@@ -32,10 +33,8 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Sign in to continue' }, { status: 401 });
   }
 
-  const parsed = bodySchema.safeParse(await request.json());
-  if (!parsed.success) {
-    return NextResponse.json({ error: 'That request was not valid' }, { status: 400 });
-  }
+  const parsed = await parseJsonBody(request, bodySchema);
+  if (!parsed.ok) return parsed.response;
 
   let adapter: SandboxAdapter;
   try {

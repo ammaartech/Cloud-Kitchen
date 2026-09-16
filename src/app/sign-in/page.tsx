@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation';
 import { getSession } from '@/lib/auth/session';
 import { landingPathForRole } from '@/lib/auth/permissions';
+import { safeNextPath } from '@/lib/auth/redirect';
 import { listDemoAccounts } from '@/lib/auth/demo-accounts';
 import { SignInPanel } from '@/components/auth/sign-in-panel';
 
@@ -24,7 +25,8 @@ export default async function SignInPage({ searchParams }: PageProps<'/sign-in'>
   if (session) redirect(landingPathForRole(session.role));
 
   const params = await searchParams;
-  const next = typeof params.next === 'string' ? params.next : null;
+  // Only a path on this site is honoured; see `safeNextPath` for why.
+  const next = safeNextPath(params.next);
 
   // Returns null unless SHOW_DEMO_ACCOUNTS is set, in which case the panel is
   // never rendered and the accounts are never queried.

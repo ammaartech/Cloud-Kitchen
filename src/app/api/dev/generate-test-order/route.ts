@@ -1,4 +1,6 @@
 import { NextResponse } from 'next/server';
+import { getSession } from '@/lib/auth/session';
+import { PERMISSIONS } from '@/lib/auth/permissions';
 import { adminClient } from '@/lib/supabase/admin';
 import { serverEnv } from '@/lib/env';
 
@@ -8,6 +10,12 @@ import { serverEnv } from '@/lib/env';
  * (same posture as SHOW_DEMO_ACCOUNTS) rather than NODE_ENV, because deployed
  * previews run NODE_ENV='production' but still want dev affordances.
  *
+ * Guarded by a session as well. The flag makes the endpoint exist; it does
+ * not make it public. It writes with the service role, so on a preview with
+ * the flag set, anyone who found the URL could otherwise fill the kitchen's
+ * board with orders. Only a signed-in user who can run the board may use it,
+ * which is the same person who sees the button.
+ *
  * The endpoint routes the fake order through the same `ingest_marketplace_order`
  * RPC that real Swiggy / Zomato webhooks hit, so the resulting ticket is
  * indistinguishable from a real one on the board.
@@ -16,6 +24,14 @@ export async function POST(request: Request) {
   const env = serverEnv();
   if (env.SHOW_DEV_TOOLS !== 'true') {
     return NextResponse.json({ error: 'Not found' }, { status: 404 });
+  }
+
+  const session = await getSession();
+  if (!session) {
+    return NextResponse.json({ error: 'Sign in to continue' }, { status: 401 });
+  }
+  if (!session.permissions.has(PERMISSIONS.kotAccept)) {
+    return NextResponse.json({ error: 'Not allowed' }, { status: 403 });
   }
 
   const url = new URL(request.url);
