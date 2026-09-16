@@ -268,7 +268,13 @@ export default async function SubscriptionsPage() {
 
           <div className="subs-closing" data-rise>
             <p>Not sure yet? See what the kitchen cooks first.</p>
-            <ButtonLink href="/menu" variant="outline" size="lg" className="btn-plain btn-wide">
+            <ButtonLink
+              href="/menu"
+              variant="outline"
+              size="lg"
+              className="btn-plain btn-wide"
+              transitionTypes={['nav-forward']}
+            >
               see the full menu
             </ButtonLink>
           </div>

@@ -174,6 +174,7 @@ export default async function HomePage() {
               variant="outline"
               size="sm"
               className="btn-plain mt-6"
+              transitionTypes={['nav-forward']}
             >
               compare all plans
             </ButtonLink>
@@ -356,6 +357,7 @@ export default async function HomePage() {
               variant="outline"
               size="lg"
               className="btn-plain btn-wide"
+              transitionTypes={['nav-forward']}
             >
               see the full menu
             </ButtonLink>
@@ -438,6 +440,7 @@ export default async function HomePage() {
                 variant="outline"
                 size="lg"
                 className="btn-plain btn-wide mt-8"
+                transitionTypes={['nav-forward']}
               >
                 more about us
               </ButtonLink>

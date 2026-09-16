@@ -129,6 +129,29 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
   return (
     <html
       lang="en"
+      /* Declares what the stylesheet already does, because the router cannot
+         see a stylesheet.
+
+         `globals.css` sets `scroll-behavior: smooth` on this element so the
+         header's anchors read as a movement through one document -- see the
+         note over that rule. The cost is that it applies to *every* programmatic
+         scroll, including the one Next performs on a route change: landing on a
+         new page turned into a smooth animated scroll from wherever the last
+         page was left, which is both slow and interruptible. Interrupt it --
+         by rendering, or by a view transition running over it -- and it never
+         arrives, so the new page opens part-way down. That is the bug where
+         `/about` opened at the bottom if you had been at the bottom of it
+         before.
+
+         Next already has the fix and will not apply it unnoticed:
+         `disableSmoothScrollDuringRouteTransition` sets `scroll-behavior: auto`
+         for the duration of its own scroll, but only when this attribute is
+         present, because a computed style is too expensive to read on every
+         navigation. Without it the helper returns early and the smooth scroll
+         stands. Hash navigation is unaffected either way -- it short-circuits
+         on `onlyHashChange` and keeps the smooth scroll, which is the one place
+         we want it. */
+      data-scroll-behavior="smooth"
       className={`${sans.variable} ${mono.variable} ${brand.variable} ${noteDisplay.variable} ${noteText.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col bg-bg text-ink">{children}</body>

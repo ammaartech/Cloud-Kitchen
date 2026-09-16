@@ -101,7 +101,11 @@ function FooterNav({
       <ul className="footer-list">
         {items.map((item) => (
           <li key={item.href}>
-            <Link href={item.href} className="footer-link">
+            <Link
+              href={item.href}
+              className="footer-link"
+              transitionTypes={['nav-forward']}
+            >
               {item.label.toLowerCase()}
             </Link>
           </li>
@@ -131,7 +135,11 @@ async function FooterPlans() {
       <ul className="footer-list">
         {plans.map((plan) => (
           <li key={plan.id}>
-            <Link href={`/subscriptions/${plan.slug}`} className="footer-link">
+            <Link
+              href={`/subscriptions/${plan.slug}`}
+              className="footer-link"
+              transitionTypes={['nav-forward']}
+            >
               {plan.name.toLowerCase()}
             </Link>
           </li>
@@ -219,7 +227,11 @@ export function SiteFooter() {
             lower case every other closing action on the home page uses. */}
         <div className="footer-rule">
           <span className="footer-rule-line" aria-hidden />
-          <Link href="/subscriptions" className="footer-cta">
+          <Link
+            href="/subscriptions"
+            className="footer-cta"
+            transitionTypes={['nav-forward']}
+          >
             start a plan
           </Link>
         </div>

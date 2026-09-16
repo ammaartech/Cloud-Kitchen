@@ -86,3 +86,52 @@ export function riseOnScroll(q: Query) {
     });
   }
 }
+
+/**
+ * Drawn marginalia: set down a beat after the copy, then left to drift.
+ *
+ * Shared by `/subscriptions` and `/about`, which both put tool drawings in the
+ * page gutters. The hero does this in pure CSS -- see the `animation` shorthand
+ * on `.storefront-hero > .tool-mark` -- because its marks have to arrive at
+ * first paint with everything else on that surface. These two pages are already
+ * paying for GSAP, and a mark that enters on the same timeline as the heading
+ * beside it is one fewer clock to keep in sync.
+ *
+ * The drift pauses whenever the section is scrolled away. An infinite loop
+ * nobody can see is still work on every frame, and both pages are long.
+ *
+ * `lean` alternates so no two neighbours settle the same way, and each mark's
+ * drift runs against its own entrance tilt -- the same reasoning as
+ * `NOTE_PLACEMENT` on the home page: the irregularity has to be composed, or
+ * four marks drifting in step read as one animation applied four times.
+ */
+export function setDownTools(q: Query) {
+  q('[data-tool]').forEach((tool, index) => {
+    const lean = index % 2 === 0 ? -1 : 1;
+    const settles = 0.7 + index * 0.3;
+
+    gsap.fromTo(
+      tool,
+      { autoAlpha: 0, y: 28, rotation: 8 * lean },
+      { autoAlpha: 1, y: 0, rotation: 0, duration: 1.3, ease: 'ck', delay: settles },
+    );
+
+    // Starts the moment the entrance ends, so the two never write `y` at once.
+    const drift = gsap.to(tool, {
+      y: -22,
+      rotation: 3.5 * -lean,
+      duration: 6 + index * 1.5,
+      ease: 'sine.inOut',
+      repeat: -1,
+      yoyo: true,
+      delay: settles + 1.3,
+    });
+
+    ScrollTrigger.create({
+      trigger: tool.parentElement,
+      start: 'top bottom',
+      end: 'bottom top',
+      onToggle: (self) => (self.isActive ? drift.resume() : drift.pause()),
+    });
+  });
+}

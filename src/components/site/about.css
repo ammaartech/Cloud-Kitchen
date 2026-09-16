@@ -1,0 +1,506 @@
+/* ==========================================================================
+   /about
+
+   Scoped to the one route that imports it. Everything here composes with the
+   storefront's existing stocks and classes -- `.paper-grid`, `.texture-dots`,
+   `.texture-hatch`, `.section-display`, `.btn-plain`, `.tool-mark` -- and adds
+   only what this page has that no other page does: the day's clock, and the
+   pledges.
+
+   Namespaced `story-` rather than `about-`, which is not available: the home
+   page's closing band already owns `.about-split`, `.about-copy`, `.about-art`
+   and `.about-shot` in `globals.css`, including a rope simulation that writes
+   transforms on them. Two pages sharing a class where only one of them has the
+   JavaScript driving it is how a layout breaks on the page that does not.
+
+   Motion lives in `about-motion.tsx`. The only motion declared here is hover
+   and press feedback, on elements GSAP never transforms.
+   ========================================================================== */
+
+/* The entrance gate that keeps GSAP entrances from flashing is shared with the
+   subscriptions and menu pages and lives in `motion-gate.css`, keyed to
+   `.motion-stage`. */
+
+/* --------------------------------------------------------------------------
+   Intro.
+   -------------------------------------------------------------------------- */
+.story-intro {
+  position: relative;
+  overflow: clip;
+}
+
+.story-intro-inner {
+  padding-block: clamp(3.5rem, 8vw, 6.5rem) clamp(3.5rem, 7vw, 5.5rem);
+}
+
+.story-intro-split {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 3rem;
+}
+
+@media (min-width: 64rem) {
+  .story-intro-split {
+    grid-template-columns: minmax(0, 1.08fr) minmax(0, 0.92fr);
+    gap: 4rem;
+    align-items: end;
+  }
+}
+
+.story-kicker {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ck-text-muted);
+}
+
+.story-kicker::before {
+  content: '';
+  width: 2rem;
+  height: 1px;
+  background-color: currentColor;
+}
+
+/* The hero's register, a step down -- the same size `/subscriptions` opens at,
+   because the two pages sit at the same depth. The hero headline is the
+   loudest thing on the storefront and these are one click behind it. */
+.story-headline {
+  margin-top: 1.25rem;
+  font-size: clamp(2.625rem, 7.4vw, 4.375rem);
+  font-weight: 600;
+  line-height: 1.04;
+  letter-spacing: -0.035em;
+  color: var(--ck-text);
+}
+
+/* Each phrase rises out of its own box. The padding widens the clip to take the
+   ascenders and descenders a 1.04 line-height does not leave room for, and the
+   negative margin gives the space straight back to the layout. */
+.story-line-mask {
+  display: block;
+  overflow: clip;
+  padding-block: 0.06em 0.16em;
+  margin-block: -0.06em -0.16em;
+}
+
+.story-line {
+  display: block;
+}
+
+/* The drawn underline, under the word the whole page is about. Positioned
+   against the word itself, so it follows it through every reflow without
+   anything being measured. */
+.story-marked {
+  position: relative;
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.story-scribble {
+  position: absolute;
+  left: -4%;
+  bottom: -0.2em;
+  width: 108%;
+  height: auto;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.story-scribble path {
+  fill: none;
+  stroke: var(--ck-brand);
+  stroke-width: 5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.story-lede {
+  margin-top: 1.5rem;
+  max-width: 36rem;
+  font-size: 1.0625rem;
+  line-height: 1.6;
+  color: var(--ck-text-muted);
+}
+
+@media (min-width: 40rem) {
+  .story-lede {
+    font-size: 1.125rem;
+  }
+}
+
+.story-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 2rem;
+}
+
+.story-actions .btn-plain {
+  min-width: 13rem;
+}
+
+/* The facts somebody arrives wanting, set like the delivery windows on the hero
+   and the facts on `/subscriptions`: large, ruled, and read straight off the
+   database rather than written here. */
+.story-facts {
+  border-bottom: 1px solid color-mix(in srgb, var(--ck-border-strong) 45%, transparent);
+}
+
+.story-fact {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.375rem;
+  padding-block: 1.25rem;
+}
+
+@media (min-width: 40rem) {
+  .story-fact {
+    grid-template-columns: 6.5rem minmax(0, 1fr);
+    gap: 1.5rem;
+  }
+}
+
+.story-fact-rule {
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 1px;
+  background-color: color-mix(in srgb, var(--ck-border-strong) 45%, transparent);
+}
+
+.story-fact dt {
+  padding-top: 0.5rem;
+  font-family: var(--font-cabinet), system-ui, sans-serif;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ck-text-muted);
+}
+
+.story-fact-value {
+  display: block;
+  font-family: var(--font-cabinet), system-ui, sans-serif;
+  font-size: clamp(1.625rem, 3vw, 2.125rem);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--ck-text);
+}
+
+/* A fact made of words rather than a figure. At the figure size a list of
+   window names breaks after a separator and leaves one word alone on the second
+   line; a step smaller and balanced, they sit on one line wherever there is
+   room and split evenly where there is not. */
+.story-fact-words {
+  font-size: clamp(1.25rem, 2.1vw, 1.5rem);
+  line-height: 1.25;
+  text-wrap: balance;
+}
+
+.story-fact-note {
+  display: block;
+  margin-top: 0.375rem;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: var(--ck-text-muted);
+}
+
+/* The drawn tools, out in the margins where the hero and the subscriptions page
+   keep theirs. Same width rule as both: only where that margin actually exists,
+   and centred in it. GSAP owns their entrance and drift here, so none of the
+   hero keyframes apply -- `.tool-mark` supplies the drawing, the tilt and the
+   transparent base, and `setDownTools` in `motion-reveals.ts` does the rest. */
+@supports (mask-image: url('/tools/spatula.png')) or
+  (-webkit-mask-image: url('/tools/spatula.png')) {
+  @media (min-width: 90rem) {
+    .story-intro > .tool-mark {
+      display: block;
+    }
+  }
+}
+
+.story-intro > .tool-spoon-knife {
+  top: 5.5rem;
+  left: calc((100% - 72rem) / 4 - var(--tool-w) / 2);
+}
+
+.story-intro > .tool-grater {
+  top: auto;
+  bottom: 4rem;
+  right: calc((100% - 72rem) / 4 - var(--tool-w) / 2);
+}
+
+/* --------------------------------------------------------------------------
+   Section heads: the heading on the left, its one sentence set against the
+   bottom of it on the right, so the pair reads as one line of thought on a wide
+   screen and stacks on a narrow one. The same head `/subscriptions` uses, so
+   the two pages open their sections identically.
+   -------------------------------------------------------------------------- */
+.story-section-head {
+  display: grid;
+  gap: 1rem;
+}
+
+@media (min-width: 64rem) {
+  .story-section-head {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 24rem);
+    align-items: end;
+    gap: 3rem;
+  }
+}
+
+.story-section-lede {
+  max-width: 32rem;
+  line-height: 1.6;
+  color: var(--ck-text-muted);
+}
+
+/* --------------------------------------------------------------------------
+   Why the menu is small: the constraint, argued in numbered rules.
+
+   The same ruled list as "before you pay" on `/subscriptions` -- a hairline, a
+   monospaced number, a heading and a paragraph. It is the storefront's shape
+   for "here are the terms of something", and this page is making the same kind
+   of statement about how the kitchen runs.
+   -------------------------------------------------------------------------- */
+.story-rules {
+  display: grid;
+  gap: 0;
+  margin-top: clamp(2.5rem, 5vw, 3.5rem);
+}
+
+@media (min-width: 64rem) {
+  .story-rules {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 4rem;
+  }
+}
+
+.story-rule {
+  position: relative;
+  display: grid;
+  grid-template-columns: 2.75rem minmax(0, 1fr);
+  column-gap: 1rem;
+  padding-block: 1.5rem;
+}
+
+.story-rule-line {
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 1px;
+  background-color: color-mix(in srgb, var(--ck-border-strong) 55%, transparent);
+}
+
+.story-rule-no {
+  grid-row: span 2;
+  padding-top: 0.25rem;
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-size: 0.8125rem;
+  color: var(--ck-text-subtle);
+}
+
+.story-rule h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--ck-text);
+}
+
+.story-rule p {
+  margin-top: 0.375rem;
+  line-height: 1.6;
+  color: var(--ck-text-muted);
+}
+
+/* --------------------------------------------------------------------------
+   The day, by the clock.
+
+   A column of hours with a line drawn down it. The line is an SVG rather than a
+   border so it can be *drawn* -- a border can only appear -- and it is stretched
+   with `preserveAspectRatio="none"` so one path description covers a list of
+   any height. `vector-effect` then keeps the stroke at its real width however
+   far the viewBox is stretched, which is the same pairing the hero's road uses.
+
+   The grid is the important part: one column for the time, one for the marker,
+   one for the words, and the marker column is where the line runs. Every hour
+   shares those tracks, so the dots line up under each other however long a time
+   string turns out to be in the visitor's locale.
+   -------------------------------------------------------------------------- */
+.story-day {
+  position: relative;
+  margin-top: clamp(2.5rem, 5vw, 3.5rem);
+}
+
+.story-spine {
+  position: absolute;
+  /* The marker column's centre, on each breakpoint's track sizes below. */
+  left: calc(var(--story-time-w) + var(--story-gap) + var(--story-dot) / 2);
+  top: 0.75rem;
+  bottom: 0.75rem;
+  width: 2px;
+  overflow: visible;
+  pointer-events: none;
+  /* Behind the markers, which sit on it. */
+  z-index: 0;
+}
+
+.story-spine-line {
+  fill: none;
+  stroke: color-mix(in srgb, var(--ck-brand) 42%, transparent);
+  stroke-width: 2;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.story-day {
+  --story-time-w: 4.5rem;
+  --story-gap: 1rem;
+  --story-dot: 0.875rem;
+}
+
+@media (min-width: 40rem) {
+  .story-day {
+    --story-time-w: 7rem;
+    --story-gap: 1.5rem;
+  }
+}
+
+.story-hour {
+  position: relative;
+  display: grid;
+  grid-template-columns: var(--story-time-w) var(--story-dot) minmax(0, 1fr);
+  column-gap: var(--story-gap);
+  padding-block: 0 clamp(2rem, 4vw, 3rem);
+}
+
+.story-hour:last-child {
+  padding-bottom: 0;
+}
+
+/* The time, set in the face the kitchen's own voice uses and tabular, so a
+   column of them lines up on the colon rather than on the glyph widths. */
+.story-hour-time {
+  font-family: var(--font-cabinet), system-ui, sans-serif;
+  font-size: clamp(0.9375rem, 1.6vw, 1.125rem);
+  font-weight: 600;
+  line-height: 1.4;
+  text-align: right;
+  color: var(--ck-text);
+}
+
+/* The marker, sitting on the line. Opaque fill rather than a ring, because the
+   line runs underneath it -- a ring would show the thread crossing its middle.
+
+   `scale` is what GSAP animates, and the base rule leaves it at 1: the dots are
+   the only part of this section that is not purely decorative, in that they are
+   what tells a reader the list is a sequence rather than four separate notes.
+   Where nothing runs, the sequence is still legible. */
+.story-hour-dot {
+  position: relative;
+  z-index: 1;
+  width: var(--story-dot);
+  height: var(--story-dot);
+  margin-top: 0.4em;
+  border-radius: 50%;
+  background-color: var(--ck-brand);
+  box-shadow: 0 0 0 4px var(--ck-bg);
+}
+
+/* The last marker is the one the day ends on, so it is drawn as an outline --
+   the thread arrives and stops rather than passing through. */
+.story-hour:last-child .story-hour-dot {
+  background-color: var(--ck-bg);
+  box-shadow:
+    0 0 0 4px var(--ck-bg),
+    inset 0 0 0 2.5px var(--ck-brand);
+}
+
+.story-hour-body h3 {
+  font-size: 1.0625rem;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--ck-text);
+}
+
+.story-hour-body p {
+  margin-top: 0.375rem;
+  max-width: 34rem;
+  line-height: 1.6;
+  color: var(--ck-text-muted);
+}
+
+.story-hour-note {
+  display: inline-block;
+  margin-top: 0.625rem;
+  padding: 0.125rem 0.5rem;
+  border: 1px dashed var(--ck-note-rule);
+  background-color: var(--ck-note);
+  font-family: var(--font-cabinet), system-ui, sans-serif;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--ck-text);
+}
+
+/* --------------------------------------------------------------------------
+   What the kitchen will not do.
+
+   Two columns of short statements, each opening on a struck-through phrase --
+   the thing that is not done -- and answering it in plain text. The strike is
+   the whole device: a list of refusals written as ordinary sentences reads as
+   marketing, and the same list with the refused thing visibly crossed out reads
+   as a decision that was made.
+   -------------------------------------------------------------------------- */
+.story-pledges {
+  display: grid;
+  gap: 0;
+  margin-top: clamp(2.5rem, 5vw, 3.5rem);
+}
+
+@media (min-width: 64rem) {
+  .story-pledges {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 4rem;
+  }
+}
+
+.story-pledge {
+  position: relative;
+  padding-block: 1.5rem;
+}
+
+.story-pledge h3 {
+  font-size: 1.0625rem;
+  font-weight: 600;
+  color: var(--ck-text);
+}
+
+.story-pledge del {
+  text-decoration-line: line-through;
+  text-decoration-thickness: 2px;
+  text-decoration-color: color-mix(in srgb, var(--ck-danger) 70%, transparent);
+  color: var(--ck-text-subtle);
+}
+
+.story-pledge p {
+  margin-top: 0.5rem;
+  line-height: 1.6;
+  color: var(--ck-text-muted);
+}
+
+/* --------------------------------------------------------------------------
+   Closing.
+   -------------------------------------------------------------------------- */
+.story-closing {
+  display: grid;
+  gap: 1rem;
+  margin-top: clamp(3rem, 6vw, 4.5rem);
+}
+
+.story-closing p {
+  max-width: 34rem;
+  color: var(--ck-text-muted);
+}

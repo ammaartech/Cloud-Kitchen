@@ -259,6 +259,7 @@ export function SiteHeader() {
               <Link
                 key={item.label}
                 href={`/#${item.section}`}
+                transitionTypes={['nav-back']}
                 tabIndex={showNav ? undefined : -1}
                 // `location`, not `page`: this says what you are looking at,
                 // not which page you are on. See `currentState`.
@@ -342,6 +343,7 @@ export function SiteHeader() {
               <li key={item.href}>
                 <Link
                   href={item.section ? `/#${item.section}` : item.href}
+                  transitionTypes={['nav-back']}
                   onClick={() => setOpenAt(null)}
                   aria-current={currentState(item)}
                   // The stagger is the sheet's, not the link's: the panel opens

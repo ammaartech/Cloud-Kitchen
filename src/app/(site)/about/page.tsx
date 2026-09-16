@@ -1,43 +1,442 @@
+import '@/components/site/motion-gate.css';
+import '@/components/site/about.css';
+import { listDeliveryWindows, listMenu, type DeliveryWindow } from '@/lib/data/catalog';
+import { clockTime } from '@/lib/format';
+import { ButtonLink } from '@/components/ui/primitives';
+import { buttonClasses } from '@/components/ui/button-styles';
+import { AboutStage } from '@/components/site/about-motion';
+
 export const metadata = {
   title: 'About',
-  description: 'One brand, one branch, one kitchen.',
+  description: 'One kitchen, one small menu, and why the constraint is deliberate.',
 };
 
-export default function AboutPage() {
+/**
+ * Why the menu is small, as four rules rather than a paragraph.
+ *
+ * Each one is a thing this application actually does, not a claim about
+ * intentions: the menu really is one day's list, dishes really are marked
+ * unavailable with a reason instead of being substituted, and the subscription
+ * really is what tells the kitchen the number before the day starts. A page
+ * that says the kitchen is careful is marketing; a page that says what the
+ * carefulness consists of can be checked.
+ */
+const RULES = [
+  {
+    title: 'We buy for the day, not for the week',
+    body: 'A short list is a list we can shop for the same morning we cook it. A long one has to be bought ahead and held, which is the decision that puts a freezer between the market and your plate.',
+  },
+  {
+    title: 'We cook in batches that finish',
+    body: 'Every batch is sized to the orders already in. Nothing is cooked speculatively and held warm for hours in case somebody wants it, because that is the point at which food stops being home food.',
+  },
+  {
+    title: 'The subscription is how we know the number',
+    body: 'This is the real reason we sell plans rather than one-off meals. Knowing how many portions are going out before the day starts is what lets the two rules above be true at all.',
+  },
+  {
+    title: 'If a dish is off, we say so and why',
+    body: 'A dish the kitchen cannot make today is marked unavailable on the menu with the reason next to it. We do not quietly substitute something else and let you find out when it arrives.',
+  },
+] as const;
+
+/**
+ * What the kitchen will not do, written as refusals.
+ *
+ * The struck-through phrase is the thing that is not done and the sentence
+ * under it is what happens instead. A list of refusals written as ordinary
+ * sentences reads as marketing; the same list with the refused thing visibly
+ * crossed out reads as a decision somebody made.
+ *
+ * All four are behaviours enforced elsewhere in this codebase rather than
+ * promises made here -- the unavailable reason on the menu, the single day's
+ * list, payment as the last step of checkout, and marketing consent as its own
+ * switch. If one of them stops being true in the product, the pledge has to
+ * come off this page with it.
+ */
+const PLEDGES = [
+  {
+    refused: 'Substitute a dish without telling you',
+    body: 'If what you ordered is off, the menu says so with the reason before you order, and we would rather be short a dish than send you something you did not choose.',
+  },
+  {
+    refused: 'List a thousand dishes we do not cook',
+    body: 'Everything on the menu is cooked in this kitchen, by us, on the day you get it. There is no second kitchen behind the name and no brand we are white-labelling.',
+  },
+  {
+    refused: 'Charge you before you have confirmed',
+    body: 'You configure the plan first and pay last. A payment that does not go through creates no subscription and schedules no food, rather than leaving you to find out later.',
+  },
+  {
+    refused: 'Treat marketing consent as account consent',
+    body: 'They are separate switches and turning one off does not silently change the other. Closing your account stops the marketing; the order and invoice records stay, because a food business is required to hold them.',
+  },
+] as const;
+
+/**
+ * A clock time, some number of minutes earlier.
+ *
+ * The delivery windows carry a real `cutoff_minutes_before`, so the moment
+ * orders close for a window is a fact in the database rather than a time
+ * somebody typed into this page. Doing the arithmetic here is what keeps it
+ * that way: change the cutoff in the admin and this page's day changes with it.
+ *
+ * Plain string arithmetic on `HH:MM:SS` rather than a `Date`, because these are
+ * wall-clock times with no date attached -- constructing a `Date` to subtract
+ * from one would invent a day, a timezone and an offset that the column does
+ * not have. Wrapping with `+ 24 * 60` covers a cutoff that reaches back past
+ * midnight, which is the only case the modulo has to survive.
+ */
+function minutesBefore(time: string, minutes: number): string {
+  const [hours = 0, mins = 0] = time.split(':').map(Number);
+  const total = (hours * 60 + mins - minutes + 24 * 60) % (24 * 60);
+
+  return `${String(Math.floor(total / 60)).padStart(2, '0')}:${String(total % 60).padStart(2, '0')}:00`;
+}
+
+/** One moment in the kitchen's day, as the timeline renders it. */
+type Moment = {
+  /** `HH:MM:SS`, and what the list is sorted on. */
+  at: string;
+  title: string;
+  body: string;
+  note?: string;
+};
+
+/**
+ * The kitchen's day, derived entirely from the delivery windows.
+ *
+ * Two moments per window -- the cutoff, then the window itself -- flattened and
+ * sorted into one clock. Nothing here is written by hand, which is the whole
+ * reason the section is worth having: a kitchen that publishes a fourth window
+ * gets a fourth pair of moments in the right place on this page, and a kitchen
+ * that changes a cutoff sees the page change. A timeline with the hours typed
+ * into it would be wrong the first time somebody touched the admin.
+ */
+function dayFrom(windows: DeliveryWindow[]): Moment[] {
+  return windows
+    .flatMap((window): Moment[] => {
+      const label = window.label.toLowerCase();
+
+      return [
+        {
+          at: minutesBefore(window.starts_at, window.cutoff_minutes_before),
+          title: `Orders for ${label} close`,
+          body: `Everything ordered by now is on the ${label} list, and the list is what the kitchen shops and cooks to. After this the day is counted and nothing is added to it.`,
+          note: `${window.cutoff_minutes_before} minutes before the window opens`,
+        },
+        {
+          at: window.starts_at,
+          title: `${window.label} goes out`,
+          body: `Cooked for this window rather than earlier in the day, packed as it is finished, and sent while it is still warm. Deliveries run until ${clockTime(window.ends_at)}.`,
+        },
+      ];
+    })
+    .sort((a, b) => a.at.localeCompare(b.at));
+}
+
+/**
+ * About.
+ *
+ * The page this replaces was five paragraphs in a `max-w-3xl` column: true,
+ * readable, and indistinguishable from the legal pages either side of it. Two
+ * of those paragraphs were the argument and three were policy, and the policy
+ * ones were saying quietly what `/privacy` and `/terms` say properly.
+ *
+ * What is here instead is the argument, at the length an argument deserves, on
+ * the storefront's own materials -- the same four bands, stocks and section
+ * heads `/subscriptions` is built from, so this reads as part of the site
+ * rather than as a document hosted on it.
+ *
+ * Every figure is read from the database. The dish count, the vegetarian note
+ * and the entire day-by-the-clock section are derived from the menu and the
+ * delivery windows, so none of them can drift out of date the way a hand-typed
+ * "we cook 20 dishes" would. Where the kitchen has published nothing, the
+ * section renders nothing rather than a placeholder.
+ *
+ * The motion is GSAP and all of it lives in `AboutStage`; this file only marks
+ * what moves. The note at the top of `about-motion.tsx` covers why none of it
+ * can flash or leave content hidden.
+ */
+export default async function AboutPage() {
+  const [menu, windows] = await Promise.all([listMenu(), listDeliveryWindows()]);
+
+  const available = menu.filter((product) => product.isAvailable);
+  const vegetarian = available.filter((product) => product.isVegetarian);
+  const day = dayFrom(windows);
+
+  /* The same reading the hero makes of the same rows: a kitchen where some
+     dishes are vegetarian is telling you how many, and a kitchen where all of
+     them are is telling you what kind of kitchen it is. "26 of 26" is a number
+     that has not noticed itself. */
+  const vegetarianNote =
+    vegetarian.length === 0
+      ? null
+      : vegetarian.length === available.length
+        ? 'every one of them vegetarian'
+        : `${vegetarian.length} of them vegetarian`;
+
   return (
-    <div className="mx-auto max-w-3xl px-4 py-12">
-      <h1 className="text-3xl font-semibold tracking-tight">About us</h1>
+    <AboutStage className="story-page motion-stage">
+      {/* ---------------------------------------------------------------- */}
+      {/* Intro                                                             */}
+      {/* ---------------------------------------------------------------- */}
+      <section className="story-intro border-b border-line bg-sunken">
+        <span className="tool-mark tool-spoon-knife" data-tool aria-hidden />
+        <span className="tool-mark tool-grater" data-tool aria-hidden />
 
-      <div className="mt-6 space-y-5 text-muted text-pretty">
-        <p>
-          We are a single kitchen serving a single neighbourhood. Not a chain, not a
-          franchise, not a marketplace listing a thousand dishes it does not cook.
-        </p>
-        <p>
-          That constraint is deliberate. A small menu means we buy fresh for the day, cook
-          in batches that finish, and know exactly how many portions are going out. It is
-          also why we sell subscriptions rather than one-off orders. Knowing what the day
-          looks like before it starts is what keeps the food good.
-        </p>
+        <div className="landing-container story-intro-inner mx-auto max-w-6xl px-4">
+          <div className="story-intro-split">
+            <div>
+              <p className="story-kicker" data-enter>
+                About
+              </p>
 
-        <h2 className="pt-4 text-xl font-semibold text-ink">How we handle your food</h2>
-        <p>
-          Meals enter the kitchen queue shortly before your delivery window, not the night
-          before. If a dish is off for the day, we mark it unavailable on the menu with the
-          reason rather than quietly substituting something.
-        </p>
+              {/* Two phrases, each in its own mask so each rises out of its
+                  own line. No `text-balance`: the phrases are the lines. */}
+              <h1 className="story-headline" data-enter>
+                <span className="story-line-mask">
+                  <span className="story-line" data-intro-line>
+                    One kitchen.
+                  </span>
+                </span>{' '}
+                <span className="story-line-mask">
+                  <span className="story-line" data-intro-line>
+                    One{' '}
+                    <span className="story-marked">
+                      small
+                      <svg
+                        className="story-scribble"
+                        viewBox="0 0 200 28"
+                        aria-hidden
+                        focusable="false"
+                      >
+                        <path d="M5 18C40 10 98 7 152 10S191 16 195 12" />
+                        <path d="M28 24C68 20 126 19 174 22" />
+                      </svg>
+                    </span>{' '}
+                    menu.
+                  </span>
+                </span>
+              </h1>
 
-        <h2 className="pt-4 text-xl font-semibold text-ink">How we handle your data</h2>
-        <p>
-          We keep the records a food business has to keep: your orders, invoices and
-          deliveries. If you close your account we disable the login and stop marketing to
-          you, but those business records stay, because we are required to hold them.
-        </p>
-        <p>
-          Marketing consent is a separate switch from your account. Turning one off does not
-          silently change the other.
-        </p>
-      </div>
-    </div>
+              <p className="story-lede text-pretty" data-enter>
+                We are a single kitchen serving a single neighbourhood. Not a chain, not a
+                franchise, and not a marketplace listing a thousand dishes it does not
+                cook. The constraint is the product, and everything below is what it buys.
+              </p>
+
+              <div className="story-actions" data-enter>
+                <a href="#day" className={buttonClasses('outline', 'lg', 'btn-plain')}>
+                  see how a day runs
+                </a>
+                <ButtonLink
+                  href="/menu"
+                  variant="outline"
+                  size="lg"
+                  className="btn-plain"
+                  transitionTypes={['nav-forward']}
+                >
+                  today&rsquo;s menu
+                </ButtonLink>
+              </div>
+            </div>
+
+            <dl className="story-facts">
+              {available.length > 0 ? (
+                <div className="story-fact" data-enter>
+                  <dt>
+                    <span className="story-fact-rule" aria-hidden />
+                    cooking
+                  </dt>
+                  <dd>
+                    <span className="story-fact-value tabular">{available.length}</span>
+                    <span className="story-fact-note">
+                      dishes on the menu today
+                      {vegetarianNote ? `, ${vegetarianNote}` : ''}
+                    </span>
+                  </dd>
+                </div>
+              ) : null}
+
+              {windows.length > 0 ? (
+                <div className="story-fact" data-enter>
+                  <dt>
+                    <span className="story-fact-rule" aria-hidden />
+                    delivered
+                  </dt>
+                  <dd>
+                    <span className="story-fact-value story-fact-words">
+                      {windows.map((window) => window.label.toLowerCase()).join(' · ')}
+                    </span>
+                    <span className="story-fact-note">
+                      {windows
+                        .map(
+                          (window) =>
+                            `${clockTime(window.starts_at)} to ${clockTime(window.ends_at)}`,
+                        )
+                        .join(', ')}
+                    </span>
+                  </dd>
+                </div>
+              ) : null}
+
+              <div className="story-fact" data-enter>
+                <dt>
+                  <span className="story-fact-rule" aria-hidden />
+                  kitchens
+                </dt>
+                <dd>
+                  <span className="story-fact-value tabular">1</span>
+                  <span className="story-fact-note">
+                    in North Bangalore, cooking everything on this menu itself
+                  </span>
+                </dd>
+              </div>
+            </dl>
+          </div>
+        </div>
+      </section>
+
+      {/* ---------------------------------------------------------------- */}
+      {/* Why the menu is small                                             */}
+      {/* ---------------------------------------------------------------- */}
+      <section className="section-anchor paper-grid border-b border-line bg-surface">
+        <div className="landing-container landing-spacing mx-auto max-w-6xl px-4">
+          <div className="story-section-head">
+            <h2 className="section-display font-semibold" data-enter data-split-heading>
+              why the menu is small
+            </h2>
+            <p className="story-section-lede text-pretty" data-rise>
+              It is the decision every other decision here follows from. Four things become
+              possible once the list is short enough to hold in your head.
+            </p>
+          </div>
+
+          <ol className="story-rules">
+            {RULES.map((rule, index) => (
+              <li key={rule.title} className="story-rule" data-rise>
+                <span className="story-rule-line" data-rule aria-hidden />
+                <span className="story-rule-no tabular" aria-hidden>
+                  {String(index + 1).padStart(2, '0')}
+                </span>
+                <h3>{rule.title}</h3>
+                <p>{rule.body}</p>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </section>
+
+      {/* ---------------------------------------------------------------- */}
+      {/* A day, by the clock                                               */}
+      {/* ---------------------------------------------------------------- */}
+      {/* Rendered only where the kitchen has published windows. A timeline of
+          a day with no hours in it is worse than no timeline. */}
+      {day.length > 0 ? (
+        <section id="day" className="section-anchor texture-dots border-b border-line">
+          <div className="landing-container landing-spacing mx-auto max-w-6xl px-4">
+            <div className="story-section-head">
+              <h2 className="section-display font-semibold" data-enter data-split-heading>
+                a day, by the clock
+              </h2>
+              <p className="story-section-lede text-pretty" data-rise>
+                Every time below is read from the kitchen&rsquo;s own schedule rather than
+                written on this page, so it is the day that is actually being run.
+              </p>
+            </div>
+
+            <ol className="story-day">
+              {/* The thread, drawn as the day is scrolled. Decoration -- it
+                  repeats the order the times are already printed in -- so it
+                  is `aria-hidden` and starts undrawn, and the list below is
+                  complete and readable without it. `preserveAspectRatio` is
+                  what lets one path description stretch to a list of any
+                  height; `vector-effect` keeps the stroke its real width
+                  while that happens. */}
+              <svg
+                className="story-spine"
+                viewBox="0 0 2 1000"
+                preserveAspectRatio="none"
+                aria-hidden
+                focusable="false"
+              >
+                <path className="story-spine-line" d="M1 0 V1000" />
+              </svg>
+
+              {day.map((moment) => (
+                <li key={`${moment.at}-${moment.title}`} className="story-hour">
+                  <p className="story-hour-time tabular">{clockTime(moment.at)}</p>
+                  <span className="story-hour-dot" aria-hidden />
+                  <div className="story-hour-body">
+                    <h3>{moment.title}</h3>
+                    <p>{moment.body}</p>
+                    {moment.note ? <span className="story-hour-note">{moment.note}</span> : null}
+                  </div>
+                </li>
+              ))}
+            </ol>
+          </div>
+        </section>
+      ) : null}
+
+      {/* ---------------------------------------------------------------- */}
+      {/* What we will not do                                               */}
+      {/* ---------------------------------------------------------------- */}
+      <section className="texture-hatch border-b border-line">
+        <div className="landing-container landing-spacing mx-auto max-w-6xl px-4">
+          <div className="story-section-head">
+            <h2 className="section-display font-semibold" data-enter data-split-heading>
+              what we will not do
+            </h2>
+            <p className="story-section-lede text-pretty" data-rise>
+              Four things a kitchen this size is regularly tempted into. Each one is
+              refused in the product itself, not only on this page.
+            </p>
+          </div>
+
+          <div className="story-pledges">
+            {PLEDGES.map((pledge) => (
+              <div key={pledge.refused} className="story-pledge" data-rise>
+                <span className="story-rule-line" data-rule aria-hidden />
+                <h3>
+                  <del>{pledge.refused}</del>
+                </h3>
+                <p>{pledge.body}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ---------------------------------------------------------------- */}
+      {/* Closing                                                           */}
+      {/* ---------------------------------------------------------------- */}
+      <section className="bg-sunken">
+        <div className="landing-container landing-spacing mx-auto max-w-6xl px-4">
+          <div className="story-section-head">
+            <h2 className="section-display font-semibold" data-enter data-split-heading>
+              come and eat
+            </h2>
+            <p className="story-section-lede text-pretty" data-rise>
+              The menu changes daily and the plans are prepaid for one cycle. You can skip,
+              pause or cancel any of it from your account.
+            </p>
+          </div>
+
+          <div className="story-closing" data-rise>
+            <ButtonLink
+              href="/subscriptions"
+              variant="outline"
+              size="lg"
+              className="btn-plain btn-wide"
+              transitionTypes={['nav-forward']}
+            >
+              see the plans
+            </ButtonLink>
+          </div>
+        </div>
+      </section>
+    </AboutStage>
   );
 }

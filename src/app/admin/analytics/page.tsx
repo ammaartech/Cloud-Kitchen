@@ -7,9 +7,13 @@ import { money, duration } from '@/lib/format';
 import { ButtonLink, Card, EmptyState, SectionHeading, Stat } from '@/components/ui/primitives';
 import { RangeChips } from '@/components/admin/analytics/range-chips';
 import { CategorySelect } from '@/components/admin/analytics/category-select';
-import { RevenueTrendChart, type TrendPoint } from '@/components/admin/analytics/revenue-trend-chart';
-import { Donut } from '@/components/admin/analytics/donut';
-import { HourBars, type HourBucket } from '@/components/admin/analytics/hour-bars';
+/* Types come straight from the implementations -- a `import type` is erased at
+   compile time, so naming them here costs the bundle nothing. The components
+   themselves come from `charts.tsx`, which defers recharts; see the note there
+   for why the split needs a client module to live in. */
+import type { TrendPoint } from '@/components/admin/analytics/revenue-trend-chart';
+import type { HourBucket } from '@/components/admin/analytics/hour-bars';
+import { Donut, HourBars, RevenueTrendChart } from '@/components/admin/analytics/charts';
 import { TopItemsTable, type TopItem } from '@/components/admin/analytics/top-items-table';
 import {
   RecentTransactionsTable,

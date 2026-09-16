@@ -161,6 +161,7 @@ export default function MenuPage({ searchParams }: PageProps<'/menu'>) {
               variant="outline"
               size="lg"
               className="btn-plain btn-wide"
+              transitionTypes={['nav-forward']}
             >
               see subscription plans
             </ButtonLink>

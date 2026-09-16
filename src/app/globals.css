@@ -698,26 +698,41 @@ h3 {
    exactly three words, so -33.3333% is one line at any breakpoint without the
    keyframes needing to know the font size.
 
-   The holds are deliberately unequal, and the first one is the odd one out.
-   "One kitchen." is on screen for about a second before anything moves: a
-   headline that starts rolling the instant it appears gives a reader nowhere to
-   land, so the first phrase is a resting place and the roll is what interrupts
-   it. After that the pace is even -- ~660ms for "One menu a day.", which is half
-   again the length of its neighbours, against ~470ms for the short one.
+   The holds are deliberately unequal, and the budget they are drawn from is
+   smaller than this keyframe makes it look. `hero-roll-pull` above fades the
+   slot up over the first 6% and starts taking it away at 86%, so a phrase is
+   only *legible* between those two marks: 80% of the run, less the two rolls,
+   which leaves about 66% to divide between three phrases. Anything parked
+   outside that window is on screen but arriving or leaving.
+
+   Divided by how much there is to read, and the previous division had it
+   backwards. It ran 30% / 21% / 15% of legible time, which gave the *longest*
+   phrase less than the opening one -- at 1.9s, 400ms to read "One menu a day."
+   The note here described the shape it was meant to have ("half again the
+   length of its neighbours") and the keyframes underneath did close to the
+   opposite. These are those numbers: 456ms, 513ms, 285ms.
+
+   "One kitchen." keeps a landing beat rather than the longest hold, which is
+   the one place length does not decide it. A headline that starts rolling the
+   instant it appears gives a reader nowhere to land, so the first phrase is a
+   resting place and the roll is what interrupts it -- but it only has to be
+   long enough to read as a rest, and the time it was hoarding is time the
+   sentence in the middle needed. "For you." is unchanged at 15%: three
+   syllables, and it was never the one that was wrong.
 
    The blur frames sit at the midpoint of each roll and carry no transform of
    their own, so the slide keeps interpolating straight through them: the text
    smears only while it is moving and is sharp everywhere it rests. */
 @keyframes hero-roll-track {
   0%,
-  36% {
+  30% {
     transform: translateY(0);
     filter: blur(0px);
   }
-  40% {
+  34% {
     filter: blur(3px);
   }
-  43%,
+  37%,
   64% {
     transform: translateY(-33.3333%);
     filter: blur(0px);
@@ -5496,4 +5511,256 @@ html:has(.nav-sheet[open]) {
   .type-caret { display: none; }
   .footer-giant > span { animation: none; }
   .sticky-note { transition: none; }
+}
+
+/* --------------------------------------------------------------------------
+   Page to page.
+
+   The storefront's routes are one document in the visitor's head -- the hero
+   sends you to the menu, the menu sends you to a plan -- and until now every
+   one of those moves was a cut: the old page vanished, the new one appeared,
+   and nothing on screen said the two were related or which direction you had
+   gone. This is that move, drawn.
+
+   ## Why this is the one animation not written in GSAP or keyframes
+
+   Every other entrance on this site is one of those two, so the exception is
+   worth arguing. A page transition is the only animation here that needs the
+   outgoing page and the incoming page on screen in the same frame, and neither
+   library can do that -- by the time GSAP could run on the new route, React has
+   already unmounted the old one. The View Transitions API snapshots the old
+   page before the swap, which is the whole mechanism. `PageTransition` in
+   `components/site/page-transition.tsx` is what drives it from a route change,
+   and it is these rules and no runtime.
+
+   ## The classes are named by the link, not by the page
+
+   `nav-forward` and `nav-back` are `transitionTypes` set on the `<Link>` that
+   started the navigation. Nothing infers them: going deeper is forward,
+   returning is back, and a navigation that says neither gets `default: 'none'`
+   and no slide at all. That is what keeps the browser's own back button,
+   `router.refresh()` and every Suspense reveal from sliding the page sideways
+   for reasons the visitor did not ask for.
+
+   Horizontal, because horizontal is the axis that already means this. Content
+   leaving to the left and arriving from the right is how a page turn reads in a
+   left-to-right language, and reversing it is how coming back reads. Vertical
+   would be saying something about hierarchy instead.
+
+   48px, not the 200 a slide wants to be. The offset has to be enough to say
+   which direction this is and not so much that the reader is tracking a page
+   across the screen -- and everything on the incoming page has to be legible
+   the moment it stops, because on a prerendered route it was legible before the
+   animation started.
+
+   ## The asymmetry
+
+   The old page leaves in 140ms and the new one takes 200 to become visible,
+   waiting out the exit before it starts. Old content should get out of the way
+   quickly because it is no longer what anyone wants; new content should arrive
+   at a pace that lets it be read. The slide underneath both runs longer than
+   either fade, so the movement is still settling after the page is already
+   readable -- which is what stops it reading as a slideshow.
+   -------------------------------------------------------------------------- */
+
+/* The transition overlay swallows clicks for as long as it is up. On a
+   prerendered site the new page is interactive immediately, so a press landing
+   during the animation is a press the visitor will believe was ignored. */
+::view-transition {
+  pointer-events: none;
+}
+
+/* The header does not move.
+
+   A sliding header takes the visitor's one fixed reference with it, and then
+   nothing on screen says the *content* changed rather than the whole window.
+   Naming it lifts it out of the root snapshot so the slide happens underneath
+   it; `display: none` on the old copy is what stops both headers being briefly
+   painted over each other, which shows up as a flicker on the wordmark.
+
+   It is done here rather than as an inline style on the element because the
+   class already exists and is already unique -- `site-header.tsx` should not
+   have to know this feature exists. */
+.site-header {
+  view-transition-name: site-header;
+}
+
+::view-transition-group(site-header) {
+  animation: none;
+  z-index: 100;
+}
+
+::view-transition-old(site-header) {
+  display: none;
+}
+
+::view-transition-new(site-header) {
+  animation: none;
+}
+
+::view-transition-old(.nav-forward) {
+  --page-slide: -48px;
+  animation:
+    140ms var(--ck-ease) both page-fade reverse,
+    320ms var(--ck-ease) both page-slide reverse;
+}
+
+::view-transition-new(.nav-forward) {
+  --page-slide: 48px;
+  animation:
+    200ms var(--ck-ease) 140ms both page-fade,
+    320ms var(--ck-ease) both page-slide;
+}
+
+::view-transition-old(.nav-back) {
+  --page-slide: 48px;
+  animation:
+    140ms var(--ck-ease) both page-fade reverse,
+    320ms var(--ck-ease) both page-slide reverse;
+}
+
+::view-transition-new(.nav-back) {
+  --page-slide: -48px;
+  animation:
+    200ms var(--ck-ease) 140ms both page-fade,
+    320ms var(--ck-ease) both page-slide;
+}
+
+@keyframes page-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes page-slide {
+  from {
+    translate: var(--page-slide, 0);
+  }
+  to {
+    translate: 0;
+  }
+}
+
+/* The global reduce block at the top of this file cannot reach these: a
+   `::view-transition-*` pseudo-element is not matched by `*`, so the durations
+   it flattens everywhere else are still full length here. A directional slide
+   is also the single most likely thing on this site to trigger motion
+   sensitivity -- it moves the entire viewport -- so this is the one that most
+   has to go. What is left is the browser's default, which is an instant swap. */
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   The storefront action, filled by a wipe rather than by a colour change.
+
+   `.btn-plain` answered a hover by transitioning `background-color`: the whole
+   rectangle went from empty to green at once, everywhere, and the label had to
+   change from green to white at the same time. Those two are the problem. A
+   colour crossfade has no direction, so nothing about it says which way the
+   press is going; and for the length of the transition the label is a blend of
+   two colours over a ground that is also a blend of two colours, which is the
+   one moment in the interaction where the words are least readable.
+
+   The hero's call to action already solved this, and solved it better than this
+   can -- see `.hero-cta-fill`, which lays a second, already-white copy of the
+   label over the first and clips it open, so no colour anywhere transitions and
+   the letters change exactly as the edge crosses them. That treatment costs a
+   duplicated label in the markup, which is affordable once, on the one button
+   the home page is built around.
+
+   This is the same gesture at the price the other eleven can pay: one
+   pseudo-element, no markup anywhere, and it reaches every `.btn-plain` on the
+   site at once -- "compare all plans", "see the full menu", "more about us",
+   "view plan" on each note, "compare the plans", the cycle board's replay. The
+   label still crossfades rather than wiping per pixel, and the delay below is
+   what keeps that honest: the colour starts changing 90ms in, as the edge is
+   passing under the text, instead of at the moment the pointer arrives.
+
+   `clip-path` is the sanctioned fourth animatable property alongside transform
+   and opacity -- composited, so this costs no layout and no paint.
+
+   The hero's button is excluded by name. It already has the better version of
+   this, and giving it both would clip a green rectangle open underneath a green
+   rectangle that was already there.
+
+   The two durations are asymmetric for the reason `.hero-cta-fill` gives:
+   filling is the deliberate half and gets 300ms, emptying is the interface
+   getting out of the way and gets 200.
+   -------------------------------------------------------------------------- */
+.btn-plain:not(.hero-cta) {
+  position: relative;
+  /* Opens a stacking context, so the `z-index: -1` below lands behind the
+     label and not behind the section's background. */
+  isolation: isolate;
+  overflow: hidden;
+}
+
+.btn-plain:not(.hero-cta)::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-color: var(--ck-brand);
+  /* Retracted to the left edge. Not `scaleX(0)`, which would blur the edge as
+     it grows; the clip leaves the fill at its true size and only changes how
+     much of it is painted. */
+  clip-path: inset(0 100% 0 0);
+  transition: clip-path 200ms var(--ck-ease);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  /* The flat fill has to be called off, or it lands under the wipe instantly
+     and there is nothing left for the wipe to reveal. Same specificity as
+     `.btn-plain:hover`, later in the file, so this wins on source order -- the
+     same cascade the hero's button already relies on. */
+  .btn-plain:not(.hero-cta):hover {
+    background-color: transparent;
+    color: #fff;
+    transition-delay: 90ms;
+  }
+
+  .btn-plain:not(.hero-cta):hover::before {
+    clip-path: inset(0 0 0 0);
+    transition-duration: 300ms;
+  }
+}
+
+/* Keyboard reach gets the filled state without the travel. A wipe is a response
+   to a pointer crossing the control; there is no pointer here, and 300ms of
+   animation between two tab stops is 300ms of the page moving while somebody is
+   trying to navigate it. */
+.btn-plain:not(.hero-cta):focus-visible {
+  background-color: transparent;
+  color: #fff;
+}
+
+.btn-plain:not(.hero-cta):focus-visible::before {
+  clip-path: inset(0 0 0 0);
+  transition-duration: 0ms;
+}
+
+/* Press goes past the fill to the ink, matching `.btn-plain:active`, and it
+   completes the wipe rather than waiting for it: a press is an answer, and an
+   answer should already be there. Ungated, because a press is real on every
+   device -- this is the whole of the interaction on a phone, where the hover
+   above never runs. */
+.btn-plain:not(.hero-cta):active {
+  background-color: transparent;
+  color: #fff;
+  transition-delay: 0ms;
+}
+
+.btn-plain:not(.hero-cta):active::before {
+  background-color: var(--ck-text);
+  clip-path: inset(0 0 0 0);
+  transition-duration: 120ms;
 }
