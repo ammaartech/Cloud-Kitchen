@@ -5771,8 +5771,20 @@ html:has(.nav-sheet[open]) {
    move a centred panel -- they are symmetric -- but they count as part of its
    box, so Chrome slides it back in while there is still a rem of air rather
    than letting it sit flat against the edge of the window. The try-fallback
-   covers an engine that overflows instead of sliding: it hangs flush from the
-   trigger's right edge, the way it always used to. */
+   covers an engine that overflows instead of sliding: it stops centring and
+   hangs from the trigger's right edge instead.
+
+   The fallback is written as a bare position-area rather than as a named
+   `@position-try` rule, because Turbopack's CSS parser does not know that
+   at-rule and fails to parse the whole sheet when it meets one. The inline
+   form says the same thing in a value, which it does parse, and the browsers
+   that implement any of this accept it -- `CSS.supports` agrees, while the
+   `position-area()` function form some drafts used is rejected.
+
+   What is lost with the rule gone is its `margin: 0.5rem 0 0`: the side
+   margins above carry into the fallback, so the panel hangs a rem inside the
+   trigger's right edge rather than flush with it. On the narrow window this
+   fallback exists for, a rem of air at the edge is the better of the two. */
 @supports (anchor-name: --a) {
   .account-panel {
     position-anchor: --account-trigger;
@@ -5780,13 +5792,8 @@ html:has(.nav-sheet[open]) {
     right: auto;
     margin: 0.5rem 1rem 0;
     position-area: bottom;
-    position-try-fallbacks: --account-panel-flush;
+    position-try-fallbacks: bottom span-left;
   }
-}
-
-@position-try --account-panel-flush {
-  position-area: bottom span-left;
-  margin: 0.5rem 0 0;
 }
 
 /* Closed, and where opening starts from: rolled up to its top edge and lifted
