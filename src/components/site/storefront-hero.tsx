@@ -536,7 +536,12 @@ export function StorefrontHero({
  * the intrinsic size travels with the file. See the note over `SHOTS` in
  * `app/whatsapp/hero-reel.tsx`, which shares these four photographs.
  */
-const BOWL_SHOTS = [idliVada, pooriChole, masalaDosa, riceBath];
+const BOWL_SHOTS = [
+  { image: idliVada, alt: 'Idli and medu vada in a bowl with sambar and coconut chutney' },
+  { image: pooriChole, alt: 'Puffed pooris on a plate with a bowl of chole and lemon' },
+  { image: masalaDosa, alt: 'Crisp masala dosa on a banana leaf with sambar and chutneys' },
+  { image: riceBath, alt: 'Spiced rice bath with green peas and coriander in a bowl' },
+];
 
 function HeroBowl() {
   return (
@@ -547,9 +552,14 @@ function HeroBowl() {
       >
         {BOWL_SHOTS.map((shot, index) => (
           <Image
-            key={shot.src}
-            src={shot}
-            alt=""
+            key={shot.image.src}
+            src={shot.image}
+            /* Named, not decorative: this is the largest photograph on the
+               site and the one that says what the kitchen cooks, and nothing
+               near it names the dish. Each shot names its own, so the reader
+               is told what the sighted visitor sees as the panel dissolves
+               from one to the next. */
+            alt={shot.alt}
             sizes="(max-width: 64rem) 100vw, 56vw"
             /* Only the first pre-empts the network. It is the LCP element at
                `lg`; the other three have a second, two and three of runway.

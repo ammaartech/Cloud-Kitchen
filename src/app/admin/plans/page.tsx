@@ -132,7 +132,7 @@ export default async function PlansPage({ searchParams }: PageProps<'/admin/plan
     const { data, error } = await db
       .from('subscription_plans')
       .insert({
-        slug: str(formData, 'slug') || slugify(name),
+        slug: slugify(str(formData, 'slug') || name),
         name,
         plan_type: planType,
         price: num(formData, 'price'),

@@ -87,7 +87,7 @@ export default async function CategoriesPage({
     const db = await serverClient();
     const { error } = await db.from('categories').insert({
       name,
-      slug: str(formData, 'slug') || slugify(name),
+      slug: slugify(str(formData, 'slug') || name),
       description: str(formData, 'description'),
       image_url: str(formData, 'imageUrl') || null,
       sort_order: num(formData, 'sortOrder', categories.length),
@@ -110,7 +110,7 @@ export default async function CategoriesPage({
       .from('categories')
       .update({
         name: str(formData, 'name'),
-        slug: str(formData, 'slug'),
+        slug: slugify(str(formData, 'slug') || str(formData, 'name')),
         description: str(formData, 'description'),
         image_url: str(formData, 'imageUrl') || null,
         sort_order: num(formData, 'sortOrder'),

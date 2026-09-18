@@ -9,7 +9,7 @@ import { PERMISSIONS } from '@/lib/auth/permissions';
 import { serverClient } from '@/lib/supabase/server';
 import { rowOf, rowsOf } from '@/lib/supabase/query';
 import { money } from '@/lib/format';
-import { bool, list, nullableNum, num, str } from '@/lib/admin/form';
+import { bool, list, nullableNum, num, slugify, str } from '@/lib/admin/form';
 import { ActionFeedback, done, fail, flashFrom, readable } from '@/lib/admin/feedback';
 import { CatalogNav } from '@/components/admin/catalog-nav';
 import { isOptimisableImage } from '@/lib/images';
@@ -209,7 +209,8 @@ export default async function ProductEditorPage({
       .from('products')
       .update({
         name,
-        slug: str(formData, 'slug'),
+        // Normalised on the way in, so the product's URL stays lowercase and hyphenated.
+        slug: slugify(str(formData, 'slug') || name),
         short_description: str(formData, 'shortDescription'),
         description: str(formData, 'description'),
         category_id: str(formData, 'categoryId') || null,

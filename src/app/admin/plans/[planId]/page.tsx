@@ -8,7 +8,7 @@ import { PERMISSIONS } from '@/lib/auth/permissions';
 import { serverClient } from '@/lib/supabase/server';
 import { rowOf, rowsOf } from '@/lib/supabase/query';
 import { clockTime, money, weekdayName, PLAN_TYPE_LABELS } from '@/lib/format';
-import { bool, list, nullableBool, nullableNum, num, str } from '@/lib/admin/form';
+import { bool, list, nullableBool, nullableNum, num, slugify, str } from '@/lib/admin/form';
 import { ActionFeedback, done, fail, flashFrom, readable } from '@/lib/admin/feedback';
 
 import {
@@ -189,7 +189,9 @@ export default async function PlanEditorPage({
       .from('subscription_plans')
       .update({
         name: str(formData, 'name'),
-        slug: str(formData, 'slug'),
+        // Normalised on the way in, so a slug typed as "Weekday Lunch" is stored
+        // as `weekday-lunch` and the plan's URL stays lowercase and hyphenated.
+        slug: slugify(str(formData, 'slug') || str(formData, 'name')),
         tagline: str(formData, 'tagline'),
         description: str(formData, 'description'),
         image_url: str(formData, 'imageUrl') || null,

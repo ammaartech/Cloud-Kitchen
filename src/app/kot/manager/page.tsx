@@ -12,7 +12,7 @@ import { ISO_DATE, todayISO } from '@/lib/kot/date';
 
 export const instant = false;
 
-export const metadata = { title: 'KOT Manager' };
+export const metadata = { title: 'KOT Manager', robots: { index: false, follow: false } };
 
 const VALID_TABS: readonly KotTabKey[] = ['live', 'completed', 'all'];
 

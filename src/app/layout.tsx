@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import { Inter, JetBrains_Mono, Poppins } from 'next/font/google';
 import localFont from 'next/font/local';
+import { publicEnv } from '@/lib/env-public';
 import './globals.css';
 
 /**
@@ -116,13 +117,57 @@ const noteText = localFont({
   fallback: ['system-ui', 'sans-serif'],
 });
 
+/**
+ * Site-wide metadata. Every page inherits this and overrides only its title
+ * and description.
+ *
+ * `metadataBase` is what turns the relative URLs below -- the canonical, the
+ * Open Graph image `app/opengraph-image.tsx` emits -- into absolute ones, and
+ * it comes from `NEXT_PUBLIC_SITE_URL` so a preview deployment and production
+ * each describe themselves rather than each other.
+ *
+ * `canonical: './'` resolves against the current route's pathname, so every
+ * page declares its own clean URL as the canonical one: `/menu?q=dosa` and
+ * `/subscriptions/x?error=invalid` both point search engines at the page
+ * without the query string.
+ */
 export const metadata: Metadata = {
+  metadataBase: new URL(publicEnv.siteUrl),
   title: {
     default: 'Infinity Kitchens',
     template: '%s · Infinity Kitchens',
   },
   description:
     'Home-style meals on subscription, cooked fresh each day in a single kitchen.',
+  applicationName: 'Infinity Kitchens',
+  alternates: {
+    canonical: './',
+  },
+  // No title or description here on purpose: left unset, each page's own
+  // title and description are what the share card shows.
+  openGraph: {
+    type: 'website',
+    siteName: 'Infinity Kitchens',
+    locale: 'en_IN',
+  },
+  twitter: {
+    card: 'summary_large_image',
+  },
+  /**
+   * Search engine ownership verification, by meta tag.
+   *
+   * Each value is the token the console hands out when you add the site by
+   * URL prefix. Left blank, no tag is emitted. The DNS TXT method is the
+   * better one where the domain's DNS is in reach -- it verifies every
+   * subdomain and protocol at once -- but this is the one that needs no
+   * access beyond the Vercel environment variables.
+   */
+  verification: {
+    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || undefined,
+    other: process.env.NEXT_PUBLIC_BING_SITE_VERIFICATION
+      ? { 'msvalidate.01': process.env.NEXT_PUBLIC_BING_SITE_VERIFICATION }
+      : undefined,
+  },
 };
 
 /* Keep browser zoom available, but make the layout viewport explicit and let

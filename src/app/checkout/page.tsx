@@ -29,7 +29,8 @@ import { SwitchAccountButton } from '@/components/checkout/switch-account';
  */
 export const instant = false;
 
-export const metadata = { title: 'Checkout' };
+// A step in a purchase, keyed to a cookie. Never something a search result should point at.
+export const metadata = { title: 'Checkout', robots: { index: false, follow: false } };
 
 interface Quote {
   subtotal: number | string;

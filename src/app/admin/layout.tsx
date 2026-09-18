@@ -16,6 +16,9 @@ import { SignOutButton } from '@/components/auth/sign-out-button';
  */
 export const instant = false;
 
+// Staff-only. Never something a search result should point at.
+export const metadata = { robots: { index: false, follow: false } };
+
 /**
  * Owner / Developer Admin shell.
  *

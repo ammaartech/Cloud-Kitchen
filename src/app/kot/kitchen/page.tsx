@@ -18,7 +18,7 @@ import { KITCHEN_STATUSES, type BoardTicket } from '@/lib/realtime/kot-board-sha
  */
 export const instant = false;
 
-export const metadata = { title: 'Kitchen Display' };
+export const metadata = { title: 'Kitchen Display', robots: { index: false, follow: false } };
 
 export default async function KitchenPage() {
   const supabase = await serverClient();

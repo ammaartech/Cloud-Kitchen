@@ -17,7 +17,7 @@ import { SignInPanel } from '@/components/auth/sign-in-panel';
  */
 export const instant = false;
 
-export const metadata = { title: 'Sign in' };
+export const metadata = { title: 'Sign in', robots: { index: false, follow: false } };
 
 // The demo panel reads live account rows, so this page must not be cached.
 

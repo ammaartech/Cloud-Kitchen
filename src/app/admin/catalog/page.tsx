@@ -103,7 +103,7 @@ export default async function CatalogPage({ searchParams }: PageProps<'/admin/ca
       .from('products')
       .insert({
         name,
-        slug: str(formData, 'slug') || slugify(name),
+        slug: slugify(str(formData, 'slug') || name),
         short_description: str(formData, 'shortDescription'),
         category_id: str(formData, 'categoryId') || null,
         base_price: num(formData, 'basePrice'),

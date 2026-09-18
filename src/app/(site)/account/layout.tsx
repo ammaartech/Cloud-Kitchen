@@ -12,6 +12,9 @@ import { AccountNav } from '@/components/account/account-nav';
  */
 export const instant = false;
 
+// Per-customer, behind a session. Never something a search result should point at.
+export const metadata = { robots: { index: false, follow: false } };
+
 /**
  * Customer account shell.
  *

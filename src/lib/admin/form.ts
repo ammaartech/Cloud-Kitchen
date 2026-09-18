@@ -50,8 +50,10 @@ export function list(form: FormData, key: string): string[] {
 
 /**
  * Derives a URL-safe slug from a name so the create forms do not make the
- * Owner invent one. Slugs stay editable afterwards -- this is a starting
- * point, not a rule.
+ * Owner invent one, and normalises whatever slug an editor types. Slugs stay
+ * editable afterwards, but every path that stores one runs it through here,
+ * so a storefront URL is always lowercase, hyphenated and free of spaces and
+ * punctuation whatever was typed into the box.
  */
 export function slugify(input: string): string {
   return input

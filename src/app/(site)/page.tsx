@@ -17,9 +17,70 @@ import { StepFlow, Typewriter } from '@/components/site/step-flow';
 import { HangingPhotos } from '@/components/site/hanging-photos';
 import { MarqueeBand } from '@/components/site/marquee-band';
 import { ArrowRightIcon } from '@/components/site/icons';
+import { JsonLd } from '@/components/site/json-ld';
+import { CONTACT } from '@/components/site/contact';
+import { publicEnv } from '@/lib/env-public';
 
+/**
+ * The home page is the one page that has to win a search for the brand's own
+ * name, so its title is the brand first and the city second, as an absolute
+ * string rather than through the root template (which would put the name at
+ * the end). "Bengaluru" and "Bangalore" both appear because people search for
+ * both, and the description is where the second one fits naturally.
+ */
 export const metadata = {
-  title: 'Home-style meals, on subscription',
+  title: { absolute: 'Infinity Kitchens · Home-style meal subscriptions in Bengaluru' },
+  description:
+    'Infinity Kitchens is a cloud kitchen in North Bangalore cooking home-style South Indian meals on subscription. Pick a plan, set your days, skip or pause any time.',
+};
+
+/**
+ * What the kitchen is, for search engines.
+ *
+ * A `FoodEstablishment` rather than `Restaurant`: there is no dining room.
+ * Only facts the site already states in words are included -- the WhatsApp
+ * number from the footer, the delivery area from the About page -- so this
+ * can never claim something the page does not. The placeholder email and
+ * Instagram handle in `CONTACT` are deliberately left out until they are real.
+ */
+const ORGANIZATION_SCHEMA = {
+  '@context': 'https://schema.org',
+  '@type': 'FoodEstablishment',
+  '@id': `${publicEnv.siteUrl}/#organization`,
+  name: 'Infinity Kitchens',
+  // The other names people type. "BLR" is how the city is abbreviated
+  // locally, and a search engine only connects it to this kitchen if the
+  // page says so.
+  alternateName: [
+    'Infinity Kitchens Bengaluru',
+    'Infinity Kitchens Bangalore',
+    'Infinity Kitchens BLR',
+  ],
+  url: publicEnv.siteUrl,
+  logo: `${publicEnv.siteUrl}/brand/mark-green.png`,
+  image: `${publicEnv.siteUrl}/opengraph-image`,
+  telephone: CONTACT.whatsappDisplay,
+  servesCuisine: 'South Indian',
+  address: {
+    '@type': 'PostalAddress',
+    addressLocality: 'Bengaluru',
+    addressRegion: 'Karnataka',
+    addressCountry: 'IN',
+  },
+  areaServed: 'North Bangalore',
+  hasMenu: `${publicEnv.siteUrl}/menu`,
+  // Only real profiles. The Instagram handle in `CONTACT` is a placeholder
+  // until ops sets it, and a schema pointing at a page that is not ours is
+  // worse than one that names no profiles at all.
+  ...(CONTACT.instagramHandle !== '@example' ? { sameAs: [CONTACT.instagramHref] } : {}),
+};
+
+const WEBSITE_SCHEMA = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: 'Infinity Kitchens',
+  url: publicEnv.siteUrl,
+  publisher: { '@id': `${publicEnv.siteUrl}/#organization` },
 };
 
 /**
@@ -106,6 +167,8 @@ export default async function HomePage() {
 
   return (
     <>
+      <JsonLd data={ORGANIZATION_SCHEMA} />
+      <JsonLd data={WEBSITE_SCHEMA} />
       <StorefrontHero plans={plans} menu={menu} windows={windows} />
 
       {/* ---------------------------------------------------------------- */}

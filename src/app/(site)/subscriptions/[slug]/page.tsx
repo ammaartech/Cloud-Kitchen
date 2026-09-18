@@ -11,6 +11,8 @@ import { FlowProgress } from '@/components/checkout/flow-progress';
 import { ArrowLeftIcon } from '@/components/site/icons';
 import { PLAN_TYPE_LABELS } from '@/lib/format';
 import { Alert } from '@/components/ui/primitives';
+import { JsonLd } from '@/components/site/json-ld';
+import { publicEnv } from '@/lib/env-public';
 
 /**
  * Enumerates every plan so each one is prerendered at build rather than on the
@@ -54,7 +56,10 @@ async function ConfigurationError({
 export async function generateMetadata({ params }: PageProps<'/subscriptions/[slug]'>) {
   const { slug } = await params;
   const plan = await getPlan(slug);
-  return { title: plan?.name ?? 'Plan' };
+  if (!plan) return { title: 'Plan' };
+  // The tagline is written to be read in one line; the description is the
+  // fallback for a plan whose tagline the kitchen left blank.
+  return { title: plan.name, description: plan.tagline || plan.description };
 }
 
 export default async function PlanPage({
@@ -124,8 +129,31 @@ export default async function PlanPage({
       ? `${plan.creditsPerCycle} credits`
       : `${plan.mealsPerCycle} meals`;
 
+  /**
+   * The plan as a product, for search engines. Price and currency are what
+   * the page itself shows; availability is `InStock` because a plan that is
+   * not on offer is not returned by `getPlan` at all.
+   */
+  const productSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: plan.name,
+    description: plan.tagline || plan.description,
+    url: `${publicEnv.siteUrl}/subscriptions/${plan.slug}`,
+    category: kind,
+    brand: { '@type': 'Brand', name: 'Infinity Kitchens' },
+    offers: {
+      '@type': 'Offer',
+      price: plan.price,
+      priceCurrency: 'INR',
+      availability: 'https://schema.org/InStock',
+      url: `${publicEnv.siteUrl}/subscriptions/${plan.slug}`,
+    },
+  };
+
   const header = (
     <header>
+      <JsonLd data={productSchema} />
       <p className="ticket-meta">
         <span>{kind}</span>
       </p>

@@ -92,7 +92,7 @@ export default async function CollectionsPage({
     const db = await serverClient();
     const { error } = await db.from('collections').insert({
       name,
-      slug: str(formData, 'slug') || slugify(name),
+      slug: slugify(str(formData, 'slug') || name),
       description: str(formData, 'description'),
       image_url: str(formData, 'imageUrl') || null,
       sort_order: num(formData, 'sortOrder', collections.length),
@@ -115,7 +115,7 @@ export default async function CollectionsPage({
       .from('collections')
       .update({
         name: str(formData, 'name'),
-        slug: str(formData, 'slug'),
+        slug: slugify(str(formData, 'slug') || str(formData, 'name')),
         description: str(formData, 'description'),
         image_url: str(formData, 'imageUrl') || null,
         sort_order: num(formData, 'sortOrder'),

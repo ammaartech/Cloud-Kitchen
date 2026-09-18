@@ -14,7 +14,7 @@ import { SignOutButton } from '@/components/auth/sign-out-button';
  */
 export const instant = false;
 
-export const metadata = { title: 'Not permitted' };
+export const metadata = { title: 'Not permitted', robots: { index: false, follow: false } };
 
 /**
  * Shown when a signed-in user reaches a screen their role does not cover.
