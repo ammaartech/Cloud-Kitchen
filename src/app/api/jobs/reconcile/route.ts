@@ -23,21 +23,14 @@ export async function POST(request: Request) {
   const from = new Date(to.getTime() - 24 * 60 * 60 * 1000);
   const results: Record<string, unknown> = {};
 
-  // Website tickets have no aggregator to push a delivered event, so any that
-  // are stuck at "handed off" past the grace window are auto-closed here.
-  const { data: swept, error: sweepError } = await adminClient().rpc('sweep_stale_picked_up', {
-    p_now: to.toISOString(),
-  });
-  results.sweep_stale_picked_up = sweepError ? { error: sweepError.message } : swept;
-
-  for (const provider of ['swiggy', 'zomato'] as const) {
+  async function reconcile(provider: 'swiggy' | 'zomato'): Promise<void> {
     try {
       const adapter = marketplaceAdapter(provider);
       const listed = await adapter.listOrderIds(from, to);
 
       if (!listed.ok) {
         results[provider] = { skipped: true, reason: listed.reason, state: listed.state };
-        continue;
+        return;
       }
 
       const { data, error } = await adminClient().rpc('reconcile_marketplace_orders', {
@@ -54,6 +47,19 @@ export async function POST(request: Request) {
       };
     }
   }
+
+  // Website tickets have no aggregator to push a delivered event, so any that
+  // are stuck at "handed off" past the grace window are auto-closed here.
+  async function sweep(): Promise<void> {
+    const { data, error } = await adminClient().rpc('sweep_stale_picked_up', {
+      p_now: to.toISOString(),
+    });
+    results.sweep_stale_picked_up = error ? { error: error.message } : data;
+  }
+
+  // The sweep and the two providers touch disjoint rows, so they run side by
+  // side rather than paying three sets of round-trips in sequence.
+  await Promise.all([sweep(), reconcile('swiggy'), reconcile('zomato')]);
 
   return NextResponse.json({ window: { from, to }, results });
 }

@@ -114,6 +114,18 @@ export function renderTemplate(template: string, payload: Record<string, unknown
   });
 }
 
+/** Sends in flight at once. Enough to overlap provider latency, few enough to stay under Twilio's rate limits. */
+const SEND_CONCURRENCY = 5;
+
+interface Outcome {
+  id: string;
+  sent: boolean;
+  body: string;
+  provider_message_id?: string;
+  error?: string;
+  retryable?: boolean;
+}
+
 /**
  * Drains the outbox.
  *
@@ -121,6 +133,11 @@ export function renderTemplate(template: string, payload: Record<string, unknown
  * one bad number cannot stall the queue behind it, and a retryable failure is
  * backed off exponentially until max_attempts, then parked in dead_letter for
  * a human to look at.
+ *
+ * The database work is batched: one call claims the batch (locking it, so an
+ * overlapping run cannot send the same message twice), one reads templates,
+ * one records every outcome. The retry rules live in `complete_notifications`
+ * (migration 0108).
  */
 export async function dispatchQueuedNotifications(limit = 50): Promise<{
   attempted: number;
@@ -130,13 +147,15 @@ export async function dispatchQueuedNotifications(limit = 50): Promise<{
   const db = adminClient();
   const transport = notificationTransport();
 
-  const { data: queued, error } = await db
-    .from('notifications')
-    .select('id, channel, to_address, payload, rendered_body, attempts, max_attempts, template_code')
-    .in('status', ['queued', 'failed'])
-    .lte('next_attempt_at', new Date().toISOString())
-    .order('created_at', { ascending: true })
-    .limit(limit);
+  const { data, error } = await db.rpc('claim_notifications', { p_limit: limit });
+  const queued = data as Array<{
+    id: string;
+    channel: NotificationChannel;
+    to_address: string;
+    payload: Record<string, unknown> | null;
+    rendered_body: string | null;
+    template_code: string | null;
+  }> | null;
 
   if (error || !queued?.length) {
     return { attempted: 0, sent: 0, failed: 0 };
@@ -154,77 +173,57 @@ export async function dispatchQueuedNotifications(limit = 50): Promise<{
     for (const row of rows ?? []) templates.set(row.code, row.body_template);
   }
 
-  let sent = 0;
-  let failed = 0;
+  const outcomes: Outcome[] = [];
+  let next = 0;
 
-  for (const item of queued) {
-    const body =
-      item.rendered_body ??
-      renderTemplate(
-        templates.get(item.template_code ?? '') ?? '',
-        (item.payload ?? {}) as Record<string, unknown>,
-      );
+  const worker = async (): Promise<void> => {
+    while (next < queued.length) {
+      const item = queued[next++];
+      const body =
+        item.rendered_body ??
+        renderTemplate(templates.get(item.template_code ?? '') ?? '', item.payload ?? {});
 
-    await db.from('notifications').update({ status: 'sending' }).eq('id', item.id);
+      let result: SendResult;
+      try {
+        result = await transport.send({
+          id: item.id,
+          channel: item.channel,
+          to: item.to_address,
+          body,
+        });
+      } catch (cause) {
+        result = {
+          sent: false,
+          error: cause instanceof Error ? cause.message : 'Transport threw',
+          retryable: true,
+        };
+      }
 
-    let result: SendResult;
-    try {
-      result = await transport.send({
+      outcomes.push({
         id: item.id,
-        channel: item.channel,
-        to: item.to_address,
+        sent: result.sent,
         body,
+        provider_message_id: result.providerMessageId,
+        error: result.error,
+        retryable: result.retryable,
       });
-    } catch (cause) {
-      result = {
-        sent: false,
-        error: cause instanceof Error ? cause.message : 'Transport threw',
-        retryable: true,
-      };
     }
+  };
 
-    const attempts = item.attempts + 1;
+  await Promise.all(
+    Array.from({ length: Math.min(SEND_CONCURRENCY, queued.length) }, worker),
+  );
 
-    if (result.sent) {
-      sent += 1;
-      await db
-        .from('notifications')
-        .update({
-          status: 'sent',
-          attempts,
-          sent_at: new Date().toISOString(),
-          rendered_body: body,
-          provider: transport.id,
-          provider_message_id: result.providerMessageId,
-          last_error: null,
-        })
-        .eq('id', item.id);
-    } else {
-      failed += 1;
-      const exhausted = attempts >= item.max_attempts || result.retryable === false;
-
-      await db
-        .from('notifications')
-        .update({
-          status: exhausted ? 'dead_letter' : 'failed',
-          attempts,
-          rendered_body: body,
-          last_error: result.error ?? 'Unknown error',
-          // Exponential backoff, capped so a long outage does not push the
-          // next attempt days away.
-          next_attempt_at: new Date(
-            Date.now() + Math.min(2 ** attempts, 60) * 60_000,
-          ).toISOString(),
-        })
-        .eq('id', item.id);
-    }
-
-    await db.from('notification_events').insert({
-      notification_id: item.id,
-      event_type: result.sent ? 'sent' : 'failed',
-      payload: { transport: transport.id, error: result.error ?? null },
-    });
+  // If this write fails the rows stay in 'sending' and are reclaimed by a
+  // later run once stale -- a possible resend, never a lost message.
+  const { error: completeError } = await db.rpc('complete_notifications', {
+    p_provider: transport.id,
+    p_results: outcomes,
+  });
+  if (completeError) {
+    console.error('[notifications] failed to record outcomes', completeError.message);
   }
 
-  return { attempted: queued.length, sent, failed };
+  const sent = outcomes.filter((o) => o.sent).length;
+  return { attempted: queued.length, sent, failed: outcomes.length - sent };
 }
