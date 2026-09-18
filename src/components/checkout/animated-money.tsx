@@ -2,7 +2,7 @@
 
 import { useLayoutEffect, useRef } from 'react';
 import { money } from '@/lib/format';
-import { countTo } from './checkout-gsap';
+import { countTo } from './checkout-motion';
 
 /**
  * An amount that counts to its new value when the value changes.

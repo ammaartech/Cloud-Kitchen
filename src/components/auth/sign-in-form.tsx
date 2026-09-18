@@ -22,7 +22,7 @@ type Phase = 'idle' | 'pending' | 'success';
 /**
  * The refusal, as the checkout says it: a short sideways shake on the thing
  * that said no, paired with the words that say why. Same keyframes and 360ms as
- * `shake()` in `checkout-gsap.ts`; written with the Web Animations API because
+ * `shake()` in `checkout-motion.ts`; written with the Web Animations API because
  * this page does not otherwise load GSAP, and a shake is not worth a library.
  */
 function shake(target: Element | null | undefined): void {

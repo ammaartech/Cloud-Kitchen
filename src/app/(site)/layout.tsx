@@ -46,7 +46,7 @@ export default function SiteLayout({ children }: LayoutProps<'/'>) {
 
       <SiteHeader />
 
-      <main className="flex-1">{children}</main>
+      <main className="customer-main flex-1">{children}</main>
 
       {/* Its plans column reads the catalog the way `OfferBar` reads offers:
           on its own, cached, so this function still has nothing to await. */}

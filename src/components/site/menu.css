@@ -471,6 +471,14 @@
   display: none;
 }
 
+@media (hover: none), (pointer: coarse) {
+  .menu-index {
+    background-color: color-mix(in srgb, var(--ck-bg) 98%, transparent);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
 .menu-index-link {
   position: relative;
   z-index: 1;

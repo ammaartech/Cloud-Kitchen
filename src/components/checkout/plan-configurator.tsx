@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { useId, useRef, useState, type ReactNode } from 'react';
+import { useId, useLayoutEffect, useRef, useState, type ReactNode } from 'react';
 import { useFormStatus } from 'react-dom';
 import type { PlanSummary, ProductCard } from '@/lib/data/catalog';
 import { clockTime, money, weekdayList, weekdayName, PLAN_TYPE_LABELS } from '@/lib/format';
@@ -9,7 +9,7 @@ import { Spinner, cx } from '@/components/ui/primitives';
 import { buttonClasses } from '@/components/ui/button-styles';
 import { ArrowRightIcon, CheckIcon, TagIcon } from '@/components/site/icons';
 import { useChoiceFlip } from './choice-flip';
-import { gsap, motionAllowed, shake, useGSAP } from './checkout-gsap';
+import { CHECKOUT_EASE, motionAllowed, shake } from './checkout-motion';
 
 type DaysMode = 'every' | 'weekdays' | 'custom';
 type Section = 'window' | 'days' | 'meals';
@@ -109,27 +109,46 @@ export function PlanConfigurator({
 
   // The meter runs to its new length, and a newly chosen meal has its tick
   // written in. Both are answers to a tap, so they run on change only.
-  useGSAP(
-    () => {
-      const fill = mealsBody.current?.querySelector('.cfg-meter-fill');
-      const from = previousRatio.current;
-      previousRatio.current = ratio;
+  useLayoutEffect(() => {
+    const fill = mealsBody.current?.querySelector<HTMLElement>('.cfg-meter-fill');
+    const from = previousRatio.current;
+    previousRatio.current = ratio;
 
-      if (fill && from !== ratio && motionAllowed()) {
-        gsap.fromTo(fill, { '--fill': from }, { '--fill': ratio, duration: 0.45, ease: 'ck' });
-      }
+    if (fill && from !== ratio && motionAllowed()) {
+      fill.getAnimations().forEach((animation) => animation.cancel());
+      fill.animate(
+        [{ transform: `scaleX(${from})` }, { transform: `scaleX(${ratio})` }],
+        { duration: 450, easing: CHECKOUT_EASE },
+      );
+    }
 
-      const added = lastAdded.current;
-      lastAdded.current = null;
-      if (added && motionAllowed()) {
-        const card = mealsBody.current?.querySelector(`[data-meal="${added}"]`);
-        const tick = card?.querySelector('.cfg-meal-check path');
-        if (tick) gsap.fromTo(tick, { drawSVG: '0%' }, { drawSVG: '100%', duration: 0.35, ease: 'ck' });
-        if (card) gsap.fromTo(card, { scale: 0.98 }, { scale: 1, duration: 0.3, ease: 'back.out(3)', clearProps: 'scale' });
-      }
-    },
-    { dependencies: [meals], revertOnUpdate: false },
-  );
+    const added = lastAdded.current;
+    lastAdded.current = null;
+    if (!added || !motionAllowed()) return;
+
+    const card = mealsBody.current?.querySelector<HTMLElement>(`[data-meal="${added}"]`);
+    const tick = card?.querySelector<SVGPathElement>('.cfg-meal-check path');
+
+    if (tick) {
+      const length = tick.getTotalLength();
+      tick.animate(
+        [
+          { strokeDasharray: `${length}`, strokeDashoffset: `${length}` },
+          { strokeDasharray: `${length}`, strokeDashoffset: '0' },
+        ],
+        { duration: 350, easing: CHECKOUT_EASE },
+      );
+    }
+
+    /* The card overshoots slightly on the way back to full size. That small
+       push past 1 is what makes the tap read as a thing being picked up rather
+       than a box quietly resizing, so it uses a backed-out curve instead of the
+       shared one. */
+    card?.animate(
+      [{ transform: 'scale(0.98)' }, { transform: 'scale(1)' }],
+      { duration: 300, easing: 'cubic-bezier(0.34, 1.56, 0.64, 1)' },
+    );
+  }, [meals, ratio]);
 
   function toggleDay(day: number) {
     setCustomDays((current) =>

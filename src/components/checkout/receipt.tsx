@@ -6,7 +6,17 @@ import { buttonClasses } from '@/components/ui/button-styles';
 import { cx } from '@/components/ui/primitives';
 import { CheckIcon } from '@/components/site/icons';
 import { money } from '@/lib/format';
-import { gsap, motionAllowed, useGSAP } from './checkout-gsap';
+import { DrawSVGPlugin } from 'gsap/DrawSVGPlugin';
+import { ScrambleTextPlugin } from 'gsap/ScrambleTextPlugin';
+import { gsap, useGSAP } from './checkout-gsap';
+import { motionAllowed } from './checkout-motion';
+
+/* Registered here rather than in `checkout-gsap.ts`: the check being written
+   and the subscription number resolving out of noise are this file's effects
+   and nothing else's. Registering them beside the timeline that uses them is
+   what keeps two one-off plugins inside the receipt's lazy chunk instead of in
+   whatever loads GSAP first. */
+gsap.registerPlugin(DrawSVGPlugin, ScrambleTextPlugin);
 
 export interface ReceiptDetails {
   planName: string;

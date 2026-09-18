@@ -6,7 +6,7 @@ import { Spinner, cx } from '@/components/ui/primitives';
 import { buttonClasses } from '@/components/ui/button-styles';
 import { TagIcon } from '@/components/site/icons';
 import { money } from '@/lib/format';
-import { shake } from './checkout-gsap';
+import { shake } from './checkout-motion';
 
 /**
  * The offer code, in the order summary.

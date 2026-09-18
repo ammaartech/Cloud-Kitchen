@@ -58,7 +58,11 @@ export function AccountNav() {
               the hero's links it was carrying half of that column already --
               two labels for one destination is the reader having to work out
               whether they are the same thing. */}
-          <ButtonLink href="/subscriptions" size="sm" className="btn-caps btn-square">
+          <ButtonLink
+            href="/subscriptions"
+            size="sm"
+            className="account-plan-cta btn-caps btn-square"
+          >
             <span className="account-cta-long">Start a plan today</span>
             <span className="account-cta-short">Start a plan</span>
           </ButtonLink>

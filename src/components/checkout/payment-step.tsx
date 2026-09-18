@@ -1,6 +1,7 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import dynamic from 'next/dynamic';
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Alert, Badge, Spinner, cx } from '@/components/ui/primitives';
 import { buttonClasses } from '@/components/ui/button-styles';
 import { LockIcon } from '@/components/site/icons';
@@ -8,11 +9,35 @@ import { money } from '@/lib/format';
 import { openCashfree, openRazorpay, type GatewayResult } from '@/lib/payments/browser';
 import { CheckoutSection } from './checkout-section';
 import { DeliveryForm } from './delivery-form';
-import { Receipt } from './receipt';
 import { AnimatedMoney } from './animated-money';
 import { useCheckoutStage } from './checkout-stage';
 import { useChoiceFlip } from './choice-flip';
-import { gsap, motionAllowed, shake, useGSAP } from './checkout-gsap';
+import { CHECKOUT_EASE, motionAllowed, shake } from './checkout-motion';
+
+/* The receipt and the GSAP timeline it prints with are impossible to show
+   before a payment succeeds. Keeping both out of the initial checkout task
+   spares the phone parsing and evaluating them while it is competing with form
+   input and the gateway button.
+
+   `warmReceipt` is the other half of that trade. The chunk is fetched the
+   moment a payment is started, so it downloads alongside the gateway round
+   trip rather than after it -- the one moment in the flow where a spinner
+   would be least welcome is the one the customer paid for. Repeat calls are
+   free: the module registry returns the same promise. */
+const Receipt = dynamic(() => import('./receipt').then((module) => module.Receipt), {
+  loading: () => (
+    <p className="co-hint" role="status">
+      Preparing your receipt&hellip;
+    </p>
+  ),
+});
+
+function warmReceipt() {
+  void import('./receipt').catch(() => {
+    // A failed prefetch is not an error anyone can act on; rendering the
+    // receipt asks for the chunk again and reports properly if it is still gone.
+  });
+}
 
 export interface CheckoutAddress {
   id: string;
@@ -225,19 +250,22 @@ export function PaymentStep({
   useEffect(() => {
     if (!returningOrderId || resumeAttempted.current) return;
     resumeAttempted.current = true;
+    warmReceipt();
     void confirmPayment(returningOrderId, 'cashfree', { order_id: returningOrderId });
   }, [returningOrderId, confirmPayment]);
 
   // The button's words change with what it is waiting on; they slide rather
   // than swap, so a change of state reads as progress and not as a flicker.
-  useGSAP(
-    () => {
-      if (!motionAllowed()) return;
-      const label = payButton.current?.querySelector('.co-pay-label');
-      if (label) gsap.fromTo(label, { yPercent: 60, autoAlpha: 0 }, { yPercent: 0, autoAlpha: 1, duration: 0.28, ease: 'ck' });
-    },
-    { dependencies: [busy], revertOnUpdate: false },
-  );
+  useLayoutEffect(() => {
+    if (!motionAllowed()) return;
+    payButton.current?.querySelector<HTMLElement>('.co-pay-label')?.animate(
+      [
+        { opacity: 0, transform: 'translateY(60%)' },
+        { opacity: 1, transform: 'translateY(0)' },
+      ],
+      { duration: 280, easing: CHECKOUT_EASE },
+    );
+  }, [busy]);
 
   function fail(message: string) {
     setError(message);
@@ -260,6 +288,7 @@ export function PaymentStep({
 
     setBusy('starting');
     setError(null);
+    warmReceipt();
 
     let begun: { paymentId: string; checkout: Record<string, unknown> };
 

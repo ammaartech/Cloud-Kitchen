@@ -13,6 +13,8 @@
    -------------------------------------------------------------------------- */
 
 .acct-page {
+  width: 100%;
+  min-width: 0;
   padding-block: 1.5rem 5rem;
 }
 
@@ -1220,7 +1222,8 @@
   z-index: 45;
   display: flex;
   justify-content: center;
-  padding-inline: 1rem;
+  padding-left: max(1rem, env(safe-area-inset-left, 0px));
+  padding-right: max(1rem, env(safe-area-inset-right, 0px));
   pointer-events: none;
 }
 
@@ -1228,7 +1231,7 @@
    phone. */
 @media (max-width: 39.99rem) {
   .acct-notice {
-    padding-right: 4.25rem;
+    padding-right: max(4.25rem, calc(3.25rem + env(safe-area-inset-right, 0px)));
   }
 }
 
@@ -1273,4 +1276,21 @@
    same token for the same reason. */
 .acct-notice-card :focus-visible {
   outline-color: #fff;
+}
+
+/* Preserve the full fourteen-day overview on compact 320px-class phones while
+   keeping every linked day large enough to tap. */
+@media (max-width: 22rem) {
+  .acct-days {
+    gap: 0.25rem;
+  }
+
+  .acct-day-cell {
+    min-height: 4.125rem;
+    padding-inline: 0.125rem;
+  }
+
+  .acct-progress-label {
+    font-size: 0.625rem;
+  }
 }

@@ -13,7 +13,7 @@ import {
 } from '@/lib/checkout/fields';
 import { CheckoutField, describedBy } from './checkout-field';
 import { useChoiceFlip } from './choice-flip';
-import { shake } from './checkout-gsap';
+import { shake } from './checkout-motion';
 
 type Values = Record<DeliveryField, string>;
 

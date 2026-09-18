@@ -322,13 +322,46 @@ html {
   color-scheme: light;
 }
 
+/* Decorative full-bleed elements and translated entrance states on customer
+   routes must never enlarge the document canvas. Scope this to storefront and
+   checkout so wide operational tables keep their intentional scroll areas. */
+html:has(.customer-main),
+html:has(.co-main-region),
+body:has(.customer-main),
+body:has(.co-main-region) {
+  /* `clip` prevents an accidental sideways page without creating a second
+     scroll container the way `hidden` would. */
+  max-width: 100%;
+  overflow-x: clip;
+}
+
 body {
+  min-width: 0;
   background: var(--ck-bg);
   color: var(--ck-text);
   -webkit-font-smoothing: antialiased;
   /* cv05 gives the lower-case l a tail, so l / I / 1 stay apart in dish names
      and ticket codes. Unsupported features are ignored, so this is safe. */
   font-feature-settings: "cv05" 1;
+}
+
+/* Grid and flex descendants otherwise keep an intrinsic minimum based on long
+   names, addresses or codes. These landmarks are the outer containment layer
+   for every customer route, so shrinking or browser zoom cannot push the app
+   wider than the layout viewport. */
+main,
+header,
+footer {
+  min-width: 0;
+}
+
+.customer-main,
+.co-main-region {
+  overflow-wrap: anywhere;
+}
+
+:where(img, video, canvas) {
+  max-inline-size: 100%;
 }
 
 /* Headings tighten as they grow; Inter is drawn loose for small sizes.
@@ -3306,6 +3339,18 @@ h3 {
   opacity: 1;
 }
 
+/* Backdrop blur repaints the page underneath a sticky layer on every scroll
+   frame. On touch-first devices the translucent depth is not worth spending a
+   low-end phone's frame budget on; an almost-opaque surface preserves the same
+   separation without the live filter. */
+@media (hover: none), (pointer: coarse) {
+  .site-header {
+    background-color: color-mix(in srgb, var(--ck-surface) 98%, transparent);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
 /* The header is focused by script when the back-to-top button is pressed, and a
    `tabindex="-1"` element focused that way shows a focus ring in every browser.
    It is the wrong ring: nothing was reached by keyboard, and a box around the
@@ -3640,7 +3685,7 @@ h3 {
    -------------------------------------------------------------------------- */
 .to-top {
   position: fixed;
-  right: 1rem;
+  right: max(1rem, env(safe-area-inset-right, 0px));
   /* Clear of a phone's home indicator and of browser chrome sitting over the
      bottom of the viewport, which is why this is `env()` plus a gap rather than
      a flat inset. It falls back to the gap alone where there is no safe area. */
@@ -3672,7 +3717,7 @@ h3 {
    from the thumb and the button can afford the room. */
 @media (min-width: 40rem) {
   .to-top {
-    right: 1.75rem;
+    right: max(1.75rem, env(safe-area-inset-right, 0px));
     bottom: calc(1.75rem + env(safe-area-inset-bottom, 0px));
     width: 3rem;
     height: 3rem;
@@ -5451,6 +5496,8 @@ html:has(.nav-sheet[open]) {
 
 .hero-container,
 .landing-container {
+  width: 100%;
+  min-width: 0;
   padding-inline: clamp(1.25rem, 3vw, 2rem);
 }
 
@@ -5560,6 +5607,20 @@ html:has(.nav-sheet[open]) {
 
 .account-cta-short {
   display: inline;
+}
+
+/* 320px phones do not have room for two account actions, the centred mark and
+   the menu trigger in one row. Meal plans remain available in the drawer;
+   sign-in keeps the scarce header position because it has no duplicate there. */
+@media (max-width: 22rem) {
+  .site-bar {
+    gap: 0.25rem;
+    padding-inline: 0.75rem;
+  }
+
+  .account-actions .account-plan-cta {
+    display: none;
+  }
 }
 
 /* --------------------------------------------------------------------------

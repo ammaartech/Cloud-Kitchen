@@ -8,7 +8,7 @@ import { buttonClasses } from '@/components/ui/button-styles';
 import { EyeIcon, EyeOffIcon } from '@/components/site/icons';
 import { CheckoutField, describedBy } from './checkout-field';
 import { useChoiceFlip } from './choice-flip';
-import { shake } from './checkout-gsap';
+import { shake } from './checkout-motion';
 
 /**
  * The Supabase browser client, fetched when it is about to be needed rather

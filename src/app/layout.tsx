@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Inter, JetBrains_Mono, Poppins } from 'next/font/google';
 import localFont from 'next/font/local';
 import './globals.css';
@@ -123,6 +123,16 @@ export const metadata: Metadata = {
   },
   description:
     'Home-style meals on subscription, cooked fresh each day in a single kitchen.',
+};
+
+/* Keep browser zoom available, but make the layout viewport explicit and let
+   the on-screen keyboard resize the page instead of covering the active field
+   and the checkout dock. Next emits the ordinary accessible defaults for the
+   omitted maximumScale/userScalable fields. */
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  interactiveWidget: 'resizes-content',
 };
 
 export default function RootLayout({ children }: LayoutProps<'/'>) {

@@ -6,7 +6,9 @@ import { ChevronDownIcon, LockIcon } from '@/components/site/icons';
 import { money } from '@/lib/format';
 import { AnimatedMoney } from './animated-money';
 import { CouponField } from './coupon-field';
-import { Flip, gsap, motionAllowed } from './checkout-gsap';
+import { CHECKOUT_EASE, motionAllowed } from './checkout-motion';
+
+type RowPositions = Map<string, DOMRect>;
 
 export interface SummaryQuote {
   subtotal: number;
@@ -49,7 +51,7 @@ export interface SummaryPlan {
  * ## When the price changes
  *
  * Applying or removing a code re-prices the plan on the server and the page
- * re-renders. The rows are recorded with Flip just before that request, and
+ * re-renders. The row positions are recorded just before that request and
  * played from there when the new quote lands: the tax lines slide down to make
  * room for the offer line, which fades in, and the total counts to its new
  * value. Nothing about the new numbers is invented in the browser -- the motion
@@ -68,7 +70,8 @@ export function OrderSummary({
   const bodyId = useId();
   const bodyRef = useRef<HTMLDivElement>(null);
   const pricesRef = useRef<HTMLDivElement>(null);
-  const recorded = useRef<Flip.FlipState | null>(null);
+  const recorded = useRef<RowPositions | null>(null);
+  const closing = useRef<Animation | null>(null);
 
   const quoteKey = quote
     ? `${quote.total}|${quote.discount}|${quote.deliveryFee}|${quote.couponCode}|${quote.couponApplied}`
@@ -79,16 +82,33 @@ export function OrderSummary({
     recorded.current = null;
     if (!state || !pricesRef.current) return;
 
-    Flip.from(state, {
-      targets: pricesRef.current.querySelectorAll('[data-flip-id]'),
-      duration: 0.45,
-      ease: 'ck',
-      onEnter: (entering) =>
-        gsap.fromTo(
-          entering,
-          { autoAlpha: 0, y: -8 },
-          { autoAlpha: 1, y: 0, duration: 0.35, ease: 'ck', delay: 0.1 },
-        ),
+    pricesRef.current.querySelectorAll<HTMLElement>('[data-flip-id]').forEach((row) => {
+      const id = row.dataset.flipId;
+      const before = id ? state.get(id) : undefined;
+
+      if (!before) {
+        row.animate(
+          [
+            { opacity: 0, transform: 'translateY(-8px)' },
+            { opacity: 1, transform: 'translateY(0)' },
+          ],
+          { duration: 350, delay: 100, easing: CHECKOUT_EASE },
+        );
+        return;
+      }
+
+      const after = row.getBoundingClientRect();
+      const x = before.left - after.left;
+      const y = before.top - after.top;
+      if (x === 0 && y === 0) return;
+
+      row.animate(
+        [
+          { transform: `translate(${x}px, ${y}px)` },
+          { transform: 'translate(0, 0)' },
+        ],
+        { duration: 450, easing: CHECKOUT_EASE },
+      );
     });
   }, [quoteKey]);
 
@@ -96,14 +116,25 @@ export function OrderSummary({
   // `toggle` first and only then hides it, or there would be nothing to watch.
   useLayoutEffect(() => {
     const body = bodyRef.current;
-    if (!open || !body || !motionAllowed()) return;
+    if (!open || !body) return;
+
+    // A close that ran to the end is still holding the panel shut on a
+    // forwards fill. Release it before anything measures the body, whether or
+    // not this opening is going to animate.
+    closing.current?.cancel();
+    closing.current = null;
+
+    if (!motionAllowed()) return;
     if (window.matchMedia('(min-width: 64rem)').matches) return;
 
-    gsap.fromTo(
-      body,
-      { height: 0, autoAlpha: 0 },
-      { height: 'auto', autoAlpha: 1, duration: 0.4, ease: 'ck', clearProps: 'height,opacity,visibility' },
+    const animation = body.animate(
+      [
+        { height: '0px', opacity: 0 },
+        { height: `${body.scrollHeight}px`, opacity: 1 },
+      ],
+      { duration: 400, easing: CHECKOUT_EASE },
     );
+    return () => animation.cancel();
   }, [open]);
 
   function toggle() {
@@ -119,21 +150,32 @@ export function OrderSummary({
       return;
     }
 
-    gsap.to(body, {
-      height: 0,
-      autoAlpha: 0,
-      duration: 0.3,
-      ease: 'ck',
-      onComplete: () => {
-        setOpen(false);
-        gsap.set(body, { clearProps: 'height,opacity,visibility' });
-      },
-    });
+    closing.current?.cancel();
+    const animation = body.animate(
+      [
+        { height: `${body.getBoundingClientRect().height}px`, opacity: 1 },
+        { height: '0px', opacity: 0 },
+      ],
+      { duration: 300, easing: CHECKOUT_EASE, fill: 'forwards' },
+    );
+    closing.current = animation;
+    // The fill is deliberately left in place. Cancelling here would restore the
+    // body's natural height for however many frames pass before React commits
+    // `display: none`, which is the panel flashing back open as it closes. The
+    // next opening cancels it instead, by which point it is hidden anyway.
+    animation.finished.then(() => setOpen(false)).catch(() => {});
   }
 
   function recordRows() {
     if (!pricesRef.current || !motionAllowed()) return;
-    recorded.current = Flip.getState(pricesRef.current.querySelectorAll('[data-flip-id]'));
+    recorded.current = new Map(
+      Array.from(pricesRef.current.querySelectorAll<HTMLElement>('[data-flip-id]')).flatMap(
+        (row): Array<[string, DOMRect]> => {
+          const id = row.dataset.flipId;
+          return id ? [[id, row.getBoundingClientRect()]] : [];
+        },
+      ),
+    );
   }
 
   return (
