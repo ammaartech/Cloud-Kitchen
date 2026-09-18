@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { memo, useState } from 'react';
 import { useKotBoard, type BoardTicket } from '@/lib/realtime/use-kot-board';
 import { KITCHEN_STATUSES } from '@/lib/realtime/kot-board-shared';
 import { itemsFor, primeTicketItems, useTicketItems } from '@/lib/kot/items-store';
@@ -9,6 +9,7 @@ import { useNow } from '@/hooks/use-now';
 import { useTicketActions } from './ticket-actions';
 import { ConnectionBadge } from './connection-badge';
 import { TicketItems } from './ticket-items';
+import { useFlash } from './use-flash';
 import { SignOutButton } from '@/components/auth/sign-out-button';
 import {
   Alert,
@@ -44,9 +45,6 @@ const COLUMNS: Array<{ key: string; title: string; statuses: string[]; tone: str
     tone: 'text-success',
   },
 ];
-
-/** How long a card keeps its flash after a change. */
-const FLASH_MS = 2000;
 
 export function KitchenBoard({
   initialTickets,
@@ -129,81 +127,16 @@ export function KitchenBoard({
                   <EmptyState title="Nothing here" />
                 ) : null}
 
-                {columnTickets.map((ticket) => {
-                  const deadline = untilDeadline(ticket.sla_due_at, now);
-                  const busy = actions.isPending(ticket.id);
-
-                  return (
-                    <Card
-                      key={ticket.id}
-                      className={cx(
-                        'p-4',
-                        sourceCardTone(ticket.source, Boolean(ticket.subscription_number)),
-                        ticket._changedAt !== undefined &&
-                          now - ticket._changedAt < FLASH_MS &&
-                          'ck-flash',
-                        deadline?.overdue && 'border-danger',
-                      )}
-                    >
-                      <div className="flex items-center justify-between gap-3">
-                        <SourceTag
-                          source={ticket.source}
-                          ticketCode={ticket.ticket_code}
-                          size="lg"
-                        />
-
-                        <div className="text-right">
-                          <p
-                            className={cx(
-                              'text-lg font-semibold tabular',
-                              deadline?.overdue ? 'text-danger' : 'text-muted',
-                            )}
-                          >
-                            {deadline?.label ?? elapsedSince(ticket.created_at, now)}
-                          </p>
-                          <p className="text-xs text-subtle">
-                            {SOURCE_LABELS[ticket.source] ?? ticket.source}
-                            {ticket.delivery_window_label
-                              ? ` · ${ticket.delivery_window_label}`
-                              : ''}
-                          </p>
-                        </div>
-                      </div>
-
-                      {/* Large item list -- this is the part a cook reads. */}
-                      <TicketItems items={itemsFor(ticket.order_id)} size="lg" />
-
-                      {ticket.special_instructions ? (
-                        <p className="mt-3 rounded-ck bg-warning-soft px-3 py-2 text-base font-medium text-warning">
-                          {ticket.special_instructions}
-                        </p>
-                      ) : null}
-
-                      {ticket.scheduled_for ? (
-                        <p className="mt-3 text-sm text-subtle">
-                          Due {timeOnly(ticket.scheduled_for)}
-                        </p>
-                      ) : null}
-
-                      {ticket.status === 'ACCEPTED' ? (
-                        <Button
-                          size="lg"
-                          className="mt-4 w-full"
-                          disabled={busy}
-                          onClick={() => actions.transition(ticket.id, 'PREPARING')}
-                        >
-                          Start preparing
-                        </Button>
-                      ) : null}
-
-                      {ticket.status === 'PREPARING' ? (
-                        <p className="mt-4 rounded-ck border border-line bg-sunken px-3 py-2 text-center text-sm text-muted">
-                          Tell the manager when this is ready
-                        </p>
-                      ) : null}
-                    </Card>
-                  );
-                })}
+                {columnTickets.map((ticket) => (
+                  <KitchenTicketCard
+                    key={ticket.id}
+                    ticket={ticket}
+                    items={itemsFor(ticket.order_id)}
+                    now={now}
+                    busy={actions.isPending(ticket.id)}
+                    transition={actions.transition}
+                  />
+                ))}
               </div>
             </section>
           );
@@ -212,3 +145,84 @@ export function KitchenBoard({
     </div>
   );
 }
+
+/**
+ * One ticket, memoised: a Realtime change or an items read re-renders the
+ * card it concerns, not the whole display.
+ */
+const KitchenTicketCard = memo(function KitchenTicketCard({
+  ticket,
+  items,
+  now,
+  busy,
+  transition,
+}: {
+  ticket: BoardTicket;
+  items: TicketItem[] | undefined;
+  now: number;
+  busy: boolean;
+  transition: ReturnType<typeof useTicketActions>['transition'];
+}) {
+  const flashRef = useFlash<HTMLDivElement>(ticket._changedAt);
+  const deadline = untilDeadline(ticket.sla_due_at, now);
+
+  return (
+    <Card
+      ref={flashRef}
+      className={cx(
+        'p-4',
+        sourceCardTone(ticket.source, Boolean(ticket.subscription_number)),
+        deadline?.overdue && 'border-danger',
+      )}
+    >
+      <div className="flex items-center justify-between gap-3">
+        <SourceTag source={ticket.source} ticketCode={ticket.ticket_code} size="lg" />
+
+        <div className="text-right">
+          <p
+            className={cx(
+              'text-lg font-semibold tabular',
+              deadline?.overdue ? 'text-danger' : 'text-muted',
+            )}
+          >
+            {deadline?.label ?? elapsedSince(ticket.created_at, now)}
+          </p>
+          <p className="text-xs text-subtle">
+            {SOURCE_LABELS[ticket.source] ?? ticket.source}
+            {ticket.delivery_window_label ? ` · ${ticket.delivery_window_label}` : ''}
+          </p>
+        </div>
+      </div>
+
+      {/* Large item list -- this is the part a cook reads. */}
+      <TicketItems items={items} size="lg" />
+
+      {ticket.special_instructions ? (
+        <p className="mt-3 rounded-ck bg-warning-soft px-3 py-2 text-base font-medium text-warning">
+          {ticket.special_instructions}
+        </p>
+      ) : null}
+
+      {ticket.scheduled_for ? (
+        <p className="mt-3 text-sm text-subtle">Due {timeOnly(ticket.scheduled_for)}</p>
+      ) : null}
+
+      {ticket.status === 'ACCEPTED' ? (
+        <Button
+          size="lg"
+          className="mt-4 w-full"
+          disabled={busy}
+          onClick={() => transition(ticket.id, 'PREPARING')}
+        >
+          Start preparing
+        </Button>
+      ) : null}
+
+      {ticket.status === 'PREPARING' ? (
+        <p className="mt-4 rounded-ck border border-line bg-sunken px-3 py-2 text-center text-sm text-muted">
+          Tell the manager when this is ready
+        </p>
+      ) : null}
+    </Card>
+  );
+});

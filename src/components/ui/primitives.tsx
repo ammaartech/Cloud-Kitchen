@@ -1,4 +1,4 @@
-import type { ComponentPropsWithoutRef, ReactNode } from 'react';
+import type { ComponentPropsWithRef, ComponentPropsWithoutRef, ReactNode } from 'react';
 import Link from 'next/link';
 import { buttonClasses, cx, type ButtonSize, type ButtonVariant } from './button-styles';
 
@@ -15,7 +15,7 @@ export function Card({
   className,
   children,
   ...rest
-}: ComponentPropsWithoutRef<'div'>) {
+}: ComponentPropsWithRef<'div'>) {
   return (
     <div
       className={cx(

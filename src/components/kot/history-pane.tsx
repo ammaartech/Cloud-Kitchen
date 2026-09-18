@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { memo, useMemo, useState } from 'react';
 import {
   Alert,
   Button,
@@ -34,7 +34,11 @@ const ALL_STATUS_FILTERS = [
 
 type StatusFilter = (typeof ALL_STATUS_FILTERS)[number] | 'ANY';
 
-export function HistoryPane({
+/**
+ * Memoised: it sits beside the live board in `ManagerBoard`, which re-renders
+ * on every clock tick and Realtime event -- none of which this pane shows.
+ */
+export const HistoryPane = memo(function HistoryPane({
   scope,
   date,
   onDateChange,
@@ -139,7 +143,7 @@ export function HistoryPane({
       )}
     </div>
   );
-}
+});
 
 function FilterChip({
   label,

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useKotBoard, type BoardTicket } from '@/lib/realtime/use-kot-board';
 import { primeTicketItems } from '@/lib/kot/items-store';
 import type { TicketItem } from '@/lib/kot/items';
@@ -63,25 +63,20 @@ export function ManagerBoard({
   const [tab, setTab] = useState<KotTabKey>(initialTab);
   const [date, setDate] = useState<string>(initialDate);
 
-  function writeUrl(nextTab: KotTabKey, nextDate: string) {
-    const search = new URLSearchParams();
-    if (nextTab !== 'live') {
-      search.set('tab', nextTab);
-      search.set('date', nextDate);
-    }
-    const query = search.toString();
-    window.history.replaceState(null, '', query ? `/kot/manager?${query}` : '/kot/manager');
-  }
-
   const handleTab = (next: KotTabKey) => {
     setTab(next);
     writeUrl(next, date);
   };
 
-  const handleDate = (next: string) => {
-    setDate(next);
-    writeUrl(tab, next);
-  };
+  // Stable, so the memoised history pane is left alone by the clock tick and
+  // by live-board events it has no part in.
+  const handleDate = useCallback(
+    (next: string) => {
+      setDate(next);
+      writeUrl(tab, next);
+    },
+    [tab],
+  );
 
   return (
     <div className="min-h-dvh bg-bg text-ink">
@@ -123,6 +118,16 @@ export function ManagerBoard({
       </div>
     </div>
   );
+}
+
+function writeUrl(nextTab: KotTabKey, nextDate: string) {
+  const search = new URLSearchParams();
+  if (nextTab !== 'live') {
+    search.set('tab', nextTab);
+    search.set('date', nextDate);
+  }
+  const query = search.toString();
+  window.history.replaceState(null, '', query ? `/kot/manager?${query}` : '/kot/manager');
 }
 
 function tabSubtitle(tab: KotTabKey): string {

@@ -101,7 +101,23 @@ export function useKotBoard(
       if (error || !data) return;
 
       const rows = data as BoardTicket[];
-      setTickets(new Map(rows.map((ticket) => [ticket.id, ticket])));
+      // Every tab focus and reconnect lands here, and usually nothing has
+      // changed. An unchanged row keeps its existing object, so the memoised
+      // cards skip the render; an unchanged board keeps the same Map.
+      setTickets((current) => {
+        let changed = rows.length !== current.size;
+        const next = new Map<string, BoardTicket>();
+        for (const row of rows) {
+          const existing = current.get(row.id);
+          if (existing && sameRow(existing, row)) {
+            next.set(row.id, existing);
+          } else {
+            next.set(row.id, row);
+            changed = true;
+          }
+        }
+        return changed ? next : current;
+      });
       requestTicketItems(rows.map((ticket) => ticket.order_id));
       setLastSyncedAt(new Date());
     },
@@ -308,3 +324,15 @@ export function useKotBoard(
 }
 
 export type KotBoard = ReturnType<typeof useKotBoard>;
+
+/**
+ * True when a freshly read row matches what the board holds. Only the fresh
+ * row's columns are compared, so the board's own `_changedAt` stamp is
+ * ignored; a column holding an object compares by identity, which reads as
+ * changed -- a spare render, never a missed update.
+ */
+function sameRow(held: BoardTicket, fresh: BoardTicket): boolean {
+  const a = held as unknown as Record<string, unknown>;
+  const b = fresh as unknown as Record<string, unknown>;
+  return Object.keys(b).every((key) => Object.is(a[key], b[key]));
+}

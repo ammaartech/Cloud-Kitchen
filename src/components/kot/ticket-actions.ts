@@ -35,7 +35,7 @@ interface ActionResponse {
   ticket?: BoardTicket | null;
 }
 
-export function useTicketActions(board: BoardHandle) {
+export function useTicketActions({ apply, optimistic }: BoardHandle) {
   const [pending, setPending] = useState<ReadonlySet<string>>(() => new Set());
   const [error, setError] = useState<string | null>(null);
 
@@ -78,7 +78,7 @@ export function useTicketActions(board: BoardHandle) {
 
         // Server sends back the fresh v_kot_tickets row so we skip the extra
         // refetch the Realtime path would trigger for other clients.
-        if (data && 'ticket' in data) board.apply(ticketId, data.ticket ?? null);
+        if (data && 'ticket' in data) apply(ticketId, data.ticket ?? null);
 
         return true;
       } catch {
@@ -95,7 +95,7 @@ export function useTicketActions(board: BoardHandle) {
         mark(ticketId, false);
       }
     },
-    [board, mark],
+    [apply, mark],
   );
 
   const isPending = useCallback((ticketId: string) => pending.has(ticketId), [pending]);
@@ -104,7 +104,7 @@ export function useTicketActions(board: BoardHandle) {
 
   const transition = useCallback(
     (ticketId: string, toStatus: string, reason?: string | null) => {
-      const rollback = board.optimistic(ticketId, { status: toStatus });
+      const rollback = optimistic(ticketId, { status: toStatus });
       return call(
         '/api/kot/transition',
         { ticketId, toStatus, reason: reason ?? null },
@@ -112,18 +112,18 @@ export function useTicketActions(board: BoardHandle) {
         rollback,
       );
     },
-    [board, call],
+    [optimistic, call],
   );
 
   const overrideEta = useCallback(
     (ticketId: string, minutes: number) => {
-      const rollback = board.optimistic(ticketId, {
+      const rollback = optimistic(ticketId, {
         prep_eta_minutes: minutes,
         eta_overridden_at: new Date().toISOString(),
       });
       return call('/api/kot/eta', { ticketId, minutes }, ticketId, rollback);
     },
-    [board, call],
+    [optimistic, call],
   );
 
   return { isPending, error, clearError, transition, overrideEta };

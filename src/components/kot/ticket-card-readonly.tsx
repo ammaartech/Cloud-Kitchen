@@ -1,5 +1,6 @@
 'use client';
 
+import { memo } from 'react';
 import { Badge, Card, SourceTag, cx, sourceCardTone } from '@/components/ui/primitives';
 import { TicketItems } from './ticket-items';
 import type { HistoryTicket } from '@/hooks/use-kot-history';
@@ -15,7 +16,7 @@ import {
  * A ticket in a history view: no action buttons, and the terminal event --
  * completed / rejected / cancelled -- is surfaced instead of the live ETA.
  */
-export function TicketCardReadonly({
+export const TicketCardReadonly = memo(function TicketCardReadonly({
   ticket,
   items,
 }: {
@@ -98,7 +99,7 @@ export function TicketCardReadonly({
       )}
     </Card>
   );
-}
+});
 
 function statusTone(
   status: string,
