@@ -43,11 +43,11 @@
 .site-header .account-actions button,
 .site-header .nav-toggle { min-height: 2.75rem; }
 .site-header .nav-toggle { width: 2.75rem; }
-.site-bar { gap: 0.75rem; grid-template-columns: auto minmax(0, 1fr) auto; }
-.site-bar-mark { justify-self: start; }
+/* The bar's layout -- the mark centred, "Sign in" moved into the phone menu --
+   is set once, in `globals.css` (`.site-bar`, `.account-sign-in`). A copy here
+   loads later and would quietly win over it. */
 .account-actions { white-space: nowrap; }
 .account-cta-long { display: none; }
-.account-actions .account-sign-in { display: inline-flex; }
 .account-cta-short { display: inline; }
 .about-split { gap: 2.5rem; }
 .about-copy { max-width: 40rem; }
@@ -157,10 +157,6 @@
   .hero-bowl { margin-top: -4.5rem; }
   .about-split { grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); gap: 3rem; }
   .about-art { margin-inline: 0; }
-}
-@media (min-width: 80rem) {
-  .site-bar { grid-template-columns: 1fr auto 1fr; }
-  .site-bar-mark { justify-self: center; }
 }
 @media (prefers-reduced-motion: reduce) {
   /* CSS can honor the preference before hydration without changing SSR props. */

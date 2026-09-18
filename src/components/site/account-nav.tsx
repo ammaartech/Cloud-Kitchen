@@ -28,6 +28,10 @@ import { ArrowRightIcon, ChevronDownIcon } from './icons';
  * `@starting-style` brings it in. The first paint of a page load is not a
  * change, and does not animate.
  *
+ * On a phone "Sign in" is hidden here and offered at the foot of the menu
+ * drawer instead, so the mark can sit on the centre line (see `.account-sign-in`
+ * in `globals.css`).
+ *
  * "Sign in" carries the current page as `?next=`, so signing in returns the
  * visitor to what they were looking at instead of dropping them somewhere
  * else -- see `safeNextPath` for what is allowed through.

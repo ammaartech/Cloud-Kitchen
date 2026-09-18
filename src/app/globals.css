@@ -3431,6 +3431,16 @@ h3 {
   padding: 0;
 }
 
+/* The menu's two buttons hand focus back and forth -- the drawer focuses its
+   close button as it opens and returns focus to the toggle as it shuts -- and
+   the browser treats focus moved by script as keyboard focus and rings it. For
+   someone who tapped, that is a box left around the button they just pressed.
+   `data-pointer` is set on the root by a pointer press and cleared by any key
+   (`SiteHeader`), so the ring still shows for everyone navigating by keyboard. */
+:root[data-pointer] :is(.nav-toggle, .nav-sheet-close):focus-visible {
+  outline: none;
+}
+
 /* Two strokes that cross rather than two drawings that swap -- see `MenuGlyph`
    in `icons.tsx` for why. Each line travels to the middle and turns as it
    arrives.
@@ -3573,17 +3583,69 @@ h3 {
    none, and this fills it instead, and a tap on the empty lower half of the
    drawer lands here and leaves it open. */
 .nav-sheet-body {
+  /* Everything in the drawer in lowercase, the footer's voice: the links, the
+     help row and the buttons (the name keeps its capitals, see
+     `.nav-sheet-wordmark`). A transform rather than rewritten
+     strings, so the labels stay what every other list of them says. */
+  text-transform: lowercase;
   display: flex;
   flex-direction: column;
   min-height: 100%;
-  padding: env(safe-area-inset-top, 0px) 0.75rem calc(1rem + env(safe-area-inset-bottom, 0px));
+  padding: env(safe-area-inset-top, 0px) 0.75rem calc(1.5rem + env(safe-area-inset-bottom, 0px));
+}
+
+/* The links sit in the middle of the panel, not hung from its head: the
+   centre of the screen is where the eye is and well inside a thumb's reach,
+   where the top-left corner is neither. `margin-block: auto` in the body's
+   column splits the spare height evenly above and below the list, so it
+   centres between the head and the help row -- and on a short phone, with no
+   spare height, it simply follows the head. */
+.nav-sheet-nav {
+  margin-block: auto;
+  padding-block: 1.5rem;
+}
+
+/* On a tall enough screen, the true middle rather than the middle of what is
+   left: the head and the foot are different heights, so centring in the gap
+   between them sits the list above the centre of the screen. Out of the
+   column's flow and pinned to the panel's midpoint instead -- the list is
+   about 14rem tall and the foot about 15rem, so below 46rem of height the two
+   could meet, and there the column arrangement above takes over again. */
+@media (min-height: 46rem) {
+  .nav-sheet-body {
+    position: relative;
+  }
+
+  .nav-sheet-nav {
+    position: absolute;
+    top: 50%;
+    inset-inline: 0.75rem;
+    margin: 0;
+    padding: 0;
+    translate: 0 -50%;
+  }
+
+  .sheet-actions {
+    margin-top: auto;
+  }
 }
 
 /* The head mirrors the bar -- same height, same button, the mark beside it --
    so the drawer arriving over the header looks like the header's own left end
    sliding out rather than a second, different toolbar appearing. */
+.nav-sheet-wordmark {
+  grid-column: 2;
+  color: var(--ck-text);
+  /* The one exception to the drawer's lowercase: the name is set the way the
+     drawn logo sets it, in capitals, everywhere it appears. */
+  text-transform: none;
+}
+
 .nav-sheet-head {
-  display: flex;
+  /* Three tracks, the outer two equal, so the name sits on the panel's centre
+     line whatever the close button's width -- the bar's own arrangement. */
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
   align-items: center;
   gap: 0.5rem;
   height: 4rem;
@@ -3606,9 +3668,14 @@ h3 {
 .nav-row {
   display: block;
   border-radius: var(--ck-radius);
-  padding: 0.875rem 1rem;
-  font-size: 1.0625rem;
-  font-weight: 500;
+  /* Display-sized: three destinations do not need to be small to fit, and a
+     big word is a big target. Each row comes to about 61px, well past the
+     44px a fingertip needs. */
+  padding: 0.625rem 1rem;
+  font-size: 2.125rem;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.025em;
   color: var(--ck-text);
   transition: background-color 150ms var(--ck-ease);
 }
@@ -3631,6 +3698,74 @@ h3 {
 /* Ungated: a press is real on every device. */
 .nav-row:active {
   background-color: var(--ck-surface-sunken);
+}
+
+/* Help and the account, under the links. */
+.sheet-actions {
+  display: grid;
+  gap: 1rem;
+  padding: 1rem 0.25rem 0;
+  border-top: 1px solid var(--ck-border);
+}
+
+.sheet-help {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  padding: 0.5rem 0.75rem;
+  margin-inline: -0.75rem;
+  border-radius: var(--ck-radius);
+  color: var(--ck-text);
+  transition: background-color 150ms var(--ck-ease);
+}
+
+.sheet-help:active {
+  background-color: var(--ck-surface-sunken);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .sheet-help:hover {
+    background-color: var(--ck-surface-sunken);
+  }
+}
+
+.sheet-help-icon {
+  flex-shrink: 0;
+  width: 1.5rem;
+  height: 1.5rem;
+  color: var(--ck-brand);
+}
+
+.sheet-help-text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.sheet-help-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.sheet-help-sub {
+  font-size: 0.9375rem;
+  color: var(--ck-text-muted);
+}
+
+.sheet-help-arrow {
+  flex-shrink: 0;
+  color: var(--ck-text-subtle);
+}
+
+.sheet-account {
+  display: grid;
+  gap: 0.625rem;
+}
+
+/* The rest of the panel arrives the way its links do, just after them. */
+.nav-sheet[open] .sheet-actions {
+  animation: nav-row-in 380ms var(--ck-ease) 200ms backwards;
 }
 
 .nav-sheet[open] .nav-row {
@@ -5588,11 +5723,14 @@ html:has(.nav-sheet[open]) {
 
 .site-bar {
   gap: 0.75rem;
-  grid-template-columns: auto minmax(0, 1fr) auto;
+  /* The mark on the centre line at every width. The two sides share what is
+     left equally, so the mark cannot be pushed off centre by whichever of them
+     holds more; each side keeps its content inside its own half. */
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
 }
 
 .site-bar-mark {
-  justify-self: start;
+  justify-self: center;
 }
 
 .account-actions {
@@ -5603,23 +5741,22 @@ html:has(.nav-sheet[open]) {
   display: none;
 }
 
-.account-actions .account-sign-in { display: inline-flex; }
+/* On a phone "Sign in" leaves the bar for the menu, where it sits at the foot
+   of the drawer next to "Start a plan today" (`SheetActions`). The bar keeps
+   the plan button: with the mark centred, each side has half of what is left,
+   and one short button is what fits in that half. */
+.account-actions .account-sign-in { display: none; }
 
 .account-cta-short {
   display: inline;
 }
 
-/* 320px phones do not have room for two account actions, the centred mark and
-   the menu trigger in one row. Meal plans remain available in the drawer;
-   sign-in keeps the scarce header position because it has no duplicate there. */
+/* 320px phones: the gaps and the edge padding give a little, so the plan
+   button still fits in its half beside the centred mark. */
 @media (max-width: 22rem) {
   .site-bar {
     gap: 0.25rem;
     padding-inline: 0.75rem;
-  }
-
-  .account-actions .account-plan-cta {
-    display: none;
   }
 }
 

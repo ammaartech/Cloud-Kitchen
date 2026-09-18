@@ -6,7 +6,10 @@ import { usePathname } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { AccountNav } from './account-nav';
 import { HERO_NAV, SITE_NAV, SECTIONS } from './nav';
-import { MenuGlyph } from './icons';
+import { ArrowRightIcon, MenuGlyph, WhatsAppIcon } from './icons';
+import { useAccount } from './account';
+import { CONTACT } from './contact';
+import type { Route } from 'next';
 import { useActiveSection, useScrolledPast, useScrolledPastElement } from './scroll';
 import { buttonClasses, cx } from '@/components/ui/button-styles';
 
@@ -105,6 +108,24 @@ export function SiteHeader() {
    * an `onClick` on each row would not.
    */
   const [openAt, setOpenAt] = useState<string | null>(null);
+
+  // Which kind of input came last, for the menu buttons' focus ring. See the
+  // rule over `:root[data-pointer]` in `globals.css`.
+  useEffect(() => {
+    const root = document.documentElement;
+    const pointer = () => {
+      root.dataset.pointer = '';
+    };
+    const key = () => {
+      delete root.dataset.pointer;
+    };
+    window.addEventListener('pointerdown', pointer, { capture: true, passive: true });
+    window.addEventListener('keydown', key, { capture: true });
+    return () => {
+      window.removeEventListener('pointerdown', pointer, { capture: true });
+      window.removeEventListener('keydown', key, { capture: true });
+    };
+  }, []);
   const menuOpen = openAt === pathname;
 
   /*
@@ -353,21 +374,18 @@ export function SiteHeader() {
             >
               <MenuGlyph />
             </button>
-            {/* Decorative: the bar's mark is the home link, and it is one
-                tap away the moment this closes. Same file and `sizes` as the
-                bar's, so it is already in the cache. */}
-            <Image
-              src="/brand/mark-green.png"
-              alt=""
-              width={933}
-              height={416}
-              sizes="63px"
-              className="h-7 w-auto"
-            />
+            {/* The name, set as the drawn logo sets it (`.wordmark`), on the
+                panel's centre line. Decorative: the dialog is already labelled
+                and the home link is one tap away once this closes. */}
+            <span className="wordmark nav-sheet-wordmark" aria-hidden>
+              INFINITY KITCHENS
+            </span>
           </div>
 
-          <nav aria-label="Main">
-            <ul className="flex flex-col gap-0.5">
+          {/* Low in the panel on purpose: the drawer is opened one-handed,
+              and the bottom of the screen is where a thumb already is. */}
+          <nav aria-label="Main" className="nav-sheet-nav">
+            <ul className="flex flex-col gap-1">
               {SITE_NAV.map((item, index) => (
                 <li key={item.href}>
                   <Link
@@ -388,8 +406,58 @@ export function SiteHeader() {
               ))}
             </ul>
           </nav>
+
+          <SheetActions pathname={pathname} onNavigate={() => setOpenAt(null)} />
         </div>
       </dialog>
     </header>
+  );
+}
+
+/**
+ * The foot of the phone menu: help, and who you are.
+ *
+ * On a wide screen "Sign in" and "Start a plan today" sit in the bar. On a
+ * phone the bar has room for neither label, and the menu is where people go
+ * looking for them -- so they are here, at the very bottom, the easiest place
+ * on the screen to press. Signed in, they are gone, from the same identity
+ * store the bar reads.
+ *
+ * WhatsApp is the kitchen's support line, so it is one press from anywhere.
+ */
+function SheetActions({ pathname, onNavigate }: { pathname: string | null; onNavigate: () => void }) {
+  const { account } = useAccount();
+  const signInHref = `/sign-in?next=${encodeURIComponent(pathname || '/')}` as Route;
+
+  return (
+    <div className="sheet-actions">
+      <a
+        href={CONTACT.whatsappHref}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="sheet-help"
+        onClick={onNavigate}
+      >
+        <WhatsAppIcon className="sheet-help-icon" />
+        <span className="sheet-help-text">
+          <span className="sheet-help-title">Help on WhatsApp</span>
+          <span className="sheet-help-sub">{CONTACT.whatsappDisplay}</span>
+        </span>
+        <ArrowRightIcon className="sheet-help-arrow" />
+      </a>
+
+      {/* Signed in, nothing here: the account and signing out are both under
+          the monogram in the bar, and a second copy only crowded the menu. */}
+      {account ? null : (
+        <div className="sheet-account">
+          <Link href="/subscriptions" onClick={onNavigate} className={buttonClasses('primary', 'lg', 'btn-square w-full')}>
+            Start a plan today
+          </Link>
+          <Link href={signInHref} onClick={onNavigate} className={buttonClasses('outline', 'lg', 'btn-square w-full')}>
+            Sign in
+          </Link>
+        </div>
+      )}
+    </div>
   );
 }
