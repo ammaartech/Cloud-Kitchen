@@ -1,69 +1,21 @@
+import { Suspense } from 'react';
 import { revalidatePath } from 'next/cache';
 import { requireSession } from '@/lib/auth/session';
 import { serverClient } from '@/lib/supabase/server';
-import { dateTime, money, SUBSCRIPTION_STATUS_LABELS } from '@/lib/format';
 import { nullableNum, str } from '@/lib/admin/form';
-import { ActionFeedback, done, fail, readable } from '@/lib/admin/feedback';
-
-/**
- * These screens are per-user by definition -- a session decides not just what
- * they show but whether you may see them at all -- so there is no static shell
- * to prerender and no point pretending otherwise. `instant = false` says that
- * plainly: this segment is allowed to block.
- *
- * It is a statement about *this* route, not a global escape hatch. The public
- * storefront next door is held to the opposite standard.
- */
-export const instant = false;
+import { done, fail, readable } from '@/lib/admin/feedback';
+import { AccountHead } from '@/components/account/account-shell';
+import { RefundsSkeleton } from '@/components/account/account-skeletons';
 import {
-  Alert,
-  Badge,
-  Button,
-  ButtonLink,
-  Card,
-  EmptyState,
-  Field,
-  Input,
-  SectionHeading,
-  Select,
-  Textarea,
-} from '@/components/ui/primitives';
+  RefundsNoCustomer,
+  RefundsView,
+  type RequestRow,
+  type SubscriptionOption,
+} from '@/components/account/refunds-view';
 
 export const metadata = { title: 'Refund requests' };
 
 const PATH = '/account/refunds';
-
-const STATUS_TONES: Record<string, 'success' | 'warning' | 'neutral' | 'danger' | 'info'> = {
-  open: 'warning',
-  under_review: 'info',
-  approved: 'success',
-  completed: 'success',
-  rejected: 'danger',
-  withdrawn: 'neutral',
-};
-
-const STATUS_NOTE: Record<string, string> = {
-  open: 'Received. Someone will look at it.',
-  under_review: 'Being looked at now.',
-  approved: 'Approved. The refund will follow.',
-  completed: 'Settled.',
-  rejected: 'Not approved.',
-  withdrawn: 'You took this one back.',
-};
-
-/** A case can only be taken back before it has been decided. */
-const WITHDRAWABLE = new Set(['open', 'under_review']);
-
-interface RequestRow {
-  id: string;
-  reason: string;
-  requested_amount: string | null;
-  status: string;
-  resolution_note: string | null;
-  resolved_at: string | null;
-  created_at: string;
-  subscriptions: { subscription_number: string } | null;
-}
 
 /**
  * Refund requests (PRD 7, PRD 22).
@@ -72,7 +24,22 @@ interface RequestRow {
  * promising an outcome -- and the page says so plainly instead of implying a
  * guarantee the business has not agreed to yet.
  */
-export default async function AccountRefundsPage({ searchParams }: PageProps<'/account/refunds'>) {
+export default function AccountRefundsPage({ searchParams }: PageProps<'/account/refunds'>) {
+  return (
+    <div className="acct-page mx-auto max-w-3xl px-4">
+      <AccountHead eyebrow="Help" title="Refund requests">
+        Something wrong with an order or a plan? Raise it here and it gets looked at.
+      </AccountHead>
+      <div className="acct-body">
+        <Suspense fallback={<RefundsSkeleton />}>
+          <Refunds searchParams={searchParams} />
+        </Suspense>
+      </div>
+    </div>
+  );
+}
+
+async function Refunds({ searchParams }: Pick<PageProps<'/account/refunds'>, 'searchParams'>) {
   const supabase = await serverClient();
 
   // The guard and the reads go out together. Both reads are already confined
@@ -93,31 +60,13 @@ export default async function AccountRefundsPage({ searchParams }: PageProps<'/a
   ]);
 
   if (!session.customerId) {
-    return (
-      <div className="mx-auto max-w-2xl px-4 py-16">
-        <EmptyState
-          title="Nothing to refund yet"
-          description="Refund requests relate to a subscription you have paid for."
-          action={
-            <ButtonLink href="/subscriptions">Browse plans</ButtonLink>
-          }
-        />
-      </div>
-    );
+    return <RefundsNoCustomer />;
   }
 
   const customerId = session.customerId;
 
   const requests = (requestsResult.data ?? []) as unknown as RequestRow[];
-  const subscriptions = (subscriptionsResult.data ?? []) as unknown as Array<{
-    id: string;
-    subscription_number: string;
-    status: string;
-    price_paid: string;
-    subscription_plans: { name: string } | null;
-  }>;
-
-  const openCase = requests.find((row) => WITHDRAWABLE.has(row.status));
+  const subscriptions = (subscriptionsResult.data ?? []) as unknown as SubscriptionOption[];
 
   async function raiseRequest(formData: FormData) {
     'use server';
@@ -158,126 +107,11 @@ export default async function AccountRefundsPage({ searchParams }: PageProps<'/a
   }
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-10">
-      <SectionHeading
-        title="Refund requests"
-        description="Something wrong with an order or a plan? Raise it here and it gets looked at."
-      />
-
-      <ActionFeedback error={params.error as string} ok={params.ok as string} />
-
-      <div className="mb-6">
-        <Alert tone="info">
-          Raising a request opens a case. It does not cancel your plan or issue a refund by
-          itself. Refund terms are still being finalised, so we will come back to you with what we
-          can do.
-        </Alert>
-      </div>
-
-      {/* ------------------------------------------------------------------ */}
-      {/* Raise                                                               */}
-      {/* ------------------------------------------------------------------ */}
-      <Card className="p-5">
-        <h2 className="mb-4 font-semibold">Raise a request</h2>
-
-        {openCase ? (
-          <Alert tone="warning">
-            You already have a request open. Add to it by getting in touch rather than raising a
-            second one.
-          </Alert>
-        ) : null}
-
-        <form action={raiseRequest} className="mt-4 grid gap-4 sm:grid-cols-2">
-          <Field label="Which subscription?">
-            <Select name="subscriptionId" defaultValue="">
-              <option value="">Not about a specific plan</option>
-              {subscriptions.map((subscription) => (
-                <option key={subscription.id} value={subscription.id}>
-                  {subscription.subscription_plans?.name ?? 'Plan'} ·{' '}
-                  {subscription.subscription_number} (
-                  {SUBSCRIPTION_STATUS_LABELS[subscription.status] ?? subscription.status})
-                </option>
-              ))}
-            </Select>
-          </Field>
-
-          <Field label="Amount you are asking for" hint="Leave blank if you are not sure.">
-            <Input name="requestedAmount" inputMode="decimal" placeholder="450" />
-          </Field>
-
-          <div className="sm:col-span-2">
-            <Field label="What happened?" required>
-              <Textarea
-                name="reason"
-                required
-                minLength={10}
-                placeholder="Tell us what went wrong and when."
-              />
-            </Field>
-          </div>
-
-          <div>
-            <Button type="submit">Raise request</Button>
-          </div>
-        </form>
-      </Card>
-
-      {/* ------------------------------------------------------------------ */}
-      {/* History                                                             */}
-      {/* ------------------------------------------------------------------ */}
-      <section className="mt-10">
-        <h2 className="text-xl font-semibold tracking-tight">Your requests</h2>
-
-        {requests.length === 0 ? (
-          <p className="mt-3 text-sm text-muted">You have not raised any.</p>
-        ) : (
-          <div className="mt-4 space-y-3">
-            {requests.map((request) => (
-              <Card key={request.id} className="p-4">
-                <div className="flex flex-wrap items-center gap-2">
-                  <Badge tone={STATUS_TONES[request.status] ?? 'neutral'}>
-                    {request.status.replace('_', ' ')}
-                  </Badge>
-                  {request.requested_amount ? (
-                    <span className="tabular text-sm text-muted">
-                      {money(request.requested_amount)}
-                    </span>
-                  ) : null}
-                  <span className="text-xs text-subtle">
-                    {dateTime(request.created_at)}
-                    {request.subscriptions
-                      ? ` · ${request.subscriptions.subscription_number}`
-                      : ''}
-                  </span>
-                </div>
-
-                <p className="mt-2 text-sm whitespace-pre-line">{request.reason}</p>
-
-                <p className="mt-2 text-xs text-subtle">
-                  {STATUS_NOTE[request.status] ?? request.status}
-                </p>
-
-                {request.resolution_note ? (
-                  <p className="mt-2 rounded-ck bg-sunken px-3 py-2 text-sm text-muted">
-                    <span className="font-medium text-ink">Our reply:</span>{' '}
-                    {request.resolution_note}
-                    {request.resolved_at ? ` · ${dateTime(request.resolved_at)}` : ''}
-                  </p>
-                ) : null}
-
-                {WITHDRAWABLE.has(request.status) ? (
-                  <form action={withdrawRequest} className="mt-3">
-                    <input type="hidden" name="requestId" value={request.id} />
-                    <Button type="submit" size="sm" variant="ghost">
-                      Withdraw this request
-                    </Button>
-                  </form>
-                ) : null}
-              </Card>
-            ))}
-          </div>
-        )}
-      </section>
-    </div>
+    <RefundsView
+      requests={requests}
+      subscriptions={subscriptions}
+      feedback={{ error: params.error as string | undefined, ok: params.ok as string | undefined }}
+      actions={{ raise: raiseRequest, withdraw: withdrawRequest }}
+    />
   );
 }

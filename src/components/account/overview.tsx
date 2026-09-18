@@ -5,10 +5,12 @@ import { CONTACT } from '@/components/site/contact';
 import { ArrowRightIcon, CheckIcon, HomeIcon, WhatsAppIcon } from '@/components/site/icons';
 import { calendarDate } from '@/lib/checkout/schedule';
 import { clockTime, dateOnly, money } from '@/lib/format';
-import { relativeDay, type UpcomingDelivery } from '@/lib/account/schedule';
+import { kitchenStep, relativeDay, skipDeadline, type UpcomingDelivery } from '@/lib/account/schedule';
 import type { AccountOverview as Model, PlanView } from '@/lib/account/overview';
 import type { AccountAction } from '@/lib/account/action-state';
 import { AccountStage } from './account-stage';
+import { Enter } from './account-shell';
+import { RememberShape, type OverviewShape } from './account-shape';
 import { CreditsFigure } from './credits-figure';
 import { DeliveryRow, NextDelivery } from './deliveries';
 import { PlanControls } from './plan-controls';
@@ -55,8 +57,9 @@ export function AccountOverview({ model, actions }: { model: Model; actions: Acc
 
   return (
     <AccountStage>
+      <RememberShape page="overview" shape={outline(model, next, rest.length)} measure={OUTLINE_TEXTS} />
       <div className="acct-page mx-auto max-w-5xl px-4">
-        <header className="acct-head">
+        <header className="acct-head acct-enter" style={{ '--i': 0 } as React.CSSProperties}>
           <p className="acct-date">{longDate(today)}</p>
           <h1 className="acct-hello">Hello, {model.name}</h1>
           <p className="acct-summary">{summary(model, next)}</p>
@@ -64,7 +67,7 @@ export function AccountOverview({ model, actions }: { model: Model; actions: Acc
 
         {plan ? (
           <div className="acct-grid">
-            <div className="acct-main">
+            <Enter index={1} className="acct-main">
               <NextDelivery
                 delivery={next}
                 emptyNote={emptyNote(plan)}
@@ -124,25 +127,77 @@ export function AccountOverview({ model, actions }: { model: Model; actions: Acc
                   </>
                 ) : null}
               </section>
-            </div>
+            </Enter>
 
-            <aside className="acct-aside" aria-label="Your plan">
+            <aside className="acct-aside acct-enter" style={{ '--i': 2 } as React.CSSProperties} aria-label="Your plan">
               <PlanTicket plan={plan} model={model} actions={actions} />
             </aside>
           </div>
         ) : (
-          <NoPlan model={model} />
+          <Enter index={1}>
+            <NoPlan model={model} />
+          </Enter>
         )}
 
-        <div className="acct-records">
+        <Enter index={3} className="acct-records">
           <History model={model} />
           <Invoices model={model} />
-        </div>
+        </Enter>
 
-        <AccountLinks model={model} />
+        <Enter index={4}>
+          <AccountLinks model={model} />
+        </Enter>
       </div>
     </AccountStage>
   );
+}
+
+/** The texts whose length decides how many lines they wrap to. */
+const OUTLINE_TEXTS = {
+  texts: {
+    summary: '.acct-summary',
+    when: '.acct-next-when',
+    dishes: '.acct-next-dishes',
+    lock: '.acct-next-lock',
+    empty: '.acct-next-empty',
+    note: '.acct-controls-note',
+    emptyTitle: '.acct-empty-title',
+    emptyItems: '.acct-empty-list li',
+    historyQuiet: '[aria-labelledby="acct-history-title"] .acct-quiet',
+    invoicesQuiet: '[aria-labelledby="acct-invoices-title"] .acct-quiet',
+  },
+};
+
+/**
+ * The page's outline, for the next visit's skeleton (`OverviewSkeleton`). It
+ * mirrors the decisions this file and `deliveries.tsx` make about which
+ * variant of each block to draw, so the skeleton picks the same one.
+ */
+function outline(model: Model, next: UpcomingDelivery | null, restCount: number): OverviewShape {
+  const { plan } = model;
+  let nextKind: OverviewShape['next'] = 'empty';
+  if (next) {
+    if (next.status === 'released') nextKind = kitchenStep(next.kitchenStatus) === null ? 'lock' : 'progress';
+    else nextKind = skipDeadline(next.locksAt, new Date(model.now), model.today) ? 'skip' : 'lock';
+  }
+
+  return {
+    plan: plan !== null,
+    next: nextKind,
+    activeWeekdays: [
+      ...new Set(
+        model.schedule
+          .filter((day) => day.kind !== 'rest')
+          .map((day) => new Date(`${day.date}T00:00:00Z`).getUTCDay()),
+      ),
+    ],
+    rows: Math.min(restCount, VISIBLE_ROWS),
+    more: restCount > VISIBLE_ROWS,
+    facts: plan ? (plan.window ? 1 : 0) + 2 + (plan.cycleStart && plan.cycleEnd ? 1 : 0) : 0,
+    cycle: Boolean(plan?.progress),
+    history: model.history.length,
+    invoices: model.invoices.length,
+  };
 }
 
 function longDate(today: string): string {

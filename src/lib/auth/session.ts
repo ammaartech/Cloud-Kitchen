@@ -46,6 +46,26 @@ export interface SessionProfile {
  * Customers hold no rows there at all -- RLS returns nothing to a non-staff
  * caller -- which is the same empty set they had before.
  */
+/**
+ * The signed-in user's id, verified and nothing more.
+ *
+ * `getClaims()` checks the token's signature against the cached signing key,
+ * so this costs no network hop for a valid session. That is what makes it
+ * useful on its own: a page can start the reads it scopes by user the moment
+ * the request arrives, in parallel with `getSession()`'s profile round trip,
+ * instead of queued behind it. It is not a guard -- a deactivated profile still
+ * has a valid token -- so a page that uses it still awaits `requireSession()`
+ * before it renders anything.
+ */
+export const getUserId = cache(async (): Promise<string | null> => {
+  // See `getSession` below: the expiry check reads the clock.
+  await connection();
+
+  const supabase = await serverClient();
+  const { data: verified } = await supabase.auth.getClaims();
+  return verified?.claims.sub ?? null;
+});
+
 export const getSession = cache(async (): Promise<SessionProfile | null> => {
   /*
    * Nothing past this line may run while a shell is being prerendered.
@@ -66,10 +86,7 @@ export const getSession = cache(async (): Promise<SessionProfile | null> => {
    */
   await connection();
 
-  const supabase = await serverClient();
-
-  const { data: verified } = await supabase.auth.getClaims();
-  const userId = verified?.claims.sub;
+  const [supabase, userId] = await Promise.all([serverClient(), getUserId()]);
   if (!userId) return null;
 
   const [{ data: profile }, { data: grants }, { data: customer }] = await Promise.all([

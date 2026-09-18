@@ -145,24 +145,116 @@ function settingBoolean(rows: Array<{ key: string; value: unknown }>, key: strin
   return typeof value === 'boolean' ? value : fallback;
 }
 
+type SessionLike = { customerId: string | null; fullName: string | null };
+
 /**
- * Everything the account overview shows, read in one round of parallel queries.
+ * Everything the account overview shows, read in one round of parallel queries
+ * -- and that round runs alongside the session lookup, not after it.
  *
- * The one read that depends on another -- the credit balance needs the live
- * plan's id -- is chained onto the subscriptions query rather than awaited
- * after the whole batch, so it starts the moment its input arrives instead of
- * waiting for the slowest unrelated list. Every read is confined to this
- * customer by RLS; nothing here filters by customer id for security.
+ * The database is a long way from the server, so every sequential hop is a few
+ * hundred milliseconds the customer watches. This used to be three in a row:
+ * the session's profile, then the subscriptions, then the credit balance for
+ * whichever of them was live. Now it is one. `session` may arrive as a promise
+ * so the reads can start before it resolves, and the balance is summed from the
+ * ledger rows of the customer's live plans (RLS lets a customer read their own)
+ * instead of an RPC that could only be called once the live plan's id was known.
+ *
+ * `userId` is the verified token subject, and the unbounded reads name it
+ * through `customers.profile_id`. RLS already confines a customer to their own
+ * rows; the explicit filter is for staff, whose permissions would otherwise
+ * let a visit to their own account page read every subscription in the
+ * business before being told they have no customer record.
  */
 export async function loadAccountOverview(
   supabase: Db,
-  session: { customerId: string | null; fullName: string | null },
+  session: SessionLike | Promise<SessionLike>,
+  userId: string,
   now: Date = new Date(),
 ): Promise<AccountOverview> {
   const today = businessDate(now);
-  const name = session.fullName?.trim().split(/\s+/)[0] || 'there';
 
-  if (!session.customerId) {
+  const reads = Promise.all([
+    session,
+    supabase
+      .from('subscriptions')
+      .select(
+        `id, subscription_number, status, price_paid, current_period_start, current_period_end,
+         next_renewal_at, payment_flow, delivery_days, grace_period_days, past_due_since,
+         paused_until, pauses_used_this_period, cancelled_at, updated_at, plan_snapshot,
+         subscription_plans ( name, plan_type, credits_per_cycle, meals_per_cycle,
+                              max_pauses_per_period, max_pause_days, skip_returns_credit ),
+         delivery_windows ( label, starts_at, ends_at ),
+         customer_addresses ( label ),
+         customers!inner ( profile_id )`,
+      )
+      .eq('customers.profile_id', userId)
+      .order('created_at', { ascending: false }),
+    supabase
+      .from('subscription_credit_ledger')
+      .select('subscription_id, credits, subscriptions!inner ( status, customers!inner ( profile_id ) )')
+      .in('subscriptions.status', LIVE as string[])
+      .eq('subscriptions.customers.profile_id', userId),
+    supabase
+      .from('v_customer_deliveries')
+      .select(
+        'id, scheduled_date, status, credits_cost, window_label, window_starts_at, kitchen_status, ticket_code, prep_eta_minutes, items',
+      )
+      .in('status', ['scheduled', 'released', 'skipped'])
+      // A released delivery stays upcoming until the kitchen closes it, even
+      // if it was yesterday's late window; a skipped one only counts ahead.
+      .or(`scheduled_date.gte.${today},status.eq.released`)
+      .order('scheduled_date', { ascending: true })
+      .order('window_starts_at', { ascending: true })
+      .limit(UPCOMING_LIMIT),
+    supabase
+      .from('v_customer_deliveries')
+      .select('id, scheduled_date, status, window_label, items')
+      .in('status', ['fulfilled', 'skipped', 'cancelled'])
+      .or(`status.eq.fulfilled,scheduled_date.lt.${today}`)
+      .order('scheduled_date', { ascending: false })
+      .limit(HISTORY_LIMIT),
+    supabase
+      .from('invoices')
+      .select('id, invoice_number, issued_at, total')
+      .order('issued_at', { ascending: false })
+      .limit(INVOICE_LIMIT),
+    supabase
+      .from('customer_addresses')
+      .select('label, is_default, customers!inner ( profile_id )')
+      .eq('is_active', true)
+      .eq('customers.profile_id', userId),
+    supabase
+      .from('subscription_pauses')
+      .select('starts_on, ends_on, subscriptions!inner ( customers!inner ( profile_id ) )')
+      .is('cancelled_at', null)
+      .gte('ends_on', today)
+      .eq('subscriptions.customers.profile_id', userId),
+    supabase
+      .from('business_settings')
+      .select('key, value')
+      .in('key', [
+        'kot.release_lead_time_minutes',
+        'subscription.max_pauses_per_period',
+        'subscription.max_pause_days',
+        'subscription.skip_returns_credit',
+      ]),
+  ]);
+
+  const [
+    who,
+    subscriptionsResult,
+    ledgerResult,
+    upcomingResult,
+    historyResult,
+    invoicesResult,
+    addressesResult,
+    pausesResult,
+    settingsResult,
+  ] = await reads;
+
+  const name = who.fullName?.trim().split(/\s+/)[0] || 'there';
+
+  if (!who.customerId) {
     return {
       today,
       now: now.toISOString(),
@@ -183,82 +275,22 @@ export async function loadAccountOverview(
     };
   }
 
-  const subscriptionsQuery = supabase
-    .from('subscriptions')
-    .select(
-      `id, subscription_number, status, price_paid, current_period_start, current_period_end,
-       next_renewal_at, payment_flow, delivery_days, grace_period_days, past_due_since,
-       paused_until, pauses_used_this_period, cancelled_at, updated_at, plan_snapshot,
-       subscription_plans ( name, plan_type, credits_per_cycle, meals_per_cycle,
-                            max_pauses_per_period, max_pause_days, skip_returns_credit ),
-       delivery_windows ( label, starts_at, ends_at ),
-       customer_addresses ( label )`,
-    )
-    .order('created_at', { ascending: false })
-    .then((result) => {
-      const rows = (result.data ?? []) as unknown as SubscriptionRow[];
-      return rows;
-    });
-
-  const creditsQuery = subscriptionsQuery.then(async (rows) => {
-    const live = rows.find((row) => LIVE.includes(row.status));
-    if (!live) return null;
-    const { data, error } = await supabase.rpc('subscription_credit_balance', {
-      p_subscription_id: live.id,
-    });
-    return error ? null : (data as number | null);
-  });
-
-  const [subscriptions, credits, upcomingResult, historyResult, invoicesResult, addressesResult, pausesResult, settingsResult] =
-    await Promise.all([
-      subscriptionsQuery,
-      creditsQuery,
-      supabase
-        .from('v_customer_deliveries')
-        .select(
-          'id, scheduled_date, status, credits_cost, window_label, window_starts_at, kitchen_status, ticket_code, prep_eta_minutes, items',
-        )
-        .in('status', ['scheduled', 'released', 'skipped'])
-        // A released delivery stays upcoming until the kitchen closes it, even
-        // if it was yesterday's late window; a skipped one only counts ahead.
-        .or(`scheduled_date.gte.${today},status.eq.released`)
-        .order('scheduled_date', { ascending: true })
-        .order('window_starts_at', { ascending: true })
-        .limit(UPCOMING_LIMIT),
-      supabase
-        .from('v_customer_deliveries')
-        .select('id, scheduled_date, status, window_label, items')
-        .in('status', ['fulfilled', 'skipped', 'cancelled'])
-        .or(`status.eq.fulfilled,scheduled_date.lt.${today}`)
-        .order('scheduled_date', { ascending: false })
-        .limit(HISTORY_LIMIT),
-      supabase
-        .from('invoices')
-        .select('id, invoice_number, issued_at, total')
-        .order('issued_at', { ascending: false })
-        .limit(INVOICE_LIMIT),
-      supabase.from('customer_addresses').select('label, is_default').eq('is_active', true),
-      supabase
-        .from('subscription_pauses')
-        .select('starts_on, ends_on')
-        .is('cancelled_at', null)
-        .gte('ends_on', today),
-      supabase
-        .from('business_settings')
-        .select('key, value')
-        .in('key', [
-          'kot.release_lead_time_minutes',
-          'subscription.max_pauses_per_period',
-          'subscription.max_pause_days',
-          'subscription.skip_returns_credit',
-        ]),
-    ]);
+  const subscriptions = (subscriptionsResult.data ?? []) as unknown as SubscriptionRow[];
 
   const settings = (settingsResult.data ?? []) as Array<{ key: string; value: unknown }>;
   const leadMinutes = settingNumber(settings, 'kot.release_lead_time_minutes', DEFAULT_RULES.releaseLeadMinutes);
 
   const live = subscriptions.find((row) => LIVE.includes(row.status)) ?? null;
   const planRow = live?.subscription_plans ?? null;
+
+  // The same sum `subscription_credit_balance` takes, over the rows RLS already
+  // lets this customer read. A failed read is an unknown balance, never zero.
+  const credits =
+    live && !ledgerResult.error
+      ? ((ledgerResult.data ?? []) as Array<{ subscription_id: string; credits: number }>)
+          .filter((row) => row.subscription_id === live.id)
+          .reduce((sum, row) => sum + row.credits, 0)
+      : null;
 
   const upcoming: UpcomingDelivery[] = ((upcomingResult.data ?? []) as DeliveryRow[]).map((row) => ({
     id: row.id,

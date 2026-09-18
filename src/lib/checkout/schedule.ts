@@ -17,7 +17,7 @@
  * caller words it that way.
  */
 
-const BUSINESS_TIMEZONE = 'Asia/Kolkata';
+export const BUSINESS_TIMEZONE = 'Asia/Kolkata';
 
 /** Today's date in the business timezone, as `YYYY-MM-DD`. */
 export function businessDate(now: Date = new Date()): string {

@@ -41,8 +41,22 @@ function hasAuthCookie(request: NextRequest): boolean {
     .some((cookie) => cookie.name.startsWith('sb-') && cookie.name.includes('-auth-token'));
 }
 
+/** Customer screens that only ever render for a session. */
+function isAccountPath(pathname: string): boolean {
+  return pathname === '/account' || pathname.startsWith('/account/');
+}
+
 export async function proxy(request: NextRequest) {
-  if (!hasAuthCookie(request)) return NextResponse.next({ request });
+  if (!hasAuthCookie(request)) {
+    // Nobody to show an account to. Sending them to sign-in here, from the
+    // cookie header alone, beats rendering the account shell and redirecting
+    // from inside its stream. The pages still guard themselves: a cookie that
+    // is present but no longer valid is `requireSession()`'s to refuse.
+    if (isAccountPath(request.nextUrl.pathname)) {
+      return NextResponse.redirect(new URL('/sign-in', request.url));
+    }
+    return NextResponse.next({ request });
+  }
 
   let response = NextResponse.next({ request });
   const env = serverEnv();

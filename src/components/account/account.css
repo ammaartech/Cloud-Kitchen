@@ -6,11 +6,398 @@
    -- the next delivery -- and one object carries the plan, the ticket it was
    bought on. Everything else is a list.
 
-   Motion lives in the islands (`account-motion.ts`) and only ever answers
-   something the customer did. Nothing on this page enters on load, and nothing
-   here is hidden waiting for a script: every rule below describes the finished
-   state, so a page whose JavaScript never arrives is complete.
+   Two kinds of motion. The islands (`account-motion.ts`) answer something the
+   customer did. The rest is arrival: the tabs' travelling bar, the page
+   sliding the way the tab was pressed, and each block of a page rising into
+   place as its data lands -- the storefront's `reveal-up`, shortened for a
+   screen people come to use rather than to read. All of it is CSS, all of it
+   is a keyframe or a transition rather than a base rule, so nothing here is
+   hidden waiting for a script and a page whose JavaScript never arrives is
+   complete.
+
+   Shared by every account page: the layout imports it.
    -------------------------------------------------------------------------- */
+
+/* --- Tabs ------------------------------------------------------------------ */
+
+.acct-nav-wrap {
+  padding-top: 1.5rem;
+}
+
+.acct-tabs {
+  position: relative;
+  display: flex;
+  gap: 0.25rem;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  border-bottom: 1px solid var(--ck-border);
+}
+
+.acct-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+/* The header's voice (`.bar-nav .nav-link`): tracked capitals, semibold. */
+.acct-tab {
+  position: relative;
+  z-index: 1;
+  flex-shrink: 0;
+  padding: 0.9375rem 0.875rem 1rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.075em;
+  line-height: 1;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--ck-text-muted);
+  transition: color 180ms var(--ck-ease);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.acct-tab:first-child {
+  margin-left: -0.875rem;
+}
+
+.acct-tab[data-shown] {
+  color: var(--ck-text);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .acct-tab:hover {
+    color: var(--ck-text);
+  }
+}
+
+.acct-tab:focus-visible {
+  outline: none;
+}
+
+/* The row's own focus ring would be clipped by its scroller, so focus is
+   the highlight plus an inset ring on the highlight. */
+.acct-tabs:has(.acct-tab:focus-visible) .acct-tabs-hover {
+  box-shadow: inset 0 0 0 2px var(--ck-brand);
+}
+
+/* Before the first measurement -- the server's HTML, or no JavaScript at all --
+   the current tab underlines itself. The travelling bar takes over once it has
+   a position, so the row is right from the first paint either way. */
+.acct-tab[aria-current]::after {
+  content: '';
+  position: absolute;
+  inset-inline: 0.875rem;
+  bottom: -1px;
+  height: 2px;
+  background-color: var(--ck-brand);
+}
+
+.acct-tabs[data-ready] .acct-tab::after {
+  content: none;
+}
+
+.acct-tabs-bar,
+.acct-tabs-hover {
+  position: absolute;
+  left: 0;
+  pointer-events: none;
+}
+
+/* Inset to the label, the way the static underline is: a bar the width of
+   the padding reads as belonging to the gap, not the word. */
+.acct-tabs-bar {
+  bottom: 0;
+  z-index: 2;
+  height: 2px;
+  width: max(0px, calc(var(--bar-w, 0px) - 1.75rem));
+  translate: calc(var(--bar-x, 0px) + 0.875rem) 0;
+  background-color: var(--ck-brand);
+  opacity: 0;
+}
+
+.acct-tabs[data-ready] .acct-tabs-bar {
+  opacity: 1;
+  /* Long enough to be followed from one tab to the next, short enough to
+     have landed before the page underneath has finished sliding. */
+  transition:
+    translate 420ms var(--ck-ease),
+    width 420ms var(--ck-ease);
+}
+
+.acct-tabs-hover {
+  top: 0.4375rem;
+  bottom: 0.5rem;
+  width: var(--hover-w, 0px);
+  translate: var(--hover-x, 0px) 0;
+  background-color: var(--ck-surface-sunken);
+  opacity: 0;
+  transition:
+    opacity 160ms var(--ck-ease),
+    translate 260ms var(--ck-ease),
+    width 260ms var(--ck-ease);
+}
+
+.acct-tabs[data-hover] .acct-tabs-hover {
+  opacity: 1;
+}
+
+.acct-tabs[data-snap] .acct-tabs-hover {
+  transition-property: opacity;
+}
+
+/* --- Arrival --------------------------------------------------------------- */
+
+/* The storefront's `reveal-up`, cut down for a task surface: half the rise,
+   a little over half the time, and a stagger short enough that the whole page
+   has landed inside half a second. `--i` is the block's place in the page. */
+.acct-enter {
+  animation: acct-rise 480ms var(--ck-ease) calc(var(--i, 0) * 60ms) both;
+}
+
+@keyframes acct-rise {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 0.625rem, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* The three form pages: the heading is static, the rows stream in below it. */
+.acct-body {
+  margin-top: 2rem;
+}
+
+/* --- Waiting --------------------------------------------------------------- */
+
+/* A bar inside a real text element (see `account-skeletons.tsx`): inline, so
+   the element keeps its own line box and the skeleton line is exactly the
+   height of the text that replaces it, and sized in `em` so a bar in a heading
+   is heading-sized. `data-block` is for the things that are boxes -- inputs,
+   buttons -- and carry an explicit height. */
+.acct-bone {
+  display: inline-block;
+  max-width: 100%;
+  height: 0.8em;
+  vertical-align: middle;
+  border-radius: var(--ck-radius-sm);
+  background:
+    linear-gradient(
+      100deg,
+      transparent 20%,
+      rgb(255 255 255 / 0.55) 50%,
+      transparent 80%
+    )
+    0 0 / 200% 100% no-repeat,
+    var(--ck-surface-sunken);
+  animation: acct-shimmer 1.6s linear infinite;
+}
+
+.acct-bone[data-block] {
+  display: block;
+  flex-shrink: 0;
+}
+
+/* Placeholder text, drawn as one bar per line it wraps onto. The text itself
+   is transparent; the background is sized to a bar rather than the whole line
+   box and repeated on every line fragment (`box-decoration-break: clone`). */
+.acct-bone-text {
+  color: transparent;
+  user-select: none;
+  border-radius: var(--ck-radius-sm);
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  background:
+    linear-gradient(100deg, transparent 20%, rgb(255 255 255 / 0.55) 50%, transparent 80%) 150% 55% / 200% 0.8em no-repeat,
+    linear-gradient(var(--ck-surface-sunken), var(--ck-surface-sunken)) 0 55% / 100% 0.8em no-repeat;
+  animation: acct-shimmer-text 1.6s linear infinite;
+}
+
+@keyframes acct-shimmer-text {
+  from {
+    background-position: 150% 55%, 0 55%;
+  }
+  to {
+    background-position: -50% 55%, 0 55%;
+  }
+}
+
+/* A real form control standing in for itself, disabled (so already
+   `bg-sunken`), with the sweep over it. */
+.acct-bone-control {
+  pointer-events: none;
+  background-image: linear-gradient(100deg, transparent 20%, rgb(255 255 255 / 0.55) 50%, transparent 80%);
+  background-size: 200% 100%;
+  background-repeat: no-repeat;
+  animation: acct-shimmer-one 1.6s linear infinite;
+}
+
+/* A real button box with its real label, both made grey: the width is the
+   button's own. Doubled so it outranks the storefront's unlayered button
+   treatments (`.btn-square` and friends) wherever it is combined with them. */
+.acct-bone-button.acct-bone-button {
+  pointer-events: none;
+  border-color: transparent;
+  box-shadow: none;
+  color: transparent;
+  background-color: var(--ck-surface-sunken);
+  background-image: linear-gradient(100deg, transparent 20%, rgb(255 255 255 / 0.55) 50%, transparent 80%);
+  background-size: 200% 100%;
+  background-repeat: no-repeat;
+  animation: acct-shimmer-one 1.6s linear infinite;
+}
+
+.acct-bone-button.acct-bone-button::before,
+.acct-bone-button.acct-bone-button::after {
+  content: none;
+}
+
+@keyframes acct-shimmer-one {
+  from {
+    background-position: 150% 0;
+  }
+  to {
+    background-position: -50% 0;
+  }
+}
+
+/* The sweep reads as one light crossing the page rather than each bar
+   blinking on its own: the same keyframe, in phase, on every bone. */
+@keyframes acct-shimmer {
+  from {
+    background-position: 150% 0, 0 0;
+  }
+  to {
+    background-position: -50% 0, 0 0;
+  }
+}
+
+/* Held back for a beat: on a warm connection the rows land before it would
+   have shown, and a flash of grey is worse than a moment of nothing. The
+   skeleton occupies its space from the first frame, so the wait costs no
+   layout shift -- only the paint is delayed. */
+.acct-skeleton {
+  animation: acct-fade 240ms var(--ck-ease) 120ms both;
+}
+
+@keyframes acct-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+/* A day in the skeleton's strip: the ordinary bordered cell, its mark holding
+   its space without a colour. */
+.acct-day[data-kind='bone'] .acct-day-mark {
+  visibility: hidden;
+}
+
+.acct-skeleton .acct-more > summary {
+  pointer-events: none;
+}
+
+/* --- Cards on the form pages ---------------------------------------------- */
+
+.acct-card {
+  transition:
+    border-color 200ms var(--ck-ease),
+    box-shadow 200ms var(--ck-ease),
+    translate 200ms var(--ck-ease);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .acct-card:hover {
+    border-color: var(--color-dark-slate-grey-200);
+    box-shadow: var(--ck-shadow);
+    translate: 0 -1px;
+  }
+}
+
+/* A disclosure that opens rather than appears. `::details-content` and
+   `interpolate-size` are Chromium-only for now; elsewhere the panel simply
+   shows, which is what it did before. */
+.acct-details {
+  interpolate-size: allow-keywords;
+}
+
+.acct-details::details-content {
+  block-size: 0;
+  overflow: clip;
+  opacity: 0;
+  transition:
+    block-size 320ms var(--ck-ease),
+    opacity 200ms var(--ck-ease),
+    content-visibility 320ms allow-discrete;
+}
+
+.acct-details[open]::details-content {
+  block-size: auto;
+  opacity: 1;
+}
+
+.acct-details-summary {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  width: fit-content;
+  cursor: pointer;
+  font-size: 0.875rem;
+  color: var(--ck-text-muted);
+  list-style: none;
+  transition: color 150ms var(--ck-ease);
+}
+
+.acct-details-summary::-webkit-details-marker {
+  display: none;
+}
+
+/* The chevron turns over rather than swapping, as the select's does. */
+.acct-details-summary::after {
+  content: '';
+  width: 0.625rem;
+  height: 0.625rem;
+  background-color: currentColor;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3.5 6 8 10.5 12.5 6' fill='none' stroke='black' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / contain no-repeat;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3.5 6 8 10.5 12.5 6' fill='none' stroke='black' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / contain no-repeat;
+  transition: rotate 200ms var(--ck-ease);
+}
+
+.acct-details[open] > .acct-details-summary {
+  color: var(--ck-text);
+}
+
+.acct-details[open] > .acct-details-summary::after {
+  rotate: 180deg;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .acct-details-summary:hover {
+    color: var(--ck-text);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .acct-enter,
+  .acct-bone,
+  .acct-bone-text,
+  .acct-bone-control,
+  .acct-bone-button.acct-bone-button,
+  .acct-skeleton {
+    animation: none;
+  }
+
+  .acct-tabs[data-ready] .acct-tabs-bar,
+  .acct-tabs-hover,
+  .acct-card,
+  .acct-details::details-content {
+    transition: none;
+  }
+
+  .acct-card:hover {
+    translate: none;
+  }
+}
 
 .acct-page {
   width: 100%;
