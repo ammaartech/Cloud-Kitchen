@@ -1,7 +1,8 @@
 'use client';
 
 import { useRef, type ReactNode } from 'react';
-import { gsap, ScrollTrigger, useGSAP } from './gsap';
+import { gsap, useGSAP } from './gsap';
+import { onceInView } from './in-view';
 import { riseOnScroll, setDownTools, splitHeadings, type Query } from './motion-reveals';
 
 /**
@@ -34,10 +35,11 @@ import { riseOnScroll, setDownTools, splitHeadings, type Query } from './motion-
  *
  * `gsap.matchMedia()` is what makes reduced motion a branch rather than a pile
  * of conditionals: the moving branch builds every animation, and when the
- * preference flips mid-visit GSAP reverts all of it -- inline styles, split
- * text and ScrollTriggers -- and runs the other branch. `useGSAP` reverts the
- * lot again on unmount, which is what keeps a client-side navigation away and
- * back from stacking a second set of triggers on the first.
+ * preference flips mid-visit GSAP reverts all of it -- inline styles and split
+ * text -- and runs the other branch, after the branch's own cleanup has
+ * disconnected its observers. `useGSAP` reverts the lot again on unmount,
+ * which is what keeps a client-side navigation away and back from stacking a
+ * second set of observers on the first.
  */
 export function SubscriptionsStage({
   className,
@@ -71,25 +73,12 @@ export function SubscriptionsStage({
           }
 
           playIntro(q);
-          setDownTools(q);
-          splitHeadings(q);
-          printTickets(q);
-          riseOnScroll(q);
+          const stops = [setDownTools(q), splitHeadings(q), printTickets(q), riseOnScroll(q)];
+          return () => stops.forEach((stop) => stop());
         },
       );
 
-      // The ticket faces are `preload: false` and swap in late. Every
-      // ScrollTrigger measured its start against the fallback font's layout,
-      // so once the real faces land the positions are measured again.
-      let mounted = true;
-      document.fonts?.ready.then(() => {
-        if (mounted) ScrollTrigger.refresh();
-      });
-
-      return () => {
-        mounted = false;
-        mm.revert();
-      };
+      return () => mm.revert();
     },
     { scope },
   );
@@ -156,45 +145,41 @@ function playIntro(q: Query) {
  * perforation runs across last, just above the stub. The object doing what that
  * object does, which is the test every entrance on this site is held to.
  *
- * `ScrollTrigger.batch` rather than one trigger per ticket: on a wide screen
- * all four enter together and are staggered as a row; on a phone they arrive
- * one at a time as each is reached, and the same code does both.
+ * Batched rather than one observer callback per ticket: on a wide screen all
+ * four enter together and are staggered as a row; on a phone they arrive one
+ * at a time as each is reached, and the same code does both.
  *
  * The transform lives on the paper and the hover lift on the ticket around it,
  * so GSAP and the stylesheet transition never write one property on one
  * element.
  */
-function printTickets(q: Query) {
+function printTickets(q: Query): () => void {
   const tickets = q('.plan-ticket');
-  if (tickets.length === 0) return;
+  if (tickets.length === 0) return () => {};
 
   gsap.set(tickets, { autoAlpha: 1 });
   gsap.set(q('.ticket-paper'), { clipPath: 'inset(0% 0% 100% 0%)', y: -28 });
   gsap.set(q('.ticket-row, .ticket-total'), { autoAlpha: 0, y: 6 });
   gsap.set(q('.ticket-stub'), { '--perf': 0 });
 
-  ScrollTrigger.batch(tickets, {
-    start: 'top 85%',
-    once: true,
-    onEnter: (batch) => {
-      batch.forEach((ticket, index) => {
-        const inTicket = gsap.utils.selector(ticket);
+  return onceInView(tickets, 0.85, (batch) => {
+    batch.forEach((ticket, index) => {
+      const inTicket = gsap.utils.selector(ticket);
 
-        gsap
-          .timeline({ delay: index * 0.14, defaults: { ease: 'ck' } })
-          .to(inTicket('.ticket-paper'), {
-            clipPath: 'inset(0% 0% 0% 0%)',
-            y: 0,
-            duration: 1.05,
-            clearProps: 'clipPath,transform',
-          })
-          .to(
-            inTicket('.ticket-row, .ticket-total'),
-            { autoAlpha: 1, y: 0, duration: 0.5, stagger: 0.06 },
-            0.4,
-          )
-          .to(inTicket('.ticket-stub'), { '--perf': 1, duration: 0.7 }, 0.65);
-      });
-    },
+      gsap
+        .timeline({ delay: index * 0.14, defaults: { ease: 'ck' } })
+        .to(inTicket('.ticket-paper'), {
+          clipPath: 'inset(0% 0% 0% 0%)',
+          y: 0,
+          duration: 1.05,
+          clearProps: 'clipPath,transform',
+        })
+        .to(
+          inTicket('.ticket-row, .ticket-total'),
+          { autoAlpha: 1, y: 0, duration: 0.5, stagger: 0.06 },
+          0.4,
+        )
+        .to(inTicket('.ticket-stub'), { '--perf': 1, duration: 0.7 }, 0.65);
+    });
   });
 }

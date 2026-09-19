@@ -3,6 +3,8 @@
 
   "framework": "nextjs",
 
+  "regions": ["bom1"],
+
   "crons": [
     { "path": "/api/jobs/release-deliveries", "schedule": "0 1 * * *" },
     { "path": "/api/jobs/reconcile", "schedule": "30 1 * * *" }

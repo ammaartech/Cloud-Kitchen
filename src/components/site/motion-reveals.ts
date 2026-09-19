@@ -1,4 +1,5 @@
-import { gsap, ScrollTrigger, SplitText } from './gsap';
+import { gsap, SplitText } from './gsap';
+import { onceInView, onScreen } from './in-view';
 
 /**
  * The scroll reveals every GSAP page on the storefront shares.
@@ -9,11 +10,12 @@ import { gsap, ScrollTrigger, SplitText } from './gsap';
  * every page, and a row of content rises the same distance on the same curve.
  * Two copies of these would drift apart the first time one of them was tuned.
  *
- * Both expect to run inside a `gsap.matchMedia()` branch for
+ * All three expect to run inside a `gsap.matchMedia()` branch for
  * `(prefers-reduced-motion: no-preference)`, so the branch reverting takes
- * every split, inline style and ScrollTrigger they made with it. Both animate
- * to explicit visible values, because the elements they reveal are hidden by
- * `motion-gate.css` rather than by these functions.
+ * every split and inline style they made with it. Each returns the function
+ * that stops its observers, for the branch to call on the way out. The
+ * elements they reveal are hidden by `motion-gate.css` rather than by these
+ * functions, so anything GSAP animates goes *to* an explicit visible value.
  */
 
 export type Query = (selector: string) => HTMLElement[];
@@ -28,63 +30,80 @@ export type Query = (selector: string) => HTMLElement[];
  * which hands the heading back to the browser as one run of text -- no masks
  * left clipping descenders, and the `aria-label` SplitText added taken off.
  */
-export function splitHeadings(q: Query) {
-  q('[data-split-heading]').forEach((heading) => {
+export function splitHeadings(q: Query): () => void {
+  const headings = q('[data-split-heading]');
+  const sayings = new Map<Element, gsap.core.Tween>();
+
+  headings.forEach((heading) => {
     const split = SplitText.create(heading, { type: 'words', mask: 'words' });
     gsap.set(heading, { autoAlpha: 1 });
 
-    gsap.fromTo(
-      split.words,
-      { yPercent: 115 },
-      {
-        yPercent: 0,
-        duration: 0.85,
-        stagger: 0.07,
-        ease: 'ck',
-        scrollTrigger: { trigger: heading, start: 'top 88%', once: true },
-        onComplete: () => split.revert(),
-      },
+    sayings.set(
+      heading,
+      gsap.fromTo(
+        split.words,
+        { yPercent: 115 },
+        {
+          yPercent: 0,
+          duration: 0.85,
+          stagger: 0.07,
+          ease: 'ck',
+          paused: true,
+          onComplete: () => split.revert(),
+        },
+      ),
     );
   });
+
+  return onceInView(headings, 0.88, (reached) =>
+    reached.forEach((heading) => sayings.get(heading)?.play()),
+  );
 }
 
 /**
  * Everything else below the fold: a short rise, and hairlines drawn across.
  *
- * `ScrollTrigger.batch`, so whatever enters the viewport together is staggered
- * as a group -- a row of three on a wide screen, one at a time on a phone --
- * from the same code.
+ * Not GSAP. These are the same movement on every element, and there are a lot
+ * of them -- one per dish on `/menu` -- so they are keyframes in
+ * `motion-gate.css`, run by the compositor, and all this does is say when.
+ * Tweening them meant a `gsap.set` per row at load, each one reading computed
+ * style straight after the last one wrote it, which on a phone was a forced
+ * style recalculation per dish before the page could respond to anything.
+ *
+ * Whatever crosses the line together is staggered as a group -- a row of three
+ * on a wide screen, one at a time on a phone -- from the same code.
  */
-export function riseOnScroll(q: Query) {
-  const risers = q('[data-rise]');
+export function riseOnScroll(q: Query): () => void {
+  const stops = [arrive(q('[data-rise]'), 80), arrive(q('[data-rule]'), 100)];
+  return () => stops.forEach((stop) => stop());
+}
 
-  if (risers.length > 0) {
-    gsap.set(risers, { autoAlpha: 0, y: 20 });
-    ScrollTrigger.batch(risers, {
-      start: 'top 90%',
-      once: true,
-      onEnter: (batch) =>
-        gsap.to(batch, {
-          autoAlpha: 1,
-          y: 0,
-          duration: 0.75,
-          stagger: 0.08,
-          ease: 'ck',
-          overwrite: true,
-        }),
+/**
+ * `data-reveal` is the handshake with the stylesheet. `armed` means the
+ * observer is watching, which is what lets the stylesheet hold the element at
+ * zero opacity past the gate's failsafe; `in` plays its keyframe, `--arrive-at`
+ * into it.
+ */
+function arrive(elements: HTMLElement[], stagger: number) {
+  elements.forEach((element) => {
+    element.dataset.reveal = 'armed';
+  });
+
+  const stop = onceInView(elements, 0.9, (batch) =>
+    batch.forEach((element, index) => {
+      element.style.setProperty('--arrive-at', `${index * stagger}ms`);
+      element.dataset.reveal = 'in';
+    }),
+  );
+
+  return () => {
+    stop();
+    // Anything never reached goes back to the gate, whose failsafe shows it,
+    // rather than being held invisible by an observer that has gone.
+    elements.forEach((element) => {
+      if (element.dataset.reveal === 'armed') delete element.dataset.reveal;
     });
-  }
-
-  const rules = q('[data-rule]');
-
-  if (rules.length > 0) {
-    gsap.set(rules, { scaleX: 0, transformOrigin: 'left center' });
-    ScrollTrigger.batch(rules, {
-      start: 'top 90%',
-      once: true,
-      onEnter: (batch) => gsap.to(batch, { scaleX: 1, duration: 1.1, stagger: 0.1, ease: 'ck' }),
-    });
-  }
+  };
 }
 
 /**
@@ -105,8 +124,8 @@ export function riseOnScroll(q: Query) {
  * `NOTE_PLACEMENT` on the home page: the irregularity has to be composed, or
  * four marks drifting in step read as one animation applied four times.
  */
-export function setDownTools(q: Query) {
-  q('[data-tool]').forEach((tool, index) => {
+export function setDownTools(q: Query): () => void {
+  const stops = q('[data-tool]').map((tool, index) => {
     const lean = index % 2 === 0 ? -1 : 1;
     const settles = 0.7 + index * 0.3;
 
@@ -127,11 +146,11 @@ export function setDownTools(q: Query) {
       delay: settles + 1.3,
     });
 
-    ScrollTrigger.create({
-      trigger: tool.parentElement,
-      start: 'top bottom',
-      end: 'bottom top',
-      onToggle: (self) => (self.isActive ? drift.resume() : drift.pause()),
-    });
+    const section = tool.parentElement;
+    return section
+      ? onScreen(section, (visible) => (visible ? drift.resume() : drift.pause()))
+      : () => {};
   });
+
+  return () => stops.forEach((stop) => stop());
 }

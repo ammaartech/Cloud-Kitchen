@@ -19,8 +19,8 @@
    or threw. A keyframe that only sets `visibility` runs after 2.6s and holds
    it, which brings the content back. It cannot fight GSAP, because by then
    every entrance above the fold has finished, and anything below the fold is
-   held by an inline `opacity` or `clip-path` that a `visibility` keyframe does
-   not touch. Content streamed in later gets its own clock: the animation
+   held by an inline `opacity` or `clip-path`, or by the `armed` rule below,
+   none of which a `visibility` keyframe touches. Content streamed in later gets its own clock: the animation
    starts when the element is inserted, not when the page loaded.
    ========================================================================== */
 @media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
@@ -29,10 +29,56 @@
     visibility: hidden;
     animation: motion-failsafe 1ms linear 2.6s forwards;
   }
+
+  /* The scroll reveals, which are keyframes rather than tweens -- see
+     `riseOnScroll` in `motion-reveals.ts`, which sets `data-reveal`.
+
+     `armed` is the script saying it is watching. Only then is an element held
+     at zero opacity, which the failsafe's `visibility` cannot undo -- so an
+     element below the fold stays hidden until it is reached, and a page whose
+     bundle never arrived is never armed and gets the failsafe as before. */
+  .motion-stage [data-rise][data-reveal='armed'] {
+    opacity: 0;
+  }
+
+  .motion-stage [data-rise][data-reveal='in'] {
+    visibility: visible;
+    animation: motion-rise 750ms var(--ck-ease) var(--arrive-at, 0ms) backwards;
+  }
+
+  /* The hairlines are decoration, so the gate never hides them: drawn is how
+     they are left wherever the script does not run. */
+  .motion-stage [data-rule][data-reveal] {
+    transform-origin: left center;
+  }
+
+  .motion-stage [data-rule][data-reveal='armed'] {
+    scale: 0 1;
+  }
+
+  .motion-stage [data-rule][data-reveal='in'] {
+    animation: motion-rule 1100ms var(--ck-ease) var(--arrive-at, 0ms) backwards;
+  }
 }
 
 @keyframes motion-failsafe {
   to {
     visibility: visible;
+  }
+}
+
+/* `from` only, so each ends on whatever the element's own rules say rather
+   than on a value written here. `backwards` in the rules above holds the
+   `from` frame through `--arrive-at`, so a staggered row waits unseen. */
+@keyframes motion-rise {
+  from {
+    opacity: 0;
+    translate: 0 20px;
+  }
+}
+
+@keyframes motion-rule {
+  from {
+    scale: 0 1;
   }
 }

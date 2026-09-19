@@ -8,9 +8,9 @@ import { useGSAP } from '@gsap/react';
  * GSAP for the receipt, and only for the receipt.
  *
  * Its own entry point rather than `site/gsap.ts`, because that one registers
- * ScrollTrigger and SplitText for the browsing pages, and nothing here scrolls
- * a timeline or splits a heading. Importing it would put both on the one route
- * where a slow phone is closest to paying.
+ * SplitText and DrawSVG for the browsing pages, and nothing here splits a
+ * heading. Importing it would put the splitter on the one route where a slow
+ * phone is closest to paying.
  *
  * Nothing the customer sees before a payment succeeds reaches this module.
  * Shakes, counting figures and travelling rings are in `checkout-motion.ts`,

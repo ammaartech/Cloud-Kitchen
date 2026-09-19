@@ -3,6 +3,7 @@
 import { useRef } from 'react';
 import { buttonClasses } from '@/components/ui/button-styles';
 import { gsap, useGSAP } from './gsap';
+import { onceInView } from './in-view';
 
 /**
  * "What a cycle looks like": the four account rules, and a month that acts
@@ -115,8 +116,14 @@ export function CycleBoard() {
       const mm = gsap.matchMedia();
 
       mm.add('(prefers-reduced-motion: no-preference)', () => {
-        run.current = buildRun(root);
+        const built = buildRun(root);
+        run.current = built;
+        // Played once, when the board is 70% of the way up the screen: far
+        // enough in that the whole month is visible as it starts.
+        const board = Array.from(root.querySelectorAll('.cycle-board'));
+        const stop = onceInView(board, 0.7, () => built.play());
         return () => {
+          stop();
           run.current = null;
         };
       });
@@ -243,10 +250,8 @@ function buildRun(root: HTMLElement) {
   const [returned] = q('[data-count="returned"]');
   const bars = q('.cycle-rule-bar');
 
-  const run = gsap.timeline({
-    defaults: { ease: 'ck' },
-    scrollTrigger: { trigger: q('.cycle-board')[0], start: 'top 70%', once: true },
-  });
+  // Paused: `CycleBoard` plays it when the board is reached.
+  const run = gsap.timeline({ defaults: { ease: 'ck' }, paused: true });
 
   /* The start of the month, written twice on purpose. `gsap.set` rewinds the
      board now, before anyone has scrolled to it, so nobody catches the finished

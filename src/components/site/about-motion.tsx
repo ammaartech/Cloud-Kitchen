@@ -1,7 +1,8 @@
 'use client';
 
 import { useRef, type ReactNode } from 'react';
-import { gsap, ScrollTrigger, useGSAP } from './gsap';
+import { gsap, useGSAP } from './gsap';
+import { onceInView } from './in-view';
 import { riseOnScroll, setDownTools, splitHeadings, type Query } from './motion-reveals';
 
 /**
@@ -16,7 +17,7 @@ import { riseOnScroll, setDownTools, splitHeadings, type Query } from './motion-
  *   `[data-rise]`           rises into place when scrolled to, in batches
  *   `[data-rule]`           a hairline drawn across when scrolled to
  *   `[data-tool]`           marginalia: set down, then left to drift
- *   `.story-spine`          the day's thread, drawn as the day is scrolled
+ *   `.story-spine`          the day's thread, drawn as the day is scrolled (in CSS)
  *   `.story-hour`           one moment in the day, arriving as the thread reaches it
  *
  * Everything in that first group is shared with `/subscriptions` and `/menu`
@@ -25,12 +26,19 @@ import { riseOnScroll, setDownTools, splitHeadings, type Query } from './motion-
  *
  * ## The one thing this page does that no other page does
  *
- * `drawDay` scrubs a drawn line to the scroll position rather than playing it
- * on a clock. That is the only scrubbed animation on the storefront, and the
+ * The day's thread is drawn to the scroll position rather than played on a
+ * clock. That is the only scroll-linked animation on the storefront, and the
  * exception is the subject: this section is a sequence of times, and the reader
  * moves through it at their own pace. A timed draw would either outrun a slow
  * reader or finish before a fast one arrived. Tying it to the scroll makes the
  * page's own scrollbar the clock, which is what the content already is.
+ *
+ * It is not in this file. It is a scroll-driven CSS animation on
+ * `.story-spine` in `about.css`, which the browser runs on the scroll itself
+ * with no script at all. It was the one thing on the site that genuinely needed
+ * ScrollTrigger, and keeping ScrollTrigger for it meant keeping its per-frame
+ * loop running for the rest of the visit. Where scroll-driven animation is not
+ * supported, the thread is simply there, drawn -- it is decoration.
  *
  * Everything readable is still on screen without it. The thread is decoration
  * -- it repeats the order the times are already printed in -- so it starts
@@ -63,35 +71,21 @@ export function AboutStage({
         (context) => {
           if (context.conditions?.still) {
             // Nothing is hidden on this branch -- the gate never matched --
-            // except the decoration, which starts transparent or undrawn in its
-            // own base rule and would otherwise never appear. Both are part of
-            // the page: show them, unmoving.
+            // except the marginalia, which start transparent in their own base
+            // rule and would otherwise never appear. They are part of the page:
+            // show them, unmoving.
             gsap.set(q('[data-tool]'), { autoAlpha: 1 });
-            gsap.set(q('.story-spine-line'), { drawSVG: '100%' });
             gsap.set(q('.story-hour-dot'), { scale: 1 });
             return;
           }
 
           playIntro(q);
-          setDownTools(q);
-          splitHeadings(q);
-          drawDay(q);
-          riseOnScroll(q);
+          const stops = [setDownTools(q), splitHeadings(q), markHours(q), riseOnScroll(q)];
+          return () => stops.forEach((stop) => stop());
         },
       );
 
-      // Zodiak and Cabinet are `preload: false` and swap in late, so every
-      // ScrollTrigger measured its start against the fallback font's layout.
-      // Once the real faces land, the positions are measured again.
-      let mounted = true;
-      document.fonts?.ready.then(() => {
-        if (mounted) ScrollTrigger.refresh();
-      });
-
-      return () => {
-        mounted = false;
-        mm.revert();
-      };
+      return () => mm.revert();
     },
     { scope },
   );
@@ -153,82 +147,44 @@ function playIntro(q: Query) {
 }
 
 /**
- * The day drawn as it is read.
+ * The hours arriving as the thread reaches them.
  *
- * One line runs down the column of hours and is drawn to the scroll position;
- * each hour's marker fills as the line reaches it. The two are deliberately not
- * the same animation. The line is scrubbed, so it tracks the scrollbar exactly.
- * The markers are `once` triggers, so a marker that has been reached stays
- * filled when the reader scrolls back up -- one that emptied on the way up
- * would be saying the kitchen had un-cooked something.
- *
- * `end: 'bottom 65%'` rather than `bottom bottom`: the line has to finish while
- * the last hour is still comfortably on screen. Ending it at the section's true
- * bottom means the final segment is drawn during the scroll that is already
- * carrying the section off the top of the window, so the one moment the
- * sequence resolves is the one moment nobody is looking at it.
+ * The thread and the markers are deliberately not the same animation. The
+ * thread is tied to the scroll, so it tracks the scrollbar exactly (see
+ * `.story-spine` in `about.css`). The markers play once, so a marker that has
+ * been reached stays filled when the reader scrolls back up -- one that
+ * emptied on the way up would be saying the kitchen had un-cooked something.
  */
-function drawDay(q: Query) {
-  const [spine] = q('.story-spine');
-  const [line] = q('.story-spine-line');
+function markHours(q: Query): () => void {
+  return onceInView(q('.story-hour'), 0.68, (reached) =>
+    reached.forEach((hour) => {
+      const inHour = gsap.utils.selector(hour);
 
-  if (spine && line) {
-    gsap.fromTo(
-      line,
-      { drawSVG: '0%' },
-      {
-        drawSVG: '100%',
-        ease: 'none',
-        scrollTrigger: {
-          trigger: spine,
-          start: 'top 62%',
-          end: 'bottom 65%',
-          // A little lag, so a trackpad flick draws a line that keeps going for
-          // a moment after the wheel stops rather than stopping dead with it.
-          // The same reason the hero's scroll progress is spring-smoothed.
-          scrub: 0.6,
-        },
-      },
-    );
-  }
-
-  const hours = q('.story-hour');
-  if (hours.length === 0) return;
-
-  hours.forEach((hour) => {
-    const inHour = gsap.utils.selector(hour);
-
-    ScrollTrigger.create({
-      trigger: hour,
-      start: 'top 68%',
-      once: true,
-      onEnter: () => {
-        gsap
-          .timeline({ defaults: { ease: 'ck' } })
-          // `back.out` on the marker and nothing else. It is the one element
-          // here that is a dot rather than a word -- a shape can overshoot and
-          // settle without anybody having to read it mid-flight, which is the
-          // same reason the step badges on the home page are the only thing in
-          // that row that travels.
-          .fromTo(
-            inHour('.story-hour-dot'),
-            { scale: 0 },
-            { scale: 1, duration: 0.5, ease: 'back.out(2)' },
-            0,
-          )
-          .fromTo(
-            inHour('.story-hour-time'),
-            { autoAlpha: 0, x: -8 },
-            { autoAlpha: 1, x: 0, duration: 0.5 },
-            0.06,
-          )
-          .fromTo(
-            inHour('.story-hour-body > *'),
-            { autoAlpha: 0, y: 10 },
-            { autoAlpha: 1, y: 0, duration: 0.5, stagger: 0.07 },
-            0.12,
-          );
-      },
-    });
-  });
+      gsap
+        .timeline({ defaults: { ease: 'ck' } })
+        // `back.out` on the marker and nothing else. It is the one element
+        // here that is a dot rather than a word -- a shape can overshoot and
+        // settle without anybody having to read it mid-flight, which is the
+        // same reason the step badges on the home page are the only thing in
+        // that row that travels.
+        .fromTo(
+          inHour('.story-hour-dot'),
+          { scale: 0 },
+          { scale: 1, duration: 0.5, ease: 'back.out(2)' },
+          0,
+        )
+        .fromTo(
+          inHour('.story-hour-time'),
+          { autoAlpha: 0, x: -8 },
+          { autoAlpha: 1, x: 0, duration: 0.5 },
+          0.06,
+        )
+        .fromTo(
+          inHour('.story-hour-body > *'),
+          { autoAlpha: 0, y: 10 },
+          { autoAlpha: 1, y: 0, duration: 0.5, stagger: 0.07 },
+          0.12,
+        );
+    }),
+  );
 }

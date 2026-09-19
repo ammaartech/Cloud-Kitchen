@@ -3,7 +3,8 @@
 import Image from 'next/image';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { cx } from '@/components/ui/button-styles';
-import { gsap, ScrollTrigger, SplitText, useGSAP } from './gsap';
+import { gsap, SplitText, useGSAP } from './gsap';
+import { onCrossing } from './in-view';
 import { riseOnScroll, splitHeadings, type Query } from './motion-reveals';
 import { VegMark } from './veg-mark';
 
@@ -101,8 +102,8 @@ export function MenuBoard({ children }: { children: ReactNode }) {
  *
  * ## Which section you are in
  *
- * One ScrollTrigger per section, toggling as the section crosses the middle of
- * the viewport, moves the index marker to that section's link. On a phone the
+ * An observer on the sections, watching a line across the middle of the
+ * viewport, moves the index marker to the link of whichever section is on it. On a phone the
  * index is a horizontal rail stuck under the header, so the marker slides
  * sideways and the rail scrolls itself to keep the current section in view; on
  * a desktop it is a column, and the marker is a bar that travels down it. The
@@ -147,8 +148,7 @@ export function MenuStage({ dishes, children }: { dishes: PassDish[]; children: 
           const cleanups: Array<() => void> = [];
 
           if (moving && first) {
-            splitHeadings(q);
-            riseOnScroll(q);
+            cleanups.push(splitHeadings(q), riseOnScroll(q));
           } else if (moving) {
             // Rows a search brought in are hidden by motion-gate.css until
             // shown; they arrive in place rather than rising again.
@@ -162,15 +162,7 @@ export function MenuStage({ dishes, children }: { dishes: PassDish[]; children: 
         },
       );
 
-      let mounted = true;
-      document.fonts?.ready.then(() => {
-        if (mounted) ScrollTrigger.refresh();
-      });
-
-      return () => {
-        mounted = false;
-        mm.revert();
-      };
+      return () => mm.revert();
     },
     { scope, dependencies: [rows], revertOnUpdate: true },
   );
@@ -232,25 +224,20 @@ function followSections(q: Query, { moving, wide }: { moving: boolean; wide: boo
     }
   };
 
-  sections.forEach((section, index) => {
-    ScrollTrigger.create({
-      trigger: section,
-      start: 'top 50%',
-      end: 'bottom 50%',
-      onToggle: (self) => {
-        if (self.isActive) place(index, true);
-      },
-    });
-  });
-
+  const stop = onCrossing(sections, 0.5, (index) => place(index, true));
   place(0, false);
 
-  // Offsets change with the layout, so the marker is put back after every
-  // refresh -- a resize, a font landing, the rail becoming a column.
-  const replace = () => place(current, false);
-  ScrollTrigger.addEventListener('refresh', replace);
+  // The marker is placed by the links' offsets, which move whenever a link
+  // changes size -- a font landing, a count changing width. Put it back,
+  // without animating, whenever one does. (The rail becoming a column is a
+  // breakpoint, and `gsap.matchMedia` rebuilds all of this for that.)
+  const resized = new ResizeObserver(() => place(current, false));
+  links.forEach((link) => resized.observe(link));
 
-  return () => ScrollTrigger.removeEventListener('refresh', replace);
+  return () => {
+    stop();
+    resized.disconnect();
+  };
 }
 
 /** Brings a dish to the pass by scroll position, or by pointing at it. */
@@ -277,18 +264,12 @@ function followDishes(q: Query, show: (index: number) => void) {
   list.addEventListener('pointerenter', onEnter);
   list.addEventListener('pointerleave', onLeave);
 
-  rows.forEach((row, index) => {
-    ScrollTrigger.create({
-      trigger: row,
-      start: 'top 45%',
-      end: 'bottom 45%',
-      onToggle: (self) => {
-        if (self.isActive && !pointing) show(index);
-      },
-    });
+  const stop = onCrossing(rows, 0.45, (index) => {
+    if (!pointing) show(index);
   });
 
   return () => {
+    stop();
     list.removeEventListener('pointerover', onOver);
     list.removeEventListener('pointerenter', onEnter);
     list.removeEventListener('pointerleave', onLeave);

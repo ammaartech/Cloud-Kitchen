@@ -356,6 +356,47 @@
   vector-effect: non-scaling-stroke;
 }
 
+/* The thread drawn as the day is read: a scroll-driven animation, so the
+   scroll position is the animation's clock and no script runs per frame. See
+   the note at the top of `about-motion.tsx` for why it is tied to the scroll.
+
+   It grows down from the top rather than being stroke-dashed. The line is a
+   vertical stroke, so squashing it vertically looks exactly like drawing it,
+   and a transform stays on the compositor where a dash offset would repaint.
+
+   The range starts when the day's top is 62% of the way down the screen, and
+   ends when its bottom is at 65%, rather than as the bottom leaves: the line
+   has to finish while the last hour is still comfortably on screen. Ending at
+   the section's true bottom would draw the final segment during the scroll
+   that is already carrying the section off the top of the window, so the one
+   moment the sequence resolves would be the one moment nobody is looking.
+   `cover 0%` is the day's top at the bottom of the screen, so 38vh later it is
+   at 62%; `cover 100%` is its bottom at the top, so 65vh earlier it is at 65%.
+
+   Where scroll-driven animation is not supported, or motion is not welcome,
+   none of this applies and the thread is simply there, drawn. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .story-day {
+      view-timeline: --story-day block;
+    }
+
+    .story-spine {
+      transform-origin: top;
+      animation: story-spine-draw linear both;
+      /* After the shorthand, which resets both. */
+      animation-timeline: --story-day;
+      animation-range: cover 38vh cover calc(100% - 65vh);
+    }
+  }
+}
+
+@keyframes story-spine-draw {
+  from {
+    scale: 1 0;
+  }
+}
+
 .story-day {
   --story-time-w: 4.5rem;
   --story-gap: 1rem;

@@ -1,7 +1,6 @@
 'use client';
 
 import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { SplitText } from 'gsap/SplitText';
 import { DrawSVGPlugin } from 'gsap/DrawSVGPlugin';
 import { CustomEase } from 'gsap/CustomEase';
@@ -19,8 +18,15 @@ import { useGSAP } from '@gsap/react';
  * This is the bundle the Motion library in `hero-motion.tsx` is not: GSAP is
  * loaded by the routes that import this file and by nothing else, so the home
  * page pays none of it.
+ *
+ * ScrollTrigger is deliberately not here. It keeps an empty
+ * `requestAnimationFrame` loop running from the moment it loads until the tab
+ * closes -- through client-side navigations to pages that never used it -- so
+ * the phone never goes idle. What starts on scroll uses `in-view.ts` instead,
+ * and the one scroll-linked animation is CSS. Adding it back brings the loop
+ * back with it.
  */
-gsap.registerPlugin(useGSAP, ScrollTrigger, SplitText, DrawSVGPlugin, CustomEase);
+gsap.registerPlugin(useGSAP, SplitText, DrawSVGPlugin, CustomEase);
 
 /**
  * `--ck-ease`, as a GSAP ease. The stylesheet's curve -- confident
@@ -37,4 +43,4 @@ CustomEase.create('ck', '0.25,1,0.5,1');
  */
 CustomEase.create('ck-travel', '0.65,0,0.35,1');
 
-export { gsap, ScrollTrigger, SplitText, useGSAP };
+export { gsap, SplitText, useGSAP };
