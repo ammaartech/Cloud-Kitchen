@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { resolveSiteUrl } from './site-url';
 
 /**
  * Environment configuration.
@@ -98,7 +99,12 @@ const serverSchema = z.object({
   SITE_LOCK_ALLOWED_EMAILS: blankAsUndefined(z.string()),
 
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
-  NEXT_PUBLIC_SITE_URL: z.string().url().default('http://localhost:3000'),
+  // The public origin every absolute URL is built on -- canonical tags, the
+  // sitemap, the share image, and Cashfree's return and notify URLs. A blank
+  // value counts as unset, and the default is resolved lazily so a deployment
+  // that forgot the variable falls back to its own Vercel hostname rather than
+  // to `localhost` (see `site-url.ts`). A malformed value still fails here.
+  NEXT_PUBLIC_SITE_URL: blankAsUndefined(z.string().url()).default(() => resolveSiteUrl()),
 });
 
 export type ServerEnv = z.infer<typeof serverSchema>;
