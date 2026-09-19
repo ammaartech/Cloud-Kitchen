@@ -172,13 +172,47 @@ export function SiteHeader() {
    * Escape, and the page behind it stays reachable by Tab. `showModal()` is the
    * one that puts it in the top layer and hands the browser the three jobs a
    * menu overlay would otherwise need a library to do.
+   *
+   * Closing is deferred until the slide out has finished, and that is what
+   * gives the drawer an exit on a phone. `close()` takes the dialog out of the
+   * top layer on the spot, and with it the backdrop. Chrome can hold both there
+   * through a CSS transition on `overlay`, but Safari and Firefox have no such
+   * property, so on an iPhone the panel and the dimming vanished in a single
+   * frame. `data-closing` runs the exit while the dialog is still open, and
+   * `close()` follows once the panel is off-screen, the same in every browser.
    */
   useEffect(() => {
     const element = sheet.current;
     if (!element) return;
 
-    if (menuOpen && !element.open) element.showModal();
-    if (!menuOpen && element.open) element.close();
+    if (menuOpen) {
+      // Reopened before the exit finished: dropping the flag turns the slide
+      // round from wherever it had got to.
+      delete element.dataset.closing;
+      if (!element.open) element.showModal();
+      return;
+    }
+
+    if (!element.open) return;
+
+    element.dataset.closing = '';
+    let interrupted = false;
+    // `getAnimations()` flushes style first, so it returns the exit transition
+    // just started by the flag. With nothing to wait for (reduced motion, say),
+    // the list is empty and this closes at once.
+    Promise.all(element.getAnimations().map((animation) => animation.finished))
+      .then(() => {
+        if (interrupted) return;
+        delete element.dataset.closing;
+        element.close();
+      })
+      // A reopen mid-exit cancels the transition and rejects `finished`. The
+      // branch above owns that case.
+      .catch(() => {});
+
+    return () => {
+      interrupted = true;
+    };
   }, [menuOpen]);
 
   /*
@@ -338,11 +372,15 @@ export function SiteHeader() {
           rather than merely covered. Hand-rolling those is how a nav menu ends
           up letting you Tab into the page underneath it.
 
-          `onClose` is the sync back, and it is not optional: Escape and the
-          browser's own dismissal close the element without going through the
-          button, so without this React would still believe the menu is open and
-          the next press of the toggle would try to close an already-closed
-          dialog.
+          `onCancel` catches Escape (and Android's back gesture) before the
+          browser closes the dialog on the spot, so those paths go through the
+          same animated exit the button does.
+
+          `onClose` is the sync back, and it is not optional: a dismissal the
+          page is not allowed to cancel still closes the element without going
+          through the button, so without this React would still believe the menu
+          is open and the next press of the toggle would try to close an
+          already-closed dialog.
 
           The click handler is the outside-click dismissal. A click on the
           backdrop has the dialog itself as its target -- the backdrop is a
@@ -354,6 +392,10 @@ export function SiteHeader() {
         id="site-menu"
         className="nav-sheet xl:hidden"
         aria-label="Main"
+        onCancel={(event) => {
+          event.preventDefault();
+          setOpenAt(null);
+        }}
         onClose={() => setOpenAt(null)}
         onClick={(event) => {
           if (event.target === sheet.current) setOpenAt(null);

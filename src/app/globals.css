@@ -3495,18 +3495,25 @@ h3 {
    ghost. The backdrop does the fading, on the same curve and clock, so the two
    read as one movement.
 
-   Asymmetric on purpose: 420ms in, 280ms out. The way in is being watched, and
+   Asymmetric on purpose: 420ms in, 320ms out. The way in is being watched, and
    the long settle of `--ck-ease-drawer` is the smoothness. The way out is
    something the visitor has already decided on -- they want the page back, and
-   every extra frame is spent in their way. A transition uses the timing of the
-   state it is heading *to*, so the closed rule carries the exit and `[open]`
+   every extra frame is spent in their way. It must still read as a slide,
+   though, and that is why the exit gets its own curve. `--ck-ease-drawer`
+   makes nearly all of its travel in the first few frames. On the way in, the
+   long settle that follows is on screen and is the smoothness. On the way out
+   it happens off the edge, so all anyone saw was the jump: four fifths of the
+   panel gone in 90ms, which felt like a snap. Plain `ease` spreads the same
+   distance evenly enough to follow. A transition uses the timing of the state
+   it is heading *to*, so `[data-closing]` carries the exit and `[open]`
    carries the entrance.
 
-   `allow-discrete` is what gives it an exit at all. `display` and `overlay` are
-   discrete properties -- they flip rather than tween -- so without it the
-   element leaves the top layer on the first frame of the close and takes the
-   slide with it. With it the browser holds both until the transition has run,
-   and Escape gets the same exit the button does.
+   The exit runs while the dialog is still open. `SiteHeader` sets
+   `data-closing`, waits for the slide to finish, and only then calls
+   `close()`. Closing first and animating afterwards needs the element held in
+   the top layer through a transition on `overlay`, which only Chromium has. In
+   Safari and Firefox the panel and its backdrop left the top layer on the first
+   frame of the close, so on an iPhone the drawer simply vanished.
    -------------------------------------------------------------------------- */
 .nav-sheet {
   position: fixed;
@@ -3529,18 +3536,18 @@ h3 {
   overscroll-behavior: contain;
 
   translate: -100% 0;
-  transition:
-    translate 280ms var(--ck-ease-drawer),
-    display 280ms allow-discrete,
-    overlay 280ms allow-discrete;
 }
 
 .nav-sheet[open] {
   translate: 0 0;
-  transition:
-    translate 420ms var(--ck-ease-drawer),
-    display 420ms allow-discrete,
-    overlay 420ms allow-discrete;
+  transition: translate 420ms var(--ck-ease-drawer);
+}
+
+/* Three selectors' worth of specificity, so it outranks `[open]` above
+   without depending on source order. */
+.nav-sheet[open][data-closing] {
+  translate: -100% 0;
+  transition: translate 320ms ease;
 }
 
 /* The opening frame, and it has to be its own rule. The browser needs a value
@@ -3556,18 +3563,16 @@ h3 {
 .nav-sheet::backdrop {
   background-color: rgb(13 23 20 / 0.4);
   opacity: 0;
-  transition:
-    opacity 280ms var(--ck-ease-drawer),
-    display 280ms allow-discrete,
-    overlay 280ms allow-discrete;
 }
 
 .nav-sheet[open]::backdrop {
   opacity: 1;
-  transition:
-    opacity 420ms var(--ck-ease-drawer),
-    display 420ms allow-discrete,
-    overlay 420ms allow-discrete;
+  transition: opacity 420ms var(--ck-ease-drawer);
+}
+
+.nav-sheet[open][data-closing]::backdrop {
+  opacity: 0;
+  transition: opacity 320ms ease;
 }
 
 @starting-style {
@@ -3870,8 +3875,11 @@ h3 {
    already in the DOM, and expressing it in the stylesheet means the lock cannot
    get out of step with the thing it is locking for. There is no way to close
    the sheet that does not also clear this.
+
+   Released as the exit starts rather than when it ends, so a link to a section
+   of the page can start scrolling while the drawer is still sliding away.
    -------------------------------------------------------------------------- */
-html:has(.nav-sheet[open]) {
+html:has(.nav-sheet[open]:not([data-closing])) {
   overflow: hidden;
 }
 
