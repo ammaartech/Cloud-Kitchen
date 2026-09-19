@@ -4,6 +4,7 @@ import { getSession } from '@/lib/auth/session';
 import { landingPathForRole } from '@/lib/auth/permissions';
 import { safeNextPath } from '@/lib/auth/redirect';
 import { listDemoAccounts } from '@/lib/auth/demo-accounts';
+import { siteLock } from '@/lib/auth/site-lock';
 import { SignInPanel } from '@/components/auth/sign-in-panel';
 
 /**
@@ -33,7 +34,13 @@ export default async function SignInPage({ searchParams }: PageProps<'/sign-in'>
 
   // Returns null unless SHOW_DEMO_ACCOUNTS is set, in which case the panel is
   // never rendered and the accounts are never queried.
-  const accounts = await listDemoAccounts();
+  //
+  // Never while the site is locked, whatever the flag says. This page is the
+  // one every locked-out visitor is sent to, and the panel lists the test
+  // accounts with their password -- the lock would be a sign-in form with the
+  // key taped to it.
+  const { locked } = siteLock();
+  const accounts = locked ? null : await listDemoAccounts();
 
-  return <SignInPanel next={next} accounts={accounts} />;
+  return <SignInPanel next={next} accounts={accounts} locked={locked} />;
 }

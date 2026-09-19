@@ -1,0 +1,1459 @@
+<!doctype html>
+<html lang="en" data-resolution="landscape">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <title>Infinity Kitchens — brag</title>
+    <script src="assets/js/gsap.min.js"></script>
+    <script src="assets/js/audio-data.js"></script>
+    <style>
+      /* ---- Faces: the project's own files, copied from its build ---------- */
+      @font-face {
+        font-family: "Inter";
+        src: url("assets/fonts/Inter-latin.woff2") format("woff2");
+        font-weight: 100 900;
+      }
+      /* The rupee sign lives in the latin-ext file, exactly as on the site. */
+      @font-face {
+        font-family: "Inter";
+        src: url("assets/fonts/Inter-latin-ext.woff2") format("woff2");
+        font-weight: 100 900;
+        unicode-range: U+20B9;
+      }
+      @font-face {
+        font-family: "Zodiak";
+        src: url("assets/fonts/Zodiak-Variable.woff2") format("woff2");
+        font-weight: 100 900;
+      }
+      @font-face {
+        font-family: "Cabinet Grotesk";
+        src: url("assets/fonts/CabinetGrotesk-Variable.woff2") format("woff2");
+        font-weight: 100 900;
+      }
+      @font-face {
+        font-family: "Poppins";
+        src: url("assets/fonts/Poppins-500.woff2") format("woff2");
+        font-weight: 500;
+      }
+      @font-face {
+        font-family: "Poppins";
+        src: url("assets/fonts/Poppins-600.woff2") format("woff2");
+        font-weight: 600;
+      }
+      @font-face {
+        font-family: "JetBrains Mono";
+        src: url("assets/fonts/JetBrainsMono.woff2") format("woff2");
+        font-weight: 100 800;
+      }
+
+      /* ---- Tokens: src/app/globals.css ------------------------------------ */
+      :root {
+        --bg: #f6f9f8;
+        --sunken: #eff6f4;
+        --surface: #ffffff;
+        --line: #dfece8;
+        --line-strong: #7f918b;
+        --ink: #0d1714;
+        --muted: #48605a;
+        --subtle: #5f7169;
+        --brand: #386155;
+        --footer: #254139;
+        --f-ink: #eff6f4;
+        --f-muted: #bedad2;
+        --f-subtle: #9ec7bb;
+        --f-line: #4a8271;
+        --o-bg: #0d1714;
+        --o-surface: #13201c;
+        --o-sunken: #080f0d;
+        --o-line: #254139;
+        --o-ink: #eff6f4;
+        --o-muted: #bedad2;
+        --o-subtle: #9ec7bb;
+        --o-brand: #7db5a4;
+        --o-brand-soft: #1b2e28;
+        --o-success: #4ade80;
+        --o-success-soft: #10291b;
+        --o-danger: #ff6b60;
+        --o-danger-soft: #331714;
+        --sw: #ff8534;
+        --sw-soft: #2e1a0d;
+        --zm: #ff5a5f;
+        --zm-soft: #33161a;
+        --sx: #7ba7ee;
+        --sx-soft: #16203a;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: var(--bg);
+      }
+      #root {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        font-family: "Inter", sans-serif;
+        font-feature-settings: "cv05";
+        color: var(--ink);
+      }
+      .scene {
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+      }
+      .stage {
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+      }
+      .line-mask {
+        display: block;
+        overflow: hidden;
+        padding-bottom: 0.06em;
+      }
+      .line-mask > span {
+        display: block;
+      }
+      .label {
+        font-weight: 600;
+        font-size: 22px;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+      }
+      .cursor {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 46px;
+        height: 46px;
+        z-index: 20;
+      }
+      .cursor svg {
+        display: block;
+        width: 46px;
+        height: 46px;
+      }
+      .click-ring {
+        position: absolute;
+        width: 90px;
+        height: 90px;
+        border-radius: 50%;
+        border: 4px solid var(--o-brand);
+        z-index: 19;
+      }
+
+      /* ---- Scene 1: the line ---------------------------------------------- */
+      #s1 .stage {
+        background: var(--bg);
+      }
+      .ghost {
+        position: absolute;
+        left: 0;
+        top: -10px;
+        width: 3600px;
+        height: 1100px;
+      }
+      #ghost-a {
+        opacity: 0.16;
+      }
+      #ghost-b {
+        opacity: 0.12;
+      }
+      .s1-veil {
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(ellipse 1150px 620px at 34% 50%, rgb(246 249 248 / 0.94) 35%, rgb(246 249 248 / 0) 100%);
+      }
+      .s1-copy {
+        position: absolute;
+        left: 160px;
+        top: 250px;
+        width: 1500px;
+      }
+      .s1-copy .label {
+        color: var(--brand);
+      }
+      .s1-head {
+        margin-top: 34px;
+        font-size: 136px;
+        font-weight: 600;
+        line-height: 1.02;
+        letter-spacing: -0.035em;
+      }
+      .s1-rule {
+        display: block;
+        width: 560px;
+        height: 6px;
+        margin-top: 44px;
+        background: var(--brand);
+        transform-origin: left center;
+      }
+
+      /* ---- Scene 2: one kitchen ------------------------------------------- */
+      #s2 .stage {
+        background: var(--sunken);
+      }
+      .lockup {
+        position: absolute;
+        left: 160px;
+        top: 120px;
+        display: flex;
+        align-items: center;
+        gap: 20px;
+      }
+      .lockup img {
+        display: block;
+        height: 58px;
+        width: auto;
+      }
+      .wordmark {
+        font-family: "Poppins", sans-serif;
+        font-weight: 600;
+        letter-spacing: 0.18em;
+        white-space: nowrap;
+      }
+      #s2 .wordmark {
+        font-size: 30px;
+        color: var(--ink);
+      }
+      .s2-head {
+        position: absolute;
+        left: 160px;
+        top: 300px;
+        width: 960px;
+        font-size: 112px;
+        font-weight: 600;
+        line-height: 1.04;
+        letter-spacing: -0.03em;
+      }
+      .s2-glow {
+        position: absolute;
+        left: 1040px;
+        top: 100px;
+        width: 900px;
+        height: 880px;
+        border-radius: 50%;
+        background: radial-gradient(closest-side, rgb(56 97 85 / 0.34), rgb(56 97 85 / 0));
+      }
+      .s2-photo {
+        position: absolute;
+        left: 1140px;
+        top: 170px;
+        width: 740px;
+        height: 740px;
+        overflow: hidden;
+        border-radius: 46% 54% 42% 58% / 54% 40% 60% 46%;
+      }
+      .s2-photo img {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      .tool {
+        position: absolute;
+        display: block;
+        height: auto;
+      }
+      #s2-spatula {
+        left: 160px;
+        top: 790px;
+        width: 150px;
+      }
+      #s2-spoon {
+        left: 900px;
+        top: 780px;
+        width: 92px;
+      }
+
+      /* ---- Scene 3: today's menu ------------------------------------------ */
+      #s3 .stage {
+        background-color: var(--bg);
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='128'%3E%3Cpath d='M0 1.5H160M0 65.5H160M1.5 1.5V65.5M81.5 65.5V128' stroke='%23d9e8e3' stroke-width='3' fill='none'/%3E%3C/svg%3E");
+      }
+      .hanger {
+        position: absolute;
+        left: 110px;
+        top: 90px;
+        width: 940px;
+        height: 110px;
+      }
+      .board {
+        position: absolute;
+        left: 110px;
+        top: 190px;
+        width: 940px;
+        height: 660px;
+        padding: 70px 66px;
+        background: var(--footer);
+        border: 16px solid var(--o-surface);
+        box-shadow: 0 50px 90px -30px rgb(13 23 20 / var(--shade, 0.45));
+        color: var(--f-ink);
+      }
+      .board-frame {
+        position: absolute;
+        inset: 18px;
+        border: 2px solid var(--f-line);
+        pointer-events: none;
+      }
+      .board .label {
+        color: var(--f-muted);
+      }
+      .board-title {
+        margin-top: 22px;
+        font-family: "Zodiak", serif;
+        font-weight: 700;
+        font-size: 116px;
+        line-height: 0.96;
+        letter-spacing: -0.01em;
+      }
+      .tally {
+        position: absolute;
+        left: 540px;
+        right: 50px;
+        top: 250px;
+        display: flex;
+        flex-direction: column;
+        gap: 26px;
+      }
+      .tally-row {
+        display: flex;
+        align-items: baseline;
+        gap: 14px;
+        font-size: 30px;
+        color: var(--f-muted);
+      }
+      .leader {
+        flex: 1;
+        height: 0;
+        border-bottom: 4px dotted var(--f-line);
+        transform-origin: left center;
+      }
+      .tally-row b {
+        font-family: "Cabinet Grotesk", sans-serif;
+        font-weight: 700;
+        font-size: 46px;
+        color: var(--f-ink);
+      }
+      .dishes {
+        position: absolute;
+        left: 1100px;
+        top: 214px;
+        width: 780px;
+        display: flex;
+        flex-direction: column;
+        gap: 26px;
+      }
+      .dish {
+        display: flex;
+        gap: 28px;
+        padding: 16px;
+        background: var(--surface);
+        border: 3px solid var(--line);
+        border-radius: 18px;
+        box-shadow: 0 18px 40px -24px rgb(13 23 20 / 0.35);
+      }
+      .dish-photo {
+        flex: none;
+        width: 160px;
+        height: 160px;
+        overflow: hidden;
+        border-radius: 12px;
+      }
+      .dish-photo img {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      .dish-text {
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 8px;
+      }
+      .dish-name {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+      .veg {
+        flex: none;
+        width: 26px;
+        height: 26px;
+        border: 3px solid #2e7d32;
+        display: grid;
+        place-items: center;
+      }
+      .veg::after {
+        content: "";
+        width: 11px;
+        height: 11px;
+        border-radius: 50%;
+        background: #2e7d32;
+      }
+      .dish-name strong {
+        font-family: "Zodiak", serif;
+        font-weight: 700;
+        font-size: 40px;
+        line-height: 1.1;
+        white-space: nowrap;
+      }
+      .dish-name .leader {
+        border-bottom: 3px dotted var(--line-strong);
+        min-width: 16px;
+      }
+      .dish-name em {
+        font-style: normal;
+        font-family: "Cabinet Grotesk", sans-serif;
+        font-weight: 700;
+        font-size: 38px;
+        white-space: nowrap;
+      }
+      .dish-desc {
+        font-size: 25px;
+        color: var(--muted);
+      }
+      .dish-facts {
+        font-size: 22px;
+        color: var(--subtle);
+      }
+
+      /* ---- Scene 4: pick a plan ------------------------------------------- */
+      #s4 .stage {
+        background-color: var(--bg);
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48'%3E%3Cpath d='M0 1H48M1 0V48' stroke='%23dfece8' stroke-width='2' fill='none'/%3E%3C/svg%3E");
+      }
+      .s4-copy {
+        position: absolute;
+        left: 150px;
+        top: 200px;
+        width: 1060px;
+      }
+      .s4-kicker {
+        display: flex;
+        align-items: center;
+        gap: 22px;
+        color: var(--muted);
+      }
+      .s4-kicker i {
+        display: block;
+        width: 72px;
+        height: 3px;
+        background: var(--muted);
+      }
+      .s4-head {
+        margin-top: 30px;
+        font-size: 132px;
+        font-weight: 600;
+        line-height: 1.02;
+        letter-spacing: -0.035em;
+      }
+      .cook {
+        position: relative;
+        display: inline-block;
+      }
+      .cook svg {
+        position: absolute;
+        left: -2%;
+        bottom: -0.1em;
+        width: 104%;
+        height: 0.26em;
+        overflow: visible;
+      }
+      .flow {
+        position: absolute;
+        left: 150px;
+        top: 720px;
+        display: flex;
+        align-items: center;
+        gap: 22px;
+      }
+      .step {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        font-size: 32px;
+        font-weight: 500;
+      }
+      .step-dot {
+        position: relative;
+        width: 54px;
+        height: 54px;
+      }
+      .step-dot span {
+        position: absolute;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        border-radius: 50%;
+        font-size: 24px;
+        font-weight: 600;
+      }
+      .dot-off {
+        border: 3px solid var(--line-strong);
+        color: var(--subtle);
+      }
+      .dot-on {
+        background: var(--brand);
+        color: #ffffff;
+      }
+      .step-name {
+        position: relative;
+        display: grid;
+      }
+      .step-name span {
+        grid-area: 1 / 1;
+        white-space: nowrap;
+      }
+      .name-off {
+        color: var(--subtle);
+      }
+      .name-on {
+        color: var(--ink);
+      }
+      .flow-rule {
+        display: block;
+        width: 84px;
+        height: 3px;
+        background: var(--line-strong);
+      }
+      .ticket {
+        position: absolute;
+        left: 1260px;
+        top: 96px;
+        width: 580px;
+      }
+      .ticket-paper {
+        position: relative;
+        padding: 40px 42px 38px;
+        background: var(--surface);
+        box-shadow: 0 34px 70px -28px rgb(13 23 20 / 0.35);
+      }
+      .tear {
+        height: 18px;
+        background:
+          linear-gradient(135deg, var(--surface) 50%, rgb(255 255 255 / 0) 50%) 0 0 / 26px 18px repeat-x,
+          linear-gradient(225deg, var(--surface) 50%, rgb(255 255 255 / 0) 50%) 0 0 / 26px 18px repeat-x;
+      }
+      .ticket-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        color: var(--muted);
+      }
+      .ticket-top .label {
+        font-size: 20px;
+        letter-spacing: 0.14em;
+      }
+      .mono {
+        font-family: "JetBrains Mono", monospace;
+      }
+      .ticket-top .mono {
+        font-size: 20px;
+        color: var(--subtle);
+      }
+      .ticket-name {
+        margin-top: 10px;
+        font-family: "Zodiak", serif;
+        font-weight: 700;
+        font-size: 66px;
+        line-height: 1.05;
+      }
+      .ticket-rows {
+        margin-top: 24px;
+        padding-top: 22px;
+        border-top: 3px dashed var(--line);
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+      }
+      .t-row {
+        display: flex;
+        align-items: baseline;
+        gap: 14px;
+        font-size: 26px;
+        color: var(--muted);
+      }
+      .t-row .leader {
+        border-bottom: 3px dotted var(--line-strong);
+      }
+      .t-row b {
+        font-family: "Cabinet Grotesk", sans-serif;
+        font-weight: 600;
+        font-size: 30px;
+        color: var(--ink);
+        white-space: nowrap;
+      }
+      .coupon {
+        margin-top: 24px;
+        padding-top: 20px;
+        border-top: 3px dashed var(--line);
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        font-size: 22px;
+        color: var(--muted);
+      }
+      .coupon .mono {
+        padding: 4px 10px;
+        border: 2px dashed var(--line-strong);
+        font-size: 22px;
+        font-weight: 700;
+        color: var(--ink);
+      }
+      .price {
+        margin-top: 22px;
+        padding-top: 18px;
+        border-top: 4px solid var(--ink);
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+      }
+      .price .label {
+        font-size: 20px;
+        letter-spacing: 0.14em;
+        color: var(--muted);
+      }
+      #price-figure {
+        font-family: "Cabinet Grotesk", "Inter", sans-serif;
+        font-weight: 800;
+        font-size: 92px;
+        line-height: 1;
+        font-variant-numeric: tabular-nums;
+      }
+      .cta {
+        position: relative;
+        margin-top: 26px;
+        height: 86px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 14px;
+        background: var(--brand);
+        color: #ffffff;
+        font-size: 30px;
+        font-weight: 600;
+        border-radius: 6px;
+      }
+      .cta-go,
+      .cta-done {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 14px;
+        white-space: nowrap;
+      }
+      .cta-go svg {
+        width: 30px;
+        height: 30px;
+      }
+      /* Confirmed: the button is stamped, the way the site's receipt is. */
+      .cta-stamp {
+        position: absolute;
+        inset: 0;
+        border: 6px solid var(--brand);
+        border-radius: 6px;
+        background: var(--surface);
+      }
+      .cta-done {
+        color: var(--brand);
+        font-weight: 800;
+        font-size: 40px;
+        letter-spacing: 0.14em;
+      }
+      .cta-done svg {
+        width: 40px;
+        height: 40px;
+      }
+
+      /* ---- Scene 5: the kitchen board ------------------------------------- */
+      #s5 .stage {
+        background: var(--o-bg);
+        color: var(--o-ink);
+      }
+      .kot-head {
+        position: absolute;
+        left: 100px;
+        top: 66px;
+      }
+      .kot-title {
+        display: flex;
+        align-items: center;
+        gap: 24px;
+        font-size: 56px;
+        font-weight: 600;
+        letter-spacing: -0.02em;
+      }
+      .live {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 8px 18px;
+        border-radius: 999px;
+        background: var(--o-success-soft);
+        border: 2px solid rgb(74 222 128 / 0.4);
+        font-size: 24px;
+        font-weight: 600;
+        letter-spacing: 0;
+        color: var(--o-success);
+      }
+      .live i {
+        display: block;
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: var(--o-success);
+      }
+      .kot-sub {
+        margin-top: 10px;
+        font-size: 24px;
+        color: var(--o-subtle);
+      }
+      .kot-caption {
+        position: absolute;
+        right: 100px;
+        top: 50px;
+        text-align: right;
+        font-size: 58px;
+        font-weight: 600;
+        line-height: 1.06;
+        letter-spacing: -0.02em;
+      }
+      .kot-caption .accent {
+        color: var(--o-brand);
+      }
+      .cols {
+        position: absolute;
+        left: 100px;
+        top: 230px;
+        width: 1720px;
+        height: 810px;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 40px;
+      }
+      .col {
+        position: relative;
+        padding: 20px;
+        background: var(--o-sunken);
+        border: 2px solid var(--o-line);
+        border-radius: 20px;
+      }
+      .col-head {
+        height: 56px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 28px;
+        font-weight: 600;
+        color: var(--o-muted);
+      }
+      .count {
+        position: relative;
+        display: grid;
+        min-width: 48px;
+        padding: 2px 14px;
+        border-radius: 999px;
+        background: var(--o-brand-soft);
+        color: var(--o-ink);
+        font-family: "JetBrains Mono", monospace;
+        font-size: 22px;
+        text-align: center;
+      }
+      .count span {
+        grid-area: 1 / 1;
+      }
+      .tk {
+        position: absolute;
+        left: 20px;
+        width: 502px;
+        height: 222px;
+        padding: 16px 18px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        background: var(--o-surface);
+        border: 2px solid var(--o-line);
+        border-radius: 16px;
+      }
+      .tk-s0 {
+        top: 90px;
+      }
+      .tk-top {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        height: 38px;
+      }
+      .tag {
+        padding: 2px 12px;
+        border-radius: 8px;
+        font-family: "JetBrains Mono", monospace;
+        font-weight: 700;
+        font-size: 24px;
+        white-space: nowrap;
+      }
+      .tag-sw {
+        background: var(--sw-soft);
+        color: var(--sw);
+        border: 2px solid rgb(255 133 52 / 0.45);
+      }
+      .tag-zm {
+        background: var(--zm-soft);
+        color: var(--zm);
+        border: 2px solid rgb(255 90 95 / 0.45);
+      }
+      .tag-sx {
+        background: var(--sx-soft);
+        color: var(--sx);
+        border: 2px solid rgb(123 167 238 / 0.45);
+      }
+      .src {
+        font-size: 20px;
+        white-space: nowrap;
+        color: var(--o-subtle);
+      }
+      .due {
+        margin-left: auto;
+        padding: 2px 12px;
+        border-radius: 999px;
+        background: var(--o-brand-soft);
+        color: var(--o-muted);
+        font-size: 20px;
+        white-space: nowrap;
+      }
+      .tk-item {
+        font-size: 28px;
+        font-weight: 600;
+        white-space: nowrap;
+      }
+      .tk-meta {
+        position: relative;
+        display: grid;
+        font-size: 22px;
+        color: var(--o-subtle);
+      }
+      .tk-meta span {
+        grid-area: 1 / 1;
+        white-space: nowrap;
+      }
+      .tk-actions {
+        position: relative;
+        margin-top: auto;
+        padding-top: 12px;
+        border-top: 2px solid var(--o-line);
+        height: 62px;
+      }
+      .tk-actions .row {
+        position: absolute;
+        left: 0;
+        top: 12px;
+        display: flex;
+        gap: 10px;
+      }
+      .btn {
+        height: 46px;
+        padding: 0 20px;
+        display: flex;
+        align-items: center;
+        border-radius: 999px;
+        font-size: 22px;
+        font-weight: 600;
+        white-space: nowrap;
+      }
+      .btn-accept {
+        background: var(--o-brand);
+        color: var(--o-bg);
+      }
+      .btn-reject {
+        background: var(--o-danger-soft);
+        color: var(--o-danger);
+      }
+      .btn-ghost {
+        color: var(--o-muted);
+        border: 2px solid var(--o-line);
+      }
+      .btn-ready {
+        background: var(--o-success);
+        color: var(--o-bg);
+      }
+
+      /* ---- Scene 6: name -------------------------------------------------- */
+      #s6 .stage {
+        background: var(--footer);
+        color: var(--f-ink);
+      }
+      .s6-copy {
+        position: absolute;
+        left: 160px;
+        top: 250px;
+      }
+      .s6-lockup {
+        display: flex;
+        align-items: center;
+        gap: 28px;
+      }
+      .s6-lockup img {
+        display: block;
+        height: 96px;
+        width: auto;
+      }
+      #s6 .wordmark {
+        font-size: 58px;
+      }
+      .s6-line {
+        margin-top: 64px;
+        font-family: "Zodiak", serif;
+        font-weight: 700;
+        font-size: 92px;
+        line-height: 1.05;
+        letter-spacing: -0.01em;
+      }
+      .s6-price {
+        margin-top: 30px;
+        font-size: 36px;
+        font-weight: 500;
+        color: var(--f-muted);
+      }
+      .s6-url {
+        margin-top: 16px;
+        font-size: 28px;
+        color: var(--f-subtle);
+      }
+      .giant-crop {
+        position: absolute;
+        left: 60px;
+        bottom: 0;
+        width: 1800px;
+        height: 178px;
+        overflow: hidden;
+      }
+      .giant-crop img {
+        display: block;
+        width: 1800px;
+        height: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="main"
+      data-start="0"
+      data-duration="23.7"
+      data-width="1920"
+      data-height="1080"
+    >
+      <!-- Scene 1 — The line — 0.00–3.70 -->
+      <section id="s1" class="scene clip" data-start="0" data-duration="3.7" data-track-index="0">
+        <div class="stage" id="s1-stage">
+          <div class="ghosts" data-layout-allow-overflow>
+            <img id="ghost-a" class="ghost" src="assets/img/ghost-a.png" alt="" />
+            <img id="ghost-b" class="ghost" src="assets/img/ghost-b.png" alt="" />
+          </div>
+          <div class="s1-veil"></div>
+          <div class="s1-copy">
+            <p class="label" id="s1-label">Infinity Kitchens · Bengaluru</p>
+            <h1 class="s1-head">
+              <span class="line-mask"><span id="s1-l1">Not a marketplace</span></span>
+              <span class="line-mask"><span id="s1-l2">with ten thousand</span></span>
+              <span class="line-mask"><span id="s1-l3">dishes.</span></span>
+            </h1>
+            <i class="s1-rule" id="s1-rule"></i>
+          </div>
+        </div>
+      </section>
+
+      <!-- Scene 2 — One kitchen — 3.35–7.38 (crossfades in over 3.35–3.70) -->
+      <section id="s2" class="scene clip" data-start="3.35" data-duration="4.03" data-track-index="1">
+        <div class="stage" id="s2-stage">
+          <div class="s2-glow" id="s2-glow" data-layout-ignore></div>
+          <div class="s2-photo" id="s2-photo">
+            <img id="s2-img" src="assets/img/hero-masala-dosa.jpg" alt="Masala dosa with chutneys" />
+          </div>
+          <div class="lockup" id="s2-lockup">
+            <img src="assets/img/mark-green.png" alt="" />
+            <span class="wordmark">INFINITY KITCHENS</span>
+          </div>
+          <h2 class="s2-head">
+            <span class="line-mask"><span id="s2-l1">One kitchen.</span></span>
+            <span class="line-mask"><span id="s2-l2">One menu a day.</span></span>
+            <span class="line-mask"><span id="s2-l3">For you.</span></span>
+          </h2>
+          <img class="tool" id="s2-spatula" src="assets/img/spatula.png" alt="" />
+          <img class="tool" id="s2-spoon" src="assets/img/spoon-knife.png" alt="" />
+        </div>
+      </section>
+
+      <!-- Scene 3 — Today's menu — 7.03–11.60 (slides in over 7.03–7.38) -->
+      <section id="s3" class="scene clip" data-start="7.03" data-duration="4.57" data-track-index="2">
+        <div class="stage" id="s3-stage">
+          <svg class="hanger" id="s3-hanger" viewBox="0 0 940 110" aria-hidden="true">
+            <path d="M360 108 L470 30 L580 108" fill="none" stroke="#0d1714" stroke-width="3" />
+            <circle cx="470" cy="30" r="9" fill="#0d1714" />
+          </svg>
+          <div class="board" id="s3-board">
+            <div class="board-frame"></div>
+            <p class="label" id="s3-kicker">Cooked this morning</p>
+            <h2 class="board-title">
+              <span class="line-mask"><span id="s3-t1">Today’s</span></span>
+              <span class="line-mask"><span id="s3-t2">menu</span></span>
+            </h2>
+            <div class="tally">
+              <div class="tally-row" id="s3-r1"><span>dishes</span><i class="leader"></i><b>27</b></div>
+              <div class="tally-row" id="s3-r2"><span>sections</span><i class="leader"></i><b>3</b></div>
+              <div class="tally-row" id="s3-r3"><span>vegetarian</span><i class="leader"></i><b>all</b></div>
+            </div>
+          </div>
+          <div class="dishes">
+            <article class="dish" id="s3-d1">
+              <div class="dish-photo"><img src="assets/img/idli.jpg" alt="Idli" /></div>
+              <div class="dish-text">
+                <div class="dish-name"><i class="veg"></i><strong>Idli</strong><i class="leader"></i><em>₹79</em></div>
+                <p class="dish-desc">Steamed soft, three to a plate</p>
+                <p class="dish-facts">310 kcal · 9 g protein</p>
+              </div>
+            </article>
+            <article class="dish" id="s3-d2">
+              <div class="dish-photo"><img src="assets/img/masala-dosa.jpg" alt="Masala dosa" /></div>
+              <div class="dish-text">
+                <div class="dish-name"><i class="veg"></i><strong>Masala Dosa</strong><i class="leader"></i><em>₹109</em></div>
+                <p class="dish-desc">Crisp dosa folded over potato palya</p>
+                <p class="dish-facts">480 kcal · 10 g protein</p>
+              </div>
+            </article>
+            <article class="dish" id="s3-d3">
+              <div class="dish-photo"><img src="assets/img/banana-leaf-thali.jpg" alt="Banana leaf thali" /></div>
+              <div class="dish-text">
+                <div class="dish-name"><i class="veg"></i><strong>Banana Leaf Thali</strong><i class="leader"></i><em>₹199</em></div>
+                <p class="dish-desc">The full midday meal, on a leaf</p>
+                <p class="dish-facts">780 kcal · 18 g protein</p>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- Scene 4 — Pick a plan — 11.25–16.34 (wipes in over 11.25–11.60) -->
+      <section id="s4" class="scene clip" data-start="11.25" data-duration="5.09" data-track-index="3">
+        <div class="stage" id="s4-stage">
+          <div class="s4-copy">
+            <p class="label s4-kicker" id="s4-kicker"><i></i>Subscriptions</p>
+            <h2 class="s4-head">
+              <span class="line-mask"><span id="s4-l1">Pick a plan.</span></span>
+              <span class="line-mask"
+                ><span id="s4-l2"
+                  >We
+                  <span class="cook"
+                    >cook<svg viewBox="0 0 200 26" preserveAspectRatio="none" aria-hidden="true">
+                      <path
+                        id="s4-underline"
+                        d="M4 16 C 40 6, 90 4, 196 12 M18 22 C 70 14, 130 14, 188 20"
+                        fill="none"
+                        stroke="#386155"
+                        stroke-width="5"
+                        stroke-linecap="round"
+                      /></svg></span
+                  >
+                  to it.</span
+                ></span
+              >
+            </h2>
+          </div>
+
+          <div class="flow" id="s4-flow">
+            <div class="step">
+              <div class="step-dot"><span class="dot-on">1</span></div>
+              <div class="step-name"><span class="name-on">Your plan</span></div>
+            </div>
+            <i class="flow-rule"></i>
+            <div class="step">
+              <div class="step-dot"><span class="dot-off">2</span><span class="dot-on" id="s4-dot2">2</span></div>
+              <div class="step-name"><span class="name-off">Checkout</span><span class="name-on" id="s4-name2">Checkout</span></div>
+            </div>
+            <i class="flow-rule"></i>
+            <div class="step">
+              <div class="step-dot"><span class="dot-off">3</span><span class="dot-on" id="s4-dot3">3</span></div>
+              <div class="step-name"><span class="name-off">Confirmed</span><span class="name-on" id="s4-name3">Confirmed</span></div>
+            </div>
+          </div>
+
+          <div class="ticket" id="s4-ticket">
+            <div class="ticket-paper">
+              <div class="ticket-top"><span class="label">Fixed menu</span><span class="mono">1 OF 3</span></div>
+              <h3 class="ticket-name">Weekday Lunch</h3>
+              <div class="ticket-rows">
+                <div class="t-row" id="s4-r1"><span>you get</span><i class="leader"></i><b>22 meals</b></div>
+                <div class="t-row" id="s4-r2"><span>window</span><i class="leader"></i><b>Lunch, 12:00 pm</b></div>
+                <div class="t-row" id="s4-r3"><span>days</span><i class="leader"></i><b>Every day</b></div>
+                <div class="t-row" id="s4-r4"><span>cycle</span><i class="leader"></i><b>30 days, one-time</b></div>
+              </div>
+              <div class="coupon" id="s4-coupon"><span class="mono">FIRST5</span>First subscription - 5% off.</div>
+              <div class="price">
+                <span class="label">Plan price</span>
+                <span id="price-figure">₹0</span>
+              </div>
+              <div class="cta" id="s4-cta">
+                <div class="cta-stamp" id="s4-stamp"></div>
+                <span class="cta-go" id="s4-go"
+                  >Continue to checkout
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="#ffffff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" /></svg
+                ></span>
+                <span class="cta-done" id="s4-done"
+                  ><svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M4.5 12.5l5 5L19.5 7" fill="none" stroke="#386155" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" /></svg
+                  >CONFIRMED</span
+                >
+              </div>
+            </div>
+            <div class="tear"></div>
+          </div>
+
+          <div class="click-ring" id="s4-ring"></div>
+          <div class="cursor" id="s4-cursor">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M4 2.5 L4 19.5 L8.6 15.3 L11.6 21.6 L14.6 20.2 L11.7 14.1 L18 14.1 Z" fill="#ffffff" stroke="#0d1714" stroke-width="1.5" stroke-linejoin="round" />
+            </svg>
+          </div>
+        </div>
+      </section>
+
+      <!-- Scene 5 — The kitchen board — 15.99–20.54 (flips in over 15.99–16.34) -->
+      <section id="s5" class="scene clip" data-start="15.99" data-duration="4.55" data-track-index="4">
+        <div class="stage" id="s5-stage">
+          <div class="kot-head" id="s5-head">
+            <h2 class="kot-title">Live board <span class="live"><i id="s5-live"></i>Live</span></h2>
+            <p class="kot-sub">KOT · Branch manager</p>
+          </div>
+          <p class="kot-caption">
+            <span class="line-mask"><span id="s5-c1">Website. Swiggy. Zomato.</span></span>
+            <span class="line-mask"><span id="s5-c2" class="accent">One board.</span></span>
+          </p>
+
+          <div class="cols">
+            <div class="col" id="s5-col1">
+              <div class="col-head">
+                Waiting on you
+                <span class="count"><span id="s5-n1-0">0</span><span id="s5-n1-1">1</span><span id="s5-n1-2">2</span><span id="s5-n1-3">3</span></span>
+              </div>
+            </div>
+            <div class="col" id="s5-col2">
+              <div class="col-head">
+                In the kitchen
+                <span class="count"><span id="s5-n2-1">1</span><span id="s5-n2-2">2</span></span>
+              </div>
+              <article class="tk tk-s0">
+                <div class="tk-top"><span class="tag tag-zm">ZM-007</span><span class="src">Zomato</span><span class="due">due 12:10</span></div>
+                <p class="tk-item">2 × Vangi Bath</p>
+                <p class="tk-meta"><span>Marketplace customer · ETA 20 min</span></p>
+                <div class="tk-actions"><div class="row"><span class="btn btn-ready">Ready for pickup</span><span class="btn btn-ghost">Change ETA</span></div></div>
+              </article>
+            </div>
+            <div class="col" id="s5-col3">
+              <div class="col-head">
+                Ready and handoff
+                <span class="count"><span>1</span></span>
+              </div>
+              <article class="tk tk-s0">
+                <div class="tk-top"><span class="tag tag-sw">SW-011</span><span class="src">Swiggy</span><span class="due">due 12:05</span></div>
+                <p class="tk-item">1 × Chow Chow Bath</p>
+                <p class="tk-meta"><span>Rider on the way · Ready for pickup</span></p>
+                <div class="tk-actions"><div class="row"><span class="btn btn-accept">Handed off</span></div></div>
+              </article>
+            </div>
+
+            <!-- Arrivals live on the grid itself, so the one that is accepted
+                 can travel across columns without leaving its parent. -->
+            <article class="tk" id="tk-sw" style="left: 22px; top: 92px">
+              <div class="tk-top"><span class="tag tag-sw">SW-014</span><span class="src">Swiggy</span><span class="due">due 12:20</span></div>
+              <p class="tk-item">2 × Masala Dosa</p>
+              <p class="tk-meta"><span>Priya S. · Status New · ETA 25 min</span></p>
+              <div class="tk-actions"><div class="row"><span class="btn btn-accept">Accept</span><span class="btn btn-reject">Reject</span><span class="btn btn-ghost">Change ETA</span></div></div>
+            </article>
+            <article class="tk" id="tk-zm" style="left: 22px; top: 330px">
+              <div class="tk-top"><span class="tag tag-zm">ZM-009</span><span class="src">Zomato</span><span class="due">due 12:25</span></div>
+              <p class="tk-item">1 × Ghee Rice</p>
+              <p class="tk-meta"><span>Arjun M. · Status New · ETA 25 min</span></p>
+              <div class="tk-actions"><div class="row"><span class="btn btn-accept">Accept</span><span class="btn btn-reject">Reject</span><span class="btn btn-ghost">Change ETA</span></div></div>
+            </article>
+            <article class="tk" id="tk-sx" style="left: 22px; top: 568px">
+              <div class="tk-top"><span class="tag tag-sx">SX-001</span><span class="src">Website</span><span class="due">due 12:30</span></div>
+              <p class="tk-item">1 × Banana Leaf Thali</p>
+              <p class="tk-meta"><span id="sx-new">Weekday Lunch · Status New · ETA 25 min</span><span id="sx-acc">Weekday Lunch · Status Accepted</span></p>
+              <div class="tk-actions">
+                <div class="row" id="sx-row-new"><span class="btn btn-accept" id="sx-accept">Accept</span><span class="btn btn-reject">Reject</span><span class="btn btn-ghost">Change ETA</span></div>
+                <div class="row" id="sx-row-acc"><span class="btn btn-ghost">Change ETA</span></div>
+              </div>
+            </article>
+          </div>
+
+          <div class="click-ring" id="s5-ring"></div>
+          <div class="cursor" id="s5-cursor">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M4 2.5 L4 19.5 L8.6 15.3 L11.6 21.6 L14.6 20.2 L11.7 14.1 L18 14.1 Z" fill="#ffffff" stroke="#0d1714" stroke-width="1.5" stroke-linejoin="round" />
+            </svg>
+          </div>
+        </div>
+      </section>
+
+      <!-- Scene 6 — Name — 20.19–23.70 (crossfades in over 20.19–20.54) -->
+      <section id="s6" class="scene clip" data-start="20.19" data-duration="3.51" data-track-index="5">
+        <div class="stage" id="s6-stage">
+          <div class="s6-copy">
+            <div class="s6-lockup" id="s6-lockup">
+              <img src="assets/img/mark-cream.png" alt="" />
+              <span class="wordmark">INFINITY KITCHENS</span>
+            </div>
+            <p class="s6-line" id="s6-line">Home food, at home’s pace.</p>
+            <p class="s6-price" id="s6-price">From ₹3,999 for 30 days · Bengaluru</p>
+            <p class="s6-url mono" id="s6-url">infinitykitchensblr.vercel.app</p>
+          </div>
+          <div class="giant-crop">
+            <img id="s6-giant" src="assets/img/giant-name.png" alt="" />
+          </div>
+        </div>
+      </section>
+
+      <!-- ---- Audio ------------------------------------------------------- -->
+      <audio
+        id="music"
+        src="assets/music/happy-beats-business-moves-vol-11-by-ende-dot-app.mp3"
+        data-start="0"
+        data-duration="23.7"
+        data-track-index="10"
+        data-volume="0.32"
+        data-automation='{"version":1,"lanes":[{"target":"volume","points":[{"t":0,"v":0},{"t":0.35,"v":1},{"t":22.8,"v":1},{"t":23.7,"v":0}]}]}'
+      ></audio>
+      <audio id="sfx-hook" src="assets/sfx/impact/impactSoft_medium_001.ogg" data-start="0.12" data-duration="0.18" data-track-index="11" data-volume="0.6"></audio>
+      <audio id="sfx-hero" src="assets/sfx/impact/impactSoft_medium_004.ogg" data-start="3.66" data-duration="0.15" data-track-index="12" data-volume="0.65"></audio>
+      <audio id="sfx-row1" src="assets/sfx/casino/card-slide-1.ogg" data-start="8.40" data-duration="0.6" data-track-index="13" data-volume="0.35"></audio>
+      <audio id="sfx-row2" src="assets/sfx/casino/card-slide-1.ogg" data-start="8.92" data-duration="0.6" data-track-index="14" data-volume="0.35"></audio>
+      <audio id="sfx-row3" src="assets/sfx/casino/card-slide-1.ogg" data-start="9.46" data-duration="0.6" data-track-index="15" data-volume="0.35"></audio>
+      <audio id="sfx-price" src="assets/sfx/impact/impactWood_light_002.ogg" data-start="12.63" data-duration="0.27" data-track-index="16" data-volume="0.55"></audio>
+      <audio id="sfx-press" src="assets/sfx/ui/click2.ogg" data-start="13.70" data-duration="0.056" data-track-index="17" data-volume="0.7"></audio>
+      <audio id="sfx-stamp" src="assets/sfx/impact/impactWood_medium_001.ogg" data-start="14.74" data-duration="0.33" data-track-index="18" data-volume="0.6"></audio>
+      <audio id="sfx-flip" src="assets/sfx/impact/impactSoft_medium_002.ogg" data-start="16.00" data-duration="0.14" data-track-index="19" data-volume="0.5"></audio>
+      <audio id="sfx-tk1" src="assets/sfx/casino/card-slide-1.ogg" data-start="16.84" data-duration="0.6" data-track-index="20" data-volume="0.35"></audio>
+      <audio id="sfx-tk3" src="assets/sfx/casino/card-slide-1.ogg" data-start="17.89" data-duration="0.6" data-track-index="21" data-volume="0.4"></audio>
+      <audio id="sfx-accept" src="assets/sfx/ui/click2.ogg" data-start="18.96" data-duration="0.056" data-track-index="22" data-volume="0.65"></audio>
+      <audio id="sfx-bell" src="assets/sfx/impact/impactBell_heavy_000.ogg" data-start="22.63" data-duration="1.07" data-track-index="23" data-volume="0.5"></audio>
+    </div>
+
+    <script>
+      const tl = gsap.timeline({ paused: true });
+      tl.set("#s4-cursor", { x: 1720, y: 1090, scale: 1, opacity: 0 }, 0);
+      tl.set("#s5-cursor", { x: 900, y: 1090, scale: 1, opacity: 0 }, 0);
+      tl.set(["#s4-ring", "#s5-ring"], { opacity: 0 }, 0);
+      const EASE = "power3.out";
+
+      // A line that rolls up out of its mask.
+      const roll = (sel, at, dur = 0.55, ease = EASE) =>
+        tl.fromTo(sel, { yPercent: 108 }, { yPercent: 0, duration: dur, ease }, at);
+      // A piece that rises and fades in.
+      const rise = (sel, at, y = 24, dur = 0.5, ease = EASE) =>
+        tl.fromTo(sel, { y, opacity: 0 }, { y: 0, opacity: 1, duration: dur, ease }, at);
+      // A two-state swap (count chips, labels, buttons): the second copy appears.
+      const swapOn = (sel, at) => tl.fromTo(sel, { opacity: 0 }, { opacity: 1, duration: 0.12, ease: "none" }, at);
+      const swapOff = (sel, at) =>
+        tl.fromTo(sel, { opacity: 1 }, { opacity: 0, duration: 0.12, ease: "none", immediateRender: false }, at);
+
+      // ---- Scene 1: the line (0.00–3.70) ---------------------------------
+      tl.fromTo("#ghost-a", { x: 0 }, { x: -620, duration: 3.7, ease: "none" }, 0);
+      tl.fromTo("#ghost-b", { x: -900 }, { x: -320, duration: 3.7, ease: "none" }, 0);
+      rise("#s1-label", 0.05, 14, 0.45);
+      roll("#s1-l1", 0.15); // sfx-hook 0.12
+      roll("#s1-l2", 0.45);
+      roll("#s1-l3", 0.75, 0.6, "back.out(1.4)");
+      tl.fromTo("#s1-rule", { scaleX: 0 }, { scaleX: 1, duration: 0.7, ease: "power2.inOut" }, 1.05);
+
+      // ---- Scene 2: one kitchen (3.35–7.38) ------------------------------
+      tl.fromTo("#s2-stage", { opacity: 0 }, { opacity: 1, duration: 0.35, ease: "power1.inOut" }, 3.35);
+      rise("#s2-lockup", 3.45, 16, 0.45);
+      tl.fromTo("#s2-photo", { x: 140, opacity: 0 }, { x: 0, opacity: 1, duration: 0.8, ease: "expo.out" }, 3.6);
+      tl.fromTo("#s2-img", { scale: 1.14 }, { scale: 1.0, duration: 3.78, ease: "sine.out" }, 3.6);
+      roll("#s2-l1", 3.7, 0.5, "expo.out"); // beat-locked: 3.70s (strong cue)
+      roll("#s2-l2", 4.75, 0.5, "expo.out"); // beat-grid: 4.75s
+      roll("#s2-l3", 5.8, 0.5, "expo.out"); // beat-grid: 5.80s
+      tl.fromTo("#s2-spatula", { rotation: -14, y: 30, opacity: 0 }, { rotation: 6, y: 0, opacity: 1, duration: 2.6, ease: "sine.out" }, 3.9);
+      tl.fromTo("#s2-spoon", { rotation: 10, y: 24, opacity: 0 }, { rotation: -4, y: 0, opacity: 1, duration: 2.4, ease: "sine.out" }, 4.3);
+
+      // ---- Scene 3: today's menu (7.03–11.60) ----------------------------
+      tl.fromTo("#s3-stage", { x: 160, opacity: 0 }, { x: 0, opacity: 1, duration: 0.35, ease: "power2.out" }, 7.03);
+      tl.fromTo("#s3-hanger", { y: -70, opacity: 0 }, { y: 0, opacity: 1, duration: 0.6, ease: "back.out(1.6)" }, 7.18);
+      tl.fromTo(
+        "#s3-board",
+        { y: -70, rotation: -2.5, opacity: 0 },
+        { y: 0, rotation: 0, opacity: 1, duration: 0.9, ease: "back.out(1.6)" },
+        7.18,
+      );
+      rise("#s3-kicker", 7.5, 12, 0.4);
+      roll("#s3-t1", 7.62, 0.55);
+      roll("#s3-t2", 7.78, 0.55);
+      ["#s3-r1", "#s3-r2", "#s3-r3"].forEach((row, i) => {
+        rise(row, 7.95 + i * 0.12, 10, 0.4);
+        tl.fromTo(`${row} .leader`, { scaleX: 0 }, { scaleX: 1, duration: 0.5, ease: "power2.out" }, 8.0 + i * 0.12);
+      });
+      // beat-grid: rows at 8.44 / 8.96 / 9.50 (consecutive beats), then the set holds ~1.6s
+      [
+        ["#s3-d1", 8.44],
+        ["#s3-d2", 8.96],
+        ["#s3-d3", 9.5],
+      ].forEach(([card, at]) => {
+        tl.fromTo(card, { x: 110, opacity: 0 }, { x: 0, opacity: 1, duration: 0.5, ease: "power3.out" }, at);
+        tl.fromTo(`${card} .dish-photo img`, { scale: 1.2 }, { scale: 1, duration: 0.9, ease: "power2.out" }, at);
+      });
+
+      // ---- Scene 4: pick a plan (11.25–16.34) ----------------------------
+      tl.fromTo(
+        "#s4-stage",
+        { clipPath: "inset(0% 100% 0% 0%)" },
+        { clipPath: "inset(0% 0% 0% 0%)", duration: 0.35, ease: "power2.inOut" },
+        11.25,
+      );
+      rise("#s4-kicker", 11.5, 12, 0.4);
+      roll("#s4-l1", 11.62, 0.55);
+      roll("#s4-l2", 11.82, 0.55);
+      tl.fromTo("#s4-underline", { strokeDasharray: 480, strokeDashoffset: 480 }, { strokeDashoffset: 0, duration: 0.6, ease: "power2.inOut" }, 12.2);
+      // The ticket prints: it unrolls from its top edge.
+      tl.fromTo(
+        "#s4-ticket",
+        { clipPath: "inset(0% 0% 100% 0%)", y: -30 },
+        { clipPath: "inset(0% 0% 0% 0%)", y: 0, duration: 0.8, ease: "power2.out" },
+        11.4,
+      );
+      ["#s4-r1", "#s4-r2", "#s4-r3", "#s4-r4"].forEach((row, i) => {
+        tl.fromTo(`${row} .leader`, { scaleX: 0 }, { scaleX: 1, duration: 0.4, ease: "power2.out" }, 11.75 + i * 0.1);
+      });
+      rise("#s4-flow", 12.0, 16, 0.45);
+      // Price counts up and lands on the strong cue.
+      const price = document.getElementById("price-figure");
+      const priceState = { v: 0 };
+      tl.fromTo(
+        priceState,
+        { v: 0 },
+        {
+          v: 4499,
+          duration: 0.5,
+          ease: "power2.out",
+          onUpdate: () => {
+            price.textContent = "₹" + Math.round(priceState.v).toLocaleString("en-IN");
+          },
+        },
+        12.15,
+      ); // beat-locked: 12.65s (strong cue) — the count lands here
+      // Cursor glides to Continue and presses it.
+      tl.fromTo("#s4-cursor", { x: 1720, y: 1090, opacity: 0 }, { x: 1600, y: 1000, opacity: 1, duration: 0.3, ease: "power1.out", immediateRender: false }, 12.95);
+      tl.fromTo("#s4-cursor", { x: 1600, y: 1000 }, { x: 1540, y: 872, duration: 0.45, ease: "power2.inOut", immediateRender: false }, 13.25);
+      tl.fromTo("#s4-cursor", { scale: 1 }, { scale: 0.82, duration: 0.08, ease: "power1.in", yoyo: true, repeat: 1 }, 13.66);
+      tl.fromTo("#s4-cta", { scale: 1 }, { scale: 0.97, duration: 0.08, ease: "power1.in", yoyo: true, repeat: 1 }, 13.66);
+      tl.fromTo("#s4-ring", { x: 1502, y: 832, scale: 0.2, opacity: 0.9 }, { scale: 1.1, opacity: 0, duration: 0.5, ease: "power2.out" }, 13.7);
+      swapOn("#s4-dot2", 13.95);
+      swapOn("#s4-name2", 13.95);
+      swapOn("#s4-dot3", 14.76); // beat-grid: 14.76s
+      swapOn("#s4-name3", 14.76);
+      tl.fromTo("#s4-cursor", { opacity: 1 }, { opacity: 0, duration: 0.3, ease: "none", immediateRender: false }, 14.3);
+      tl.set(["#s4-stamp", "#s4-done"], { opacity: 0 }, 0);
+      swapOff("#s4-go", 14.54);
+      swapOn("#s4-stamp", 14.54);
+      swapOn("#s4-done", 14.62);
+      tl.fromTo(
+        "#s4-cta",
+        { scale: 1.28, rotation: 0 },
+        { scale: 1, rotation: -3, duration: 0.22, ease: "power4.in", immediateRender: false },
+        14.54,
+      ); // beat-grid: lands 14.76s with sfx-stamp
+
+      // ---- Scene 5: the kitchen board (15.99–20.54) ----------------------
+      tl.fromTo(
+        "#s5-stage",
+        { clipPath: "inset(100% 0% 0% 0%)" },
+        { clipPath: "inset(0% 0% 0% 0%)", duration: 0.35, ease: "power3.inOut" },
+        15.99,
+      );
+      rise("#s5-head", 16.2, 14, 0.45);
+      ["#s5-col1", "#s5-col2", "#s5-col3"].forEach((col, i) => rise(col, 16.22 + i * 0.07, 30, 0.5));
+      roll("#s5-c1", 16.5, 0.55);
+      roll("#s5-c2", 17.95, 0.55);
+      swapOn("#s5-n1-0", 16.3);
+      // beat-grid: tickets on consecutive beats 16.86 / 17.39 / 17.91 (short tags, held together afterwards)
+      [
+        ["#tk-sw", 16.86, "#s5-n1-0", "#s5-n1-1"],
+        ["#tk-zm", 17.39, "#s5-n1-1", "#s5-n1-2"],
+        ["#tk-sx", 17.91, "#s5-n1-2", "#s5-n1-3"], // beat-locked: 17.91s (strong cue)
+      ].forEach(([card, at, from, to]) => {
+        tl.fromTo(card, { y: -40, opacity: 0 }, { y: 0, opacity: 1, duration: 0.42, ease: "power3.out" }, at);
+        tl.fromTo(card, { borderColor: "#7db5a4" }, { borderColor: "#254139", duration: 0.9, ease: "power1.out" }, at + 0.1);
+        swapOff(from, at);
+        swapOn(to, at);
+      });
+      swapOn("#s5-n2-1", 16.3);
+      // Cursor to SX-001's Accept, press, and the ticket moves into the kitchen.
+      tl.fromTo("#s5-cursor", { x: 900, y: 1090, opacity: 0 }, { x: 560, y: 1010, opacity: 1, duration: 0.2, ease: "power1.out", immediateRender: false }, 18.3);
+      tl.fromTo("#s5-cursor", { x: 560, y: 1010 }, { x: 192, y: 968, duration: 0.42, ease: "power2.inOut", immediateRender: false }, 18.5);
+      tl.fromTo("#s5-cursor", { scale: 1 }, { scale: 0.82, duration: 0.08, ease: "power1.in", yoyo: true, repeat: 1 }, 18.92);
+      tl.fromTo("#sx-accept", { scale: 1 }, { scale: 0.94, duration: 0.08, ease: "power1.in", yoyo: true, repeat: 1 }, 18.92);
+      tl.fromTo("#s5-ring", { x: 155, y: 930, scale: 0.2, opacity: 0.9 }, { scale: 1.1, opacity: 0, duration: 0.5, ease: "power2.out" }, 18.96); // beat-grid: 18.96s
+      tl.fromTo("#s5-cursor", { opacity: 1 }, { opacity: 0, duration: 0.25, ease: "none", immediateRender: false }, 19.25);
+      // SX-001 travels from the third slot of "Waiting on you" to the second slot of "In the kitchen".
+      tl.fromTo("#tk-sx", { x: 0, y: 0 }, { x: 586, y: -238, duration: 0.55, ease: "power3.inOut", immediateRender: false }, 19.05);
+      tl.fromTo("#tk-sx", { borderColor: "#7db5a4" }, { borderColor: "#254139", duration: 1.0, ease: "power1.out", immediateRender: false }, 19.6);
+      swapOff("#sx-new", 19.3);
+      swapOn("#sx-acc", 19.3);
+      swapOff("#sx-row-new", 19.3);
+      swapOn("#sx-row-acc", 19.3);
+      swapOff("#s5-n1-3", 19.3);
+      swapOn("#s5-n1-2", 19.3);
+      swapOff("#s5-n2-1", 19.55);
+      swapOn("#s5-n2-2", 19.55);
+
+      // ---- Scene 6: name (20.19–23.70) -----------------------------------
+      tl.fromTo("#s6-stage", { opacity: 0 }, { opacity: 1, duration: 0.35, ease: "power1.inOut" }, 20.19);
+      rise("#s6-lockup", 20.54, 20, 0.5);
+      rise("#s6-line", 21.07, 26, 0.55, "expo.out"); // beat-grid: 21.07s
+      rise("#s6-price", 21.59, 16, 0.45); // beat-grid: 21.59s
+      rise("#s6-url", 21.85, 12, 0.4);
+      tl.fromTo("#s6-giant", { yPercent: 70 }, { yPercent: 0, duration: 0.6, ease: "power3.out" }, 22.05); // beat-locked: 22.65s (strong cue) — lands with sfx-bell
+
+      // ---- Audio-reactive: the music's bass lets a few warm surfaces breathe.
+      const glow = document.getElementById("s2-glow");
+      const board = document.getElementById("s3-board");
+      const liveDot = document.getElementById("s5-live");
+      const A = window.IK_AUDIO;
+      function draw(i) {
+        const bass = A.bass[i] || 0;
+        gsap.set(glow, { scale: 1 + bass * 0.08, opacity: 0.6 + bass * 0.4 });
+        gsap.set(board, { "--shade": (0.38 + bass * 0.22).toFixed(3) });
+        gsap.set(liveDot, { boxShadow: `0 0 ${Math.round(4 + bass * 18)}px ${Math.round(bass * 6)}px rgb(74 222 128 / ${(0.25 + bass * 0.5).toFixed(2)})` });
+      }
+      const frames = Math.min(A.bass.length, Math.floor(23.7 * A.fps));
+      for (let f = 0; f < frames; f++) {
+        tl.call(
+          (function (frame) {
+            return function () {
+              draw(frame);
+            };
+          })(f),
+          [],
+          f / A.fps,
+        );
+      }
+
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>

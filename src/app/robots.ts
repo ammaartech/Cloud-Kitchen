@@ -28,6 +28,7 @@ export default function robots(): MetadataRoute.Robots {
         '/cart',
         '/sign-in',
         '/forbidden',
+        '/private-preview',
         '/api/',
       ],
     },

@@ -15,13 +15,19 @@ import { Card, cx } from '@/components/ui/primitives';
  * When `accounts` is null -- which is the case unless SHOW_DEMO_ACCOUNTS is
  * set -- this collapses back to the plain centred sign-in card, and no demo
  * code is reachable at all.
+ *
+ * `locked` is the private development lock (`lib/auth/site-lock.ts`). Every
+ * visitor is sent here while it is on, so the copy says why, and drops the
+ * line about buying a plan -- there is no checkout to reach.
  */
 export function SignInPanel({
   next,
   accounts,
+  locked = false,
 }: {
   next: string | null;
   accounts: DemoAccountList | null;
+  locked?: boolean;
 }) {
   // The credential fields live here so the account panel can fill them by
   // setting state directly, with no prop-to-state syncing anywhere.
@@ -63,7 +69,9 @@ export function SignInPanel({
           <Card className="signin-enter p-6" style={{ '--enter-step': 1 } as React.CSSProperties}>
             <h1 className="text-xl font-semibold tracking-tight">Sign in</h1>
             <p className="mt-1 text-sm text-muted">
-              Staff and customers use the same sign-in. You will land on the right screen.
+              {locked
+                ? 'Infinity Kitchens is in private development. Sign in with a developer or test account to continue.'
+                : 'Staff and customers use the same sign-in. You will land on the right screen.'}
             </p>
 
             <div className="mt-6">
@@ -77,12 +85,14 @@ export function SignInPanel({
             </div>
           </Card>
 
-          <p
-            className="signin-enter mt-6 text-center text-xs text-subtle"
-            style={{ '--enter-step': 2 } as React.CSSProperties}
-          >
-            Buying a plan? You do not need an account first. We create one during checkout.
-          </p>
+          {locked ? null : (
+            <p
+              className="signin-enter mt-6 text-center text-xs text-subtle"
+              style={{ '--enter-step': 2 } as React.CSSProperties}
+            >
+              Buying a plan? You do not need an account first. We create one during checkout.
+            </p>
+          )}
         </div>
 
         {accounts ? (

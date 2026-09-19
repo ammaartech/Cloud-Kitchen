@@ -86,6 +86,17 @@ const serverSchema = z.object({
   // it calls -- both refuse to exist when this is unset.
   SHOW_DEV_TOOLS: z.enum(['true', 'false']).default('false'),
 
+  // Private development lock (see `lib/auth/site-lock.ts`). While it is on,
+  // the whole site -- pages and APIs -- answers only to Developer Admins and
+  // the accounts listed in SITE_LOCK_ALLOWED_EMAILS; everyone else gets the
+  // sign-in page. It defaults to ON so that a deployment which forgot the
+  // variable stays shut rather than open. Set it to 'false' to launch.
+  SITE_LOCKED: z.enum(['true', 'false']).default('true'),
+  // Comma- or newline-separated exact addresses, matched case-insensitively.
+  // Exact on purpose: a domain wildcard would admit anyone who can sign up
+  // with a made-up address on it.
+  SITE_LOCK_ALLOWED_EMAILS: blankAsUndefined(z.string()),
+
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
   NEXT_PUBLIC_SITE_URL: z.string().url().default('http://localhost:3000'),
 });

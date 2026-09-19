@@ -1,0 +1,36 @@
+{
+ "homeMenu": {
+  "x": 86,
+  "y": 146,
+  "w": 31,
+  "h": 44
+ },
+ "menuStart": {
+  "x": 326,
+  "y": 32,
+  "w": 97,
+  "h": 44
+ },
+ "menuEndY": 620,
+ "subsChoose": {
+  "x": 195,
+  "y": 504,
+  "card": {
+   "top": 474,
+   "bottom": 534
+  }
+ },
+ "planWeekdays": {
+  "x": 195,
+  "y": 392,
+  "w": 114,
+  "h": 44
+ },
+ "planContinue": {
+  "x": 294,
+  "y": 523,
+  "w": 151,
+  "h": 48
+ },
+ "planAfterText": "Monday to Friday. Nothing arrives at the weekend. You can change days later from your account."
+}

@@ -1,0 +1,1493 @@
+<!doctype html>
+<html lang="en" data-resolution="portrait">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <title>Infinity Kitchens — how to order</title>
+    <script src="assets/js/gsap.min.js"></script>
+    <script src="assets/js/audio-data.js"></script>
+    <style>
+      /* ---- Faces: the project's own files ----------------------------------- */
+      @font-face {
+        font-family: "Inter";
+        src: url("assets/fonts/Inter-latin.woff2") format("woff2");
+        font-weight: 100 900;
+      }
+      @font-face {
+        font-family: "Inter";
+        src: url("assets/fonts/Inter-latin-ext.woff2") format("woff2");
+        font-weight: 100 900;
+        unicode-range: U+20B9;
+      }
+      @font-face {
+        font-family: "Zodiak";
+        src: url("assets/fonts/Zodiak-Variable.woff2") format("woff2");
+        font-weight: 100 900;
+      }
+      @font-face {
+        font-family: "Cabinet Grotesk";
+        src: url("assets/fonts/CabinetGrotesk-Variable.woff2") format("woff2");
+        font-weight: 100 900;
+      }
+      @font-face {
+        font-family: "Poppins";
+        src: url("assets/fonts/Poppins-600.woff2") format("woff2");
+        font-weight: 600;
+      }
+      @font-face {
+        font-family: "JetBrains Mono";
+        src: url("assets/fonts/JetBrainsMono.woff2") format("woff2");
+        font-weight: 100 800;
+      }
+
+      /* ---- Tokens: src/app/globals.css -------------------------------------- */
+      :root {
+        --bg: #f6f9f8;
+        --sunken: #eff6f4;
+        --surface: #ffffff;
+        --line: #dfece8;
+        --line-strong: #7f918b;
+        --ink: #0d1714;
+        --muted: #48605a;
+        --subtle: #5f7169;
+        --brand: #386155;
+        --brand-soft: #e3eeea;
+        --success: #2e7d32;
+        --danger: #b3261e;
+        --footer: #254139;
+        --f-ink: #eff6f4;
+        --f-muted: #bedad2;
+        --f-subtle: #9ec7bb;
+        --shadow: 0 2px 8px -2px rgb(13 23 20 / 0.08), 0 1px 3px rgb(13 23 20 / 0.05);
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: var(--footer);
+      }
+      #root {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        font-family: "Inter", sans-serif;
+        font-feature-settings: "cv05";
+        color: var(--ink);
+        background: var(--footer);
+      }
+
+      /* ---- Around the phone ------------------------------------------------- */
+      .glow {
+        position: absolute;
+        left: 40px;
+        top: 520px;
+        width: 1000px;
+        height: 1200px;
+        border-radius: 50%;
+        background: radial-gradient(closest-side, rgb(125 181 164 / 0.34), rgb(125 181 164 / 0));
+      }
+      .watermark {
+        position: absolute;
+        right: -160px;
+        top: 1500px;
+        width: 700px;
+        height: auto;
+        opacity: 0.08;
+      }
+      .top-lockup {
+        position: absolute;
+        left: 90px;
+        top: 96px;
+        display: flex;
+        align-items: center;
+        gap: 18px;
+      }
+      .top-lockup img {
+        display: block;
+        height: 42px;
+        width: auto;
+      }
+      .wordmark {
+        font-family: "Poppins", sans-serif;
+        font-weight: 600;
+        letter-spacing: 0.18em;
+        white-space: nowrap;
+        color: var(--f-ink);
+      }
+      .top-lockup .wordmark {
+        font-size: 24px;
+      }
+      .caption {
+        position: absolute;
+        left: 90px;
+        top: 186px;
+        width: 900px;
+        height: 236px;
+      }
+      .caption p {
+        font-size: 56px;
+        font-weight: 600;
+        line-height: 1.18;
+        letter-spacing: -0.02em;
+        color: var(--f-ink);
+      }
+      .caption em {
+        font-style: normal;
+        color: var(--f-subtle);
+      }
+      .phone {
+        position: absolute;
+        left: 76px;
+        top: 442px;
+        width: 928px;
+        height: 1318px;
+        border-radius: 64px;
+        background: #0d1714;
+        box-shadow: 0 60px 120px -40px rgb(0 0 0 / 0.55);
+      }
+      .screen {
+        position: absolute;
+        left: 14px;
+        top: 14px;
+        width: 900px;
+        height: 1290px;
+        border-radius: 50px;
+        overflow: hidden;
+        background: var(--bg);
+      }
+      .scr {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 900px;
+        height: 1290px;
+        display: block;
+      }
+      .tap {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 96px;
+        height: 96px;
+        margin: -48px 0 0 -48px;
+        border-radius: 50%;
+        background: rgb(56 97 85 / 0.28);
+        border: 5px solid rgb(56 97 85 / 0.85);
+        z-index: 50;
+      }
+
+      /* ---- The rebuilt screens: authored on the phone's own 390px grid ------- */
+      .app {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 390px;
+        height: 559px;
+        overflow: hidden;
+        background: var(--bg);
+        transform: scale(2.3076923);
+        transform-origin: 0 0;
+        font-size: 16px;
+      }
+      .co-header {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 390px;
+        height: 52px;
+        padding: 0 16px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: var(--surface);
+        border-bottom: 1px solid var(--line);
+        z-index: 5;
+      }
+      .co-header img {
+        display: block;
+        height: 22px;
+        width: auto;
+      }
+      .secure {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--muted);
+      }
+      .secure svg,
+      .icon {
+        width: 14px;
+        height: 14px;
+        flex: none;
+      }
+      .flow {
+        position: absolute;
+        left: 0;
+        top: 52px;
+        width: 390px;
+        height: 40px;
+        padding: 0 16px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 12.5px;
+        background: var(--surface);
+        border-bottom: 1px solid var(--line);
+        z-index: 5;
+      }
+      .fstep {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        white-space: nowrap;
+        color: var(--subtle);
+      }
+      .fdot {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        border: 1.5px solid var(--line-strong);
+        font-size: 11px;
+        font-weight: 700;
+      }
+      .fstep.on {
+        color: var(--ink);
+        font-weight: 600;
+      }
+      .fstep.on .fdot {
+        background: var(--brand);
+        border-color: var(--brand);
+        color: #ffffff;
+      }
+      .fstep.done .fdot {
+        background: var(--brand-soft);
+        border-color: transparent;
+        color: var(--brand);
+      }
+      .fstep.done {
+        color: var(--ink);
+      }
+      .fdot svg {
+        width: 12px;
+        height: 12px;
+      }
+      .fline {
+        width: 14px;
+        height: 1px;
+        background: var(--line-strong);
+      }
+      .summary-bar {
+        position: absolute;
+        left: 0;
+        top: 92px;
+        width: 390px;
+        height: 52px;
+        padding: 0 16px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: var(--sunken);
+        border-bottom: 1px solid var(--line);
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--brand);
+        z-index: 5;
+      }
+      .summary-bar b {
+        font-size: 17px;
+        font-weight: 700;
+        color: var(--ink);
+      }
+      .main {
+        position: absolute;
+        left: 0;
+        top: 144px;
+        width: 390px;
+        height: 415px;
+        overflow: hidden;
+      }
+      .col {
+        position: absolute;
+        left: 16px;
+        top: 0;
+        width: 358px;
+      }
+      .co-title {
+        height: 29px;
+        margin-top: 16px;
+        font-size: 24px;
+        font-weight: 650;
+        line-height: 1.2;
+        letter-spacing: -0.02em;
+      }
+      .sec {
+        margin-top: 12px;
+        border: 1px solid var(--line);
+        background: var(--surface);
+      }
+      .sec.current {
+        border-color: var(--line-strong);
+        box-shadow: var(--shadow);
+      }
+      .sec-head {
+        display: grid;
+        grid-template-columns: 28px 1fr;
+        gap: 2px 12px;
+        padding: 16px;
+      }
+      .step {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        border: 1.5px solid var(--line-strong);
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--subtle);
+      }
+      .sec.current .step {
+        background: var(--brand);
+        border-color: var(--brand);
+        color: #ffffff;
+      }
+      .sec.done .step {
+        background: var(--brand-soft);
+        border-color: transparent;
+        color: var(--brand);
+      }
+      .step svg {
+        width: 16px;
+        height: 16px;
+      }
+      .sec-title {
+        font-size: 17px;
+        font-weight: 650;
+        line-height: 28px;
+        letter-spacing: -0.01em;
+      }
+      .sec.upcoming .sec-title {
+        color: var(--subtle);
+      }
+      .sec-sum {
+        grid-column: 2;
+        font-size: 14px;
+        line-height: 1.45;
+        color: var(--muted);
+      }
+      .sec-sum b {
+        font-weight: 600;
+        color: var(--ink);
+      }
+      .sec-body {
+        padding: 0 16px 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+      }
+      .seg {
+        height: 40px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        border: 1px solid var(--line-strong);
+        padding: 3px;
+        background: var(--sunken);
+        font-size: 14px;
+        font-weight: 600;
+      }
+      .seg span {
+        display: grid;
+        place-items: center;
+        color: var(--muted);
+      }
+      .seg .on {
+        background: var(--surface);
+        color: var(--ink);
+        box-shadow: 0 0 0 1px var(--ink);
+      }
+      .field {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+      .label {
+        height: 20px;
+        font-size: 14px;
+        font-weight: 600;
+        line-height: 20px;
+      }
+      .label .req {
+        color: var(--danger);
+      }
+      .input {
+        position: relative;
+        height: 48px;
+        padding: 0 14px;
+        display: flex;
+        align-items: center;
+        border: 1px solid var(--line-strong);
+        background: var(--surface);
+        font-size: 16px;
+        white-space: nowrap;
+        overflow: hidden;
+      }
+      .input .pre {
+        margin-right: 8px;
+        padding-right: 10px;
+        border-right: 1px solid var(--line);
+        color: var(--muted);
+      }
+      .caret {
+        display: inline-block;
+        width: 1.5px;
+        height: 20px;
+        margin-left: 1px;
+        background: var(--brand);
+      }
+      .hint {
+        font-size: 12px;
+        line-height: 16px;
+        color: var(--subtle);
+      }
+      .btn {
+        height: 52px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        background: var(--brand);
+        color: #ffffff;
+        font-size: 16px;
+        font-weight: 600;
+        white-space: nowrap;
+      }
+      .btn svg {
+        width: 18px;
+        height: 18px;
+      }
+      .option {
+        padding: 14px;
+        display: grid;
+        grid-template-columns: 22px 1fr;
+        gap: 4px 12px;
+        border: 2px solid var(--brand);
+        background: var(--sunken);
+      }
+      .radio {
+        width: 20px;
+        height: 20px;
+        margin-top: 1px;
+        border-radius: 50%;
+        border: 2px solid var(--brand);
+        display: grid;
+        place-items: center;
+      }
+      .radio::after {
+        content: "";
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: var(--brand);
+      }
+      .option strong {
+        font-size: 14px;
+        font-weight: 600;
+        line-height: 22px;
+      }
+      .chips {
+        grid-column: 2;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+      .chips span {
+        padding: 2px 7px;
+        border: 1px solid var(--line);
+        background: var(--surface);
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.02em;
+        color: var(--muted);
+      }
+      .dock {
+        position: absolute;
+        left: 0;
+        top: 463px;
+        width: 390px;
+        height: 96px;
+        padding: 12px 16px 0;
+        background: rgb(255 255 255 / 0.96);
+        border-top: 1px solid var(--line);
+        box-shadow: 0 -10px 24px -18px rgb(13 23 20 / 0.3);
+        z-index: 6;
+      }
+      .dock-row {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+      .dock-total {
+        display: flex;
+        flex-direction: column;
+        line-height: 1.15;
+        flex: none;
+      }
+      .dock-total small {
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      .dock-total b {
+        font-size: 20px;
+        font-weight: 700;
+        letter-spacing: -0.01em;
+      }
+      .dock .btn {
+        position: relative;
+        flex: 1;
+        display: grid;
+      }
+      .dock .btn span {
+        grid-area: 1 / 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+      }
+      .spinner {
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        border: 2px solid rgb(255 255 255 / 0.35);
+        border-top-color: #ffffff;
+      }
+      .dock-note {
+        margin-top: 8px;
+        font-size: 11px;
+        color: var(--muted);
+      }
+
+      /* Receipt */
+      .rc {
+        position: absolute;
+        left: 16px;
+        top: 108px;
+        width: 358px;
+      }
+      .rc-paper {
+        position: relative;
+        padding: 20px;
+        background: var(--surface);
+        box-shadow: 0 16px 34px -18px rgb(13 23 20 / 0.35);
+      }
+      .rc-tear {
+        height: 10px;
+        background:
+          linear-gradient(135deg, var(--surface) 50%, rgb(255 255 255 / 0) 50%) 0 0 / 14px 10px repeat-x,
+          linear-gradient(225deg, var(--surface) 50%, rgb(255 255 255 / 0) 50%) 0 0 / 14px 10px repeat-x;
+      }
+      .seal {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        background: var(--brand-soft);
+      }
+      .seal svg {
+        width: 22px;
+        height: 22px;
+      }
+      .rc-meta {
+        margin-top: 12px;
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      .rc-title {
+        margin-top: 4px;
+        font-size: 24px;
+        font-weight: 650;
+        letter-spacing: -0.02em;
+      }
+      .rc-plan {
+        margin-top: 4px;
+        font-family: "Zodiak", serif;
+        font-size: 20px;
+        font-weight: 700;
+      }
+      .rc-num {
+        margin-top: 2px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 14px;
+        color: var(--muted);
+      }
+      .rc-rows {
+        margin-top: 14px;
+        padding-top: 12px;
+        border-top: 1px dashed var(--line-strong);
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .t-row {
+        display: flex;
+        align-items: baseline;
+        gap: 8px;
+        font-size: 14px;
+        color: var(--muted);
+      }
+      .t-row i {
+        flex: 1;
+        border-bottom: 2px dotted var(--line-strong);
+      }
+      .t-row b {
+        font-family: "Cabinet Grotesk", "Inter", sans-serif;
+        font-weight: 600;
+        color: var(--ink);
+        white-space: nowrap;
+      }
+      .rc-total {
+        margin-top: 12px;
+        padding-top: 10px;
+        border-top: 2px solid var(--ink);
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+      }
+      .rc-total span {
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      .rc-total b {
+        font-family: "Cabinet Grotesk", "Inter", sans-serif;
+        font-size: 26px;
+        font-weight: 800;
+      }
+      .stamp {
+        position: absolute;
+        right: 18px;
+        top: 22px;
+        padding: 2px 10px;
+        border: 3px double var(--success);
+        font-family: "Zodiak", serif;
+        font-size: 22px;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        color: var(--success);
+      }
+      .rc-next {
+        margin-top: 12px;
+        font-size: 13px;
+        line-height: 1.45;
+        color: var(--muted);
+      }
+      .rc .btn {
+        margin-top: 12px;
+      }
+
+      /* Account */
+      .offer {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 390px;
+        height: 36px;
+        display: grid;
+        place-items: center;
+        background: var(--brand);
+        color: #ffffff;
+        font-size: 12px;
+        font-weight: 600;
+        white-space: nowrap;
+      }
+      .offer .mono {
+        font-family: "JetBrains Mono", monospace;
+      }
+      .site-header {
+        position: absolute;
+        left: 0;
+        top: 36px;
+        width: 390px;
+        height: 64px;
+        padding: 0 16px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: var(--surface);
+      }
+      .burger {
+        width: 22px;
+        height: 22px;
+      }
+      .site-header img {
+        display: block;
+        height: 26px;
+        width: auto;
+      }
+      .avatar {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .avatar span {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        background: var(--brand);
+        color: #ffffff;
+        font-size: 13px;
+        font-weight: 600;
+      }
+      .avatar svg {
+        width: 16px;
+        height: 16px;
+      }
+      .tabs {
+        position: absolute;
+        left: 0;
+        top: 100px;
+        width: 390px;
+        height: 44px;
+        padding: 0 16px;
+        display: flex;
+        align-items: stretch;
+        gap: 22px;
+        border-bottom: 1px solid var(--line);
+        overflow: hidden;
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 0.1em;
+        color: var(--muted);
+      }
+      .tabs span {
+        display: flex;
+        align-items: center;
+        white-space: nowrap;
+      }
+      .tabs .on {
+        color: var(--ink);
+        box-shadow: inset 0 -2px 0 var(--brand);
+      }
+      .acct-date {
+        position: absolute;
+        left: 16px;
+        top: 160px;
+        font-size: 13px;
+        color: var(--subtle);
+      }
+      .acct-hello {
+        position: absolute;
+        left: 16px;
+        top: 180px;
+        font-size: 28px;
+        font-weight: 600;
+        letter-spacing: -0.02em;
+      }
+      .next {
+        position: absolute;
+        left: 16px;
+        top: 232px;
+        width: 358px;
+        padding: 20px;
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        background: var(--surface);
+        box-shadow: 0 1px 2px rgb(13 23 20 / 0.05);
+      }
+      .next-label {
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      .next-swap {
+        position: relative;
+        height: 96px;
+      }
+      .next-swap > div {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 318px;
+      }
+      .next-day {
+        margin-top: 8px;
+        font-size: 34px;
+        font-weight: 600;
+        line-height: 1.05;
+        letter-spacing: -0.025em;
+      }
+      .next-when {
+        margin-top: 6px;
+        font-size: 15px;
+        color: var(--muted);
+      }
+      .next-dish {
+        margin-top: 8px;
+        font-size: 16px;
+      }
+      .next-foot {
+        position: relative;
+        margin-top: 12px;
+        padding-top: 14px;
+        border-top: 1px solid var(--line);
+        height: 116px;
+      }
+      .next-foot > div {
+        position: absolute;
+        left: 0;
+        top: 14px;
+        width: 318px;
+      }
+      .lock {
+        display: flex;
+        gap: 8px;
+        font-size: 14px;
+        line-height: 1.45;
+        color: var(--muted);
+      }
+      .lock svg {
+        width: 16px;
+        height: 16px;
+        margin-top: 2px;
+        flex: none;
+      }
+      .skip-q {
+        font-size: 14px;
+        line-height: 1.45;
+        color: var(--muted);
+      }
+      .skip-q strong {
+        color: var(--ink);
+      }
+      .btn-row {
+        display: flex;
+        gap: 8px;
+        margin-top: 12px;
+      }
+      .sbtn {
+        height: 44px;
+        padding: 0 16px;
+        display: flex;
+        align-items: center;
+        border-radius: 999px;
+        font-size: 15px;
+        font-weight: 600;
+        white-space: nowrap;
+      }
+      .sbtn-soft {
+        background: var(--brand-soft);
+        color: var(--brand);
+      }
+      .sbtn-danger {
+        background: var(--danger);
+        color: #ffffff;
+      }
+      .sbtn-ghost {
+        color: var(--brand);
+      }
+      .notice {
+        position: absolute;
+        left: 16px;
+        top: 500px;
+        width: 358px;
+        height: 50px;
+        padding: 0 14px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        border-radius: 12px;
+        background: var(--ink);
+        color: var(--f-ink);
+        font-size: 14px;
+        z-index: 8;
+      }
+      .notice svg {
+        width: 18px;
+        height: 18px;
+        flex: none;
+      }
+
+      /* ---- End card --------------------------------------------------------- */
+      .end {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 1080px;
+        height: 1920px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        color: var(--f-ink);
+      }
+      .end img {
+        display: block;
+        width: 380px;
+        height: auto;
+      }
+      .end .wordmark {
+        margin-top: 40px;
+        font-size: 52px;
+      }
+      .end-line {
+        margin-top: 70px;
+        width: 900px;
+        font-family: "Zodiak", serif;
+        font-size: 86px;
+        font-weight: 700;
+        line-height: 1.08;
+      }
+      .end-price {
+        margin-top: 60px;
+        font-size: 40px;
+        font-weight: 500;
+        color: var(--f-muted);
+      }
+      .end-cta {
+        margin-top: 50px;
+        padding: 26px 56px;
+        background: var(--f-ink);
+        color: var(--footer);
+        font-size: 38px;
+        font-weight: 600;
+      }
+      .end-url {
+        margin-top: 34px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 30px;
+        color: var(--f-subtle);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="39.6" data-width="1080" data-height="1920">
+      <!-- Background, breathing with the music -->
+      <div class="glow" id="glow" data-layout-ignore></div>
+      <img class="watermark" src="assets/img/mark-cream.png" alt="" data-layout-ignore />
+
+      <!-- Brand, above the captions -->
+      <div class="top-lockup" id="top-lockup">
+        <img src="assets/img/mark-cream.png" alt="" />
+        <span class="wordmark">INFINITY KITCHENS</span>
+      </div>
+
+      <!-- Captions: the voiceover, line by line -->
+      <div id="cap1" class="clip caption" data-start="0.1" data-duration="4.45" data-track-index="1"><p>Here's how you get <em>a month of home-style lunches</em> from Infinity Kitchens.</p></div>
+      <div id="cap2" class="clip caption" data-start="4.55" data-duration="5.7" data-track-index="1"><p>Start with <em>today's menu</em>. It's small, all vegetarian, and cooked fresh every morning.</p></div>
+      <div id="cap3" class="clip caption" data-start="10.25" data-duration="4.1" data-track-index="1"><p>Then pick a plan. <em>Weekday Lunch</em> is twenty-two lunches a month.</p></div>
+      <div id="cap4" class="clip caption" data-start="14.35" data-duration="4.1" data-track-index="1"><p>Choose your delivery window and <em>your days</em>, then tap continue.</p></div>
+      <div id="cap5" class="clip caption" data-start="18.45" data-duration="6.05" data-track-index="1"><p>At checkout, sign in and <em>add your address once</em>, with a note for the rider.</p></div>
+      <div id="cap6" class="clip caption" data-start="24.5" data-duration="3.15" data-track-index="1"><p>Pay with <em>UPI or card</em>.</p></div>
+      <div id="cap7" class="clip caption" data-start="27.65" data-duration="4.7" data-track-index="1"><p>That's it. <em>Your plan is active</em>, and all twenty-two lunches are scheduled.</p></div>
+      <div id="cap8" class="clip caption" data-start="32.35" data-duration="3.85" data-track-index="1"><p>Busy day? Skip a delivery from your account in <em>two taps</em>.</p></div>
+
+      <!-- The phone -->
+      <div class="phone" id="phone">
+        <div class="screen">
+          <!-- Live captures of the mobile storefront -->
+          <img id="p-home" class="clip scr" src="assets/screens/home.png" alt="Home screen" data-start="0" data-duration="4.85" data-track-index="2" />
+
+          <img id="p-menu-a" class="clip scr" src="assets/screens/menu-start.png" alt="Menu" data-start="4.5" data-duration="1.3" data-track-index="3" />
+          <video id="v-menu" class="scr" src="assets/screens/menu-scroll.mp4" data-start="5.8" data-duration="2.2" data-track-index="4" muted playsinline></video>
+          <img id="p-menu-b" class="clip scr" src="assets/screens/menu-end.png" alt="Menu dishes" data-start="8.0" data-duration="2.55" data-track-index="3" />
+
+          <img id="p-subs-a" class="clip scr" src="assets/screens/subs-start.png" alt="Meal plans" data-start="10.2" data-duration="0.4" data-track-index="5" />
+          <video id="v-subs" class="scr" src="assets/screens/subs-scroll.mp4" data-start="10.6" data-duration="2.2" data-track-index="6" muted playsinline></video>
+          <img id="p-subs-b" class="clip scr" src="assets/screens/subs-end.png" alt="Weekday Lunch ticket" data-start="12.8" data-duration="1.85" data-track-index="5" />
+
+          <img id="p-plan-a" class="clip scr" src="assets/screens/plan-start.png" alt="Weekday Lunch plan" data-start="14.3" data-duration="0.6" data-track-index="7" />
+          <video id="v-plan" class="scr" src="assets/screens/plan-scroll.mp4" data-start="14.9" data-duration="1.5" data-track-index="8" muted playsinline></video>
+          <img id="p-plan-b" class="clip scr" src="assets/screens/plan-end.png" alt="Which days" data-start="16.4" data-duration="0.38" data-track-index="7" />
+          <img id="p-plan-c" class="clip scr" src="assets/screens/plan-weekdays.png" alt="Weekdays chosen" data-start="16.78" data-duration="1.97" data-track-index="7" />
+
+          <!-- Checkout: signing in -->
+          <div id="p-co1" class="clip scr" data-start="18.4" data-duration="2.3" data-track-index="9">
+            <div class="app">
+              <header class="co-header">
+                <img src="assets/img/mark-green.png" alt="" />
+                <span class="secure"
+                  ><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2" fill="none" stroke="#48605a" stroke-width="2" /><path d="M8 11V8a4 4 0 0 1 8 0v3" fill="none" stroke="#48605a" stroke-width="2" /></svg
+                  >Secure checkout</span
+                >
+              </header>
+              <div class="flow">
+                <span class="fstep done"><span class="fdot"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="#386155" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" /></svg></span>Your plan</span>
+                <i class="fline"></i>
+                <span class="fstep on"><span class="fdot">2</span>Checkout</span>
+                <i class="fline"></i>
+                <span class="fstep"><span class="fdot">3</span>Confirmed</span>
+              </div>
+              <div class="summary-bar"><span>Show order summary ⌄</span><b>₹4,487.75</b></div>
+              <div class="main">
+                <div class="col">
+                  <h1 class="co-title">Checkout</h1>
+                  <section class="sec current">
+                    <div class="sec-head"><span class="step">1</span><span class="sec-title">Account</span></div>
+                    <div class="sec-body">
+                      <div class="seg"><span class="on">Sign in</span><span>Create account</span></div>
+                      <div class="field">
+                        <span class="label">Email</span>
+                        <span class="input" id="in-email"><span id="t-email"></span><i class="caret" id="c-email"></i></span>
+                      </div>
+                      <div class="field">
+                        <span class="label">Password</span>
+                        <span class="input" id="in-pass"><span id="t-pass"></span><i class="caret" id="c-pass"></i></span>
+                      </div>
+                      <span class="btn" id="b-signin">Sign in and continue</span>
+                    </div>
+                  </section>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Checkout: delivery -->
+          <div id="p-co2" class="clip scr" data-start="20.5" data-duration="4.25" data-track-index="10">
+            <div class="app">
+              <header class="co-header">
+                <img src="assets/img/mark-green.png" alt="" />
+                <span class="secure"
+                  ><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2" fill="none" stroke="#48605a" stroke-width="2" /><path d="M8 11V8a4 4 0 0 1 8 0v3" fill="none" stroke="#48605a" stroke-width="2" /></svg
+                  >Secure checkout</span
+                >
+              </header>
+              <div class="flow">
+                <span class="fstep done"><span class="fdot"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="#386155" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" /></svg></span>Your plan</span>
+                <i class="fline"></i>
+                <span class="fstep on"><span class="fdot">2</span>Checkout</span>
+                <i class="fline"></i>
+                <span class="fstep"><span class="fdot">3</span>Confirmed</span>
+              </div>
+              <div class="summary-bar"><span>Show order summary ⌄</span><b>₹4,487.75</b></div>
+              <div class="main">
+                <div class="col" id="co2-col">
+                  <h1 class="co-title">Checkout</h1>
+                  <section class="sec done">
+                    <div class="sec-head">
+                      <span class="step"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="#386155" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" /></svg></span>
+                      <span class="sec-title">Account</span>
+                      <span class="sec-sum"><b>Ananya Rao</b> · ananya@example.com</span>
+                    </div>
+                  </section>
+                  <section class="sec current">
+                    <div class="sec-head">
+                      <span class="step">2</span><span class="sec-title">Delivery</span>
+                      <span class="sec-sum">First delivery Mon, 21 Sept, 12:00 pm</span>
+                    </div>
+                    <div class="sec-body">
+                      <div class="field"><span class="label">Full name <span class="req">*</span></span><span class="input">Ananya Rao</span></div>
+                      <div class="field"><span class="label">Mobile number <span class="req">*</span></span><span class="input"><span class="pre">+91</span>98765 43210</span></div>
+                      <div class="field">
+                        <span class="label">Flat, house number, building <span class="req">*</span></span>
+                        <span class="input" id="in-flat"><span id="t-flat"></span><i class="caret" id="c-flat"></i></span>
+                      </div>
+                      <div class="field">
+                        <span class="label">Area, street <span class="req">*</span></span>
+                        <span class="input" id="in-area"><span id="t-area"></span><i class="caret" id="c-area"></i></span>
+                      </div>
+                      <div class="field">
+                        <span class="label">Delivery instructions</span>
+                        <span class="input" id="in-note"><span id="t-note"></span><i class="caret" id="c-note"></i></span>
+                        <span class="hint">For example: call from the gate, the lift is slow.</span>
+                      </div>
+                      <span class="btn" id="b-save">Save and continue to payment</span>
+                    </div>
+                  </section>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Payment -->
+          <div id="p-pay" class="clip scr" data-start="24.4" data-duration="3.55" data-track-index="11">
+            <div class="app">
+              <header class="co-header">
+                <img src="assets/img/mark-green.png" alt="" />
+                <span class="secure"
+                  ><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2" fill="none" stroke="#48605a" stroke-width="2" /><path d="M8 11V8a4 4 0 0 1 8 0v3" fill="none" stroke="#48605a" stroke-width="2" /></svg
+                  >Secure checkout</span
+                >
+              </header>
+              <div class="flow">
+                <span class="fstep done"><span class="fdot"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="#386155" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" /></svg></span>Your plan</span>
+                <i class="fline"></i>
+                <span class="fstep on"><span class="fdot">2</span>Checkout</span>
+                <i class="fline"></i>
+                <span class="fstep"><span class="fdot">3</span>Confirmed</span>
+              </div>
+              <div class="summary-bar"><span>Show order summary ⌄</span><b>₹4,487.75</b></div>
+              <div class="main">
+                <div class="col" style="top: -110px">
+                  <h1 class="co-title">Checkout</h1>
+                  <section class="sec done">
+                    <div class="sec-head">
+                      <span class="step"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="#386155" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" /></svg></span>
+                      <span class="sec-title">Account</span>
+                      <span class="sec-sum"><b>Ananya Rao</b> · ananya@example.com</span>
+                    </div>
+                  </section>
+                  <section class="sec done">
+                    <div class="sec-head">
+                      <span class="step"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="#386155" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" /></svg></span>
+                      <span class="sec-title">Delivery</span>
+                      <span class="sec-sum">Deliver to <b>402, Lakeview Apartments</b>, 12th Main, Indiranagar</span>
+                    </div>
+                  </section>
+                  <section class="sec current">
+                    <div class="sec-head"><span class="step">3</span><span class="sec-title">Payment</span></div>
+                    <div class="sec-body">
+                      <div class="option">
+                        <span class="radio"></span>
+                        <strong>UPI, cards, net banking or wallet</strong>
+                        <span class="chips"><span>UPI</span><span>Cards</span><span>Net banking</span><span>Wallets</span></span>
+                      </div>
+                    </div>
+                  </section>
+                </div>
+              </div>
+              <div class="dock">
+                <div class="dock-row">
+                  <span class="dock-total"><small>Total</small><b>₹4,487.75</b></span>
+                  <span class="btn" id="b-pay"
+                    ><span id="pay-go">Pay ₹4,487.75</span><span id="pay-busy"><i class="spinner" id="spin"></i>Confirming your payment…</span></span
+                  >
+                </div>
+                <p class="dock-note">Paid securely through Razorpay.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Receipt -->
+          <div id="p-rc" class="clip scr" data-start="27.6" data-duration="5.05" data-track-index="12">
+            <div class="app">
+              <header class="co-header">
+                <img src="assets/img/mark-green.png" alt="" />
+                <span class="secure"
+                  ><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2" fill="none" stroke="#48605a" stroke-width="2" /><path d="M8 11V8a4 4 0 0 1 8 0v3" fill="none" stroke="#48605a" stroke-width="2" /></svg
+                  >Secure checkout</span
+                >
+              </header>
+              <div class="flow">
+                <span class="fstep done"><span class="fdot"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="#386155" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" /></svg></span>Your plan</span>
+                <i class="fline"></i>
+                <span class="fstep done"><span class="fdot"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="#386155" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" /></svg></span>Checkout</span>
+                <i class="fline"></i>
+                <span class="fstep on"><span class="fdot">3</span>Confirmed</span>
+              </div>
+              <div class="rc" id="rc">
+                <div class="rc-paper" id="rc-paper">
+                  <span class="stamp" id="rc-stamp">PAID</span>
+                  <span class="seal"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="#386155" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" /></svg></span>
+                  <p class="rc-meta rc-line">Subscription confirmed</p>
+                  <h2 class="rc-title rc-line">Your plan is active</h2>
+                  <p class="rc-plan rc-line">Weekday Lunch</p>
+                  <p class="rc-num rc-line" id="rc-num">SUB-000412</p>
+                  <div class="rc-rows">
+                    <div class="t-row rc-line"><span>first delivery</span><i></i><b>Mon, 21 Sept, 12:00 pm</b></div>
+                    <div class="t-row rc-line"><span>deliveries scheduled</span><i></i><b>22</b></div>
+                    <div class="t-row rc-line"><span>deliver to</span><i></i><b>402, Lakeview Apts</b></div>
+                  </div>
+                  <div class="rc-total rc-line"><span>paid</span><b>₹4,487.75</b></div>
+                </div>
+                <div class="rc-tear"></div>
+                <p class="rc-next rc-line">Each meal enters the kitchen queue shortly before its delivery window. Skip, pause or change days from your account.</p>
+                <span class="btn rc-line" id="b-account">Go to my account</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Account: next delivery, and a skip -->
+          <div id="p-acct" class="clip scr" data-start="32.3" data-duration="4.4" data-track-index="13">
+            <div class="app">
+              <div class="offer">
+                <span>Use code <span class="mono">FIRST5</span> — Up to 5% off on your first plan</span>
+              </div>
+              <header class="site-header">
+                <svg class="burger" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h16M4 16h16" stroke="#386155" stroke-width="2" stroke-linecap="round" /></svg>
+                <img src="assets/img/mark-green.png" alt="" />
+                <span class="avatar"
+                  ><span>A</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="#5f7169" stroke-width="2" stroke-linecap="round" /></svg
+                ></span>
+              </header>
+              <nav class="tabs"><span class="on">OVERVIEW</span><span>ADDRESSES</span><span>REVIEWS</span><span>REFUNDS</span></nav>
+              <p class="acct-date">Saturday, 19 September</p>
+              <h1 class="acct-hello">Hello, Ananya</h1>
+              <section class="next">
+                <p class="next-label">Next delivery</p>
+                <div class="next-swap">
+                  <div id="nd-1">
+                    <p class="next-day">Mon, 21 Sept</p>
+                    <p class="next-when">Lunch, from 12:00 pm</p>
+                    <p class="next-dish">Banana Leaf Thali</p>
+                  </div>
+                  <div id="nd-2">
+                    <p class="next-day">Tue, 22 Sept</p>
+                    <p class="next-when">Lunch, from 12:00 pm</p>
+                    <p class="next-dish">Banana Leaf Thali</p>
+                  </div>
+                </div>
+                <div class="next-foot">
+                  <div id="nf-1">
+                    <p class="lock"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2" fill="none" stroke="#48605a" stroke-width="2" /><path d="M8 11V8a4 4 0 0 1 8 0v3" fill="none" stroke="#48605a" stroke-width="2" /></svg>You can skip this until 10:00 am, Mon, 21 Sept.</p>
+                    <div class="btn-row"><span class="sbtn sbtn-soft" id="b-skip">Skip this delivery</span></div>
+                  </div>
+                  <div id="nf-2">
+                    <p class="skip-q"><strong>Skip lunch on Mon, 21 Sept?</strong> The kitchen will not cook it.</p>
+                    <div class="btn-row"><span class="sbtn sbtn-danger" id="b-yes">Yes, skip it</span><span class="sbtn sbtn-ghost">Keep it</span></div>
+                  </div>
+                  <div id="nf-3">
+                    <p class="lock"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2" fill="none" stroke="#48605a" stroke-width="2" /><path d="M8 11V8a4 4 0 0 1 8 0v3" fill="none" stroke="#48605a" stroke-width="2" /></svg>You can skip this until 10:00 am, Tue, 22 Sept.</p>
+                    <div class="btn-row"><span class="sbtn sbtn-soft">Skip this delivery</span></div>
+                  </div>
+                </div>
+              </section>
+              <div class="notice" id="notice">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="#4ade80" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" /></svg>
+                Skipped. The kitchen will not cook this one.
+              </div>
+            </div>
+          </div>
+
+          <!-- Taps (screen pixels) -->
+          <i class="tap" id="tap1"></i>
+          <i class="tap" id="tap2"></i>
+          <i class="tap" id="tap3"></i>
+          <i class="tap" id="tap4"></i>
+          <i class="tap" id="tap5"></i>
+          <i class="tap" id="tap6"></i>
+          <i class="tap" id="tap7"></i>
+          <i class="tap" id="tap8"></i>
+          <i class="tap" id="tap9"></i>
+          <i class="tap" id="tap10"></i>
+          <i class="tap" id="tap11"></i>
+        </div>
+      </div>
+
+      <!-- End card -->
+      <div id="endcard" class="clip end" data-start="36.2" data-duration="3.4" data-track-index="14">
+        <img id="end-mark" src="assets/img/mark-cream.png" alt="Infinity Kitchens" />
+        <span class="wordmark" id="end-word">INFINITY KITCHENS</span>
+        <p class="end-line" id="end-line">Home food, at home’s pace.</p>
+        <p class="end-price" id="end-price">From ₹3,999 for 30 days · Bengaluru</p>
+        <p class="end-cta" id="end-cta">Start a plan today</p>
+        <p class="end-url" id="end-url">infinitykitchensblr.vercel.app</p>
+      </div>
+
+      <!-- ---- Audio ---------------------------------------------------------- -->
+      <audio id="vo1" src="assets/vo/vo-01.wav" data-start="0.2" data-duration="3.99" data-track-index="20" data-volume="1.5"></audio>
+      <audio id="vo2" src="assets/vo/vo-02.wav" data-start="4.65" data-duration="5.23" data-track-index="20" data-volume="1.5"></audio>
+      <audio id="vo3" src="assets/vo/vo-03.wav" data-start="10.35" data-duration="3.58" data-track-index="20" data-volume="1.5"></audio>
+      <audio id="vo4" src="assets/vo/vo-04.wav" data-start="14.45" data-duration="3.33" data-track-index="20" data-volume="1.5"></audio>
+      <audio id="vo5" src="assets/vo/vo-05.wav" data-start="18.55" data-duration="3.93" data-track-index="20" data-volume="1.5"></audio>
+      <audio id="vo6" src="assets/vo/vo-06.wav" data-start="24.6" data-duration="1.77" data-track-index="20" data-volume="1.5"></audio>
+      <audio id="vo7" src="assets/vo/vo-07.wav" data-start="27.75" data-duration="4.16" data-track-index="20" data-volume="1.5"></audio>
+      <audio id="vo8" src="assets/vo/vo-08.wav" data-start="32.45" data-duration="3.18" data-track-index="20" data-volume="1.5"></audio>
+      <audio id="vo9" src="assets/vo/vo-09.wav" data-start="36.4" data-duration="3.03" data-track-index="20" data-volume="1.5"></audio>
+      <audio
+        id="music"
+        src="assets/music/happy-beats-business-moves-vol-11-by-ende-dot-app.mp3"
+        data-start="0"
+        data-duration="39.6"
+        data-track-index="10"
+        data-volume="0.18"
+        data-automation='{"version":1,"lanes":[{"target":"volume","points":[{"t":0,"v":0},{"t":0.4,"v":0.18},{"t":38.9,"v":0.18},{"t":39.6,"v":0}]}]}'
+      ></audio>
+      <audio id="sfx-t1" src="assets/sfx/ui/click2.ogg" data-start="3.95" data-duration="0.056" data-track-index="21" data-volume="0.5"></audio>
+      <audio id="sfx-t2" src="assets/sfx/ui/click2.ogg" data-start="9.85" data-duration="0.056" data-track-index="21" data-volume="0.5"></audio>
+      <audio id="sfx-t3" src="assets/sfx/ui/click2.ogg" data-start="13.95" data-duration="0.056" data-track-index="21" data-volume="0.5"></audio>
+      <audio id="sfx-t4" src="assets/sfx/ui/click2.ogg" data-start="16.7" data-duration="0.056" data-track-index="21" data-volume="0.5"></audio>
+      <audio id="sfx-t5" src="assets/sfx/ui/click2.ogg" data-start="17.95" data-duration="0.056" data-track-index="21" data-volume="0.5"></audio>
+      <audio id="sfx-t6" src="assets/sfx/ui/click2.ogg" data-start="20.35" data-duration="0.056" data-track-index="21" data-volume="0.5"></audio>
+      <audio id="sfx-t7" src="assets/sfx/ui/click2.ogg" data-start="23.9" data-duration="0.056" data-track-index="21" data-volume="0.5"></audio>
+      <audio id="sfx-t8" src="assets/sfx/ui/click2.ogg" data-start="26.6" data-duration="0.056" data-track-index="21" data-volume="0.5"></audio>
+      <audio id="sfx-stamp" src="assets/sfx/impact/impactWood_medium_001.ogg" data-start="28.93" data-duration="0.33" data-track-index="22" data-volume="0.5"></audio>
+      <audio id="sfx-t9" src="assets/sfx/ui/click2.ogg" data-start="31.95" data-duration="0.056" data-track-index="21" data-volume="0.5"></audio>
+      <audio id="sfx-t10" src="assets/sfx/ui/click2.ogg" data-start="33.75" data-duration="0.056" data-track-index="21" data-volume="0.5"></audio>
+      <audio id="sfx-t11" src="assets/sfx/ui/click2.ogg" data-start="34.95" data-duration="0.056" data-track-index="21" data-volume="0.5"></audio>
+      <audio id="sfx-bell" src="assets/sfx/impact/impactBell_heavy_000.ogg" data-start="36.55" data-duration="1.48" data-track-index="23" data-volume="0.35"></audio>
+    </div>
+
+    <script>
+      const S = 900 / 390; // phone CSS px → screen px
+
+      // ---- Resting states ----------------------------------------------------
+      // Set before the timeline exists, so frame 0 already shows them hidden.
+      gsap.set(".tap", { opacity: 0, scale: 0.4 });
+      gsap.set(["#pay-busy", "#nd-2", "#nf-2", "#nf-3", "#notice"], { opacity: 0 });
+      gsap.set(["#c-email", "#c-pass", "#c-flat", "#c-area", "#c-note"], { opacity: 0 });
+      gsap.set(["#co2-col", "#rc"], { y: 0 });
+      const tl = gsap.timeline({ paused: true });
+
+      // ---- Captions: each line rises in as its voice starts --------------------
+      [
+        ["#cap1 p", 0.1],
+        ["#cap2 p", 4.55],
+        ["#cap3 p", 10.25],
+        ["#cap4 p", 14.35],
+        ["#cap5 p", 18.45],
+        ["#cap6 p", 24.5],
+        ["#cap7 p", 27.65],
+        ["#cap8 p", 32.35],
+      ].forEach(([sel, at]) => tl.fromTo(sel, { y: 26, opacity: 0 }, { y: 0, opacity: 1, duration: 0.35, ease: "power3.out" }, at));
+      tl.fromTo("#top-lockup", { y: -16, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, ease: "power2.out" }, 0);
+      tl.fromTo("#phone", { y: 90, opacity: 0 }, { y: 0, opacity: 1, duration: 0.7, ease: "expo.out" }, 0.05);
+
+      // ---- A tap: the finger lands, then the ring lets go ----------------------
+      function tap(id, x, y, at) {
+        const el = `#${id}`;
+        tl.set(el, { x: x * S, y: y * S }, at - 0.2);
+        tl.fromTo(el, { opacity: 0, scale: 0.4 }, { opacity: 1, scale: 0.8, duration: 0.14, ease: "power2.out", immediateRender: false }, at - 0.16);
+        tl.fromTo(el, { opacity: 1, scale: 0.8 }, { opacity: 0, scale: 1.5, duration: 0.4, ease: "power2.out", immediateRender: false }, at + 0.02);
+      }
+      // A page arriving from the right, the way the phone navigates.
+      const push = (sel, at) => tl.fromTo(sel, { xPercent: 100 }, { xPercent: 0, duration: 0.35, ease: "power3.inOut" }, at);
+      // Text typed into a field, with its caret while it has focus.
+      function type(id, text, at, dur) {
+        const el = document.getElementById(`t-${id}`);
+        const state = { n: 0 };
+        tl.fromTo(state, { n: 0 }, { n: text.length, duration: dur, ease: "none", onUpdate: () => (el.textContent = text.slice(0, Math.round(state.n))) }, at);
+        tl.fromTo(`#c-${id}`, { opacity: 0 }, { opacity: 1, duration: 0.05, immediateRender: false }, at - 0.15);
+        tl.fromTo(`#in-${id}`, { borderColor: "#7f918b", boxShadow: "inset 0 0 0 0px #386155" }, { borderColor: "#386155", boxShadow: "inset 0 0 0 1px #386155", duration: 0.1 }, at - 0.15);
+        tl.fromTo(`#c-${id}`, { opacity: 1 }, { opacity: 0, duration: 0.05, immediateRender: false }, at + dur + 0.25);
+        tl.fromTo(`#in-${id}`, { borderColor: "#386155", boxShadow: "inset 0 0 0 1px #386155" }, { borderColor: "#7f918b", boxShadow: "inset 0 0 0 0px #386155", duration: 0.1, immediateRender: false }, at + dur + 0.25);
+      }
+      const swap = (sel, at, to = 1) => tl.fromTo(sel, { opacity: 1 - to }, { opacity: to, duration: 0.18, ease: "none", immediateRender: false }, at);
+
+      // ---- 1. Home (0.00–4.50) -------------------------------------------------
+      tl.fromTo("#p-home", { scale: 1.0 }, { scale: 1.035, duration: 4.4, ease: "sine.inOut", transformOrigin: "50% 30%" }, 0.1);
+      tap("tap1", 86, 146, 3.95); // the hero's MENU
+
+      // ---- 2. Menu (4.50–10.20) ------------------------------------------------
+      push("#p-menu-a", 4.5);
+      tap("tap2", 326, 32, 9.85); // START A PLAN in the sticky header
+
+      // ---- 3. Plans (10.20–14.30) ----------------------------------------------
+      push("#p-subs-a", 10.2);
+      tap("tap3", 195, 504, 13.95); // "choose this plan" on Weekday Lunch
+
+      // ---- 4. Plan page (14.30–18.40) ------------------------------------------
+      push("#p-plan-a", 14.3);
+      tap("tap4", 195, 392, 16.7); // Weekdays
+      tap("tap5", 294, 523, 17.95); // Continue, in the dock
+
+      // ---- 5. Checkout (18.40–24.40) -------------------------------------------
+      push("#p-co1", 18.4);
+      type("email", "ananya@example.com", 18.9, 0.75);
+      type("pass", "••••••••", 19.75, 0.35);
+      tap("tap6", 195, 517, 20.35); // Sign in and continue
+      tl.fromTo("#p-co2", { opacity: 0 }, { opacity: 1, duration: 0.2, ease: "none" }, 20.5);
+      tl.fromTo("#co2-col", { y: 0 }, { y: -150, duration: 0.4, ease: "power2.inOut" }, 20.75);
+      type("flat", "402, Lakeview Apartments", 21.05, 0.75);
+      tl.fromTo("#co2-col", { y: -150 }, { y: -238, duration: 0.3, ease: "power2.inOut", immediateRender: false }, 21.9);
+      type("area", "12th Main, Indiranagar", 22.1, 0.65);
+      tl.fromTo("#co2-col", { y: -238 }, { y: -336, duration: 0.3, ease: "power2.inOut", immediateRender: false }, 22.85);
+      type("note", "Call from the gate", 23.05, 0.55);
+      tap("tap7", 195, 527, 23.9); // Save and continue to payment
+
+      // ---- 6. Payment (24.40–27.60) --------------------------------------------
+      push("#p-pay", 24.4);
+      tap("tap8", 253, 501, 26.6); // Pay ₹4,487.75
+      swap("#pay-go", 26.72, 0);
+      swap("#pay-busy", 26.72, 1);
+      tl.fromTo("#spin", { rotation: 0 }, { rotation: 540, duration: 0.9, ease: "none" }, 26.72);
+
+      // ---- 7. Receipt (27.60–32.30) --------------------------------------------
+      push("#p-rc", 27.6);
+      tl.fromTo("#rc-paper", { clipPath: "inset(0% 0% 100% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: 0.6, ease: "power2.out" }, 27.95);
+      tl.fromTo("#p-rc .rc-line", { y: 8, opacity: 0 }, { y: 0, opacity: 1, duration: 0.3, ease: "power2.out", stagger: 0.05 }, 28.05);
+      // The subscription number resolves out of scrambled digits, left to right.
+      const num = document.getElementById("rc-num");
+      const REAL = "SUB-000412";
+      const scramble = { p: 0 };
+      tl.fromTo(
+        scramble,
+        { p: 0 },
+        {
+          p: 1,
+          duration: 0.9,
+          ease: "none",
+          onUpdate: () => {
+            const shown = Math.floor(scramble.p * (REAL.length - 4));
+            const tick = Math.floor(scramble.p * 27);
+            let out = "SUB-";
+            for (let i = 4; i < REAL.length; i++) out += i - 4 < shown ? REAL[i] : String((i * 7 + tick * 3) % 10);
+            num.textContent = scramble.p >= 1 ? REAL : out;
+          },
+        },
+        28.1,
+      );
+      tl.fromTo("#rc-stamp", { scale: 1.8, rotation: -16, opacity: 0 }, { scale: 1, rotation: -9, opacity: 1, duration: 0.2, ease: "power4.in" }, 28.75);
+      tl.fromTo("#rc", { y: 0 }, { y: -40, duration: 0.45, ease: "power2.inOut" }, 31.25);
+      tap("tap9", 195, 528, 31.95); // Go to my account
+
+      // ---- 8. Account (32.30–36.20) --------------------------------------------
+      push("#p-acct", 32.3);
+      tap("tap10", 111, 466, 33.75); // Skip this delivery
+      swap("#nf-1", 33.85, 0);
+      swap("#nf-2", 33.85, 1);
+      tap("tap11", 96, 466, 34.95); // Yes, skip it
+      swap("#nf-2", 35.05, 0);
+      swap("#nd-1", 35.1, 0);
+      swap("#nd-2", 35.1, 1);
+      swap("#nf-3", 35.1, 1);
+      tl.fromTo("#nd-2", { y: 14 }, { y: 0, duration: 0.35, ease: "power3.out" }, 35.1);
+      tl.fromTo("#notice", { y: 40 }, { y: 0, duration: 0.35, ease: "power3.out" }, 35.1);
+      swap("#notice", 35.1, 1);
+
+      // ---- 9. Name (36.20–39.60) -----------------------------------------------
+      tl.fromTo("#phone", { scale: 1, opacity: 1 }, { scale: 0.9, opacity: 0, duration: 0.4, ease: "power2.in", immediateRender: false }, 36.0);
+      tl.fromTo("#top-lockup", { opacity: 1 }, { opacity: 0, duration: 0.3, ease: "none", immediateRender: false }, 36.0);
+      tl.fromTo("#end-mark", { y: 30, opacity: 0, scale: 0.9 }, { y: 0, opacity: 1, scale: 1, duration: 0.55, ease: "back.out(1.6)" }, 36.35);
+      [
+        ["#end-word", 36.55],
+        ["#end-line", 36.8],
+        ["#end-price", 37.4],
+        ["#end-cta", 37.7],
+        ["#end-url", 37.95],
+      ].forEach(([sel, at]) => tl.fromTo(sel, { y: 24, opacity: 0 }, { y: 0, opacity: 1, duration: 0.45, ease: "power3.out" }, at));
+
+      // ---- Audio-reactive: the glow behind the phone breathes with the bass ----
+      const glow = document.getElementById("glow");
+      const A = window.IK_AUDIO;
+      const frames = Math.min(A.bass.length, Math.floor(39.6 * A.fps));
+      for (let f = 0; f < frames; f++) {
+        tl.call(
+          (function (b) {
+            return function () {
+              gsap.set(glow, { scale: 1 + b * 0.07, opacity: 0.55 + b * 0.45 });
+            };
+          })(A.bass[f] || 0),
+          [],
+          f / A.fps,
+        );
+      }
+
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>
