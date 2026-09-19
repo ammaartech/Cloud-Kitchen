@@ -1,5 +1,23 @@
 import { describe, expect, it } from 'vitest';
-import { hasPreviewAccess, isOpenWhileLocked, parseEmailList } from '@/lib/auth/site-lock';
+import {
+  hasPreviewAccess,
+  isOpenWhileLocked,
+  parseEmailList,
+  PREVIEW_TESTERS,
+} from '@/lib/auth/site-lock';
+
+describe('the built-in testers', () => {
+  it('are all well-formed, so none is silently dropped by the parser', () => {
+    expect(parseEmailList(PREVIEW_TESTERS.join(',')).size).toBe(PREVIEW_TESTERS.length);
+  });
+
+  it('get in as customers', () => {
+    const testers = parseEmailList(PREVIEW_TESTERS.join(','));
+    for (const email of PREVIEW_TESTERS) {
+      expect(hasPreviewAccess(email, { role: 'customer', isActive: true }, testers)).toBe(true);
+    }
+  });
+});
 
 const allowed = parseEmailList('owner@cloudkitchen.test, Meera@Example.test\nrahul@example.test');
 

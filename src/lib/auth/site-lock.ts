@@ -10,7 +10,8 @@ import { serverEnv } from '@/lib/env';
  * can be tested on their own.
  *
  * **Who gets in.** A signed-in, active account that is either a Developer Admin
- * or one of the addresses in SITE_LOCK_ALLOWED_EMAILS (the test accounts).
+ * or one of the testers below. SITE_LOCK_ALLOWED_EMAILS can add more without a
+ * code change, but the list here is what every deployment gets regardless.
  * The role comes from `auth_profiles`, which a user cannot change for
  * themselves (`guard_profile_privilege_columns`). The email comes from the
  * verified access token, *not* the profile row: a user may edit their own
@@ -20,6 +21,21 @@ import { serverEnv } from '@/lib/env';
  * **What stays open.** Only what the lock itself needs, and the server-to-
  * server endpoints that carry their own authentication. See `isOpenWhileLocked`.
  */
+
+/** The accounts the site is being tested with. Exact addresses only. */
+export const PREVIEW_TESTERS = [
+  'dev@cloudkitchen.test',
+  'owner@cloudkitchen.test',
+  'manager@cloudkitchen.test',
+  'kitchen1@cloudkitchen.test',
+  'kitchen2@cloudkitchen.test',
+  'kitchen3@cloudkitchen.test',
+  'meera@example.test',
+  'rahul@example.test',
+  'sana@example.test',
+  'ammaar.kid.524@gmail.com',
+  'faiss.hx@gmail.com',
+] as const;
 
 export interface SiteLock {
   locked: boolean;
@@ -33,7 +49,9 @@ export function siteLock(): SiteLock {
   const env = serverEnv();
   cached = {
     locked: env.SITE_LOCKED === 'true',
-    allowedEmails: parseEmailList(env.SITE_LOCK_ALLOWED_EMAILS),
+    allowedEmails: parseEmailList(
+      [...PREVIEW_TESTERS, env.SITE_LOCK_ALLOWED_EMAILS ?? ''].join(','),
+    ),
   };
   return cached;
 }

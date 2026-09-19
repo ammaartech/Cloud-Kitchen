@@ -88,8 +88,8 @@ const serverSchema = z.object({
 
   // Private development lock (see `lib/auth/site-lock.ts`). While it is on,
   // the whole site -- pages and APIs -- answers only to Developer Admins and
-  // the accounts listed in SITE_LOCK_ALLOWED_EMAILS; everyone else gets the
-  // sign-in page. It defaults to ON so that a deployment which forgot the
+  // the testers in `PREVIEW_TESTERS` (plus any listed in
+  // SITE_LOCK_ALLOWED_EMAILS); everyone else gets the sign-in page. It defaults to ON so that a deployment which forgot the
   // variable stays shut rather than open. Set it to 'false' to launch.
   SITE_LOCKED: z.enum(['true', 'false']).default('true'),
   // Comma- or newline-separated exact addresses, matched case-insensitively.
