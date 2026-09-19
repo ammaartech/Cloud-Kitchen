@@ -1,6 +1,5 @@
 import type { CSSProperties } from 'react';
 import { ButtonLink } from '@/components/ui/primitives';
-import './not-found.css';
 
 export const metadata = { title: 'Not found' };
 
@@ -15,7 +14,10 @@ export const metadata = { title: 'Not found' };
  * off this page, and a 404 that a visitor has to use the back button to escape
  * is a 404 that loses them.
  *
- * The choreography is documented in `not-found.css`. The short version: one
+ * The choreography is documented in the 404 section at the end of
+ * `globals.css` -- there rather than in a stylesheet of its own, because this
+ * boundary is in every page's tree and its own stylesheet was preloaded on
+ * every page for a screen almost nobody sees. The short version: one
  * curve, one distance, one interval, so the page arrives as a single wave
  * rather than six things that each animate.
  */

@@ -144,6 +144,46 @@
   transition-property: opacity;
 }
 
+/* --- The page between tabs ------------------------------------------------- */
+
+/* The storefront's page turn (`page-fade` and `page-slide` in `globals.css`),
+   steered by the direction `AccountNav` puts on <html> when a tab is pressed
+   rather than by a transition type -- `account/template.tsx` has why.
+
+   With no direction the outgoing page is gone and the incoming one is there,
+   the same instant swap an untyped storefront navigation gets. The browser's
+   default here is a fade of each, which is the two pages on screen at once. */
+::view-transition-old(.acct-page) {
+  animation: none;
+  opacity: 0;
+}
+
+::view-transition-new(.acct-page) {
+  animation: none;
+}
+
+:root[data-acct-nav]::view-transition-old(.acct-page) {
+  animation:
+    140ms var(--ck-ease) both page-fade reverse,
+    320ms var(--ck-ease) both page-slide reverse;
+}
+
+:root[data-acct-nav]::view-transition-new(.acct-page) {
+  animation:
+    200ms var(--ck-ease) 140ms both page-fade,
+    320ms var(--ck-ease) both page-slide;
+}
+
+:root[data-acct-nav='forward']::view-transition-old(.acct-page),
+:root[data-acct-nav='back']::view-transition-new(.acct-page) {
+  --page-slide: -48px;
+}
+
+:root[data-acct-nav='back']::view-transition-old(.acct-page),
+:root[data-acct-nav='forward']::view-transition-new(.acct-page) {
+  --page-slide: 48px;
+}
+
 /* --- Arrival --------------------------------------------------------------- */
 
 /* The storefront's `reveal-up`, cut down for a task surface: half the rise,
